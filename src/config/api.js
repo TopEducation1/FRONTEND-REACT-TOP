@@ -1,4 +1,4 @@
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = 'https://backend-django-top-production.up.railway.app';
 console.log('API_URL:', API_URL);
 
 const BASE_URL = API_URL;
