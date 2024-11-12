@@ -1,4 +1,4 @@
-const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
+const API_URL = process.env.REACT_APP_API_URL;
 console.log('API_URL:', API_URL);
 
 const BASE_URL = API_URL;

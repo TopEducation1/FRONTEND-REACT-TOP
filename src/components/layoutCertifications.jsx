@@ -55,7 +55,7 @@ const CertificationsList = ({ certifications }) => {
                         <div className="tag-platform">
                             <img
                                 src={getImageUrl(certification.url_imagen_plataforma_certificacion)}
-                                alt="platform-logo"
+                                alt="platform-logo" 
                                 onError={handleImageError}
                                 style={{
                                     display: 'block',

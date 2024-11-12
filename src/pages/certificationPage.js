@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 import getCertificationById from "../services/getCertificationById";
+import RightPop from "../components/RightPop";
 
 const CertificationPage = () => {
     // Estados de la pagina de certificacion
@@ -8,8 +9,33 @@ const CertificationPage = () => {
     const [certification, setCertification] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [expandedIndex, setExpandedIndex] = useState(null); 
+    const [expandedIndex, setExpandedIndex] = useState(null);
     const [countSkills, setSkillsCount] = useState(0);
+    // Estado para manejar la posición del pop up
+    const [positionPopUp, SetPositionPopUp] = useState(false);
+    // Estado para maneajr la visibilidad del contenedor del pop up responsive
+    const [visibleContainerPopUp, setVisibleContainerPopUp] = useState(true);
+
+    useEffect(() => {
+
+        const handleRezise = () => {
+            SetPositionPopUp(window.innerWidth < 1200);
+        }
+
+        window.addEventListener('resize', handleRezise);
+
+        handleRezise(); // Verifica el anchoo de la pagina
+
+        return () => {
+            window.removeEventListener('resize', handleRezise);
+        }
+
+    }, []);
+
+    const hadleClickButtonPopUp = () => {
+        setVisibleContainerPopUp(false);
+
+    }
 
     useEffect(() => {
         const loadCertification = async () => {
@@ -59,6 +85,7 @@ const CertificationPage = () => {
     if (!certification) {
         return (
             <div className="container-main-info">
+
                 <div>No se encontró la certificación</div>
             </div>
         );
@@ -66,32 +93,15 @@ const CertificationPage = () => {
 
     return (
         <>
-            <div id="container-right-pop">
-                {/* Pop-up section */}
-                <div className="grid-pop-section" id="upper-section">
-                    <button id="close-pop">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-x">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M18 6l-12 12" />
-                            <path d="M6 6l12 12" />
-                        </svg>
-                    </button>
-                    <h3>¿Aún no eres miembro de Top Education?</h3>
-                </div>
-                {/* Middle section */}
-                <div className="grid-pop-section" id="mid-section">
-                    <span>Con una membresía en Top Education, tendrás acceso a esta certificación y cientos más. <b>¡Haz la prueba ahora!</b></span>
-                    <button id="button-test-top">Probar Top Education</button>
-                </div>
-                {/* Bottom section */}
-                <div className="grid-pop-section" id="bottom-section">
-                    <span>¿Te gustaría contratar nuestros servicios para tu empresa?</span>
-                    <a>Conoce Top Education for teams</a>
-                </div>
-            </div>
+           
+
+
+
+
 
 
             <div id="grid-main-content">
+            
                 {/* Main certification information */}
                 <div className="container-main-info">
                     <div id="wrapper-logo-certification" className="grid-main-info-section">
@@ -197,45 +207,100 @@ const CertificationPage = () => {
 
 
                 <div id="container-areas">
-                        <div id="wrapper-title-areas"><h1>Explora áreas del conocimiento</h1></div>
+                    <div id="wrapper-title-areas"><h1>Explora áreas del conocimiento</h1></div>
 
-                        <div id="wrapper-show-areas">
+                    <div id="wrapper-show-areas">
 
                         <div className="area-circle-object">
-  <img src="/assets/Areas-Conocimiento/area-conocimiento-1.png" alt="Área de Conocimiento 1" />
-</div>
-
-                            <div className="area-circle-object">
-                            <img src="/assets/Areas-Conocimiento/area-conocimiento-2.png" alt="Área de Conocimiento 1" />
-                            </div>
-                            <div className="area-circle-object">
-                            <img src="/assets/Areas-Conocimiento/area-conocimiento-3.png" alt="Área de Conocimiento 1" />
-                            </div>
-                            <div className="area-circle-object">
-                            <img src="/assets/Areas-Conocimiento/area-conocimiento-4.png" alt="Área de Conocimiento 1" />
-                            </div>
-                            <div className="area-circle-object">
-                            <img src="/assets/Areas-Conocimiento/area-conocimiento-5.png" alt="Área de Conocimiento 1" />
-                            </div>
-                            <div className="area-circle-object">
-                            <img src="/assets/Areas-Conocimiento/area-conocimiento-6.png" alt="Área de Conocimiento 1" />
-                            </div>
-                            <div className="area-circle-object">
-                            <img src="/assets/Areas-Conocimiento/area-conocimiento-7.png" alt="Área de Conocimiento 1" />
-                            </div>
-                            <div className="area-circle-object">
-                            <img src="/assets/Areas-Conocimiento/area-conocimiento-8.png" alt="Área de Conocimiento 1" />
-                            </div>
-                            <div className="area-circle-object">
-                            <img src="/assets/Areas-Conocimiento/area-conocimiento-9.png" alt="Área de Conocimiento 1" />
-                            </div>
+                            <img src="/assets/Areas-Conocimiento/area-conocimiento-1.png" alt="Área de Conocimiento 1" />
                         </div>
+
+                        <div className="area-circle-object">
+                            <img src="/assets/Areas-Conocimiento/area-conocimiento-2.png" alt="Área de Conocimiento 1" />
+                        </div>
+                        <div className="area-circle-object">
+                            <img src="/assets/Areas-Conocimiento/area-conocimiento-3.png" alt="Área de Conocimiento 1" />
+                        </div>
+                        <div className="area-circle-object">
+                            <img src="/assets/Areas-Conocimiento/area-conocimiento-4.png" alt="Área de Conocimiento 1" />
+                        </div>
+                        <div className="area-circle-object">
+                            <img src="/assets/Areas-Conocimiento/area-conocimiento-5.png" alt="Área de Conocimiento 1" />
+                        </div>
+                        <div className="area-circle-object">
+                            <img src="/assets/Areas-Conocimiento/area-conocimiento-6.png" alt="Área de Conocimiento 1" />
+                        </div>
+                        <div className="area-circle-object">
+                            <img src="/assets/Areas-Conocimiento/area-conocimiento-7.png" alt="Área de Conocimiento 1" />
+                        </div>
+                        <div className="area-circle-object">
+                            <img src="/assets/Areas-Conocimiento/area-conocimiento-8.png" alt="Área de Conocimiento 1" />
+                        </div>
+                        <div className="area-circle-object">
+                            <img src="/assets/Areas-Conocimiento/area-conocimiento-9.png" alt="Área de Conocimiento 1" />
+                        </div>
+                    </div>
                 </div>
 
 
                 <div id="container-classes">
-                <div id="wrapper-title-classes"><h1>Clases recomendadas para ti</h1></div>
+                    <div id="wrapper-title-classes"><h1>Clases recomendadas para ti</h1></div>
+
+                    <div id="wrapper-slider-masterclass">
+
+                        <div className="card-masterclass">
+                            <img src="/assets/MasterClass/masterclass-1.png" alt="masterclass-imagen" />
+                        </div>
+                        <div className="card-masterclass">
+                            <img src="/assets/MasterClass/masterclass-2.png" alt="masterclass-imagen" />
+                        </div>
+                        <div className="card-masterclass">
+                            <img src="/assets/MasterClass/masterclass-3.png" alt="masterclass-imagen" />
+                        </div>
+
+                    </div>
                 </div>
+
+
+                <div id="container-promotion">
+                    <div id="promotion-grid">
+                        <div className="div-grid-promotion" id="upper-left-div">
+                            <img src="/assets/banners/promotion-banner.jpg" />
+                        </div>
+                        <div className="div-grid-promotion" id="upper-right-div">
+                            <h2>Con Top Education, ahorras dinero y tienes más contenidos</h2>
+                            <p>Imagina tener acceso ilimitado al catalogo de edX, Masterclass, y Coursera, todo en una sola plataforma y por menos de la mitad del precio que pagarias por las tres plataformas.</p>
+                        </div>
+                        <div className="div-grid-promotion" id="bottom-div">
+                            <button id="button-join-now-grid">¡Únete ahora!</button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="wrapper-right-column">
+            {visibleContainerPopUp && (
+                positionPopUp ? (
+                    // Posición dentro del contenedor responsive
+                    <div id="container-pop-up-responsive">
+                        <button onClick={hadleClickButtonPopUp} id="close-pop">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-x">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M18 6l-12 12" />
+                                <path d="M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <RightPop />
+                    </div>
+                ) : (
+                    // Posición original
+                    <RightPop />
+                )
+            )}
+            </div>
+
+
+
             </div>
 
 

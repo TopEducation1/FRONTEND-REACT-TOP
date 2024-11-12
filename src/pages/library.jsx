@@ -468,7 +468,7 @@ function LibraryPage() {
             >
                 <div id="wrapper-logos">
                     <div className="container-logo">
-                        <img src="assets/logos/coursera-hover.png" />
+                        <img src="assets/Plataformas/Coursera mini logo.png" />
                     </div>
                     <div className="container-logo">
                         <img src="assets/logos/edx-hover.png" />
