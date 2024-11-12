@@ -1,8 +1,8 @@
 import { endpoints } from "../config/api";
 
 const fetchConfig = {
+  method: 'GET', 
   headers: {
-    'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
   mode: 'cors',
@@ -12,12 +12,10 @@ const fetchConfig = {
 const CertificationsFetcher = {
   async getAllCertifications(page = 1, pageSize = 16) {
     try {
-      // Construir la URL manualmente
       const baseUrl = endpoints.certificaciones;
       const url = `${baseUrl}?page=${page}&page_size=${pageSize}`;
       
       console.log('Requesting URL:', url);
-       // Para debugging
       
       const response = await fetch(url, fetchConfig);
       
