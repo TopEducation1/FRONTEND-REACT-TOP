@@ -82,6 +82,8 @@ const CertificationPage = () => {
         );
     }
 
+    
+
     if (!certification) {
         return (
             <div className="container-main-info">
@@ -176,7 +178,7 @@ const CertificationPage = () => {
                                         <div className="wrapper-info">
                                             <h2>{modulo.titulo}</h2>
                                             <span>{modulo.duracion}</span>
-                                            <span>Incluye: {modulo.incluye}</span>
+                                            <span>Incluye: {modulo.incluye.join(" + ")}</span>
                                         </div>
                                         <div
                                             className="wrapper-row"

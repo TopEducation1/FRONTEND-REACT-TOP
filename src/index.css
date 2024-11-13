@@ -1074,11 +1074,9 @@ header {
   box-sizing: border-box;
   position: relative;
   grid-row: 1;
+  grid-column: 1;
 }
 
-#container-areas {
-  grid-row: 2;
-}
 
 #container-areas,
 #container-classes,
@@ -1106,7 +1104,6 @@ header {
   grid-column: 2;
   grid-row: 1 / -1;
   height: 100%;
-  background-color: rebeccapurple;
 }
 
 .grid-main-info-section {
@@ -1313,11 +1310,13 @@ header {
   align-items: center;
   row-gap: 0;
   width: 95%;
-  max-height: 150px; /* Cambiar a auto para permitir crecimiento */
+  height: auto;
+  max-height: 200px; 
   background-color: transparent;
   box-sizing: border-box;
   color: white;
-  transition: max-height 1s ease-in-out;
+  transition: max-height 1s ease;
+  overflow: hidden;
 }
 
 .module-card.closed {
@@ -1332,6 +1331,7 @@ header {
 
 .first-row {
   display: flex;
+  align-items: center;
   flex-direction: row;
   width: 100%;
   height: auto;
@@ -1341,6 +1341,14 @@ header {
   border-top-right-radius: 30px;
   border-radius: 30px;
   box-sizing: border-box;
+}
+
+.first-row h2 {
+  margin-top: 4px;
+}
+
+.first-row span {
+  margin-bottom: 5px;
 }
 
 .second-row {
@@ -1362,7 +1370,6 @@ header {
   display: flex;
   flex-direction: column;
   width: 85%;
-  padding-bottom: 24px;  
 }
 
 .wrapper-row {
@@ -1629,17 +1636,17 @@ header {
 
 #wrapper-right-column {
   display: flex;
-  width: 30%;
+  justify-content: center;
+  width: 80%;
   grid-column: 2;
   height: 100%;
-  background-color: rebeccapurple;
 }
 
 #container-right-pop {
   display: grid;
   grid-template-rows: 30% 40% 30%;
-  position: relative;
-  top: 150px;
+  position: sticky;
+  top: 125px;
   left: 0px;
   width: 299px;
   height: 337px;
@@ -1707,20 +1714,15 @@ header {
 #grid-main-content {
   display: grid;
   grid-template-columns: 70% 30%;
-  grid-template-rows: auto auto auto auto;
+  grid-template-rows: repeat(4, auto);
   position: absolute;
   width: 100%;
   top: 150px;
   left: 0px;
-  padding: 0 20px;
-  gap: 20px;
+  padding: 0 40px;
+  row-gap: 20px;
+  column-gap: 30px;
 }
-
-#grid-main-content > div:nth-child(2) {
-  grid-row: 1 / -1;
-}
-
-
 
 
 
@@ -2371,7 +2373,6 @@ header {
 
   #grid-main-content {
     width: 70%;
-    background-color: red;
   }
 
   
@@ -2480,6 +2481,149 @@ header {
 }
 
 @media(max-width: 774px) {
+
+  .container-main-info {
+    padding: 20px 5px;
+    overflow-x: hidden;
+  }
+
+  .area-circle-object:last-child  {
+    margin-right: 100px;
+  }
+
+  .div-grid-promotion {
+    width: 100%;
+    left: 0;
+    
+  }
+
+  #promotion-grid {
+
+    grid-template-columns: auto;
+    grid-template-rows: auto auto auto ;
+  }
+
+  .div-grid-promotion img {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  #container-classes {
+    padding-left: 0;
+    padding-right: 0;
+    overflow-y: hidden;
+  }
+
+  #wrapper-title-classes {
+    display: flex;
+    margin-top: 20px;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #wrapper-slider-masterclass {
+    width: 100%;
+    align-items: center;
+    justify-content: start;
+    overflow-x: scroll;
+    flex-wrap: nowrap;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 50%;
+    padding: 0 10px;
+    
+  }
+
+  .card-masterclass:last-child {
+    margin-right: 20px;
+  }
+
+
+
+  #wrapper-title-areas {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  #container-areas {
+    overflow: hidden;
+    padding: 0;
+    justify-content: center;
+  }
+
+  #wrapper-show-areas {
+    width: 90%;
+    overflow-x: scroll;
+    flex-wrap: nowrap;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 50%;
+    gap: 35px;
+    padding-left:135px;
+    padding-right: 300px;
+    margin: 20px 0 ;
+  }
+
+  #container-fast-info {
+    width: 95%;
+    display: flex;
+    overflow-x: auto;
+    gap: 40px;
+    flex-wrap: nowrap;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 50%;
+    padding-left: 10px;
+  }
+
+  #container-fast-info > * {
+    flex-shrink: 0;
+    scroll-snap-align: center; /* Hace que cada card se alinee al centro al hacer scroll */
+
+  }
+
+  .fast-info {
+  
+  }
+
+  #container-instructors {
+    padding: 0;
+  }
+
+  #container-button-url-original {
+    padding-left: 0;
+  }
+
+  #container-short-description {
+    padding-left: 0;
+  }
+
+  #wrapper-logo-certification {
+    left: 0;
+    width: 100%;
+    padding: 0;
+  }
+
+  .module-card.closed {
+    background-color: red;
+    }
+
+
+  #wrapper-name-certification {
+    padding-left: 0;
+  }
+
+  #grid-main-content {
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: repeat(4, auto);
+    position: absolute;
+    width: 100%;
+    top: 150px;
+    left: 0px;
+    padding: 0;
+    row-gap: 20px;
+  }
 
   .container-routes-section {
     width: 100%;
