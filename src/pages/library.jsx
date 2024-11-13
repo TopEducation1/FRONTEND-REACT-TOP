@@ -1,14 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link } from 'react-router-dom';
-import Skills from "../services/skillsService";
 import SkillsTags from "../services/skillsService";
-import Universities from "../services/univerisitiesService";
+//import Universities from "../services/universitiesService";
 import Topics from "../services/topicService";
 import tagFilterService from "../services/filterByTagsTesting";
 import CertificationsFetcher from "../services/certificationsFetcher";
 import CertificationsList from "../components/layoutCertifications";
 import SearchBar from "../components/searchBar";
 import RoutesComponent from "../components/RoutesComponent";
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useDebounce } from 'use-debounce';
+
+
+
+
+
 
 /**
  * Pagina de la biblioteca
@@ -16,18 +22,19 @@ import RoutesComponent from "../components/RoutesComponent";
 
 function LibraryPage() {
 
-    // Estados de la pagina
-    const [width, setWidth] = useState(window.innerWidth);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [openSections, setOpenSections] = useState([]);
-    const [selectedTags, setSelectedTags] = useState({});
-    const [isMobileView, setIsMobileView] = useState(false);
-    const [indexPosition, setIndexPosition] = useState(0);
-    const [filteredResults, setFilteredResults] = useState([]);
-    const [certifications, setCertifications] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [isSmallScreen, SetIsSmallSreen] = useState(false);
+    const [width, setWidth] = useState(window.innerWidth);           // Tracks window width
+    const [isMenuOpen, setIsMenuOpen] = useState(false);            // Controls mobile menu visibility
+    const [openSections, setOpenSections] = useState([]);           // Tracks open filter sections
+    const [selectedTags, setSelectedTags] = useState({});           // Stores selected filter tags
+    const [isMobileView, setIsMobileView] = useState(false);        // Tracks mobile view state
+    const [indexPosition, setIndexPosition] = useState(0);          // Tracks index position
+    const [filteredResults, setFilteredResults] = useState([]);     // Stores filtered certifications
+    const [certifications, setCertifications] = useState([]);       // Stores all certifications
+    const [loading, setLoading] = useState(true);                   // Tracks loading state
+    const [error, setError] = useState(null);                       // Stores error state
+    const [isSmallScreen, SetIsSmallSreen] = useState(false);      // Tracks small screen state
+    const location = useLocation();
+    const [debouncedSelectedTags] = useDebounce(selectedTags, 300);
 
 
     useEffect(() => {
@@ -56,17 +63,12 @@ function LibraryPage() {
     });
 
 
-    const loadCertifications = async (page = 1, pageSize = 16) => {
+    const loadCertifications = useCallback(async (page = 1, pageSize = 16) => {
+        setLoading(true);
         try {
-            setLoading(true);
             let fetchData;
-
-
-
             if (Object.keys(selectedTags).length > 0) {
                 fetchData = await tagFilterService.filterByTags(selectedTags, page, pageSize);
-
-                // Actualizar la url con los parametros de filtro
                 const queryString = tagFilterService.buildQueryString(selectedTags);
                 window.history.pushState({}, '', `/library/filter/${queryString}`);
             } else {
@@ -74,38 +76,51 @@ function LibraryPage() {
                 window.history.pushState({}, '', '/library');
             }
 
-
-            if (fetchData && fetchData.results) {
-
-                setCertifications(fetchData.results);
+            if (fetchData && Array.isArray(fetchData.results)) {
+                setCertifications(fetchData.results.length > 0 ? fetchData.results : []);
                 setPagination({
-                    count: fetchData.count,
+                    count: fetchData.count || 0,
                     current_page: page,
-                    total_pages: Math.ceil(fetchData.count / pageSize)
+                    total_pages: Math.ceil(fetchData.count / pageSize) || 1,
                 });
+            } else {
+                setCertifications([]); // Vacío si no es un array o no hay resultados
             }
         } catch (error) {
             setError('Error al cargar las certificaciones');
+            setCertifications([]);
         } finally {
             setLoading(false);
         }
-    };
-
-    useEffect(() => {
-        loadCertifications(1);
-    }, []);
-
-
-    useEffect(() => {
-        loadCertifications(1);
     }, [selectedTags]);
 
+    useEffect(() => {
+        loadCertifications();
+    }, [debouncedSelectedTags, loadCertifications]);
 
+    
+    
     const handlePageChange = (newPage) => {
         if (newPage >= 1 && newPage <= pagination.total_pages && !loading) {
             loadCertifications(newPage);
         }
     };
+    
+    const handleBannerClick = (category, tag) => {
+        console.log("BANNER PRESIONADO");
+    
+        setSelectedTags(prevTags => {
+            const updatedTags = { ...prevTags };
+            const tagSet = new Set(updatedTags[category] || []);
+            tagSet.add(tag);
+            updatedTags[category] = [...tagSet];
+            return updatedTags;
+        });
+    
+        loadCertifications(1);
+    };
+
+    
 
     /**
   * Maneja el clic en una etiqueta de filtro
@@ -312,6 +327,7 @@ function LibraryPage() {
         });
     };
 
+   
 
 
     return (
@@ -322,7 +338,8 @@ function LibraryPage() {
 
             <SearchBar />
 
-            {!isMobileView && SearchBar}
+            {!isMobileView && <SearchBar />}
+|
 
             <div className="container-tags">
                 {Object.keys(selectedTags).length === 0 || Object.values(selectedTags).every(tags => tags.length === 0) ? (
@@ -445,13 +462,13 @@ function LibraryPage() {
 
                         <div className={`wrapper-logos ${isSmallScreen ? 'small-screen' : ''
                             }`}>
-                            <div className="container-logo">
+                            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "Coursera")}>
                                 <img src="assets/logos/coursera-hover.png" />
                             </div>
-                            <div className="container-logo">
+                            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "edX")}>
                                 <img src="assets/logos/edx-hover.png" />
                             </div>
-                            <div className="container-logo">
+                            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "MasterClass")}>
                                 <img src="assets/logos/masterclass-hover.png" />
                             </div>
                         </div>
@@ -467,13 +484,13 @@ function LibraryPage() {
                     }`}
             >
                 <div id="wrapper-logos">
-                    <div className="container-logo">
+                    <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "Coursera")}>
                         <img src="assets/Plataformas/Coursera mini logo.png" />
                     </div>
-                    <div className="container-logo">
+                    <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "edX")}>
                         <img src="assets/logos/edx-hover.png" />
                     </div>
-                    <div className="container-logo">
+                    <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "MasterClass")}>
                         <img src="assets/logos/masterclass-hover.png" />
                     </div>
                 </div>

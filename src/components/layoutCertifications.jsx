@@ -45,6 +45,7 @@ const CertificationsList = ({ certifications }) => {
                                 alt="imagen-certificacion"
                                 onError={handleImageError}
                                 style={{
+                                    
                                     display: 'block',
                                     maxWidth: '100%',
                                     height: 'auto'

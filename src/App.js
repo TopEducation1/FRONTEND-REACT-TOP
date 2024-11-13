@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 
@@ -25,6 +25,10 @@ import Footer from "./components/Footer.jsx";
 
 function App() {
 
+  useEffect(() => {
+    document.title = "Top Education";
+  }, []);
+
   const isLoading = usePageLoading();
   return (
     <Router>
@@ -32,6 +36,7 @@ function App() {
       <div className={isLoading ? 'content-hidden' : 'content-visible'}>
           <Header />
           <Routes>
+            
             <Route path="/" element={<HomePage />} />
             <Route path="/library" element={<LibraryPage />} />
             <Route path="/certificacion/:id" element={<CertificationPage />} />
