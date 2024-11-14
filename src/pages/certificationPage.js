@@ -223,24 +223,7 @@ const CertificationPage = () => {
                         <div className="area-circle-object">
                             <img src="/assets/Areas-Conocimiento/area-conocimiento-3.png" alt="Área de Conocimiento 1" />
                         </div>
-                        <div className="area-circle-object">
-                            <img src="/assets/Areas-Conocimiento/area-conocimiento-4.png" alt="Área de Conocimiento 1" />
-                        </div>
-                        <div className="area-circle-object">
-                            <img src="/assets/Areas-Conocimiento/area-conocimiento-5.png" alt="Área de Conocimiento 1" />
-                        </div>
-                        <div className="area-circle-object">
-                            <img src="/assets/Areas-Conocimiento/area-conocimiento-6.png" alt="Área de Conocimiento 1" />
-                        </div>
-                        <div className="area-circle-object">
-                            <img src="/assets/Areas-Conocimiento/area-conocimiento-7.png" alt="Área de Conocimiento 1" />
-                        </div>
-                        <div className="area-circle-object">
-                            <img src="/assets/Areas-Conocimiento/area-conocimiento-8.png" alt="Área de Conocimiento 1" />
-                        </div>
-                        <div className="area-circle-object">
-                            <img src="/assets/Areas-Conocimiento/area-conocimiento-9.png" alt="Área de Conocimiento 1" />
-                        </div>
+
                     </div>
                 </div>
 

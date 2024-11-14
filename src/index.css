@@ -1749,7 +1749,7 @@ header {
   display: flex;
   margin-top: 10px;
   justify-content: center;
-  gap: 10px;
+  gap: 100px;
   flex-direction: row;
   width: 100%;
   height: auto;
@@ -2379,7 +2379,6 @@ header {
 
 #wrapper-slider-masterclass {
   display: flex;
-background-color: yellow;
   justify-content: center;
   flex-direction: row;
   width: 100%;
@@ -2634,6 +2633,7 @@ background-color: yellow;
     width: 100%;
     justify-content: center;
     align-items: center;
+    font-size: 12px;
   }
   
   #wrapper-slider-masterclass {
@@ -2660,6 +2660,7 @@ background-color: yellow;
     justify-content: center;
     text-align: center;
     width: 100%;
+    font-size: 12px;
   }
 
   #container-areas {
@@ -2676,8 +2677,8 @@ background-color: yellow;
     scroll-snap-type: x mandatory;
     scroll-padding: 0 50%;
     gap: 35px;
-    padding-left:135px;
-    padding-right: 300px;
+    padding-left:70px;
+
     margin: 20px 0 ;
   }
 
@@ -2702,12 +2703,22 @@ background-color: yellow;
   
   }
 
+  #container-modules h2 {
+    text-align: center;
+  }
+
   #container-instructors {
+    text-align: center;
     padding: 0;
+  }
+
+  #container-instructors ul {
+    text-align: left;
   }
 
   #container-button-url-original {
     padding-left: 0;
+    justify-content: center;
   }
 
   #container-short-description {
@@ -2725,7 +2736,9 @@ background-color: yellow;
 
 
   #wrapper-name-certification {
+    text-align: center;
     padding-left: 0;
+    font-size: 13px;
   }
 
   #grid-main-content {
@@ -2874,6 +2887,48 @@ background-color: yellow;
 }
 
 @media (max-width: 545px) {
+  #wrapper-title-classes {
+    display: flex;
+    padding: 0;
+    margin-top: 0;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+  }
+
+  #wrapper-slider-masterclass {
+    width: 100%;
+    align-items: center;
+    justify-content: start;
+    overflow-x: scroll;
+    flex-wrap: nowrap;
+    scroll-snap-type: x mandatory;
+    padding: 0 20px;
+    height: auto;
+    gap: 10px;
+
+  }
+
+  .card-masterclass {
+    scroll-snap-align: start;
+    flex:  0 0 50%  ;
+  }
+
+  .card-masterclass img{
+    border-radius: 10px;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .card-masterclass:last-child {
+    margin-right: 20px;
+  }
+
+  #container-logo-platforms {
+    padding-left: 5px;
+  }
 
   .tag-platform {
     top: 207px;
@@ -2907,6 +2962,11 @@ background-color: yellow;
     transform: scale(0.9);
     left: 6px;
   }
+
+  #wrapper-new-courses img {
+    width: 90%;
+    height: 55px;
+}
 }
 
 @media (min-width: 1700px) {
