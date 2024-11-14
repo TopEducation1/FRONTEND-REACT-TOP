@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import FilterBySearch from "../services/filterBySearch";
+import { useDebounce } from "use-debounce";
 
 const SearchBar = () => {
 
@@ -8,8 +9,11 @@ const SearchBar = () => {
     const [isMobileView, setIsMobileView] = useState(false);
     const [error, setError] = useState(null);
     const [results, setResults] = useState([]);
+    const [tempResults, setTempResults] = useState([]); // Temporarily store results while loading new ones
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(false);
+    // Use debounce to reduce the number of API calls
+    const [debouncedText] = useDebounce(text, 300);
 
 
     // Manejar la escritura en el input 
@@ -17,48 +21,43 @@ const SearchBar = () => {
         const newText = event.target.value;
         setText(newText);
 
-        if (!newText.trim()) {
-            setResults([])
-        }
-        //console.log(text);
     };
 
-
+    // Effect to fecth search results when debounced text changes
     useEffect(() => {
-        console.log("EL USUARIO HA ESCRITO");
-
         const fetchResults = async () => {
 
-
-            if (!text.trim()) {
-
-                // Vaciar resultados si no hay texto
+            if(!debouncedText.trim() || debouncedText.trim().length < 3) {
+                // Clear results if the input text is empty or less than 3 characters
                 setResults([]);
                 return;
             }
 
             try {
                 setLoading(true);
-                const data = await FilterBySearch.getResults(text);
-                setResults(Array.isArray(data) ? data : []);
-                console.log("ESTE ES EL PUNTO FINAL PARA RECIBIR LA DATA");
-                console.log(data);
+                setTempResults([]); // Clear temporary results
+                const data = await FilterBySearch.getResults(debouncedText);
+                setTempResults(Array.isArray(data) ? data : []);
                 setLoading(false);
 
             } catch (error) {
                 console.error('Error al enviar datos: ', error);
                 setError(error);
-                setResults([]);
+                setTempResults([]);
                 setLoading(false);
             }
         };
 
-        const timeoutId = setTimeout(() => {
-            fetchResults();
-        }, 300)
+        fetchResults();
 
-        return () => clearTimeout(timeoutId);
-    }, [text]);
+    }, [debouncedText]);
+
+    // Update main results state after loading is complete
+    useEffect(() => {
+        if(!loading) {
+            setResults(tempResults);
+        }
+    }, [loading, tempResults]);
 
 
 
@@ -88,7 +87,7 @@ const SearchBar = () => {
 
             
 
-            {text.trim() && results.length > 0 && (
+            {debouncedText.trim() && results.length > 0 && (
                 <div className="container-results">
                     {results.map((resultado) => (
                         <div key={resultado.id} className="box-result">

@@ -30,9 +30,10 @@ function LibraryPage() {
     const [indexPosition, setIndexPosition] = useState(0);          // Tracks index position
     const [filteredResults, setFilteredResults] = useState([]);     // Stores filtered certifications
     const [certifications, setCertifications] = useState([]);       // Stores all certifications
+    const [tempCertifications, setTempCertifications] = useState([]);// Temporaly stores certifications
     const [loading, setLoading] = useState(true);                   // Tracks loading state
     const [error, setError] = useState(null);                       // Stores error state
-    const [isSmallScreen, SetIsSmallSreen] = useState(false);      // Tracks small screen state
+    const [isSmallScreen, SetIsSmallScreen] = useState(false);      // Tracks small screen state
     const location = useLocation();
     const [debouncedSelectedTags] = useDebounce(selectedTags, 300);
 
@@ -40,7 +41,7 @@ function LibraryPage() {
     useEffect(() => {
 
         const handleRezise = () => {
-            SetIsSmallSreen(window.innerWidth <= 1100);
+            SetIsSmallScreen(window.innerWidth <= 1100);
 
         }
 
@@ -62,41 +63,52 @@ function LibraryPage() {
         total_pages: 1,
     });
 
+    const updateHistoryState = useCallback((tags) => {
+        const queryString = tagFilterService.buildQueryString(tags);
+        window.history.pushState({}, '', tags && Object.keys(tags).length > 0 ? `/library/filter/${queryString}` : '/library');
+    }, []);
+
 
     const loadCertifications = useCallback(async (page = 1, pageSize = 16) => {
         setLoading(true);
+        setTempCertifications([]); // Clear temporary certifications
         try {
             let fetchData;
             if (Object.keys(selectedTags).length > 0) {
-                fetchData = await tagFilterService.filterByTags(selectedTags, page, pageSize);
+                fetchData = await tagFilterService.filterByTags(debouncedSelectedTags, page, pageSize);
                 const queryString = tagFilterService.buildQueryString(selectedTags);
-                window.history.pushState({}, '', `/library/filter/${queryString}`);
             } else {
                 fetchData = await CertificationsFetcher.getAllCertifications(page, pageSize);
-                window.history.pushState({}, '', '/library');
             }
 
             if (fetchData && Array.isArray(fetchData.results)) {
-                setCertifications(fetchData.results.length > 0 ? fetchData.results : []);
+                setTempCertifications(fetchData.results.length > 0 ? fetchData.results : []);
                 setPagination({
                     count: fetchData.count || 0,
                     current_page: page,
                     total_pages: Math.ceil(fetchData.count / pageSize) || 1,
                 });
             } else {
-                setCertifications([]); // Vacío si no es un array o no hay resultados
+                setTempCertifications([]); // Vacío si no es un array o no hay resultados
             }
         } catch (error) {
             setError('Error al cargar las certificaciones');
-            setCertifications([]);
+            setTempCertifications([]);
         } finally {
             setLoading(false);
         }
-    }, [selectedTags]);
+    }, [debouncedSelectedTags]);
 
     useEffect(() => {
-        loadCertifications();
+       updateHistoryState(debouncedSelectedTags);
+       loadCertifications();
     }, [debouncedSelectedTags, loadCertifications]);
+
+    useEffect(() => {
+        if(!loading) {
+            setCertifications(tempCertifications)
+        }
+    }, [loading, tempCertifications]);
 
     
     
@@ -336,7 +348,6 @@ function LibraryPage() {
                 <h2>Biblioteca</h2>
             </div>
 
-            <SearchBar />
 
             {!isMobileView && <SearchBar />}
 |
@@ -405,7 +416,7 @@ function LibraryPage() {
                 </button>
 
 
-                <div className="index-container">  
+                <div className="index-container">
                     <div className="category-wrapper">
                         {sections.map((section, index) => (
                             <div
@@ -448,36 +459,10 @@ function LibraryPage() {
                     </div>
                 </div>
 
-                {isSmallScreen && isMenuOpen && (
-                    <div
-                        
-                        className={`container-logo-platforms ${isSmallScreen ? 'small-screen' : ''
-                            }`}
-                    >
-                        
-                        <div className={`wrapper-new-courses ${isSmallScreen ? 'small-screen' : ''
-                            }`}>
-                            <button id="button-new-courses">Nuevo en Top Education</button>
-                        </div>
 
-                        <div className={`wrapper-logos ${isSmallScreen ? 'small-screen' : ''
-                            }`}>
-                            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "Coursera")}>
-                                <img src="assets/logos/coursera-hover.png" />
-                            </div>
-                            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "edX")}>
-                                <img src="assets/logos/edx-hover.png" />
-                            </div>
-                            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "MasterClass")}>
-                                <img src="assets/logos/masterclass-hover.png" />
-                            </div>
-                        </div>
-                    </div>
-                )}
             </div>
 
 
-            {!isSmallScreen && (
                 <div
                 id="container-logo-platforms"
                 className={`wrapper-logo-platforms ${isSmallScreen ? 'small-screen' : ''
@@ -495,16 +480,9 @@ function LibraryPage() {
                     </div>
                 </div>
                 <div id="wrapper-new-courses">
-                    <button id="button-new-courses">Nuevo en Top Education</button>
+                    <img src="assets/banners/Botón_Nuevo_en_Top_Education.svg"/>
                 </div>
             </div>
-            )}
-
-     
-                    
-        
-
-
 
             <div className="certifications-container">
             { loading ? (
@@ -512,7 +490,7 @@ function LibraryPage() {
 
             ) : (
                 <CertificationsList certifications={certifications} />
-                
+
             )}
                 <PaginationControls />
 
