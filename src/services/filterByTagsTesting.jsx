@@ -59,7 +59,7 @@ class TagFilterService {
 
 
             const data = await response.json();
-            console.log('Filter reponse data:', {
+            /*console.log('Filter reponse data:', {
                 count: data.count,
                 resultsCount: data.results?.length,
                 sampleResult : data.results?.[0],
@@ -69,7 +69,7 @@ class TagFilterService {
                     hasEntImage: !!cert.url_imagen_empresa_certificacion,
                     hasPlatImage: !!cert.url_imagen_plataforma_certificacion,
                 }))
-            })
+            })*/
             return data;
         } catch (error) {
             console.error('Error en TagFilterService: ', error);

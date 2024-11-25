@@ -20,7 +20,7 @@ const CertificationsList = ({ certifications }) => {
 
     const handleCertificationClick = (certificationId) => {
 
-        console.log(certificationId)
+        //console.log(certificationId)
         if (certificationId) {
             navigate(`/certificacion/${certificationId}`);
         }
