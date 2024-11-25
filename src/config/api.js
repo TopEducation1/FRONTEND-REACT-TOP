@@ -16,7 +16,8 @@ export const endpoints = {
   universidades: `${BASE_URL}/certificaciones/universities/`
 };
 
-console.log('endpoints.certificaciones:', endpoints.certificaciones);
+// IMPRIMIR LAS URLS DE LOS ENDPOINTS A LOS CUALES SE ESTA ACCEDIENDO
+//console.log('endpoints.certificaciones:', endpoints.certificaciones);
 
 
 
