@@ -203,10 +203,7 @@ const CertificationPage = () => {
                         })}
                     </div>
 
-
-
                 </div>
-
 
                 <div id="container-areas">
                     <div id="wrapper-title-areas"><h1>Explora áreas del conocimiento</h1></div>
