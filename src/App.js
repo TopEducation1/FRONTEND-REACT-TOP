@@ -19,6 +19,9 @@ import LibraryPage from "./pages/library";
 // Página de inicio
 import HomePage from "./pages/home";
 
+// Pagina de blog
+import Blog from "./pages/blog.jsx";
+
 // Componente footer
 import Footer from "./components/Footer.jsx";
 
@@ -40,6 +43,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/library" element={<LibraryPage />} />
             <Route path="/certificacion/:id" element={<CertificationPage />} />
+            <Route path="/blog/" element={<Blog />} />
           </Routes>
       </div>
     </Router>
