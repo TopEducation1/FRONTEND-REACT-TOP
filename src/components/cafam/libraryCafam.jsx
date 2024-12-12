@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from 'react-router-dom';
-import SkillsTags from "../services/skillsService";
+import SkillsTags from "../../services/skillsService";
 //import Universities from "../services/universitiesService";
-import Topics from "../services/topicService";
-import tagFilterService from "../services/filterByTagsTesting";
-import CertificationsFetcher from "../services/certificationsFetcher";
-import CertificationsList from "../components/layoutCertifications";
-import SearchBar from "../components/searchBar";
-import RoutesComponent from "../components/RoutesComponent";
+import Topics from "../../services/topicService";
+import tagFilterService from "../../services/filterByTagsTesting";
+import CertificationsFetcher from "../../services/certificationsFetcher";
+import CertificationsListCafam from "../../components/cafam/layoutCertificationsCafam";
+import SearchBarCafam from "../../components/cafam/searchBarCafam";
+import RoutesComponent from "../../components/RoutesComponent";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
 
@@ -15,7 +15,7 @@ import { useDebounce } from 'use-debounce';
  * Pagina de la biblioteca
  *  */
 
-function LibraryPageCafam({ showRoutes = true,  }) {
+function LibraryPage({ showRoutes = true,  }) {
 
     const [width, setWidth] = useState(window.innerWidth);           // Tracks window width
     const [isMenuOpen, setIsMenuOpen] = useState(false);            // Controls mobile menu visibility
@@ -173,7 +173,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
 
 
     const PaginationControls = () => (
-        <div className="container-buttons-pagination">
+        <div className="container-buttons-pagination-cafam">
             <button
                 onClick={() => handlePageChange(pagination.current_page - 1)}
                 disabled={pagination.current_page === 1 || loading}
@@ -297,7 +297,10 @@ function LibraryPageCafam({ showRoutes = true,  }) {
                     <div key={subIndex} style={{ marginBottom: 30 }}>
                         <Link
                             to="#"
-                            className="subsection-link"
+                            className="subsection-link-cafam"
+                            style ={{
+                                color: '#0750A0'
+                            }}
                             onClick={(e) => {
                                 e.preventDefault();
                                 handleTagClick(category, subsection);
@@ -317,6 +320,9 @@ function LibraryPageCafam({ showRoutes = true,  }) {
                                     <Link
                                         to="#"
                                         className="subsection-link"
+                                        style ={{
+                                            color: '#0750A0'
+                                        }}
                                         onClick={(e) => {
                                             e.preventDefault();
                                             handleTagClick(category, subsubsection);
@@ -339,21 +345,25 @@ function LibraryPageCafam({ showRoutes = true,  }) {
 
     return (
         <>
-            <div className="title-category">
+            <div className="title-category-cafam">
                 <h2>Biblioteca</h2>
             </div>
 
+            <div id="title-certifications-cafam">
+                <h2>Explora Certificaciones</h2>
+            </div>
 
-            {!isMobileView && <SearchBar />}
+
+            {!isMobileView && <SearchBarCafam />}
             |
 
-            <div className="container-tags">
+            <div className="container-tags-cafam">
                 {Object.keys(selectedTags).length === 0 || Object.values(selectedTags).every(tags => tags.length === 0) ? (
                     <p>Aún no has seleccionado tags</p>
                 ) : (
                     Object.entries(selectedTags).map(([category, tags], index) => (
                         tags.map((tag, tagIndex) => (
-                            <div key={`${category}-${tagIndex}`} className="tag">
+                            <div key={`${category}-${tagIndex}`} className="tag-cafam">
                                 <span>{tag}</span>
                                 <button onClick={() => removeTag(category, tag)} className="remove-tag-button">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-x">
@@ -411,11 +421,11 @@ function LibraryPageCafam({ showRoutes = true,  }) {
                 </button>
 
 
-                <div className="index-container">
+                <div className="index-container-cafam">
                     <div className="category-wrapper">
                         {sections.map((section, index) => (
                             <div
-                                className={`category-item ${openSections.includes(index) ? "open" : ""}`}
+                                className={`category-item-cafam ${openSections.includes(index) ? "open" : ""}`}
                                 key={index}
                                 style={{
                                     marginBottom: openSections.includes(index) ? calculateDynamicMargin(index) : 0,
@@ -432,7 +442,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
                                             height="24"
                                             viewBox="0 0 24 24"
                                             fill="none"
-                                            stroke="white"
+                                            stroke="#0750A0"
                                             strokeWidth="2"
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
@@ -445,7 +455,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
                                     </span>
                                 </button>
                                 {openSections.includes(index) && (
-                                    <div className="unfold-list">
+                                    <div className="unfold-list-cafam">
                                         {renderSubsections(section.title, section.subsections)}
                                     </div>
                                 )}
@@ -459,7 +469,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
 
 
             <div
-                id="container-logo-platforms"
+                id="container-logo-platforms-cafam"
                 className={`wrapper-logo-platforms ${isSmallScreen ? 'small-screen' : ''
                     }`}
             >
@@ -479,12 +489,12 @@ function LibraryPageCafam({ showRoutes = true,  }) {
                 </div>
             </div>
 
-            <div className="certifications-container">
+            <div className="certifications-container-cafam">
                 {loading ? (
                     <span class="loader"></span>
 
                 ) : (
-                    <CertificationsList certifications={certifications} />
+                    <CertificationsListCafam certifications={certifications} />
 
                 )}
                 <PaginationControls />
@@ -501,4 +511,4 @@ function LibraryPageCafam({ showRoutes = true,  }) {
     );
 }
 
-export default LibraryPageCafam;
+export default LibraryPage;

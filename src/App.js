@@ -1,51 +1,44 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
-
+import { 
+  BrowserRouter as Router, 
+  Routes, 
+  Route, 
+  Navigate 
+} from "react-router-dom";
 import CertificationPage from "./pages/certificationPage";
-
-
-import { usePageLoading } from "./hooks/usePageLoading";
-
-
-import Header from "./components/header.jsx"
-
-import LoadingPage from "./components/LoadingPage.jsx";
-// Componente del encabezado
-
-// Página de la biblioteca
 import LibraryPage from "./pages/library";
-
-// Página de inicio
+import CertificationPageCafam from "./pages/cafam/certificationPageCafam.js";
 import HomePage from "./pages/home";
-
-// Pagina de blog
+import HomeCafam from "./pages/cafam/homeCafam.jsx";
 import Blog from "./pages/blog.jsx";
-
-// Componente footer
-import Footer from "./components/Footer.jsx";
-
+import TopEducationLayout from "./layouts/topeducation/topEducationLayout.js";
+import CafamLayout from "./layouts/cafam/cafamLayout.js";
 
 function App() {
-
   useEffect(() => {
     document.title = "Top Education";
   }, []);
 
-  const isLoading = usePageLoading();
   return (
     <Router>
-      {isLoading && <LoadingPage />}
-      <div className={isLoading ? 'content-hidden' : 'content-visible'}>
-          <Header />
-          <Routes>
-            
-            <Route path="/" element={<HomePage />} />
-            <Route path="/library" element={<LibraryPage />} />
-            <Route path="/certificacion/:id" element={<CertificationPage />} />
-            <Route path="/blog/" element={<Blog />} />
-          </Routes>
-      </div>
+      <Routes>
+        {/* Routes using TopEducationLayout */}
+        <Route element={<TopEducationLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/library" element={<LibraryPage />} />
+          <Route path="/certificacion/:id" element={<CertificationPage />} />
+          <Route path="/blog" element={<Blog />} />
+        </Route>
+
+        {/* Routes using CafamLayout */}
+        <Route path="/cafam" element={<CafamLayout />}>
+          <Route index element={<HomeCafam />} />
+          <Route path="certificacion/:id" element={<CertificationPageCafam />} />
+        </Route>
+
+        {/* Optional: Redirect to default route if no match */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </Router>
   );
 }

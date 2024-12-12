@@ -1,0 +1,889 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+
+
+
+body.cafam-layout {
+    background-color:white;
+    font-family: "Montserrat", sans-serif;
+}
+
+#nav-cafam {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 88px;
+    background-color: #0E4194;
+    border-bottom-right-radius: 30px;
+    border-bottom-left-radius: 30px;
+}
+
+#wrapper-logo-cafam {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding-left: 102px;
+    box-sizing: border-box;
+    width: 50%;
+}
+
+#wrapper-search-cafam {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+}
+
+#main-section-cafam {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: calc(100vh - 88px);
+}
+
+#left-wrapper-cafam {
+    display: flex;
+    justify-content: left;
+    padding-left: 100px;
+    box-sizing: border-box;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+}
+
+#wrapper-content-cafam {
+    display: flex;
+    flex-direction: column;
+    width: 90%;height: 80%;
+    gap: 0;
+}
+
+
+#wrapper-titles-cafam {
+    display: flex;
+    flex-direction: column;
+    height: 130px;
+    overflow: hidden;
+    justify-content: start;
+    align-items: start;
+    padding-top: 0;
+    gap: 0;
+    margin-top: 50px;
+}
+
+#first-h1-left, 
+#second-h1-left {
+    padding: 0;
+    margin: 0;
+    line-height: 1.2;
+}
+
+#wrapper-titles-cafam h1 {
+    margin-top: 0;
+}
+
+#left-wrapper-cafam p {
+    font-size: 25px;
+    color: #002A42;
+}
+
+#left-wrapper-cafam button {
+    width: 200px;
+    height: 40px;
+    border: none;
+    background-color: #0750A0;
+    font-size: 25px;
+    color: white;
+    margin-top: 30px;
+}
+
+#right-wrapper-cafam {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+}
+
+#right-wrapper-cafam img {
+    border-top-right-radius: 50px;
+    border-bottom-left-radius: 50px;
+    max-width: 600px;
+    
+}
+
+#first-h1-left{
+    font-size: 60px;
+    color: #002A42;
+}
+
+#second-h1-left {
+    font:60px ;
+    color: #0064A7;
+}
+
+#universities-cafam-section {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height:700px;
+    background-color: #0750A0;
+    border-top-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+    padding: 100px;
+    box-sizing: border-box;
+    gap: 50px;
+    justify-content: center;
+}
+
+#separator-cafam-universities {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: white;
+    border-radius: 20px;
+}
+
+#upper-section-universities {
+    justify-content: space-between;
+}
+
+#lower-section-universities {
+    justify-content: space-between;
+}
+
+#wrapper-upper-universities-cafam {
+    width: 900px;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+#wrapper-slider-upper-universities {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    gap: 20px;
+}
+
+#wrapper-slider-lower-universities {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    gap: 20px;
+}
+
+.card-upper-universities {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 120px;
+    background-color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: transform 0.4s ease;
+}
+
+.card-upper-universities:hover {
+    transform: scale(1.02);
+}
+
+.card-upper-universities img {
+    width: 65% !important;     /* Usa todo el ancho del contenedor */
+    height: auto;    /* Usa toda la altura del contenedor */
+    object-fit: cover; /* Mantiene la proporción de la imagen, recortándola si es necesario */
+    object-position: center;
+    max-height: 70px;
+    
+}
+
+.card-lower-universities {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 120px;
+    background-color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: transform 0.4s ease;
+}
+
+.card-lower-universities:hover {
+    transform: scale(1.02);
+}
+
+.card-lower-universities img {
+    width: 65% !important;    
+    height: auto;   
+    object-fit: cover; 
+    object-position: center;
+    max-height: 70px;
+    
+}
+
+#wrapper-lower-universities-cafam {
+    width: 900px;
+    height: 100%;
+}
+
+.block-universities {
+    display: flex;
+    flex-direction: row;
+}
+
+
+
+.wrapper-title-cafam-universities {
+    display: flex;
+    color: white;
+    width: 300px;
+    
+}
+
+#container-component-certificacionts-cafam {
+    display: flex;
+    width: 100%;
+    height: 1750px;
+    margin-top: 40px;
+    overflow: hidden;
+}
+
+#wrapper-industry-cafam {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 550px;
+    background-color: #0750A0;
+    border-top-right-radius: 50px;
+    margin-top: 40px;
+}
+
+
+#wrapper-title-industry-cafam {
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: auto;
+    box-sizing: border-box;
+    padding-left: 85px;
+    margin-top: 40px;
+}
+
+
+#wrapper-title-industry-cafam h1 {
+    color: white;
+    font-size: 40px;
+}
+
+#wrapper-flags-industry {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: row;
+    width: 90%;
+    height: 50%;
+    gap: 20px;
+   
+}
+
+
+.card-flag-industry {
+    display: flex;
+    width: 200px;
+    height: auto;
+    overflow: hidden;
+    transition: transform 0.4s ease;
+    
+}
+
+.card-flag-industry:hover {
+    transform: scale(1.05);
+}
+
+.card-flag-industry img {
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+}
+
+/* Contenedor principal */
+.slider-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* Wrapper del slider */
+.slider-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+
+.slider-content {
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+}
+
+.slider-item {
+    flex-shrink: 0;
+}
+
+.slider-card {
+    margin: 0 auto;
+}
+
+.card-content {
+    background-color: white;
+    border-radius: 20px;
+    padding: 16px;
+    cursor: pointer;
+    transition: transform 0.4s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 128px;
+    max-width: 250px;
+}
+
+.card-content:hover {
+    transform: scale(1.02);
+}
+
+.card-content img {
+    width: 80%;
+    height: auto;
+    max-height: 80px;
+    object-fit: contain;
+    object-position: center;
+}
+
+/* Contenedor de los dots */
+.slider-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+/* Estilo individual de cada dot */
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #ccc;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Dot activo */
+.dot.active {
+    background-color: #2563eb;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .card-content {
+        height: 100px;
+    }
+
+    .card-content img {
+        max-height: 60px;
+    }
+}
+
+
+
+
+.container-buttons-pagination-cafam {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 1200px;
+    left: 30px;
+    width: 1150px;
+    height: 100px;
+    color: #0750A0;
+  }
+
+  .container-buttons-pagination-cafam button {
+    width: 100px;
+    height: 30px;
+    border: none;
+    border-radius: 20px;
+    background-color: #0750A0;
+    color: black;
+    cursor: pointer;
+  }
+  
+
+
+  .title-category-cafam {
+    display: flex;
+    width: 100%;
+    justify-content: left;
+    padding-left: 30px;
+    align-items: center;
+    height: 80px;
+    position: absolute;
+    top: 1600px;
+    overflow: hidden;
+    color: #0750A0;
+    font-size: 25px;
+  }
+
+  
+.container-tags-cafam {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    width: 1190px;
+    height: 100px;
+    top:1710px;
+    left: 310px;
+    box-sizing: border-box;
+    overflow-x: scroll;
+    border-bottom: 1px solid #0750A0;
+    color:#0750A0 ;
+    text-align: center;
+  
+  }
+
+  .index-container-cafam {
+    display: flex;
+    flex-direction: column;
+    width: 270px;
+    height: auto;
+    position: absolute;
+    top: 1630px;
+    left: 25px;
+    padding: 0px;
+    box-sizing: border-box;
+    transition: transform 2s ease;
+    color: #0750A0;
+  
+  }
+
+  .category-item-cafam {
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    padding: 0;
+    box-sizing: border-box;
+    width: 95%;
+    height: 40px;
+    color: #F6F4EF;
+    font-size: 20px;
+    cursor: pointer;
+    margin-bottom: 30px;
+  
+  }
+  
+  .category-item-cafam span {
+    display: flex;
+    gap: 20px;
+    justify-self: center;
+    align-self: center;
+    padding: 0;
+    font-size: 18px;
+    color: #0750A0;
+  }
+
+  .subsection-link-cafam {
+    color: #0750A0;
+  }
+
+
+  .subsection-link-cafam {
+    color: #0750A0;
+    text-decoration: none;
+  }
+  
+  .subsection-link-cafam:hover {
+    color: #0750A0;
+    
+  }
+
+
+  #container-logo-platforms-cafam {
+    display: none;
+    position: absolute;
+    align-items: center;
+    width: 1190px;
+    height: 100px;
+    top: 1650px;
+    left: 290px;
+  }
+
+
+  .certifications-container-cafam {
+    display: flex;
+    position: absolute;
+    width: 1220px;
+    height: auto;
+    top: 1850px;
+    left: 290px;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 10px;
+  }
+
+  .certification-card-cafam {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    width: 280px;
+    height: 280px;
+    background-color: white;
+    color: #0F090B;
+    border-radius: 20px;
+    text-decoration: none;
+    cursor: pointer;
+    border: 2px solid #0750A0;
+    font-size: 15px;
+    
+  }
+
+ 
+  .certification-card-cafam a {
+    text-decoration: none;
+  }
+  
+  .certification-card-cafam h3 {
+    position: absolute;
+    left: 20px;
+    right: 10px;
+    top: 140px;
+    word-wrap: break-word;
+    font-size: 16px;
+    text-decoration: none;
+    color: #0F090B;
+    text-align: left;
+  }
+  
+  .container-img-card-cafam {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 140px;
+    overflow: hidden;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+  
+  }
+  
+  .container-img-card-cafam img {
+    width: 100%;
+    height: auto;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+  }
+  
+  .tag-category-cafam {
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    top: 230px;
+    left: 15px;
+    font-weight: 20px;
+    width: 130px;
+    height: 35px;
+    background-color: #034694;
+    border-radius: 20px;
+    color: #F6F4EF;
+    border: 1px solid #F6F4EF;
+    font-size: 14px;
+  }
+  
+  
+  .tag-platform-cafam {
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    top: 230px;
+    left: 155px;
+    font-weight: 25px;
+    width: 100px;
+    height: 35px;
+    border: 2px solid #034694;
+    border-radius: 20px;
+    color: #F6F4EF;
+    z-index: 1;
+  
+  }
+  
+  .tag-platform-cafam img {
+    width: 90%;
+    height: auto;
+    z-index: 99999;
+  }
+  
+
+  .wrapper-search-bar-cafam {
+    margin: 1rem 0;
+  }
+  
+  .wrapper-search-bar-cafam.desktop-style {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 9;
+    align-items: center;
+    justify-content: right;
+    box-sizing: border-box;
+    top: 1580px;
+    left: 290px;
+    width: 1220px;
+    height: 70px;
+    padding-right: 40px;
+    }
+  
+  
+  .wrapper-search-bar-cafam.mobile-style {
+    display: none;
+  }
+
+
+  .input-cafam {
+    width: 200px;
+    padding: 10px 20px 10px 15px;
+    justify-content: center;
+    border-radius: 9999px;
+    border: solid 3px #0750A0;
+    transition: all .2s ease-in-out;
+    outline: none;
+    opacity: 0.8;
+    margin-right: 10px;
+    background-color: #F6F4EF;
+  }
+  
+  .container-input svg {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translate(0, -50%);
+  }
+  
+  .input-cafam:focus {
+    opacity: 1;
+    width: 250px;
+  }
+
+
+
+  #grid-main-content-cafam {
+    display: grid;
+    grid-template-columns:70% 30%;
+    grid-template-rows: repeat(4, auto);
+    position: absolute;
+    width: 100%;
+    top: 150px;
+    left: 0px;
+    padding: 0 40px;
+    row-gap: 20px;
+    column-gap: 20px;
+    background-color: white;
+  }
+
+  #container-button-url-original-cafam {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    width: 100%;
+    padding-left: 5px;
+  }
+  
+  .button-url-original-cafam {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 216px;
+    height: 40px;
+    border-radius: 30px;
+    border: none;
+    color: #F6F4EE;
+    background-color: #0E4194;
+    cursor: pointer;
+    transition: transform .3s ease-in-out;
+  }
+  
+
+  .fast-info-cafam {
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+    padding: 20px;
+    width: 260px;
+    height: 140px;
+    height: auto;
+    border-radius: 30px;
+    background-color: #0E4194;
+    box-sizing: border-box;
+    color: white;
+  }
+  
+  .fast-info-cafam h3 {
+    margin-top: 1px;
+    color: #F6F4EF;
+    font-size: 20px;
+  }
+  #container-areas,
+  #container-classes,
+  #container-promotion  {
+    display: none;
+  }
+
+
+  #wrapper-title-areas-cafam {
+    display: none;
+  }
+
+
+  #wrapper-show-areas-cafam {
+    display: none;
+  }
+
+  #wrapper-slider-masterclass-cafam {
+    display: none
+    
+    ;
+  }
+
+
+  #wrapper-title-classes-cafam {
+    display: none;
+  }
+
+  #promotion-grid-cafam {
+    display: none;
+  }
+
+  
+.unfold-list-cafam {
+    display: flex;
+    position: absolute;
+    text-align: left;
+    font-size: 15px;
+    top: 50px;
+    margin-left: 40px;
+    flex-direction: column;
+    color: #F6F4EF;
+    gap: 5px;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    color: #0E4194;
+  
+  }
+
+
+  #title-certifications-cafam {
+    display: flex;
+    width: 100%;
+    height: 50px;
+    justify-content: right;
+    align-items: center;
+    color: #0E4194;
+    font-size: 28px;
+    box-sizing: border-box;
+    padding-right: 60px;
+  }
+
+  .container-main-info-cafam {
+    display: grid;
+    grid-column: 1;
+    justify-items: center;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 20px;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    background-color: white;
+    border-radius: 30px;
+    padding: 0 40px 20px 40px;
+    box-sizing: border-box;
+    position: relative;
+    grid-row: 1;
+    grid-column: 1;
+  }
+
+
+  .tag-cafam {
+    width: auto;
+    margin-left: 15px;
+    padding: 20px;
+    box-sizing: border-box;
+    height: 25px;
+    display: flex;
+    flex-direction: row;
+    border-radius: 20px;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    color: #0F090B;
+    background-color: #0E4194;
+  }
+  
+  .tag-cafam button {
+    display: flex;
+    border: none;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    cursor: pointer;
+  }
+
+
+  #footer-images-cafam {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    
+  }
+
+  #upper-footer {
+    display: flex;
+    flex-direction: row;
+    height: 100px;
+    
+  }
+
+  #lower-footer {
+    display: flex;
+    flex-direction: row;
+    height: 100px;
+  }
+
+  #footer-cafam {
+    display: flex;
+    width: 100%;
+    background-color: #0750A0;
+    height: 100px;
+  }
