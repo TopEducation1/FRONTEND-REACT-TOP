@@ -31,8 +31,8 @@ const HomeCafam = () => {
                 <div id="left-wrapper-cafam">
                     <div id="wrapper-content-cafam">
                         <div id="wrapper-titles-cafam">
-                            <h1 id="first-h1-left">Aprende Hoy.</h1>
-                            <h1 id="second-h1-left">Transforma tu Futuro.</h1>
+                            <h1 id="first-h1-left">Aprende hoy...</h1>
+                            <h1 id="second-h1-left">transforma tu futuro</h1>
                         </div>
 
                         <p>
@@ -51,7 +51,7 @@ const HomeCafam = () => {
             <div id="universities-cafam-section">
                 <div id="upper-section-universities" class="block-universities">
                     <div class="wrapper-title-cafam-universities">
-                        <h1>Aprende de las Mejores Universidades de Latinoamérica</h1>
+                        <h1>Aprende de las mejores universidades de Latinoamérica...</h1>
                     </div>
 
                     <div id="wrapper-upper-universities-cafam">
@@ -115,8 +115,7 @@ const HomeCafam = () => {
             </div>
 
             <div id="footer-images-cafam">
-                <div id="upper-footer"></div> 
-                <div id="lower-footer"></div> 
+                 
             </div>
 
 

@@ -73,7 +73,7 @@ const SearchBar = () => {
                     onChange={handleWriting}
                 />
                 <svg
-                    fill="white"
+                    fill="#0750A0"
                     width="20px"
                     height="20px"
                     viewBox="0 0 1920 1920"
