@@ -380,7 +380,7 @@ function LibraryPage({ showRoutes = true,  }) {
 
 
             <div className="container-buttons-reponsive-index">
-                <button id="button-filter" onClick={openIndexResponsiveMenu}>
+                <button id="button-filter-cafam" onClick={openIndexResponsiveMenu}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="24"

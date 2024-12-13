@@ -39,6 +39,10 @@ body.cafam-layout {
     width: 50%;
 }
 
+.container-buttons-reponsive-index  {
+  display: none !important;
+}
+
 #main-section-cafam {
     display: flex;
     flex-direction: row;
@@ -288,9 +292,30 @@ body.cafam-layout {
     width: 100%;
     height: auto;
     box-sizing: border-box;
-    padding-left: 85px;
-    margin-top: 40px;
+    left: 0;
+    
 }
+
+.container-results-cafam {
+  display: flex;
+  position: absolute;
+  top: 1660px;
+  flex-direction: column;
+  width: 250px;
+  overflow-y: scroll;
+  left: 50%;
+  transform: translate(-50%);
+  z-index: 99999;
+  gap: 20px;
+  background-color: #0750A0;
+  border-radius: 20px;
+  height: calc(100vh - 280px);
+  padding-top: 10px;
+  padding-bottom: 5px;
+  margin-left: 0;
+  border: 1px dotted white;
+}
+
 
 
 #wrapper-title-industry-cafam h1 {
@@ -1281,14 +1306,14 @@ body.cafam-layout {
 
   }
 
-  .container-img-card img {
+  .container-img-card-cafam img {
     width: 100%;
     height: auto;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
   }
 
-  .certification-card h3 {
+  .certification-card-cafam h3 {
     position: absolute;
     left: 20px;
     top: 80px;
@@ -1300,7 +1325,11 @@ body.cafam-layout {
     left: 5px;
   }
 
-  .tag-category {
+  .container-buttons-reponsive-index {
+    display: none;
+  }
+
+  .tag-category-cafam {
     display: flex;
     position: absolute;
     justify-content: center;
@@ -1318,12 +1347,12 @@ body.cafam-layout {
     font-size: 14px;
   }
 
-  .tag-platform {
+  .tag-platform-cafam {
     top: 170px;
     left: 140px;
   }
 
-  .unfold-list {
+  .unfold-list-cafam {
     display: flex;
     position: absolute;
     text-align: left;
@@ -1340,7 +1369,7 @@ body.cafam-layout {
 
 
 
-  .category-item.open .unfold-list {
+  .category-item-cafam.open .unfold-list {
     max-height: 1000px;
     overflow-y: scroll;
     transition: max-height 0.4s ease-out;
@@ -1365,7 +1394,7 @@ body.cafam-layout {
 
 
 
-  .container-buttons-reponsive-index {
+  .container-buttons-reponsive-index-cafam {
     display: flex;
     position: absolute;
     align-items: center;
@@ -1448,7 +1477,7 @@ body.cafam-layout {
   
  
 
-  .wrapper-certifications {
+  .wrapper-certifications-cafam {
     width: 100%;
     grid-template-columns: repeat(4, 1fr);
   }
@@ -1467,9 +1496,97 @@ body.cafam-layout {
     z-index: 99999;
   }
   
+  .container-tags-cafam {
+    top: 1700px;
+  }
+
+  
+
 }
 
 @media (max-width: 1286px) {
+
+  #upper-section-universities {
+    justify-content: space-between;
+    gap: 30px;
+}
+
+#lower-section-universities {
+    justify-content: space-between;
+    gap: 30px;
+}
+
+  .slider-item {
+    width: 100px;
+  }
+
+  #wrapper-industry-cafam {
+    margin-top: 220px;
+  }
+
+
+  #wrapper-titles-cafam {
+    margin-top: 120px;
+  }
+  #left-wrapper-cafam button {
+    width: 130px;
+    height: 30px;
+    border: none;
+    background-color: #0750A0;
+    font-size: 25px;
+    color: white;
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+  #first-h1-left {
+    font-size: 25px;
+  }
+
+  #second-h1-left {
+    font-size: 25px;
+  }
+
+  #left-wrapper-cafam p {
+    font-size: 18px;
+    color: #002A42;
+    text-align:  justify;
+    margin-top: -50px;
+}
+
+  #right-wrapper-cafam {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+}
+
+#right-wrapper-cafam img {
+    border-top-right-radius: 50px;
+    border-bottom-left-radius: 50px;
+    max-width: 450px;
+    
+}
+
+  .certifications-container-cafam {
+    top: 1900px;
+  }
+
+  .title-category-cafam {
+    display: flex
+;
+    justify-content: center;
+    padding-left: 0px;
+    align-items: center;
+    width: 100%;
+    height: 80px;
+    position: absolute;
+    top: 1500px;
+    overflow: hidden;
+}
+
+
 
     
 
@@ -1479,15 +1596,15 @@ body.cafam-layout {
     padding: 0;
   }
 
-#wrapper-slider-masterclass {
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
-  width: 100%;
-  height: 80%;
-  gap: 1px;
+  #wrapper-slider-masterclass {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    width: 100%;
+    height: 80%;
+    gap: 1px;
 
-}
+  }
 
 
   .card-masterclass {
@@ -1509,24 +1626,26 @@ body.cafam-layout {
 
 
 
-  .container-buttons-pagination {
+  .container-buttons-pagination-cafam {
     display: flex;
     justify-content: center;
     align-items: center;
     position: absolute;
-    top: -100px;
+    top: -120px;
     width: 100%;
     left: 0px;
     height: 100px;
     color: #F6F4EF;
   }
 
-  .container-tags {
-    top: 560px;
+  .container-tags-cafam {
+    justify-content: center;
+    align-items: center;
+    top: 1650px;
 
   }
 
-  #grid-responsive-index {
+  #grid-responsive-index-cafam {
     display: grid;
     width: 100%;
     height: auto;
@@ -1546,7 +1665,7 @@ body.cafam-layout {
 
   }
 
-  #container-logo-platforms {
+  #container-logo-platforms-cafam {
     height: 150px;
   }
 
@@ -1686,11 +1805,11 @@ body.cafam-layout {
 @media(max-width: 774px) {
 
 
-  .tag-category {
+  .tag-category-cafam {
     left: 3px;
     transform: scale(0.9);
   }
-  .tag-platform {
+  .tag-platform-cafam {
     left: 125px;
     transform: scale(0.9);
   }
@@ -1882,12 +2001,12 @@ body.cafam-layout {
     left: 0;
     top: 230px;
   }
-  .wrapper-certifications {
+  .wrapper-certifications-cafam {
     width: 100%;
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .certification-card {
+  .certification-card-cafam {
     width: auto;
   }
 
@@ -1895,11 +2014,11 @@ body.cafam-layout {
 }
 
 @media(max-width: 690px) {
-  .tag-category {
+  .tag-category-cafam {
     left: 2px;
     transform: scale(0.9);
   }
-  .tag-platform {
+  .tag-platform-cafam {
     left: 53%;
     transform: scale(0.9);
   }
@@ -1909,11 +2028,11 @@ body.cafam-layout {
 
 @media(max-width: 650px) {
 
-  .certification-card {
+  .certification-card-cafam {
     height: 250px;
   }
 
-  .wrapper-certifications {
+  .wrapper-certifications-cafam {
     display: grid;
     padding: 0 10px;
     box-sizing: border-box;
@@ -1926,7 +2045,7 @@ body.cafam-layout {
     overflow: hidden;
   }
 
-  .certification-card h3 {
+  .certification-card-cafam h3 {
     position: absolute;
     left: 10px;
     top: 73px;
@@ -1937,14 +2056,14 @@ body.cafam-layout {
     text-align: left;
   }
 
-  .tag-category {
+  .tag-category-cafam {
 
     top: 170px;
     left: -2px;
     transform: scale(0.8);
   }
 
-  .tag-platform {
+  .tag-platform-cafam {
     left: 50%;
     transform: scale(0.8);
   }
@@ -1952,7 +2071,7 @@ body.cafam-layout {
 
 
 
-  .box-result {
+  .box-result-cafam {
     width: 100%;
     padding-bottom: 1px;
 
@@ -2020,11 +2139,11 @@ body.cafam-layout {
     margin-right: 20px;
   }
 
-  #container-logo-platforms {
+  #container-logo-platforms-cafam {
     padding-left: 5px;
   }
 
-  .tag-platform {
+  .tag-platform-cafam {
     top: 207px;
     left: 6px;
 
@@ -2040,19 +2159,19 @@ body.cafam-layout {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .certification-card h3 {
+  .certification-card-cafam h3 {
     margin-top: 30px;
   }
 
-  .container-logo {
+  .container-logo-cafam {
     width: 120px;
   }
 
-  .tag-platform {
+  .tag-platform-cafam {
     transform: scale(0.9);
   }
 
-  .tag-category {
+  .tag-category-cafam {
     transform: scale(0.9);
     left: 6px;
   }
@@ -2064,13 +2183,13 @@ body.cafam-layout {
 }
 
 @media (min-width: 1700px) {
-  .wrapper-certifications {
+  .wrapper-certifications-cafam {
     grid-template-columns: repeat(5, 1fr);
   }
 }
 
 @media (min-width: 2000px) {
-  .wrapper-certifications {
+  .wrapper-certifications-cafam {
     grid-template-columns: repeat(6, 1fr);
   }
 

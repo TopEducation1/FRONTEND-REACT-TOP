@@ -88,7 +88,7 @@ const SearchBar = () => {
             
 
             {debouncedText.trim() && results.length > 0 && (
-                <div className="container-results">
+                <div className="container-results-cafam">
                     {results.map((resultado) => (
                         <div key={resultado.id} className="box-result">
                             <div className="wrapper-img-box">
