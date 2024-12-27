@@ -16,39 +16,48 @@ const CertificationsList = ({ certifications }) => {
         e.target.style.backgroundColor = '#f0f0f0';
     };
 
-    const handleCertificationClick = (certificationId) => {
-        if (certificationId) {
-            navigate(`/certificacion/${certificationId}`);
+    const handleCertificationClick = (certification) => {
+
+        if(certification) {
+            const platformId = certification.plataforma_certificacion_id;
+
+            if(platformId === 1) {
+                navigate(`/certificacion/edx/${certification.id}`);
+            } else if ( platformId === 2) {
+                navigate(`/certificacion/coursera/${certification.id}`);
+            } else {
+                navigate(`/certificacion/${certification.id}`);
+            }
+        } else {
+            console.log("nollega");
         }
     };
 
-    // Verify platform data is correctly loaded
+    // Función mejorada para obtener la imagen de la plataforma
     const getPlatformImage = (certification) => {
-        if (!certification.url_imagen_plataforma_certificacion) {
-            // Fallback logic based on platform ID
-            const platformId = certification.plataforma_certificacion_id;
-            switch(platformId) {
-                case 1:
-                    return '/path/to/edx-logo.png';
-                case 2:
-                    return '/path/to/coursera-logo.png';
-                case 3:
-                    return '/path/to/masterclass-logo.png';
-                default:
-                    return null;
-            }
+        if (certification.url_imagen_plataforma_certificacion) {
+            return getImageUrl(certification.url_imagen_plataforma_certificacion);
         }
-        return getImageUrl(certification.url_imagen_plataforma_certificacion);
+
+        // Mapa de IDs de plataforma a rutas de imagen
+        const platformImages = {
+            1: '/assets/Plataformas/Edx Mini logo.svg',
+            2: '/assets/Plataformas/Coursera mini logo.png',
+            3: '/assets/Plataformas/MasterClass logo mini.svg'
+        };
+
+        const platformId = certification.plataforma_certificacion_id;
+        return platformImages[platformId] || '/images/platforms/default-platform.png';
     };
+
 
     return (
         <div className="wrapper-certifications">
             {certifications.map(certification => {
                 const platformImage = getPlatformImage(certification);
-                
                 return (
                     <div
-                        onClick={() => handleCertificationClick(certification.id)}
+                        onClick={() => handleCertificationClick(certification)}
                         key={certification.id}
                         className='certification-card'
                         style={{ cursor: 'pointer' }}

@@ -2270,7 +2270,7 @@ header {
 
 .container-slider {
   display: flex;
-  width: 100%;
+  width: 90%;
   height: 450px;
   justify-content: center;
   align-items: center;
@@ -2278,6 +2278,7 @@ header {
   box-sizing: border-box;
   position: relative;
   margin-top: 50px;
+  left: 700px;
 }
 
 .button-left, .button-right {
@@ -2534,7 +2535,17 @@ header {
   align-items: center;
   position: absolute;
   left: 0;
-  margin-top: 650px;
+  margin-top: 610px;
+}
+
+#wrapper-button-reserva-getsmarter {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  margin-top: 610px;
 }
 
 
@@ -2565,7 +2576,7 @@ header {
   align-items: center;
   width: 100%;
   height: 50px;
-  margin-top: 20px;
+  margin-top: 50px;
 }
 
 #button-reserva-masterclass {
@@ -2642,6 +2653,7 @@ header {
 
 #lower-train-section span {
   font-size: 22px;
+  margin-bottom: 50px;
 }
 
 #fifth-trial-section {
@@ -2707,10 +2719,12 @@ header {
 #seventh-leader-section {
   display: flex;
   justify-content: center;
+  align-items: center;
   width: 100%;
   height: calc(100vh - 120px);
   background-color: #0F090B;
   font-size: 22px;
+  flex-direction: column;
 }
 
 #first-startnow-section {
@@ -2877,6 +2891,45 @@ header {
 }
 
 
+
+.carousel-container {
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+}
+
+.carousel-wrapper {
+  display: flex;
+  
+  animation: move-left linear infinite;
+}
+
+
+
+.a-image {
+  width: 180px;
+  height: 150px;
+  margin-left: 20px;
+
+}
+
+.a-image img {
+  width: 100%;
+  height: auto;
+}
+
+@keyframes move-left {
+  0% {
+      transform: translateX(0);
+  }
+  100% {
+      transform: translateX(-50%);
+  }
+}
 
 @media (max-width: 500px) {
 
@@ -3528,9 +3581,7 @@ header {
     left: 0;
   }
 
-  .container-slider {
-    margin-top: 2030px;
-  }
+
 
   
 
@@ -3545,17 +3596,8 @@ header {
     margin-top: 150px;
   }
 
-  .container-slider {
-    display: flex;
-    width: 100%;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    left: 0;
-    top: 2030px;
-  }
-
+  
+  
 
   .moved-header {
     width: 100%;
@@ -3645,6 +3687,28 @@ header {
 
 @media(max-width: 774px) {
 
+  #wrapper-button-reserva-getsmarter {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    left: 0;
+    margin-top: 1500px;
+  }
+
+  #lower-train-section {
+    margin-top: -50px;
+  }
+  
+
+  
+#fourth-home-section h2 {
+  color: #F6F4F0;
+  font-size: 40px;
+  text-align: center;
+}
+
   .article {
     width: 100%;
   }
@@ -3682,6 +3746,7 @@ header {
 
     h1 {
       font-size: 50px;
+      text-align: center;
     }
 
     p {
@@ -3735,10 +3800,13 @@ header {
 
     h1 {
       width: 100%;
-      text-align: justify;
+      text-align: center;
     }
   }
   
+  #container-image-subinfo {
+    width: 100%;
+  }
 
   #wrapper-images-prices, #wrapper-trial-images {
     flex-direction: column;
@@ -3767,19 +3835,70 @@ header {
   }
 
   #first-section {
-    background-color: red;
+    margin-top: 120px;
+    padding: 30px;
+    box-sizing: border-box;
+    height: auto;
   }
   #right-renata-section {
     width: 100%;
   }
 
+  #wrapper-p {
+    text-align: justify;
+  }
 
+  #blog-section {
+    height: auto;
+  }
+
+
+  #newsletter-section {
+    height: auto;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 30px;
+  }
+
+  #left-wrapper, #right-wrapper {
+    width: 100%;
+  }
+
+
+  #left-content-wrapper,#right-content-wrapper  {
+    width: 100%;
+  }
   #wrapper-team-title {
     height: auto;
 
     h1 {
       font-size: 40px;
     }
+  }
+
+  #block-title {
+    text-align: center;
+  }
+
+  #wrapper-button {
+    justify-content: center;
+    align-items: center;
+  }
+  #wrapper-form form {
+    justify-content: center;
+    align-items: center;
+  }
+
+  #wrapper-form form input {
+    width: 95%;
+  }
+
+  #wrapper-terms {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: justify;
+    width: 100%;
   }
 
   #second-team-page {
@@ -3817,10 +3936,12 @@ header {
   #button-reserva {
     width: 85%;
     margin-top: 0;
+    font-size: 17px;
   }
 
   #button-reserva-masterclass {
     width: 100%;
+    font-size: 17px;
   }
 
   #wrapper-alternative-button-reserve {
@@ -3832,6 +3953,7 @@ header {
 
   #button-alternative-reserve {
     width: 85%;
+    font-size: 17px;
   }
 
   
@@ -3839,7 +3961,7 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: auto;
+    height: 1500px;
     flex-direction: column;
     padding: 0;
   }
@@ -3852,20 +3974,24 @@ header {
   }
 
   #fourth-train-section {
-    height: 1500px;
+    height: 1700px;
     flex-direction: column;
     padding: 30px;
     justify-content: center;
     align-items: center;
+    gap: 0;
   }
 
   #upper-train-section {
     width: 100%;
     padding: 30px;
+    height: auto;
+    margin-top: -100px;
+
   }
 
   #upper-train-section {
-    margin-top: 50px;
+    
   }
 
   #mid-train-section {
@@ -3884,6 +4010,7 @@ header {
     align-items: center;
     flex-direction: column;
     padding: 30px;
+    margin-top: -130px;
   }
 
   #right-train {
@@ -3893,11 +4020,11 @@ header {
     align-items: center;
     flex-direction: column;
     padding: 30px;
+    height: auto;
   }
 
   #left-trial {
     width: 100%;
-    padding: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -3908,6 +4035,10 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
+    
+    p {
+      text-align: justify;
+    }
   }
 
   #fifth-trial-section {
@@ -3924,11 +4055,16 @@ header {
     height: auto;
     flex-direction: column;
     padding: 30px;
+    text-align: justify;
   }
 
   #seventh-leader-section {
     height: auto;
     flex-direction: column;
+
+    h1 {
+      padding: 30px;
+    }
   }
 
 
@@ -4100,11 +4236,8 @@ header {
     left: 0;
   }
 
-  .container-slider {
-   
+
   
-    width: 100% ;
-  }
 
   #wrapper-slide {
     width: 100%;
@@ -4124,15 +4257,7 @@ header {
     margin-top: 150px;
   }
 
-  .container-slider {
-    display: flex;
-    width: 100%;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    
-  }
+  
   .wrapper-certifications {
     width: 100%;
     grid-template-columns: repeat(3, 1fr);

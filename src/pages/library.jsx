@@ -136,21 +136,16 @@ function LibraryPageCafam({ showRoutes = true,  }) {
   */
     const handleTagClick = (category, tag) => {
         setSelectedTags(prevTags => {
-
-
-            // Copiar el estado previo de los tags para no mutarlo
             const updatedTags = { ...prevTags };
-
-            // Set a partir de la lista actual o una vacia
-            const tagSet = new Set(updatedTags[category] || []);
-
-            tagSet.add(tag);
-            updatedTags[category] = [...tagSet];
+            if (!updatedTags[category]) {
+                updatedTags[category] = [];
+            }
+            if (!updatedTags[category].includes(tag)) {
+                updatedTags[category] = [...updatedTags[category], tag];
+            }
             return updatedTags;
-
         });
     };
-
 
     const removeTag = (category, tagToRemove) => {
         setSelectedTags(prevTags => {

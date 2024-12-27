@@ -15,6 +15,7 @@ import TopEducationLayout from "./layouts/topeducation/topEducationLayout.js";
 import CafamLayout from "./layouts/cafam/cafamLayout.js";
 import ParaEquipos from "./pages/paraEquipos.jsx";
 import StartNow from "./pages/startNow.jsx";
+import EdxCertificationPage from "./pages/EdxCertificationPage.jsx";
 
 function App() {
   useEffect(() => {
@@ -28,7 +29,9 @@ function App() {
         <Route element={<TopEducationLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/library" element={<LibraryPage />} />
-          <Route path="/certificacion/:id" element={<CertificationPage />} />
+          <Route path="/certificacion/edx/:id" element={<EdxCertificationPage />} />
+          <Route path="/certificacion/coursera/:id" element={<CertificationPage />} />
+  
           <Route path="/blog" element={<Blog />} />
           <Route path="/para-equipos" element={<ParaEquipos />} />
           <Route path="/empieza-ahora" element={<StartNow />} />

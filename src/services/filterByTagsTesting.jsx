@@ -20,7 +20,7 @@ class TagFilterService {
 
         const categoryMap = {
             'Tema': 'temas',
-            'Plataforma': 'plataformas',
+            'Plataforma': 'plataforma',
             'Empresa': 'empresas',
             'Universidad': 'universidades'
         };

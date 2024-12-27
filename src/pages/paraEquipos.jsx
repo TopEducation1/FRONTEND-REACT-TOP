@@ -1,3 +1,4 @@
+import Flags from "../components/Flags";
 import SliderMasterClass from "../components/SliderMasterClass";
 
 function ParaEquipos () {
@@ -74,7 +75,7 @@ function ParaEquipos () {
                     
                 </div>
 
-                <div id="wrapper-button-reserva">
+                <div id="wrapper-button-reserva-getsmarter">
                     <button id="button-reserva">Reserva una demostración empresarial</button>
                 </div>
                 
@@ -139,6 +140,9 @@ function ParaEquipos () {
                 <h1 style={{
                     color: "#5CC781"
                 }}>Colaboramos con los líderes de la industria</h1>
+
+                <Flags direction="left" />
+                <Flags direction="right" />
             </div>
         </>
 
