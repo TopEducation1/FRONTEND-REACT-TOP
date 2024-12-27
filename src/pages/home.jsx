@@ -12,7 +12,7 @@ function HomePage () {
                     <h1>Top Education,</h1>
                     <h2><em>La plataforma que revoluciona la educación en linea</em></h2>
                     <div id="row-video">
-                        <img src="/assets/piezas/play.png" alt="play icono"/>
+                        <img src="/assets/Piezas/play.png" alt="play icono"/>
                         <span>Conoce más de<br/>Top Education</span>
                     </div>
                     
@@ -73,12 +73,12 @@ function HomePage () {
 
                     <h2>Aprende con las universidades lideres del mundo</h2>
 
-                    <img src="/assets/piezas/flags1.png" alt="Imagen con banderas de universidades"/>
+                    <img src="/assets/Piezas/flags1.png" alt="Imagen con banderas de universidades"/>
 
 
                     <h2>y de habla hispana</h2>
 
-                    <img src="/assets/piezas/flags2.png" alt="Imagen con banderas de universidades"/>
+                    <img src="/assets/Piezas/flags2.png" alt="Imagen con banderas de universidades"/>
 
             </div>
 
@@ -112,15 +112,15 @@ function HomePage () {
 
 
                     <div class="article">
-                        <img  src="/assets/piezas/1-article.png "/>
+                        <img  src="/assets/Piezas/1-article.png "/>
                         <h3>edx vs coursera ¿Cuál plataforma educativa es mejor?</h3>
                     </div>
                     <div class="article">
-                        <img  src="/assets/piezas/2-article.png "/>
+                        <img  src="/assets/Piezas/2-article.png "/>
                         <h3>Así puedes certificarte en las mejores universidades del mundo</h3>
                     </div>
                     <div class="article">
-                    <img  src="/assets/piezas/3-article.png "/>
+                    <img  src="/assets/Piezas/3-article.png "/>
                     <h3>5 grandes cursos de edx con certificado de universidadesen estados unidos</h3>
                     </div>
 
