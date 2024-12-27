@@ -19,7 +19,7 @@ function ParaEquipos () {
 
                     <p><strong>Top Education optimiza los procesos de capacitación, reduciendo costos y aumentando la eficiencia</strong></p>
 
-                    <p>Con nuestra ayuda, podrás crear una universidad corporativa, que te permitirá alcanzar los objetivos de desarrollo profesional y potenciar el talento de tu equipo, garantizando asi un crecimiento sostenible y una mayor competividad en el mercado</p>
+                    <p>Con nuestra ayuda, podrás crear una universidad corporativa, que te permitirá alcanzar los objetivos de desarrollo profesional y potenciar el talento de tu equipo, garantizando así un crecimiento sostenible y una mayor competitividad en el mercado</p>
                 </div>
                 <div id="right-wrapper-second">
                     <img src="/assets/Piezas/pieza-teams.png"/>
@@ -28,16 +28,16 @@ function ParaEquipos () {
 
 
             <div id="third-info-section">
-                <h2 style={{color: "#5CC781"}}><strong>Organizaciones lideres </strong><em>han transformado su desempeño y talento humano<strong>con nuestras soluciones educativas.</strong></em></h2>
+                <h2 style={{color: "#5CC781"}}><strong>Organizaciones líderes </strong><em>han transformado su desempeño y talento humano<strong> con nuestras soluciones educativas.</strong></em></h2>
 
 
-                <p><strong><em>Con Top Education, tu organización puede desarrollar las habilidades de sus empleados para aumentar la productividad e innovación, </em></strong> ademas de atraer y retener los mejores talentos mediante oportunidades de aprendizaje atractivas.</p>
+                <p><strong><em>Con Top Education, tu organización puede desarrollar las habilidades de sus empleados para aumentar la productividad e innovación, </em></strong> además de atraer y retener los mejores talentos mediante oportunidades de aprendizaje atractivas.</p>
 
                 <p>Podrás capacitar a tu equipo sin necesidad de realizar grandes inversiones en infraestructura y logística.</p>
 
                 <p><em style={{
                     color: "#5CC781"
-                }}>Nuestras soluciones han ayudado a empresas de todo el mundo a alcanzar nuevos niveles de éxito y crecimiento.</em>Invierte en el futuro de tu organización con Top Education.</p>
+                }}>Nuestras soluciones han ayudado a empresas de todo el mundo a alcanzar nuevos niveles de éxito y crecimiento.</em> Invierte en el futuro de tu organización con Top Education.</p>
 
 
 
@@ -117,7 +117,7 @@ function ParaEquipos () {
 
 
             <div id="sixth-masterclass-section">
-                <p><em>Más de 200 instructores reconocidos, incluyendo figuras como<strong>Richard Branson, George W. Bush, Mark Cuban, Malala Yousafzai y James Clear, </strong>comparten su conocimiento en nuestra plataforma.</em></p>
+                <p><em>Más de 200 instructores reconocidos, incluyendo figuras como<strong> Richard Branson, George W. Bush, Mark Cuban, Malala Yousafzai y James Clear, </strong>comparten su conocimiento en nuestra plataforma.</em></p>
 
                 {/**<SliderMasterClass /> */}
 
