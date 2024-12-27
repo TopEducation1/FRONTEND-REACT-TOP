@@ -72,7 +72,8 @@ function BlogPage() {
                 </h3>
             </div>
 
-            <div className="container-slider">
+            <div id="section-slider-blog-top">
+            <div className="container-slider-top">
                 <div className="wrapper-slide">
                     <a href="https://info.top.education/es-mx/como-encontrar-trabajo-con-poca-experiencia" target="_blank" rel="noopener noreferrer" className="card-product">
                         <span className="label-type">Guía</span>
@@ -131,6 +132,8 @@ function BlogPage() {
                     <div className="line" style={{ background: "#D33B3E" }}></div>
                 </div>
             </div>
+            </div>
+            
 
             <div id="blog-section">
                <h1><strong><em>Explora y aprende</em></strong></h1> 

@@ -60,8 +60,8 @@ const Header = () => {
                 <div className="navigation-menu-responsive">
                     <ul>
                         <li><a href="example.com" className="button-explore" onClick={toggleMenu}><Link to="/library">Explora</Link></a></li>
-                        <li><a href="example.com">Para Equipos</a></li>
-                        <li><a href="example.com">Recursos</a></li>
+                        <li><a href="/para-equipos">Para Equipos</a></li>
+                        <li><a href="/blog">Recursos</a></li>
                     </ul>
                 </div>
                 <button className="button-start-now-responsive">Empiezá ahora</button>

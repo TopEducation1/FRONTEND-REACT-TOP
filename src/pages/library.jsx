@@ -66,44 +66,54 @@ function LibraryPageCafam({ showRoutes = true,  }) {
 
     const loadCertifications = useCallback(async (page = 1, pageSize = 16) => {
         setLoading(true);
-        setTempCertifications([]); // Clear temporary certifications
         try {
             let fetchData;
-            if (Object.keys(selectedTags).length > 0) {
+            // Verificar si hay tags seleccionados
+            const hasSelectedTags = Object.keys(debouncedSelectedTags).length > 0;
+            
+            if (hasSelectedTags) {
+                console.log('Filtrando por tags:', debouncedSelectedTags);
                 fetchData = await tagFilterService.filterByTags(debouncedSelectedTags, page, pageSize);
-                const queryString = tagFilterService.buildQueryString(selectedTags);
             } else {
+                console.log('Cargando todas las certificaciones');
                 fetchData = await CertificationsFetcher.getAllCertifications(page, pageSize);
             }
 
             if (fetchData && Array.isArray(fetchData.results)) {
-                setTempCertifications(fetchData.results.length > 0 ? fetchData.results : []);
+                // Actualizar directamente las certificaciones
+                setCertifications(fetchData.results);
                 setPagination({
                     count: fetchData.count || 0,
                     current_page: page,
                     total_pages: Math.ceil(fetchData.count / pageSize) || 1,
                 });
             } else {
-                setTempCertifications([]); // Vacío si no es un array o no hay resultados
+                setCertifications([]);
             }
         } catch (error) {
+            console.error('Error al cargar certificaciones:', error);
             setError('Error al cargar las certificaciones');
-            setTempCertifications([]);
+            setCertifications([]);
         } finally {
             setLoading(false);
         }
     }, [debouncedSelectedTags]);
+
 
     useEffect(() => {
         updateHistoryState(debouncedSelectedTags);
         loadCertifications();
     }, [debouncedSelectedTags, loadCertifications]);
 
+
     useEffect(() => {
         if (!loading) {
-            setCertifications(tempCertifications)
+            console.log('Tags actualizados, recargando certificaciones');
+            updateHistoryState(debouncedSelectedTags);
+            loadCertifications(1); // Reiniciar a la primera página
         }
-    }, [loading, tempCertifications]);
+    }, [debouncedSelectedTags, loadCertifications]);
+
 
 
 
@@ -113,9 +123,10 @@ function LibraryPageCafam({ showRoutes = true,  }) {
         }
     };
 
-    const handleBannerClick = (category, tag) => {
-        console.log("BANNER PRESIONADO");
-
+    const handleBannerClick = async (category, tag) => {
+        console.log("Banner clicked:", category, tag);
+        
+        // Actualizar los tags seleccionados
         setSelectedTags(prevTags => {
             const updatedTags = { ...prevTags };
             const tagSet = new Set(updatedTags[category] || []);
@@ -123,8 +134,6 @@ function LibraryPageCafam({ showRoutes = true,  }) {
             updatedTags[category] = [...tagSet];
             return updatedTags;
         });
-
-        loadCertifications(1);
     };
 
 
@@ -329,6 +338,13 @@ function LibraryPageCafam({ showRoutes = true,  }) {
         });
     };
 
+    useEffect(() => {
+        if (!loading) {
+            console.log('Tags actualizados, recargando certificaciones');
+            updateHistoryState(debouncedSelectedTags);
+            loadCertifications(1); // Reiniciar a la primera página
+        }
+    }, [debouncedSelectedTags, loadCertifications]);
 
 
 
@@ -462,7 +478,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
                     <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "Coursera")}>
                         <img src="assets/Plataformas/Coursera mini logo.png" />
                     </div>
-                    <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "edX")}>
+                    <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "EdX")}>
                         <img src="assets/logos/edx-hover.png" />
                     </div>
                     <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "MasterClass")}>

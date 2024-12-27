@@ -18,7 +18,7 @@ function HomePage () {
                     
                 </div>
                 <div id="right-first-section">
-                    <video src="/assets/video/TOP EDUCATION_V9_FULL.mp4" autoPlay loop muted>
+                    <video src="/assets/video/main-video.mp4" autoPlay loop muted>
                         Tu navegador no soporta video
                     </video>
                 </div>

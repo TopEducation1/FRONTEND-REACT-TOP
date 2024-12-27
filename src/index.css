@@ -949,7 +949,9 @@ header {
   border-radius: 20px;
   color: #F6F4EF;
   border: 1px solid #F6F4EF;
-  font-size: 14px;
+  font-size: 13px;
+  box-sizing: border-box;
+  padding: 5px;
 }
 
 
@@ -1183,7 +1185,6 @@ header {
   box-sizing: border-box;
   width: 100%;
   font-size: 20px;
-  background-color: rebeccapurplee;
 }
 
 #container-instructors ul {
@@ -1495,10 +1496,10 @@ header {
   align-items: center;
   position: absolute;
   padding: 20px 0px;
-  width: 1180px;
+  width: 100%;
   height: 800px;
   top: 1700px;
-  left: 300px;
+  left: 0;
   text-align: center;
   color: #F6F4EF;
 }
@@ -1519,13 +1520,7 @@ header {
   font-size: 30px;
 }
 
-.container-slider {
-  display: flex;
-  width: 100%;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
+
 
 .images-container {
   display: flex;
@@ -1657,6 +1652,13 @@ header {
   height: 100%;
 }
 
+.container-slider {
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 
 #container-right-pop {
   display: grid;
@@ -1684,6 +1686,7 @@ header {
   position: absolute;
   margin-top: 30px;
   left: 0;
+  font-size: 25px;
 }
 
 #mid-section {
@@ -1717,7 +1720,7 @@ header {
   background-color: #034694;
   font-size: 16px;
   color:#F6F4EE;
-  margin-top: 25px;
+  margin-top: 12px;
   cursor: pointer;
 }
 
@@ -1874,7 +1877,7 @@ header {
 
 }
 
-.container-slider {
+.container-slider-top {
   display: flex;
   width: 100%;
   height: 500px;
@@ -1883,8 +1886,7 @@ header {
   padding: 0px;
   box-sizing: border-box;
   position: relative;
-  left: 50%;
-  transform: translate(-50%);
+
 }
 
 .button-left, .button-right {
@@ -1996,8 +1998,6 @@ header {
   height: 500px;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  background-color: purple;
-  
 
 }
 
@@ -2268,7 +2268,7 @@ header {
   color: #F6F4F0;
 }
 
-.container-slider {
+.container-slider-top {
   display: flex;
   width: 90%;
   height: 450px;
@@ -2278,7 +2278,15 @@ header {
   box-sizing: border-box;
   position: relative;
   margin-top: 50px;
-  left: 700px;
+  left: 0;
+}
+
+#section-slider-blog-top  {
+  display: flex;
+  width: 100%;
+  height: 500px;
+  justify-content: center;
+  align-items: center;
 }
 
 .button-left, .button-right {
@@ -3058,7 +3066,7 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 160px;
+    width: 120px;
     height: 60px;
     cursor: pointer;
 
@@ -3593,7 +3601,7 @@ header {
 
   .container-routes-section p {
     width: 99%;
-    margin-top: 150px;
+    margin-top: 200px;
   }
 
   
@@ -3686,6 +3694,19 @@ header {
 }
 
 @media(max-width: 774px) {
+
+  .container-slider-top {
+    display: flex;
+    width: 90%;
+    height: 450px;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+    box-sizing: border-box;
+    position: relative;
+    margin-top: 30px;
+    left: 0px;
+  }
 
   #wrapper-button-reserva-getsmarter {
     display: flex;
@@ -4234,6 +4255,7 @@ header {
     position: absolute;
     top: 2550px;
     left: 0;
+    height: auto;
   }
 
 
@@ -4254,7 +4276,7 @@ header {
 
   .container-routes-section p {
     width: 85%;
-    margin-top: 150px;
+    margin-top: 200px;
   }
 
   
@@ -4402,14 +4424,20 @@ header {
 
   .tag-platform {
     top: 207px;
-    left: 6px;
+    left: 7px;
 
   }
   .container-routes-section {
     width: 100%;
     position: absolute;
-    top: 2650px;
+    top: 2950px;
     left: 0;
+    height: auto;
+  }
+
+  .container-routes-section p {
+    width: 99%;
+    margin-top: 200px;
   }
 
   .wrapper-certifications {

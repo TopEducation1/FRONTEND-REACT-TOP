@@ -1615,9 +1615,7 @@ body.cafam-layout {
 
   }
 
-  .container-routes-section {
-    top: 2250px;
-  }
+
 
   .slider-wrapper {
   }
@@ -1813,12 +1811,6 @@ body.cafam-layout {
 
 
 
-  .container-routes-section {
-    width: 100%;
-    position: absolute;
-    top: 1800px;
-    left: 0;
-  }
 
   .container-slider {
     margin-top: 130px;
@@ -1832,10 +1824,7 @@ body.cafam-layout {
 
   
 
-  .container-routes-section p {
-    width: 99%;
-    margin-top: 150px;
-  }
+ 
 
   .container-slider {
     display: flex;
@@ -1845,7 +1834,7 @@ body.cafam-layout {
     align-items: center;
     position: absolute;
     left: 0;
-    top: 230px;
+    top: 260px;
   }
 
 
@@ -2075,12 +2064,7 @@ body.cafam-layout {
     row-gap: 20px;
   }
 
-  .container-routes-section {
-    width: 100%;
-    position: absolute;
-    top: 2550px;
-    left: 0;
-  }
+  
 
   .container-slider {
     margin-top: 130px;
@@ -2095,10 +2079,7 @@ body.cafam-layout {
     height: 400px;
   }
 
-  .container-routes-section p {
-    width: 85%;
-    margin-top: 150px;
-  }
+
 
   .container-slider {
     display: flex;
@@ -2108,7 +2089,7 @@ body.cafam-layout {
     align-items: center;
     position: absolute;
     left: 0;
-    top: 230px;
+    top: 260px;
   }
   .wrapper-certifications-cafam {
     width: 100%;
@@ -2297,12 +2278,7 @@ body.cafam-layout {
     left: 10px;
 
   }
-  .container-routes-section {
-    width: 100%;
-    position: absolute;
-    top: 2650px;
-    left: 0;
-  }
+  
 
   .wrapper-certifications {
     grid-template-columns: repeat(2, 1fr);
@@ -2476,7 +2452,8 @@ body.cafam-layout {
       display: flex;
       flex-direction: column;
       grid-column: 2;
-      color: #0750A0;
+      justify-content: center;
+      align-items: center;
   }
 
 }

@@ -70,7 +70,7 @@ const SliderEditorial = () => {
     };
 
     return (
-        <div className="container-slider">
+        <div className="container-slider-top">
             <div className="wrapper-slide" ref={containerRef}>
                 <a href="https://info.top.education/es-mx/como-encontrar-trabajo-con-poca-experiencia" target="_blank" className="card-product">
                     <span className="label-type">Guía</span>
