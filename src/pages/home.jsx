@@ -64,7 +64,7 @@ function HomePage () {
 
 
                 <div id="right-renata-section">
-                    <img src="/assets/piezas/TE_Renata_con_portátil.png" />
+                    <img src="/assets/Piezas/TE_Renata_con_portátil.png" />
                 </div>
             </div>
 
