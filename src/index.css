@@ -1993,11 +1993,14 @@ header {
 }
 
 #grid-blogs {
-  display: grid;
+  display: flex;
   width: 90%;
-  height: 500px;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  justify-content: center;
+  align-items: center;
+
+  img {
+    max-width: 90%;
+  }
 
 }
 
@@ -3694,6 +3697,12 @@ header {
 }
 
 @media(max-width: 774px) {
+
+  #grid-blogs {
+    img {
+      display: none;
+    }
+  }
 
   .container-slider-top {
     display: flex;

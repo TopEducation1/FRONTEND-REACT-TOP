@@ -137,7 +137,7 @@ function BlogPage() {
 
             <div id="blog-section">
                <h1><strong><em>Explora y aprende</em></strong></h1> 
-                <div id="grid-blogs">Esta sección tendra los blogs</div>
+                <div id="grid-blogs"><img  src="/assets/banners/blogs-capture.png"/></div>
             </div>
 
             <div id="newsletter-section">
