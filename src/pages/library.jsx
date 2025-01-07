@@ -32,6 +32,20 @@ function LibraryPageCafam({ showRoutes = true,  }) {
     const location = useLocation();
     const [debouncedSelectedTags] = useDebounce(selectedTags, 300);
 
+    const NoResultsMessage = () => (
+        <div className="no-results-container">
+            <svg  xmlns="http://www.w3.org/2000/svg"  width="50"  height="50"  viewBox="0 0 24 24"  fill="none"  stroke="#ffffff"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-face-id-error"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /><path d="M4 16v2a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M16 20h2a2 2 0 0 0 2 -2v-2" /><path d="M9 10h.01" /><path d="M15 10h.01" /><path d="M9.5 15.05a3.5 3.5 0 0 1 5 0" /></svg>
+            <h3>No se encontraron certificaciones</h3>
+            <p>No hay resultados que coincidan con los filtros seleccionados.</p>
+            <button 
+                onClick={() => setSelectedTags({})} 
+                className="clear-filters-button"
+            >
+                Limpiar filtros
+            </button>
+        </div>
+    );
+
 
     useEffect(() => {
 
@@ -123,16 +137,34 @@ function LibraryPageCafam({ showRoutes = true,  }) {
         }
     };
 
-    const handleBannerClick = async (category, tag) => {
+    const handleBannerClick = (category, tag) => {
         console.log("Banner clicked:", category, tag);
         
         // Actualizar los tags seleccionados
         setSelectedTags(prevTags => {
             const updatedTags = { ...prevTags };
-            const tagSet = new Set(updatedTags[category] || []);
-            tagSet.add(tag);
-            updatedTags[category] = [...tagSet];
-            return updatedTags;
+            
+            //Si la categoria no existe, crear un nuevo array
+            if(!updatedTags[category]) {
+                updatedTags[category] = [];
+            }
+
+            if(!updatedTags[category].includes(tag)) {
+                updatedTags[category] = [...updatedTags[category], tag];
+                        } else {
+                            updatedTags[category] = updatedTags[category].filter(t => t !== tag );
+
+                            if(updatedTags[category].length === 0) {
+                                delete updatedTags[category];
+                            }
+                        }
+
+                        return updatedTags;
+
+
+
+
+
         });
     };
 
@@ -157,21 +189,26 @@ function LibraryPageCafam({ showRoutes = true,  }) {
     };
 
     const removeTag = (category, tagToRemove) => {
+        console.log("Removing tag:", category, tagToRemove); // Para debugging
+        
         setSelectedTags(prevTags => {
             const updatedTags = { ...prevTags };
-
-
+            
             if (updatedTags[category]) {
-
-                updatedTags[category] = updatedTags[category].filter(tag => tag !== tagToRemove);
-
-
-                if (updatedTags[category].length === 0) {
-                    delete updatedTags[category];  // Eliminamos la categoría si no quedan tags
+                // Filtramos el tag específico que queremos remover
+                const filteredTags = updatedTags[category].filter(tag => tag !== tagToRemove);
+                
+                if (filteredTags.length === 0) {
+                    // Si no quedan tags en la categoría, la eliminamos
+                    delete updatedTags[category];
+                } else {
+                    // Si quedan tags, actualizamos el array
+                    updatedTags[category] = filteredTags;
                 }
             }
+            
             return updatedTags;
-        })
+        });
     };
 
 
@@ -493,6 +530,9 @@ function LibraryPageCafam({ showRoutes = true,  }) {
             <div className="certifications-container">
                 {loading ? (
                     <span class="loader"></span>
+
+                    ): certifications.length === 0 ? (
+                        <NoResultsMessage />
 
                 ) : (
                     <CertificationsList certifications={certifications} />

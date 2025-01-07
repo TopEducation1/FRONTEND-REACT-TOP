@@ -89,9 +89,19 @@ const CertificationsList = ({ certifications }) => {
                                     }}
                                 />
                             </div>
-                            
+
+                            <div id="container-title-certification">
                             <h3>{certification.nombre}</h3>
+                            </div>
                             
+                            
+                            <div id="container-tags-card">
+                            
+                            
+                            <div className="tag-category">
+                                {certification.tema_certificacion?.nombre || 'Sin categoría'}
+                            </div>
+
                             <div className="tag-platform">
                                 <img
                                     src={platformImage}
@@ -104,10 +114,8 @@ const CertificationsList = ({ certifications }) => {
                                     }}
                                 />
                             </div>
-                            
-                            <div className="tag-category">
-                                {certification.tema_certificacion?.nombre || 'Sin categoría'}
                             </div>
+                            
                         </div>
                     );
                 })}
