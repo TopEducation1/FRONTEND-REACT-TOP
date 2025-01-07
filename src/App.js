@@ -31,6 +31,8 @@ function App() {
           <Route path="/library" element={<LibraryPage />} />
           <Route path="/certificacion/edx/:id" element={<EdxCertificationPage />} />
           <Route path="/certificacion/coursera/:id" element={<CertificationPage />} />
+          <Route path="/certificacion/:id" element={<CertificationPage />} />
+
   
           <Route path="/blog" element={<Blog />} />
           <Route path="/para-equipos" element={<ParaEquipos />} />

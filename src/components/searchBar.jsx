@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import FilterBySearch from "../services/filterBySearch";
 import { useDebounce } from "use-debounce";
+import { useNavigate } from 'react-router-dom';
+
 
 const SearchBar = () => {
 
@@ -14,6 +16,8 @@ const SearchBar = () => {
     const [loading, setLoading] = useState(false);
     // Use debounce to reduce the number of API calls
     const [debouncedText] = useDebounce(text, 300);
+    const navigate = useNavigate();
+    
 
 
     // Manejar la escritura en el input 
@@ -51,6 +55,36 @@ const SearchBar = () => {
         fetchResults();
 
     }, [debouncedText]);
+
+
+    const handleCertificationClick = (certification, e) => {
+        e.preventDefault();
+        try {
+            if (!certification) {
+                throw new Error('No certification data provided');
+            }
+
+            const platformId = certification.plataforma_certificacion_id;
+            let path;
+
+            switch (platformId) {
+                case 1:
+                    path = `/certificacion/edx/${certification.id}`;
+                    break;
+                case 2:
+                    path = `/certificacion/coursera/${certification.id}`;
+                    break;
+                default:
+                    path = `/certificacion/${certification.id}`;
+            }
+
+            console.log('Navigating to:', path);
+            navigate(path);
+        } catch (err) {
+            console.error('Navigation error:', err);
+            setError('Error al navegar a la certificación');
+        }
+    };
 
     // Update main results state after loading is complete
     useEffect(() => {
@@ -90,7 +124,7 @@ const SearchBar = () => {
             {debouncedText.trim() && results.length > 0 && (
                 <div className="container-results">
                     {results.map((resultado) => (
-                        <div key={resultado.id} className="box-result">
+                        <div key={resultado.id} onClick={(e) => handleCertificationClick(resultado, e)} className="box-result">
                             <div className="wrapper-img-box">
                                 <img src={resultado.url_imagen_universidad_certificacion}></img>
                             </div>

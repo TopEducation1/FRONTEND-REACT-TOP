@@ -70,7 +70,6 @@ const HomeCafam = () => {
                         </div>
                     </div>
                 </div>
-                <div id="separator-cafam-universities">&nbsp;</div>
                 <div id="lower-section-universities" class="block-universities">
 
                     <div id="wrapper-lower-universities-cafam">

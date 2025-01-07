@@ -62,8 +62,8 @@ body.cafam-layout {
 }
 
 #main-section-cafam {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 50% 50%;
     width: 100%;
     height: calc(100vh - 88px);
     padding-top: 30px;
@@ -75,7 +75,6 @@ body.cafam-layout {
     padding-left: 100px;
     box-sizing: border-box;
     align-items: center;
-    width: 50%;
     height: 100%;
 }
 
@@ -130,7 +129,6 @@ body.cafam-layout {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 50%;
     height: 100%;
 }
 
@@ -685,15 +683,18 @@ body.cafam-layout {
     text-align: center;
     top: 230px;
     left: 15px;
-    font-weight: 20px;
+    font-weight: 13px;
     width: 130px;
     height: 35px;
     background-color: #034694;
     border-radius: 20px;
     color: #F6F4EF;
     border: 1px solid #F6F4EF;
-    font-size: 14px;
+    
+    padding: 5px;
+    box-sizing: border-box;
   }
+  
   
   
   .tag-platform-cafam {
@@ -944,7 +945,7 @@ body.cafam-layout {
     align-items: center;
     color: white;
     width: 100%;
-    height: 150px;
+    height: 80px;
     background-color: #0750A0;
     flex-direction: column;
     
@@ -1543,18 +1544,19 @@ body.cafam-layout {
 @media(max-width: 1040px) {
 
   #main-section-cafam {
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 900px;
+    grid-template-rows: 50% 50%;
+    grid-template-columns: 100%;
   }
 
   #left-wrapper-cafam {
-    width: 90%;
+    width: 100%;
   }
 
   #right-wrapper-cafam {
-    width: 90%;
+    width: 100%;
   }
 
   #title-certifications-cafam {
@@ -1691,8 +1693,7 @@ body.cafam-layout {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 50%;
-    height: 100%;
+    width: 100%;
 }
 
 #right-wrapper-cafam img {
