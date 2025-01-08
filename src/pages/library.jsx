@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from 'react-router-dom';
 import SkillsTags from "../services/skillsService";
 //import Universities from "../services/universitiesService";
@@ -10,6 +10,7 @@ import SearchBar from "../components/searchBar";
 import RoutesComponent from "../components/RoutesComponent";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
+import IndexCategories from "../components/IndexCategories";
 
 /**
  * Pagina de la biblioteca
@@ -31,6 +32,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
     const [isSmallScreen, SetIsSmallScreen] = useState(false);      // Tracks small screen state
     const location = useLocation();
     const [debouncedSelectedTags] = useDebounce(selectedTags, 300);
+    const certificationsRef = useRef(null);
 
     const NoResultsMessage = () => (
         <div className="no-results-container">
@@ -170,7 +172,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
 
 
 
-    /**
+/**
   * Maneja el clic en una etiqueta de filtro
   * @param {string} category - Categoría de la etiqueta
   * @param {string} tag - Etiqueta seleccionada
@@ -248,43 +250,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
 
 
 
-    // Definición del array sections para categorias de filtro
-    const sections = [
-        {
-            title: "Tema",
-
-            subsections: ["Arte y Humanidades", "Negocios", "Ciencias de la Computación", "Ciencias de Datos", "Tecnología de la información", "Salud", "Matemáticas y Logica", "Desarrollo Personal", "Ciencías, Física e Ingenieria", "Ciencias Sociales", "Aprendizaje de un Idioma"]
-        },
-        {
-            title: "Plataforma",
-            subsections: ["EdX", "Coursera", "MasterClass"]
-        },
-        {
-            title: "Empresa",
-            subsections: ["Capitals Coalition", "DeepLearning.AI", "Big Interview", "UBITS", "HubSpot Academy", "SV Academy", "Pathstream", "Salesforce", "The Museum of Moder Art", "Banco Interamericano de Desarrollo", "Yad Vashem", " Google", "Microsoft"]
-        },
-        {
-            title: "Universidad",
-            subsections: [
-                {
-                    title: "Oceania",
-                    subsections: ["Macquarie University"]
-                },
-                {
-                    title: "Europa",
-                    subsections: ["IE Business School", "Universidad Autónoma de Barcelona", "Universidad Carlos III de Madrid"]
-                },
-                {
-                    title: "Latinoamérica",
-                    subsections: ["Universidad de chile", "Universidad Nacional de Colombia", "Tecnológico de Monterrey", "Pontificia Universidad Católica del Perú", "Universidad Nacional Autónoma de Mexico", "Universidad Anáhuac", "SAE Institute México", "Pontificia Universidad Católica de Chile", "Universidad de Palermo", "Universidad de los Andes", "Universidad Austral"]
-                },
-                {
-                    title: "Norteamérica",
-                    subsections: ["University of New Mexico", "Parsons School of Design, The New School", "University of Michigan", "University of Virginia", "University of Illinois Urbana-Champaign", "University of California, Irvine", "The University of North Carolina at Chapel Hill", "Northwestern University", "University of Colorado Boulder", "Wesleyan University", "California Institute of the Arts", "Duke University", "University of Pennsylvania", "Berklee college of music", "Columbia", "Harvard university", "Yale university", "Stanford"]
-                }
-            ]
-        }
-    ];
+    
 
     /**
      * Abre el menu  del index responsive
@@ -303,77 +269,11 @@ function LibraryPageCafam({ showRoutes = true,  }) {
     };
 
 
-    /**
-     * Calcula el margen dinámico de una sección del menú de índice
-     * @param {number} index - Índice de la sección
-     * @returns {number} - Valor del margen
-     */
+    
 
-    const calculateDynamicMargin = (index) => {
-        const section = sections[index];
-        const numSubsections = section.subsections.length;
-        const baseMargin = 120;
-        const marginPerItem = 50;
-        return baseMargin + numSubsections * marginPerItem;
-    };
+    
 
-
-    /**
-     * Alterna la apertura de una sección del menú de índice
-     * @param {number} index - Índice de la sección
-     */
-
-    const toggleSection = (index) => {
-        setOpenSections(prev =>
-            prev.includes(index)
-                ? prev.filter(i => i !== index)
-                : [...prev, index]
-        );
-    };
-
-    const renderSubsections = (category, subsections) => {
-        return subsections.map((subsection, subIndex) => {
-            if (typeof subsection === "string") {
-                return (
-                    <div key={subIndex} style={{ marginBottom: 30 }}>
-                        <Link
-                            to="#"
-                            className="subsection-link"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                handleTagClick(category, subsection);
-                            }}
-                        >
-                            {subsection}
-                        </Link>
-                    </div>
-                );
-            } else if (subsection.title && subsection.subsections) {
-                return (
-                    <div key={subIndex} style={{ marginBottom: 30 }}>
-                        <h3>{subsection.title}</h3>
-                        <ul style={{ listStyle: 'none', padding: 0 }}>
-                            {subsection.subsections.map((subsubsection, subsubIndex) => (
-                                <li key={subsubIndex} style={{ marginBottom: 30 }}>
-                                    <Link
-                                        to="#"
-                                        className="subsection-link"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleTagClick(category, subsubsection);
-                                        }}
-                                    >
-                                        {subsubsection}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                );
-            }
-            return null;
-        });
-    };
+    
 
     useEffect(() => {
         if (!loading) {
@@ -459,49 +359,8 @@ function LibraryPageCafam({ showRoutes = true,  }) {
                 </button>
 
 
-                <div className="index-container">
-                    <div className="category-wrapper">
-                        {sections.map((section, index) => (
-                            <div
-                                className={`category-item ${openSections.includes(index) ? "open" : ""}`}
-                                key={index}
-                                style={{
-                                    marginBottom: openSections.includes(index) ? calculateDynamicMargin(index) : 0,
-                                }}
-                            >
-                                <button
-                                    className="unfold-category-button"
-                                    onClick={() => toggleSection(index)}
-                                >
-                                    <span>
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="white"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"
-                                        >
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                            <path d={openSections.includes(index) ? "M6 9l6 6l6 -6" : "M9 6l6 6l-6 6"} />
-                                        </svg>
-                                        {section.title}
-                                    </span>
-                                </button>
-                                {openSections.includes(index) && (
-                                    <div className="unfold-list">
-                                        {renderSubsections(section.title, section.subsections)}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
+                
+                <IndexCategories onTagSelect={handleTagClick}/>
 
             </div>
 
@@ -527,7 +386,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
                 </div>
             </div>
 
-            <div className="certifications-container">
+            <div ref={certificationsRef} className="certifications-container">
                 {loading ? (
                     <span class="loader"></span>
 
