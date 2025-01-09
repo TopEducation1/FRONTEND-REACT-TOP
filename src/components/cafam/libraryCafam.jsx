@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import SkillsTags from "../../services/skillsService";
 //import Universities from "../services/universitiesService";
 import Topics from "../../services/topicService";
@@ -18,7 +18,7 @@ import Flags from "../Flags";
  * Pagina de la biblioteca
  *  */
 
-function LibraryPageCafam({ showRoutes = true,  }) {
+function LibraryPageCafam({ showRoutes = true }) {
 
     const [width, setWidth] = useState(window.innerWidth);           // Tracks window width
     const [isMenuOpen, setIsMenuOpen] = useState(false);            // Controls mobile menu visibility
@@ -34,6 +34,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
     const [isSmallScreen, SetIsSmallScreen] = useState(false);      // Tracks small screen state
     const location = useLocation();
     const [debouncedSelectedTags] = useDebounce(selectedTags, 300);
+    const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -58,10 +59,103 @@ function LibraryPageCafam({ showRoutes = true,  }) {
         total_pages: 1,
     });
 
-    const updateHistoryState = useCallback((tags) => {
+    const updateHistoryStateAndLoadCertifications = useCallback(async (tags, page = 1) => {
+        
         const queryString = tagFilterService.buildQueryString(tags);
-        window.history.pushState({}, '', tags && Object.keys(tags).length > 0 ? `/library/filter/${queryString}` : '/library');
-    }, []);
+
+        navigate(tags && Object.keys(tags).length > 0 ? `/library/filter/${queryString}` : '/library', {replace: true});
+
+        setLoading(true);
+        setTempCertifications([]);
+
+        try {
+            let fetchData;
+            if (Object.keys(tags).length > 0) {
+                fetchData = await tagFilterService.filterByTags(tags, page, 16);
+            } else {
+                fetchData = await CertificationsFetcher.getAllCertifications(page, 16);
+            }
+
+            if (fetchData && Array.isArray(fetchData.results)) {
+
+                setTempCertifications(fetchData.results);
+                setPagination({
+                    count: fetchData.count || 0,
+                    current_page: page,
+                    total_pages: Math.ceil(fetchData.count / 16) || 1,
+                });
+            } else {
+                setTempCertifications([]);
+            }
+        }  catch (error) {
+            setError('Error al cargar las certificaciones');
+            setTempCertifications([]);
+        }  finally {
+            setLoading(false);
+        }
+    }, [navigate]);
+
+
+    const handleTagAddition = useCallback((category, tag) => {
+        setSelectedTags(prevTags => {
+            const updatedTags = {...prevTags};
+            const tagSet = new Set(updatedTags[category] || []);
+            tagSet.add(tag);
+            updatedTags[category] = [...tagSet];
+
+            updateHistoryStateAndLoadCertifications(updatedTags, 1);
+
+            return updatedTags;
+        });
+    }, [updateHistoryStateAndLoadCertifications]);
+
+
+    const handleBannerClick = useCallback((category, tag) => {
+        handleTagAddition(category, tag);
+
+    }, [handleTagAddition]);
+
+    const handleTagClick = useCallback((category, tag) => {
+        handleTagAddition(category, tag);
+    }, [handleTagAddition]);    
+
+    const removeTag = useCallback((category, tagToRemove) => {
+        setSelectedTags(prevTags => {
+            const updatedTags = { ...prevTags };
+            if (updatedTags[category]) {
+                updatedTags[category] = updatedTags[category].filter(tag => tag !== tagToRemove);
+                if (updatedTags[category].length === 0) {
+                    delete updatedTags[category];
+                }
+            }
+            
+            // Call update function with updated tags
+            updateHistoryStateAndLoadCertifications(updatedTags, 1);
+            
+            return updatedTags;
+        });
+    }, [updateHistoryStateAndLoadCertifications]);
+
+
+    useEffect(() => {
+        const path = location.pathname;
+        if (path.startsWith('/library/filter/')) {
+            const queryString = path.replace('/library/filter/', '');
+            const parsedTags = tagFilterService.parseQueryString(queryString);
+            setSelectedTags(parsedTags);
+            updateHistoryStateAndLoadCertifications(parsedTags, 1);
+        } else {
+            updateHistoryStateAndLoadCertifications({}, 1);
+        }
+    }, [location.pathname, updateHistoryStateAndLoadCertifications]);
+
+    const handlePageChange = useCallback((newPage) => {
+        if (newPage >= 1 && newPage <= pagination.total_pages && !loading) {
+            updateHistoryStateAndLoadCertifications(selectedTags, newPage);
+        }
+    }, [pagination.total_pages, loading, selectedTags, updateHistoryStateAndLoadCertifications]);
+
+    
 
 
     const loadCertifications = useCallback(async (page = 1, pageSize = 16) => {
@@ -107,68 +201,13 @@ function LibraryPageCafam({ showRoutes = true,  }) {
 
 
 
-    const handlePageChange = (newPage) => {
-        if (newPage >= 1 && newPage <= pagination.total_pages && !loading) {
-            loadCertifications(newPage);
-        }
-    };
+    
 
-    const handleBannerClick = (category, tag) => {
-
-        console.log(category, tag);
-
-        setSelectedTags(prevTags => {
-            const updatedTags = { ...prevTags };
-            const tagSet = new Set(updatedTags[category] || []);
-            tagSet.add(tag);
-            updatedTags[category] = [...tagSet];
-            return updatedTags;
-        });        
-    };
+    
 
 
 
-/**
-  * Maneja el clic en una etiqueta de filtro
-  * @param {string} category - Categoría de la etiqueta
-  * @param {string} tag - Etiqueta seleccionada
-  */
-    const handleTagClick = (category, tag) => {
-        setSelectedTags(prevTags => {
-
-
-            // Copiar el estado previo de los tags para no mutarlo
-            const updatedTags = { ...prevTags };
-
-            // Set a partir de la lista actual o una vacia
-            const tagSet = new Set(updatedTags[category] || []);
-
-            tagSet.add(tag);
-            updatedTags[category] = [...tagSet];
-            return updatedTags;
-
-        });
-    };
-
-
-    const removeTag = (category, tagToRemove) => {
-        setSelectedTags(prevTags => {
-            const updatedTags = { ...prevTags };
-
-
-            if (updatedTags[category]) {
-
-                updatedTags[category] = updatedTags[category].filter(tag => tag !== tagToRemove);
-
-
-                if (updatedTags[category].length === 0) {
-                    delete updatedTags[category];  // Eliminamos la categoría si no quedan tags
-                }
-            }
-            return updatedTags;
-        })
-    };
-
+    
 
 
     const PaginationControls = () => (
