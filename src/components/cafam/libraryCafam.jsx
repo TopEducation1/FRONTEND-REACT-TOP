@@ -10,12 +10,14 @@ import SearchBarCafam from "../../components/cafam/searchBarCafam";
 import RoutesComponent from "../../components/RoutesComponent";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
+import IndexCategoriesCafam from "./IndexCategoriesCafam";
+import IndexCategories from "../IndexCategories";
 
 /**
  * Pagina de la biblioteca
  *  */
 
-function LibraryPage({ showRoutes = true,  }) {
+function LibraryPageCafam({ showRoutes = true,  }) {
 
     const [width, setWidth] = useState(window.innerWidth);           // Tracks window width
     const [isMenuOpen, setIsMenuOpen] = useState(false);            // Controls mobile menu visibility
@@ -129,7 +131,7 @@ function LibraryPage({ showRoutes = true,  }) {
 
 
 
-    /**
+/**
   * Maneja el clic en una etiqueta de filtro
   * @param {string} category - Categoría de la etiqueta
   * @param {string} tag - Etiqueta seleccionada
@@ -421,51 +423,12 @@ function LibraryPage({ showRoutes = true,  }) {
                 </button>
 
 
-                <div className="index-container-cafam">
-                    <div className="category-wrapper-cafam">
-                        {sections.map((section, index) => (
-                            <div
-                                className={`category-item-cafam ${openSections.includes(index) ? "open" : ""}`}
-                                key={index}
-                                style={{
-                                    marginBottom: openSections.includes(index) ? calculateDynamicMargin(index) : 0,
-                                }}
-                            >
-                                <button
-                                    className="unfold-category-button"
-                                    onClick={() => toggleSection(index)}
-                                >
-                                    <span>
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="#0750A0"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            className="icon icon-tabler icons-tabler-outline icon-tabler-chevron-right"
-                                        >
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                            <path d={openSections.includes(index) ? "M6 9l6 6l6 -6" : "M9 6l6 6l-6 6"} />
-                                        </svg>
-                                        {section.title}
-                                    </span>
-                                </button>
-                                {openSections.includes(index) && (
-                                    <div className="unfold-list-cafam">
-                                        {renderSubsections(section.title, section.subsections)}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                
 
 
             </div>
+
+            <IndexCategoriesCafam onTagSelect={handleTagClick} />
 
 
             <div
@@ -511,4 +474,4 @@ function LibraryPage({ showRoutes = true,  }) {
     );
 }
 
-export default LibraryPage;
+export default LibraryPageCafam;

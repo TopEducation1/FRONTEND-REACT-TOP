@@ -19,36 +19,36 @@ import EdxCertificationPage from "./pages/EdxCertificationPage.jsx";
 
 function App() {
   useEffect(() => {
-    document.title = "Top Education";
+      document.title = "Top Education";
   }, []);
 
   return (
-    <Router>
-      <Routes>
-        {/* Routes using TopEducationLayout */}
-        <Route element={<TopEducationLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/library" element={<LibraryPage />} />
-          <Route path="/certificacion/edx/:id" element={<EdxCertificationPage />} />
-          <Route path="/certificacion/coursera/:id" element={<CertificationPage />} />
-          <Route path="/certificacion/:id" element={<CertificationPage />} />
+      <Router>
+          <Routes>
+              {/* Rutas de Cafam - Con mejor manejo de subrutas */}
+              <Route path="/cafam" element={<CafamLayout />}>
+                  <Route index element={<HomeCafam />} />
+                  <Route path="certificacion/:id" element={<CertificationPageCafam />} />
+                  {/* Capturar todas las subrutas de cafam no definidas */}
+                  <Route path="*" element={<Navigate to="/cafam" replace />} />
+              </Route>
 
-  
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/para-equipos" element={<ParaEquipos />} />
-          <Route path="/empieza-ahora" element={<StartNow />} />
-        </Route>
+              {/* Rutas principales */}
+              <Route element={<TopEducationLayout />}>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/library" element={<LibraryPage />} />
+                  <Route path="/certificacion/edx/:id" element={<EdxCertificationPage />} />
+                  <Route path="/certificacion/coursera/:id" element={<CertificationPage />} />
+                  <Route path="/certificacion/:id" element={<CertificationPage />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/para-equipos" element={<ParaEquipos />} />
+                  <Route path="/empieza-ahora" element={<StartNow />} />
+              </Route>
 
-        {/* Routes using CafamLayout */}
-        <Route path="/cafam" element={<CafamLayout />}>
-          <Route index element={<HomeCafam />} />
-          <Route path="certificacion/:id" element={<CertificationPageCafam />} />
-        </Route>
-
-        {/* Optional: Redirect to default route if no match */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+              {/* Ruta por defecto */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+      </Router>
   );
 }
 

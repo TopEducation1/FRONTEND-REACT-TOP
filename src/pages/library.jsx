@@ -11,12 +11,13 @@ import RoutesComponent from "../components/RoutesComponent";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
 import IndexCategories from "../components/IndexCategories";
+import IndexCategoriesCafam from "../components/cafam/IndexCategoriesCafam";
 
 /**
  * Pagina de la biblioteca
  *  */
 
-function LibraryPageCafam({ showRoutes = true,  }) {
+function LibraryPage({ showRoutes = true,  }) {
 
     const [width, setWidth] = useState(window.innerWidth);           // Tracks window width
     const [isMenuOpen, setIsMenuOpen] = useState(false);            // Controls mobile menu visibility
@@ -411,4 +412,4 @@ function LibraryPageCafam({ showRoutes = true,  }) {
     );
 }
 
-export default LibraryPageCafam;
+export default LibraryPage;

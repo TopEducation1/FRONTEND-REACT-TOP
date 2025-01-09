@@ -3,6 +3,9 @@ import LibraryPageCafam from "../../components/cafam/libraryCafam.jsx";
 import SliderWithDots from "../../components/cafam/SliderWithDots";
 
 import AnimatedCarousel from "../../components/cafam/AnimatedCarousel.jsx";
+import Flags from "../../components/Flags.jsx";
+import React, { useState, useEffect, useCallback } from "react";
+
 
 const universidadesLatamImagenes = [
     "assets/cafam/latinoamérica/andes.png",
@@ -29,7 +32,27 @@ const universidadesImagenes = [
 
 ];
 
+
+
+
+
 const HomeCafam = () => {
+
+    const [selectedTags, setSelectedTags] = useState({});  
+
+    const handleBannerClick = (category, tag) => {
+        console.log("Banner clicked:", category, tag);
+        
+        setSelectedTags(prevTags => {
+            const updatedTags = { ...prevTags };
+            const tagSet = new Set(updatedTags[category] || []);
+            tagSet.add(tag);
+            updatedTags[category] = [...tagSet];
+            return updatedTags;
+        });
+    
+        loadCertifications(1);
+    };
 
 
     return (
@@ -57,8 +80,8 @@ const HomeCafam = () => {
             </div>
 
             <div id="universities-cafam-section">
-                <div id="upper-section-universities" class="block-universities">
-                    <div class="wrapper-title-cafam-universities">
+                <div id="upper-section-universities" className="block-universities">
+                    <div className="wrapper-title-cafam-universities">
                         <h1>Aprende de las mejores universidades de Latinoamérica...</h1>
                     </div>
 
@@ -70,11 +93,11 @@ const HomeCafam = () => {
                         </div>
                     </div>
                 </div>
-                <div id="lower-section-universities" class="block-universities">
+                <div id="lower-section-universities" className="block-universities">
 
                     <div id="wrapper-lower-universities-cafam">
                         
-                    <div class="wrapper-title-cafam-universities">
+                    <div className="wrapper-title-cafam-universities">
                         <h1>y de todo el mundo</h1>
                     </div>
                         
@@ -103,7 +126,7 @@ const HomeCafam = () => {
                 <div id="wrapper-title-industry-cafam">
                     <h1>Explora clases con los líderes de la industria</h1>
                 </div>
-                <AnimatedCarousel />
+                <Flags onCompanySelect={handleBannerClick} />
             </div>
 
             <div id="footer-images-cafam">
