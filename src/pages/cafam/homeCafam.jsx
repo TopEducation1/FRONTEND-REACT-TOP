@@ -38,22 +38,6 @@ const universidadesImagenes = [
 
 const HomeCafam = () => {
 
-    const [selectedTags, setSelectedTags] = useState({});  
-
-    const handleBannerClick = (category, tag) => {
-        console.log("Banner clicked:", category, tag);
-        
-        setSelectedTags(prevTags => {
-            const updatedTags = { ...prevTags };
-            const tagSet = new Set(updatedTags[category] || []);
-            tagSet.add(tag);
-            updatedTags[category] = [...tagSet];
-            return updatedTags;
-        });
-    
-        loadCertifications(1);
-    };
-
 
     return (
         <>
@@ -122,12 +106,7 @@ const HomeCafam = () => {
             </div>
 
 
-            <div id="wrapper-industry-cafam">
-                <div id="wrapper-title-industry-cafam">
-                    <h1>Explora clases con los líderes de la industria</h1>
-                </div>
-                <Flags onCompanySelect={handleBannerClick} />
-            </div>
+            
 
             <div id="footer-images-cafam">
             Cafam 2024 | Todos los derechos reservados

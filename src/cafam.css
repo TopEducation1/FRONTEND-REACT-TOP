@@ -306,6 +306,8 @@ body.cafam-layout {
 
 #wrapper-industry-cafam {
     display: flex;
+    position: absolute;
+    top: 3500px;
     justify-content: center;
     align-items: center;
     flex-direction: column;
@@ -313,7 +315,6 @@ body.cafam-layout {
     height: 420px;
     background-color:#4fa4ff ;
     border-top-right-radius: 50px;
-    margin-top: 0px;
 }
 
 
@@ -533,14 +534,13 @@ body.cafam-layout {
 
   .index-container-cafam {
     width: 270px;
-    height: 1350px;
+    height: 1380px;
     position: relative;
-    top: 230px;
+    top: 100px;
     left: 25px;
     padding: 16px;
     box-sizing: border-box;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     overflow-y: hidden !important;
     clip-path: inset(0 0 0 0);
   }
@@ -553,7 +553,8 @@ body.cafam-layout {
     gap: 20px;
     width: 270px;
     position: fixed;
-    top: 350px;
+    margin-top: -120px;
+    top: 1200px;
     left: 25px;
   }
   

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Flags = ({ direction = 'left', onCompanySelect }) => {
+const Flags = ({ direction = 'left', onFlagSelect}) => {
   const wrapperRef = useRef(null);
   const navigate = useNavigate();
   
@@ -29,11 +29,10 @@ const Flags = ({ direction = 'left', onCompanySelect }) => {
     { url: "", img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/4ed2514f-f8f1-41b1-bbe3-410b55eecd05/12.png", alt: "Pathstream", company: "Pathstream" },
   ];
 
-  const handleLogoClick = (e, company) => {
-    e.preventDefault(); // Prevent default navigation
-    if (onCompanySelect) {
-      onCompanySelect("Empresa", company);
-    }
+  const handleBannerClick = (category = "empresas", tag) => {
+    console.log("FLAG PRESIONADO");
+    console.log(category, tag); 
+    return ({category, tag});
   };
 
   return (
@@ -41,15 +40,20 @@ const Flags = ({ direction = 'left', onCompanySelect }) => {
       <div className="carousel-wrapper" ref={wrapperRef}>
         <div className="logos-set">
           {logos.map((logo, index) => (
-            <a key={`original-${index}`} className="a-image" href={logo.url} onClick={(e) => handleLogoClick(e, logo.company)}
-            style={{ cursor: "pointer"}}>
+            <a key={`original-${index}`} className="a-image" href={logo.url}
+            style={{ cursor: "pointer"}}
+            
+            onClick={(e) => {
+              e.preventDefault();
+              onFlagSelect("empresa", logo.company);
+            }}>
               <img src={logo.img} className="carousel-image" alt={logo.alt} />
             </a>
           ))}
         </div>
         <div className="logos-set">
           {logos.map((logo, index) => (
-            <a key={`clone-${index}`} className="a-image" href={logo.url} onClick={(e) => handleLogoClick(e, logo.company)}
+            <a key={`clone-${index}`} className="a-image" href={logo.url} onClick={(e) => handleBannerClick(e, "empresas", logo.company)}
             style={{ cursor: "pointer"}}>
               <img src={logo.img} className="carousel-image" alt={logo.alt} />
             </a>

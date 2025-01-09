@@ -12,6 +12,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
 import IndexCategoriesCafam from "./IndexCategoriesCafam";
 import IndexCategories from "../IndexCategories";
+import Flags from "../Flags";
 
 /**
  * Pagina de la biblioteca
@@ -50,9 +51,6 @@ function LibraryPageCafam({ showRoutes = true,  }) {
         }
     }, []);
 
-
-
-
     // Estados para la paginación
     const [pagination, setPagination] = useState({
         count: 0,
@@ -68,7 +66,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
 
     const loadCertifications = useCallback(async (page = 1, pageSize = 16) => {
         setLoading(true);
-        setTempCertifications([]); // Clear temporary certifications
+        setTempCertifications([]); 
         try {
             let fetchData;
             if (Object.keys(selectedTags).length > 0) {
@@ -86,7 +84,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
                     total_pages: Math.ceil(fetchData.count / pageSize) || 1,
                 });
             } else {
-                setTempCertifications([]); // Vacío si no es un array o no hay resultados
+                setTempCertifications([]); 
             }
         } catch (error) {
             setError('Error al cargar las certificaciones');
@@ -127,6 +125,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
         });
 
         loadCertifications(1);
+
     };
 
 
@@ -470,6 +469,15 @@ function LibraryPageCafam({ showRoutes = true,  }) {
                     <RoutesComponent />
                 </div>
             )}
+
+
+
+<div id="wrapper-industry-cafam">
+                <div id="wrapper-title-industry-cafam">
+                    <h1>Explora clases con los líderes de la industria</h1>
+                </div>
+                <Flags onFlagSelect={handleBannerClick}/>
+            </div>
         </>
     );
 }
