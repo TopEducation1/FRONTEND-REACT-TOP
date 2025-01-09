@@ -114,7 +114,8 @@ function LibraryPageCafam({ showRoutes = true,  }) {
     };
 
     const handleBannerClick = (category, tag) => {
-        console.log("BANNER PRESIONADO");
+
+        console.log(category, tag);
 
         setSelectedTags(prevTags => {
             const updatedTags = { ...prevTags };
@@ -122,10 +123,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
             tagSet.add(tag);
             updatedTags[category] = [...tagSet];
             return updatedTags;
-        });
-
-        loadCertifications(1);
-
+        });        
     };
 
 

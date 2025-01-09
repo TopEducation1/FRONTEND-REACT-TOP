@@ -5,14 +5,7 @@ const Flags = ({ direction = 'left', onFlagSelect}) => {
   const wrapperRef = useRef(null);
   const navigate = useNavigate();
   
-  useEffect(() => {
-    if (wrapperRef.current) {
-      const totalWidth = wrapperRef.current.scrollWidth / 2;
-      const animationDuration = totalWidth / 50;
-      const animationName = direction === 'left' ? 'move-left' : 'move-right';
-      wrapperRef.current.style.animation = `${animationName} ${animationDuration}s linear infinite`;
-    }
-  }, [direction]);
+  
 
   const logos = [
     { url: "https://www.top.education/certificaciones/empresa/big-interview", img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/844d70cd-c9d8-4ac1-b4dd-1ba134386729/1.png", alt: "Big interview", company: "Big Interview" },
@@ -29,12 +22,6 @@ const Flags = ({ direction = 'left', onFlagSelect}) => {
     { url: "", img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/4ed2514f-f8f1-41b1-bbe3-410b55eecd05/12.png", alt: "Pathstream", company: "Pathstream" },
   ];
 
-  const handleBannerClick = (category = "empresas", tag) => {
-    console.log("FLAG PRESIONADO");
-    console.log(category, tag); 
-    return ({category, tag});
-  };
-
   return (
     <div className="carousel-container">
       <div className="carousel-wrapper" ref={wrapperRef}>
@@ -45,7 +32,7 @@ const Flags = ({ direction = 'left', onFlagSelect}) => {
             
             onClick={(e) => {
               e.preventDefault();
-              onFlagSelect("empresa", logo.company);
+              onFlagSelect("empresas", logo.company);
             }}>
               <img src={logo.img} className="carousel-image" alt={logo.alt} />
             </a>
@@ -53,7 +40,7 @@ const Flags = ({ direction = 'left', onFlagSelect}) => {
         </div>
         <div className="logos-set">
           {logos.map((logo, index) => (
-            <a key={`clone-${index}`} className="a-image" href={logo.url} onClick={(e) => handleBannerClick(e, "empresas", logo.company)}
+            <a key={`clone-${index}`} className="a-image" href={logo.url} onClick={(e) => onFlagSelect("empresas", logo.company)}
             style={{ cursor: "pointer"}}>
               <img src={logo.img} className="carousel-image" alt={logo.alt} />
             </a>
