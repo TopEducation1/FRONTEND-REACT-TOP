@@ -20,7 +20,7 @@ import Flags from "../Flags";
 
 function LibraryPageCafam({ showRoutes = true,  }) {
 
-    const [width, setWidth] = useState(window.innerWidth);           // Tracks window width
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);            // Controls mobile menu visibility
     const [openSections, setOpenSections] = useState([]);           // Tracks open filter sections
     const [selectedTags, setSelectedTags] = useState({});           // Stores selected filter tags
@@ -37,18 +37,16 @@ function LibraryPageCafam({ showRoutes = true,  }) {
 
 
     useEffect(() => {
-
-        const handleRezise = () => {
-            SetIsSmallScreen(window.innerWidth <= 1100);
-
-        }
-
-        window.addEventListener('resize', handleRezise);
-        handleRezise(); // Verificar ancho de la pagina
-
+        const handleResize = () => {
+            setIsSmallScreen(window.innerWidth <= 1100);
+        };
+    
+        window.addEventListener('resize', handleResize);
+        handleResize();
+    
         return () => {
-            window.removeEventListener('resize', handleRezise);
-        }
+            window.removeEventListener('resize', handleResize);
+        };
     }, []);
 
     // Estados para la paginación

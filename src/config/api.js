@@ -1,4 +1,4 @@
-const API_URL = "https://top.education";
+const API_URL = "https://backend-django-top-production.up.railway.app";
 
 console.log('API_URL:', API_URL);
 
