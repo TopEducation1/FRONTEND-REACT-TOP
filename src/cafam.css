@@ -307,7 +307,7 @@ body.cafam-layout {
 #wrapper-industry-cafam {
     display: flex;
     position: absolute;
-    top: 3500px;
+    top: 3400px;
     justify-content: center;
     align-items: center;
     flex-direction: column;
@@ -505,9 +505,9 @@ body.cafam-layout {
     justify-content: left;
     padding-left: 45px;
     align-items: center;
-    height: 80px;
+    height: 50px;
     position: absolute;
-    top: 1645px;
+    top: 1670px;
     overflow: hidden;
     color: #0750A0;
     font-size: 25px;
@@ -532,31 +532,12 @@ body.cafam-layout {
   
   }
 
-  .index-container-cafam {
-    width: 270px;
-    height: 1380px;
-    position: relative;
-    top: 100px;
-    left: 25px;
-    padding: 16px;
-    box-sizing: border-box;
-    border-radius: 8px;
-    overflow-y: hidden !important;
-    clip-path: inset(0 0 0 0);
-  }
+
+
+ 
   
   
   
-  .category-wrapper-cafam {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 270px;
-    position: fixed;
-    margin-top: -120px;
-    top: 1200px;
-    left: 25px;
-  }
   
   .unfold-list-cafam {
     height: auto;
@@ -608,15 +589,7 @@ body.cafam-layout {
     border-radius: 4px;
   }
 
-  .category-wrapper-cafam {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 270px;
-    position: fixed;
-    top: 350px;
-    left: 25px;
-  }
+
 
 
   #container-logo-platforms-cafam {
@@ -643,9 +616,10 @@ body.cafam-layout {
   }
 
   .certification-card-cafam {
-    display: flex;
+    border: 2px solid #0750A0;
+    display: grid;
     position: relative;
-    flex-direction: column;
+    grid-template-rows: 35% 35% 30%;
     width: 280px;
     height: 280px;
     background-color: white;
@@ -653,9 +627,24 @@ body.cafam-layout {
     border-radius: 20px;
     text-decoration: none;
     cursor: pointer;
-    border: 2px solid #0750A0;
-    font-size: 15px;
-    
+    padding: 0;    
+  }
+
+  #container-title-certification-cafam {
+    display: flex;
+    justify-content: left;
+    padding: 0 20px;
+    align-items: center;
+    overflow-y: auto;
+  
+    h3 {
+      word-wrap: break-word;
+      font-size: 16px;
+      text-decoration: none;
+      color: #0F090B;
+      text-align: left;
+      
+  }
   }
 
  
@@ -723,6 +712,79 @@ body.cafam-layout {
     align-items: center;
     top: 230px;
     left: 155px;
+    font-weight: 25px;
+    width: 100px;
+    height: 35px;
+    border: 2px solid #034694;
+    border-radius: 20px;
+    color: #F6F4EF;
+    z-index: 1;
+  
+  }
+  
+  .tag-platform-cafam img {
+    width: 90%;
+    height: auto;
+    z-index: 99999;
+  }
+
+  #container-tags-card {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    box-sizing: border-box;
+    padding: 0 10px;
+    align-items: center;
+    border-bottom-right-radius: 30px;
+    border-bottom-left-radius: 30px;
+  }
+  
+  .certification-card a {
+    text-decoration: none;
+  }
+  
+  
+  .container-img-card-cafam {
+    display: flex;
+    box-sizing: border-box;
+    padding-top: 5px;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+  }
+  
+  .container-img-card-cafam img {
+    width: 90;
+    height: auto;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+  }
+  
+  .tag-category-cafam {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-weight: 20px;
+    width: 130px;
+    height: 35px;
+    background-color: #034694;
+    border-radius: 20px;
+    color: #F6F4EF;
+    border: 1px solid #F6F4EF;
+    font-size: 13px;
+    box-sizing: border-box;
+    padding: 5px;
+  }
+  
+  
+  .tag-platform-cafam {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
     font-weight: 25px;
     width: 100px;
     height: 35px;
@@ -946,6 +1008,8 @@ body.cafam-layout {
 
   #footer-images-cafam {
     display: flex;
+    position: absolute;
+    top: 3800px;
     justify-content: center;
     align-items: center;
     color: white;

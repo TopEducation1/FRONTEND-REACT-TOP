@@ -31,7 +31,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
     const [tempCertifications, setTempCertifications] = useState([]);// Temporaly stores certifications
     const [loading, setLoading] = useState(true);                   // Tracks loading state
     const [error, setError] = useState(null);                       // Stores error state
-    const [isSmallScreen, SetIsSmallScreen] = useState(false);      // Tracks small screen state
+    const [isSmallScreen, setIsSmallScreen] = useState(false);      // Tracks small screen state
     const location = useLocation();
     const [debouncedSelectedTags] = useDebounce(selectedTags, 300);
 

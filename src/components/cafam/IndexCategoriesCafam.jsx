@@ -97,9 +97,9 @@ const IndexCategoriesCafam = ({ onTagSelect }) => {
     return (
         <div
             ref={indexRef}
-            className={`index-container-cafam ${isSticky ? 'sticky' : ''}`}
+            className={`index-container ${isSticky ? 'sticky' : ''}`}
         >
-            <div className="category-wrapper-cafam">
+            <div className="category-wrapper">
                 {sections.map((section, index) => (
                     <div
                         className={`category-item-cafam ${openSections.includes(index) ? "open" : ""}`}
