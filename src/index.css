@@ -694,7 +694,7 @@ header {
   flex-direction: column;
   gap: 20px;
   width: 270px;
-  position: relative;
+  position: sticky;
   left: 25px;
 }
 
