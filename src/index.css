@@ -77,9 +77,9 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 80px;
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
 
 }
 
@@ -94,7 +94,6 @@ header {
 
 .navigation-menu {
   display: flex;
-  position: absolute;
   left: 0;
   width: 400px;
   height: 100%;
@@ -214,7 +213,6 @@ header {
   width: 50%;
   background-color: #F6F4EF;
   height: 50%;
-  padding: 20px 0px;
   box-sizing: border-box;
   border-radius: 50px;
 }
@@ -222,12 +220,14 @@ header {
 
 .wrapper-logo-nav {
   display: flex;
-  position: absolute;
   padding: 0;
   justify-content: center;
   align-items: center;
-  width: 190px;
+  width: 30%;
   height: 100%;
+  box-sizing: border-box;
+  padding-left: 30px;
+  margin-left: 1%;
 }
 
 
@@ -240,13 +240,12 @@ header {
 
 .navigation-menu {
   display: flex;
-  position: relative;
   flex-direction: row;
   align-items: center;
   justify-content: space-evenly;
-  width: 450px;
-  height: 50px;
-  left: 285px;
+  width: 65%;
+  height: 100%;
+  margin-left: 2%;
 
 }
 
@@ -1147,6 +1146,9 @@ header {
 .menu-responsive-1.position {
   left: 0;
 }
+
+
+
 
 .container-main-info {
   display: grid;
@@ -2222,7 +2224,7 @@ header {
 
 #left-first-section h1 {
   font-size: 60px;
-  line-height: 0.5;
+  line-height: 1;
 }
 
 #left-first-section h2 {
@@ -2235,14 +2237,13 @@ header {
 
 #right-first-section {
   display: flex;
-  max-width: 100%;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   width: 60%;
 
   video {
-    max-width: 95%;
+    max-width: 80%;
   }
 }
 
@@ -2488,7 +2489,8 @@ header {
   margin-top: 50px;
   justify-items: center;
   grid-template-columns: repeat(4, 1fr);
-  width: 70%;
+  width: 100%;
+  gap: 20px;
 }
 
 #grid-genius a img {
@@ -2522,7 +2524,7 @@ header {
 
 .article {
   display: flex;
-  width: 400px;
+  width: 350px;
   height: 350px;
   flex-direction: column;
 }
@@ -3048,535 +3050,7 @@ header {
 }
 }
 
-@media (max-width:1400px) {
 
-  #container-promotion {
-    width: 90%;
-    height: auto;
-    background-color: #F6F4EF;
-    border-radius: 30px;
-    padding: 0 40px 20px 40px;
-    box-sizing: border-box;
-    margin-top: 20px;
-    padding: 20px;
-    box-sizing: border-box;
-    margin-bottom: 20px;
-  }
-
-
-  #container-classes {
-    width: 90%;
-    height: auto;
-    background-color: #F6F4EF;
-    border-radius: 30px;
-    padding: 0 40px 20px 40px;
-    box-sizing: border-box;
-    margin-top: 20px;
-    overflow-x: hidden;
-  }
-
-  #container-areas {
-    width: 90%;
-    height: auto;
-    background-color: #F6F4EF;
-    border-radius: 30px;
-    padding: 0 40px 20px 40px;
-    box-sizing: border-box;
-    margin-top: 20px;
-    left: 0;
-
-  }
-
-  .container-main-info {
-    display: grid;
-    justify-items: center;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-    gap: 20px;
-    flex-direction: column;
-    width: 90%;
-    height: auto;
-    background-color: #F6F4EF;
-    border-radius: 30px;
-    padding: 0 40px 20px 40px;
-    box-sizing: border-box;
-    position: relative;
-    left: 0;
-    margin: 0;
-  }
-
-
-  #wrapper-name-certification {
-    display: flex;
-    padding-left: 10px;
-    width: 98%;
-    text-align: left;
-  }
-
-  #wrapper-logo-certification {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-  }
-
-  #wrapper-logo-certification img {
-    width: 330px;
-    height: 180px;
-  }
-
-  #grid-main-content {
-    display: grid;
-    justify-items: center;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto auto;
-    position: absolute;
-    width: 100%;
-    top: 150px;
-    left: 0px;
-    padding: 0;
-  }
-
-
-  #wrapper-logos {
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    flex-direction: row;
-    width: 50%;
-    height: 100%;
-    gap: 1px;
-  }
-
-
-  .container-logo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 120px;
-    height: 60px;
-    cursor: pointer;
-
-  }
-
-  .container-logo img {
-    width: auto;
-    height: auto;
-    transform: scale(0.1);
-  }
-
-  #wrapper-new-courses {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50%;
-    height: 100%;
-  }
-
-  #button-new-courses {
-    width: auto;
-    height: 40px;
-    background-color: transparent;
-    border: none;
-    color: #F6F4EF;
-    font-size: 19px;
-    text-decoration: underline;
-    cursor: pointer;
-  }
-
-
-  #container-logo-platforms {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    left: 0;
-    top: 400px;
-  }
-
-  .title-category {
-
-    margin-top: 80px;
-  }
-
-  #start-now {
-    display: none;
-  }
-
-  .wrapper-certifications {
-    display: grid;
-    padding: 0px;
-    box-sizing: border-box;
-    grid-template-columns: repeat(4, 1fr);
-    row-gap: 15px;
-    column-gap: 1px;
-    width: 100%;
-    height: 100%;
-    justify-items: center;
-    overflow: hidden;
-  }
-
-  .button-start-now {
-    display: none;
-  }
-
-  .nav-main {
-    width: 70%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-
-  .container-burguer-button {
-    display: flex;
-    position: absolute;
-    left: 25px;
-  }
-
-
-  .wrapper-logo-nav {
-    display: flex;
-    margin-left: 0;
-    margin: 0 auto;
-    position: absolute;
-    justify-content: center;
-    align-items: center;
-    width: 150px;
-    height: 100%;
-  }
-
-  .wrapper-logo-nav a {
-    display: flex;
-    margin-left: 0;
-    justify-content: center;
-    align-items: center;
-    width: 150px;
-    height: 100%;
-  }
-
-
-  .logo-nav {
-    transform: scale(0.3);
-    margin: 0;
-  }
-
-
-  .navigation-menu {
-    display: none;
-  }
-
-  .menu-responsive-1 {
-    display: flex;
-    position: fixed;
-    top: 120px;
-    left: -100%;
-    width: 100px;
-    flex-direction: column;
-    width: 100%;
-    background-color: #0F090B;
-    height: calc(100vh - 100px);
-    transition: transform 0.5s ease;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    transition: left 0.5s ease;
-  }
-
-  .container-tags {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    position: absolute;
-    width: 100%;
-    left: 0;
-    height: 120px;
-    top: 430px;
-    left: 0;
-    box-sizing: border-box;
-    overflow-x: scroll;
-    overflow-x: scroll;
-  }
-
-  .tag {
-    width: auto;
-    margin-left: 15px;
-    padding: 20px;
-    box-sizing: border-box;
-    height: 25px;
-    display: flex;
-    flex-direction: row;
-    border-radius: 20px;
-    justify-content: center;
-    align-items: center;
-    font-size: 15px;
-    color: #0F090B;
-    background-color: #F6F4EF;
-  }
-
-
-  .title-category {
-    display: flex;
-    justify-content: center;
-    padding-left: 0px;
-    align-items: center;
-    width: 100%;
-    height: 80px;
-    position: absolute;
-    top: 130px;
-    overflow: hidden;
-  }
-
-  .title-category h2 {
-    color: #F6F4EF;
-    font-size: 40px;
-  }
-
-  .index-container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 400px;
-    position: absolute;
-    top: 0px;
-    left: 10px;
-    padding: 0px;
-    box-sizing: border-box;
-  }
-
-  .certifications-container {
-    display: flex;
-    position: absolute;
-    width: 100%;
-    height: auto;
-    top: 800px;
-    left: 0;
-    padding: 3px;
-    box-sizing: border-box;
-    border-radius: 10px;
-  }
-
-  .container-buttons-pagination {
-    top: 1000px;
-    left: 0;
-  }
-
-  .certification-card {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    width: 250px;
-    height: 220px;
-    background-color: #F6F4EF;
-    color: #0F090B;
-    border-radius: 20px;
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  .certification-card a {
-    text-decoration: none;
-  }
-
-  .container-img-card {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 0;
-    width: 100%;
-    height: 89px;
-    overflow: hidden;
-    padding: 0;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-
-  }
-
-  .container-img-card img {
-    width: 100%;
-    height: auto;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-  }
-
-  .certification-card h3 {
-    position: absolute;
-    left: 20px;
-    top: 80px;
-    word-wrap: break-word;
-    font-size: 16px;
-    text-decoration: none;
-    color: #0F090B;
-    text-align: left;
-    left: 5px;
-  }
-
-  .tag-category {
-    display: flex;
-    position: absolute;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    top: 170px;
-    left: 10px;
-    font-weight: 20px;
-    width: 120px;
-    height: 35px;
-    background-color: #5CC781;
-    border-radius: 20px;
-    color: #F6F4EF;
-    border: 1px solid #F6F4EF;
-    font-size: 14px;
-  }
-
-  .tag-platform {
-    top: 170px;
-    left: 140px;
-  }
-
-  .unfold-list {
-    display: flex;
-    position: absolute;
-    text-align: left;
-    font-size: 15px;
-    top: 50px;
-    margin-left: 40px;
-    flex-direction: column;
-    color: #F6F4EF;
-    gap: 5px;
-    overflow-y: scroll;
-    transition: max-height 0.3s ease-out;
-
-  }
-
-
-
-  .category-item.open .unfold-list {
-    max-height: 1000px;
-    overflow-y: scroll;
-    transition: max-height 0.4s ease-out;
-
-  }
-
-  .sliding-menu-index {
-    display: flex;
-    z-index: 999;
-    position: fixed;
-    left: -100%;
-    top: 110px;
-    width: 100%;
-    height: calc(100% - 90px);
-    transition: left 0.5s ease;
-    padding: 20px;
-    box-sizing: border-box;
-    background-color: #0F090B;
-    overflow-y: scroll;
-  }
-
-
-
-
-  .container-buttons-reponsive-index {
-    display: flex;
-    position: absolute;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    top: 300px;
-    left: 0;
-    height: 100px;
-  }
-
-  #button-filter {
-    display: flex;
-    position: absolute;
-    text-align: center;
-    align-items: center;
-    justify-content: space-around;
-    width: 100px;
-    height: 40px;
-    border: none;
-    border-radius: 20px;
-    background-color: #F6F4EF;
-  }
-
-  .btnclose-index-responsive-menu {
-    display: flex;
-    position: absolute;
-    right: 20px;
-    justify-content: center;
-    align-items: center;
-    width: 35px;
-    height: 35px;
-    border: none;
-    border-radius: 20px;
-    background-color: transparent;
-    z-index: 99999999;
-  }
-
-  .navigation-menu-responsive {
-    width: 100%;
-    position: absolute;
-    top: 20px;
-    display: flex;
-    height: 50%;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .navigation-menu-responsive ul {
-    width: 100%;
-    list-style: none;
-    text-decoration: none;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-  }
-
-  .navigation-menu-responsive ul li {
-    color: #F6F4EF;
-    text-decoration: none;
-    font-size: 20px;
-    margin-bottom: 20px;
-  }
-
-  .navigation-menu-responsive ul a {
-    text-decoration: none;
-    color: #F6F4EF;
-  }
-
-
-
-  .open {
-    left: 0;
-  }
-
-  .close {
-    left: -100%;
-  }
-
-  
- 
-
-  .wrapper-certifications {
-    width: 100%;
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .button-start-now-responsive {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 150px;
-    height: 40px;
-    background-color: #034694;
-    border-radius: 30px;
-    border: none;
-    color: #F6F4EF;
-    cursor: pointer;
-    z-index: 99999;
-  }
-  
-}
 
 @media (max-width: 1286px) {
 
@@ -3779,7 +3253,18 @@ header {
 
 }
 
-@media(max-width: 774px) {
+@media(max-width: 1070px) {
+
+  #button-all-articles {
+    width: 300px;
+    height: 40px;
+    background-color: #D33B3E;
+    color: #F6F4EF;
+    border: none;
+    border-radius: 30px;
+    font-size: 20px;
+    margin-top: 200px;
+  }
 
   #grid-blogs {
     img {
@@ -3823,12 +3308,18 @@ header {
 }
 
   .article {
-    width: 100%;
+    width: 50%;
   }
 
   #left-first-section {
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
     width: 100%;
-    padding: 30px;
+    box-sizing: border-box; 
+    padding: 20px 100px;
+    margin-bottom: 20px;
+    
   }
 
   #left-first-section h1 {
@@ -3839,6 +3330,14 @@ header {
     width: 100%;
     justify-content: left;
     
+  }
+
+  #right-renata-section  {
+    img {
+      max-width: 80%;
+      margin-left: 50%;
+      transform: translateX(-50%);
+    }
   }
 
   #right-first-section{
@@ -3886,16 +3385,21 @@ header {
   }
 
   #seventh-home-section {
-    height: 1100px;
+    height: 1200px;
     display: flex;
     justify-content: center;
     align-items: center;
+
+     h1 {
+      margin-top: 00px;
+     }
   }
 
   #grid-genius {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     flex-direction: column;
-    width: 100%;
+    width: 60%;
     justify-content: center;
     align-items: center ;
   }

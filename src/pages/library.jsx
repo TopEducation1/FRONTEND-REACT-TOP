@@ -54,7 +54,7 @@ function LibraryPage({ showRoutes = true,  }) {
     useEffect(() => {
 
         const handleRezise = () => {
-            SetIsSmallScreen(window.innerWidth <= 1100);
+            SetIsSmallScreen(window.innerWidth <= 800);
 
         }
 

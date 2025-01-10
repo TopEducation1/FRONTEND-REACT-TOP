@@ -9,7 +9,7 @@ const Header = () => {
     const [position, setPosition] = useState(0);
 
     const toggleMenu = () => {
-        setPosition(!position);
+        setPosition(!position);     
 
     }
 

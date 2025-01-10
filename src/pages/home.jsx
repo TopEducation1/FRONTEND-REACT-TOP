@@ -33,7 +33,7 @@ function HomePage () {
                     <h1>Descubre más +13.000 certificaciones y crea tu propia ruta de aprendizaje.</h1>
                 </div>
                 <div className="block-second-section" id="lower-section">
-                    <img src="/assets/Piezas/hilo.png" alt=""/>
+                    
                 </div>
 
             </div>
