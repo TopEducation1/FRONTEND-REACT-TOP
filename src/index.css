@@ -678,27 +678,24 @@ header {
 
 .index-container {
   width: 270px;
-  height: 1350px;
-  position: relative;
-  top: 230px;
+  margin-top: 300px;
   left: 25px;
   padding: 16px;
   box-sizing: border-box;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  overflow-y: hidden !important;
-  clip-path: inset(0 0 0 0);
+  height: 1300px;
 }
 
 
 
 .category-wrapper {
   display: flex;
+  top: 350px;
   flex-direction: column;
   gap: 20px;
   width: 270px;
-  position: fixed;
-  top: 350px;
+  position: sticky;
   left: 25px;
 }
 
@@ -1688,9 +1685,8 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 200px;
-  max-height: 100px;
-  height: auto;
+  max-width: 300px;
+  max-height: 130px;
   cursor: pointer;
 
 }
@@ -1698,7 +1694,7 @@ header {
 .container-logo img {
   width: auto;
   height: auto;
-  transform: scale(0.1);
+  transform: scale(0.13);
   transition: filter 0.2s ease-in;
 }
 
@@ -1713,11 +1709,12 @@ header {
   align-items: center;
   width: 30%;
   height: 100%;
+  margin-left: 100px;
 }
 
 #wrapper-new-courses img{
-  width: 50%;
-  height: 55px;
+  width: 80%;
+  height: 70px;
 }
 
 #button-new-courses {

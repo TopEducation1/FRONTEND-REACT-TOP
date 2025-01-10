@@ -14,7 +14,8 @@ export const endpoints = {
   habilidades: `${BASE_URL}/certificaciones/skills/`,
   temas: `${BASE_URL}/certificaciones/topics/`,
   universidades: `${BASE_URL}/certificaciones/universities/`,
-  certificacionesCafam: `${BASE_URL}/certificacionesInterest/`
+  certificacionesCafam: `${BASE_URL}/certificacionesInterest/`,
+  ultimas_certificaciones: `${BASE_URL}/ultimasCertificaciones/`,
 };
 
 

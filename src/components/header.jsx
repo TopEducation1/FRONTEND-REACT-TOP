@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
+import SearchBar from "./searchBar";
 
 const Header = () => {
 
@@ -24,6 +25,7 @@ const Header = () => {
 
     return (
         <header>
+            
 
             {/* Navigation bar */}
             <nav className="nav-main">
@@ -50,9 +52,9 @@ const Header = () => {
                     </ul>
                 </div>
 
-
-
             </nav>
+
+            
 
             {/* Menu responsive */}
 

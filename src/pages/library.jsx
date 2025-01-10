@@ -7,6 +7,7 @@ import tagFilterService from "../services/filterByTagsTesting";
 import CertificationsFetcher from "../services/certificationsFetcher";
 import CertificationsList from "../components/layoutCertifications";
 import SearchBar from "../components/searchBar";
+import LatestInTopFetcher from "../services/LatestInTopFetcher";
 import RoutesComponent from "../components/RoutesComponent";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
@@ -58,7 +59,7 @@ function LibraryPage({ showRoutes = true,  }) {
         }
 
         window.addEventListener('resize', handleRezise);
-        handleRezise(); // Verificar ancho de la pagina
+        handleRezise(); 
 
         return () => {
             window.removeEventListener('resize', handleRezise);
@@ -139,6 +140,33 @@ function LibraryPage({ showRoutes = true,  }) {
             loadCertifications(newPage);
         }
     };
+
+    const handleNewInTopClick = async () => {
+        console.log('Clic en Nuevos en Top');
+
+        setLoading(true);
+
+        try {
+            const recentCertifications = await LatestInTopFetcher.getLatestCertifications();
+
+            if(recentCertifications.results && Array.isArray(recentCertifications.results)) {
+                setCertifications(recentCertifications.results);
+                setPagination({
+                    count: recentCertifications.count || 0,
+                    current_page: page,
+                    total_pages: Math.ceil(recentCertifications.count / pageSize) || 1,
+                });
+            } else {
+                console.log("No se encontraron certificaciones recientes");
+                setCertifications([]);
+            }
+        }  catch (error) {
+            console.error("Error al cargar recientes", error)
+        }finally {
+            setLoading(false);
+        }
+        
+    }
 
     const handleBannerClick = (category, tag) => {
         console.log("Banner clicked:", category, tag);
@@ -383,7 +411,7 @@ function LibraryPage({ showRoutes = true,  }) {
                     </div>
                 </div>
                 <div id="wrapper-new-courses">
-                    <img src="assets/banners/Botón_Nuevo_en_Top_Education.svg" />
+                    <img onClick={handleNewInTopClick} src="assets/banners/Botón_Nuevo_en_Top_Education.svg" />
                 </div>
             </div>
 
