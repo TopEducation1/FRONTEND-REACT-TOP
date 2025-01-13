@@ -1053,7 +1053,7 @@ header {
 }
 
 .tag-platform img {
-  width: 90%;
+  max-width: 40%;
   height: auto;
   z-index: 99999;
 }
@@ -2230,6 +2230,7 @@ header {
 #left-first-section h2 {
   width: 60%;
   font-size: 25px;
+  margin-top: 0;
 }
 
 
@@ -2252,7 +2253,8 @@ header {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: calc(100vh - 120px);
+  height: 900px;
+  margin-bottom: 100px;
 }
 
 .block-second-section {
@@ -2270,6 +2272,51 @@ header {
 
 #lower-section {
   padding-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 auto ;
+  height: auto;
+  max-width: 1000px;
+
+  span {
+    color: white;
+            position: relative;
+            top: 100px;
+  }
+}
+
+.topic-circle {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  width: 120px;
+  height: 160px;
+  text-align: center;
+  transition: transform 0.3s ease; 
+
+  a {
+    text-decoration: none;
+  }
+}
+.topic-circle img {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translate(-50%);
+    width: 70px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+.topic-circle:hover img {
+    transform: scale(1.2);
+}
+.topic-circle:hover img {
+transform: translate(-50%) scale(1.2);
 }
 
 
@@ -2319,10 +2366,46 @@ header {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 1500px;
+  height: auto;
   background-color: #0F090B;
-  gap: 30px;
+  gap: 100px;
+  margin-bottom: 100px;
 }
+
+#fourth-flags-upper {
+  display: grid;
+  justify-items: center;
+  grid-template-columns: repeat(3, 1fr);
+  width: 90%;
+  height: 550px;
+  grid-row-gap: 2px;
+  align-content: start;
+  
+
+  img {
+    max-width: 250px;
+    min-width: 250px;
+    cursor: pointer;
+  }
+}
+
+#fourth-flags-lower {
+  display: grid;
+  justify-items: center;
+  grid-template-columns: repeat(3, 1fr);
+  width: 90%;
+  height: 550px;
+  grid-row-gap: 2px;
+  align-content: start;
+  
+
+  img {
+    max-width: 250px;
+    min-width: 250px;
+    cursor: pointer;
+  }
+}
+
 
 #fourth-home-section h2 {
   color: #F6F4F0;
@@ -2489,7 +2572,7 @@ header {
   margin-top: 50px;
   justify-items: center;
   grid-template-columns: repeat(4, 1fr);
-  width: 100%;
+  width: 70%;
   gap: 20px;
 }
 

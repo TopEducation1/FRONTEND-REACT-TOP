@@ -109,7 +109,6 @@ const CertificationsList = ({ certifications }) => {
                                     onError={handleImageError}
                                     style={{
                                         display: 'block',
-                                        maxWidth: '100%',
                                         height: 'auto'
                                     }}
                                 />
