@@ -1,6 +1,7 @@
 import React from "react";
 import SliderEditorial from "../components/SliderEditorial";
 import TopicCircles from "../components/TopicCircles";
+import FlagsHome from "../components/FlagsHome";
 
 
 function HomePage () {
@@ -42,27 +43,27 @@ function HomePage () {
                     />
                     <TopicCircles
                         topic= "Negocios"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/1b0794ce-4058-47b7-9b5d-de284d4488c6/TE-ICONO-ARTES+Y+HUMANIDADES.png"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/0cfa8c38-199b-403e-a05d-b49850ca617f/TE-ICONO-NEGOCIOS.png"
                         tag="Negocios"
                     />
                     <TopicCircles
                         topic= "Ciencias de la Computación"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/1b0794ce-4058-47b7-9b5d-de284d4488c6/TE-ICONO-ARTES+Y+HUMANIDADES.png"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/d8dd5eae-3f58-492d-8d05-1cc5113f5f25/TE-ICONO-CIENCIAS+DE+LA+COMPUTACION.png"
                         tag="Ciencias de la Computación"
                     />
                     <TopicCircles
                         topic= "Ciencias de Datos"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/1b0794ce-4058-47b7-9b5d-de284d4488c6/TE-ICONO-ARTES+Y+HUMANIDADES.png"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/918380b3-8296-4eb3-b26c-f97bf01de5eb/TE-ICONO-CIENCIA+Y+DATOS.png"
                         tag="Ciencias de Datos"
                     />
                     <TopicCircles
                         topic= "Tecnología de Información"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/1b0794ce-4058-47b7-9b5d-de284d4488c6/TE-ICONO-ARTES+Y+HUMANIDADES.png"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/75995000-8559-48bb-96ed-871fdd7066f9/TE-ICONO-TECNOLOGIA+E+INFORMACION.png"
                         tag="Tecnología de Información"
                     />
                     <TopicCircles
                         topic= "Salud"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/1b0794ce-4058-47b7-9b5d-de284d4488c6/TE-ICONO-ARTES+Y+HUMANIDADES.png"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/234a2a55-0888-4369-a6ae-64f6a7a99618/TE-ICONO-SALUD.png"
                         tag="Salud"
                     />
                     <TopicCircles
@@ -77,22 +78,17 @@ function HomePage () {
                     />
                     <TopicCircles
                         topic= "Ciencias Físicas e Ingeniería"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/cd93c4ba-b356-4b01-87a6-6700c8839a4d/TE-ICONO-DESARROLLO+PERSONAL.png"
-                        tag="Ciencias Físicas e Ingeniería"
-                    />
-                    <TopicCircles
-                        topic= "Ciencias Físicas e Ingeniería"
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/eaea7635-0af1-4704-8cf6-03281c209dd3/TE-ICONO-CIENCIAS+F%C3%8DSICAS+E+INGENIERIA.png"
                         tag="Ciencias Físicas e Ingeniería"
                     />
                     <TopicCircles
                         topic= "Ciencias Sociales"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/eaea7635-0af1-4704-8cf6-03281c209dd3/TE-ICONO-CIENCIAS+F%C3%8DSICAS+E+INGENIERIA.png"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/c9f4926a-b119-4287-96e3-f456a789d9b0/TE-ICONO-CIENCIAS+SOCIALES.png"
                         tag="Ciencias Sociales"
                     />
                     <TopicCircles
                         topic= "Aprendizaje de un Idioma"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/eaea7635-0af1-4704-8cf6-03281c209dd3/TE-ICONO-CIENCIAS+F%C3%8DSICAS+E+INGENIERIA.png"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/318a66f7-8cf8-4053-a4bc-e2764aa6a704/TE-ICONO-LENGUAJES.png"
                         tag="Aprendizaje de un Idioma"
                     />
                     <TopicCircles
@@ -106,18 +102,13 @@ function HomePage () {
                         tag="Personas y cultura"
                     />
                     <TopicCircles
-                        topic= "Personas y cultura"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bb36fc68-859e-4d86-b0b6-97e79d83b644/TE-ICONO-PERSONAS+Y+CULTURA.png"
-                        tag="Personas y cultura"
-                    />
-                    <TopicCircles
                         topic= "Productividad"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bb36fc68-859e-4d86-b0b6-97e79d83b644/TE-ICONO-PERSONAS+Y+CULTURA.png"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/91a0e3d3-4578-431c-b09d-08b25497adbc/TE-ICONO-PRODUCTIVIDAD.png"
                         tag="Productividad"
                     />
                     <TopicCircles
                         topic= "Liderazgo"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bb36fc68-859e-4d86-b0b6-97e79d83b644/TE-ICONO-PERSONAS+Y+CULTURA.png"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/37ffffa5-cda9-412e-bb48-8e802cfdc044/TE-ICONO-LIDERAZGO.png"
                         tag="Liderazgo"
                     />
                     <TopicCircles
@@ -126,54 +117,32 @@ function HomePage () {
                         tag="Diversidad, equidad e inclusión"
                     />
                     <TopicCircles
-                        topic= "Diversidad, equidad e inclusión"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/e6b3b49a-b7c8-4dff-90ba-824523adbe4e/TE-ICONO-DIVERSIDAD_EQUIDAD+E+INCLUSI%C3%93N.png"
-                        tag="Diversidad, equidad e inclusión"
+                        topic= "Estrategia"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/d64dd080-d117-463e-8429-02dfe4fb88fc/TE-ICONO-ESTRATEGIA.png"
+                        tag="Estrategia"
+                    />
+                    <TopicCircles
+                        topic= "Comunicación"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/29500fce-c04f-4260-bc08-70944a061d95/TE-ICONO-COMUNICACION.png"
+                        tag="Comunicación"
+                    />
+                    <TopicCircles
+                        topic= "Trabajo en equipo"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/ce129121-32c3-474d-81d6-287097cb2a65/TE-ICONO-TRABAJO+EN+EQUIPO.png"
+                        tag="Trabajo en equipo"
+                    />
+                    <TopicCircles
+                        topic= "Creatividad"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/62c55e44-97c0-4afc-8e3f-1f1873a89052/TE-ICONO-CREATIVIDAD.png"
+                        tag="Creatividad"
+                    />
+                    <TopicCircles
+                        topic= "Crecimiento personal"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/079bb2bb-84f0-4a1f-9929-1112f978ca24/TE-ICONO-CRECIMIENTO+PERSONAL.png"
+                        tag="Crecimiento personal"
                     />
 
-
-
-
-
-             
   
-  
-    
-
-    
-   
-
-  
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/habilidades/estrategia">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/d64dd080-d117-463e-8429-02dfe4fb88fc/TE-ICONO-ESTRATEGIA.png" alt="Estrategia"/>
-            <span class="category-name">Estrategia</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/habilidades/comunicacion">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/29500fce-c04f-4260-bc08-70944a061d95/TE-ICONO-COMUNICACION.png" alt="Comunicación"/>
-            <span class="category-name">Comunicación</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/habilidades/trabajo-en-equipo">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/ce129121-32c3-474d-81d6-287097cb2a65/TE-ICONO-TRABAJO+EN+EQUIPO.png" alt="Trabajo en equipo"/>
-            <span class="category-name">Trabajo en equipo</span>
-        </a>
-    </div>
-      <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/habilidades/creatividad">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/62c55e44-97c0-4afc-8e3f-1f1873a89052/TE-ICONO-CREATIVIDAD.png" alt="Creatividad"/>
-            <span class="category-name">Creatividad</span>
-        </a>
-    </div>
-        <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/habilidades/crecimiento-personal">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/079bb2bb-84f0-4a1f-9929-1112f978ca24/TE-ICONO-CRECIMIENTO+PERSONAL.png" alt="Crecimiento personal"/>
-            <span class="category-name">Crecimiento personal</span>
-        </a>
-    </div>
                 </div>
 
             </div>
@@ -209,46 +178,7 @@ function HomePage () {
             </div>
 
                     
-            <div id="fourth-home-section">
-                <h2>Aprende con las universidades lideres del mundo</h2>
-                    <div id="fourth-flags-upper">
-                        <img src="/assets/flags/University+of+Toronto.png"/>
-                        <img src="/assets/flags/University+of+Michigan.png"/>
-                        <img src="/assets/flags/Columbia+university+flag.png"/>
-                        <img src="/assets/flags/Peking+university.png"/>
-                        
-                        
-                        <img src="/assets/flags/Berklee+university+flag.png"/>
-                       
-                        <img src="/assets/flags/Harvard+university+flag.png"/>
-                        <img src="/assets/flags/MIT+University+flag.png"/>
-                        <img src="/assets/flags/University+of+Penn.png"/>
-                        <img src="/assets/flags/Stanford+university+flag+1.png"/>
-                        <img src="/assets/flags/The+university+of+chicago.png"/>
-                        <img src="/assets/flags/Yale+university+flag.png"/>
-                        
-                    </div>
-
-                    <h2>y de habla hispana</h2>
-
-                    <div id="fourth-flags-lower">
-                    <img src="/assets/flags/Anáhuac.png"/>
-                    <img src="/assets/flags/IESE+Business+School+University+of+Navarre.png"/>
-                       
-                        <img src="/assets/flags/UP+universidad+de+palermo.png"/>
-                        <img src="/assets/flags/universidad+de+los+andes.png"/>
-                        <img src="/assets/flags/Universitat+Autónoma+de+Barcelona.png"/>
-                        <img src="/assets/flags/ie+business+school.png"/>
-                        <img src="/assets/flags/Pontificia+Universidad+Catolica+De+Chile.png"/>
-                        <img src="/assets/flags/Universitat+de+Barcelona.png"/>
-                        <img src="/assets/flags/Universidad+Nacional+De+Colombia+.png"/>
-                        <img src="/assets/flags/Tecnológico+de+Monterrey.png"/>
-                        <img src="/assets/flags/Universidad+Nacional+Autónoma+de+México.png"/>
-                        
-
-                    </div>
-
-            </div>
+            <FlagsHome />
 
             <div id="fifth-home-section">
                 <h1>Editorial Top Education</h1>

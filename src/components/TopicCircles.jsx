@@ -14,7 +14,8 @@ const TopicCircles = ({ topic, image, tag }) => {
         };
 
         navigate('/library', {
-            state: {selectedTags: initialTags}
+            state: {selectedTags: initialTags},
+            replace: true
         });
     };
 
@@ -22,7 +23,7 @@ const TopicCircles = ({ topic, image, tag }) => {
 
     return (
     <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/habilidades/crecimiento-personal">
+        <a onClick={handleTopicClick}>
             <img src={image} alt={topic}/>
             <span class="category-name">{topic}</span>
         </a>

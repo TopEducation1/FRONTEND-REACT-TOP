@@ -141,9 +141,8 @@ function ParaEquipos () {
                     color: "#5CC781"
                 }}>Colaboramos con los líderes de la industria</h1>
 
-                <Flags direction="left" />
-                <Flags direction="right" />
-            </div>
+<Flags direction="left" />  
+<Flags direction="right" />             </div>
         </>
 
     );

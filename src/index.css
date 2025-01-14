@@ -1636,10 +1636,14 @@ header {
   display: flex;
   position: absolute;
   align-items: center;
-  width: 1190px;
+
+
+    left: 20%;
+    top: 200px;
+    width: 80%;
+  
   height: 100px;
   top: 200px;
-  left: 320px;
 }
 
 .container-logo-platforms.small-screen {
@@ -2292,10 +2296,11 @@ header {
   align-items: center;
   flex-direction: column;
   position: relative;
-  width: 120px;
+  width: 150px;
   height: 160px;
   text-align: center;
   transition: transform 0.3s ease; 
+  cursor: pointer;
 
   a {
     text-decoration: none;

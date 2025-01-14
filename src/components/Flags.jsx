@@ -1,11 +1,20 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Flags = ({ direction = 'left', onFlagSelect}) => {
+const Flags = ({ direction = 'left', onFlagSelect }) => {
   const wrapperRef = useRef(null);
   const navigate = useNavigate();
-  
-  
+
+  const handleLogoClick = (company) => {
+    const initialTags = {
+      "Empresa": [company]
+    };
+
+    navigate('/library', {
+      state: { selectedTags: initialTags },
+      replace: true
+    });
+  };
 
   const logos = [
     { url: "https://www.top.education/certificaciones/empresa/big-interview", img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/844d70cd-c9d8-4ac1-b4dd-1ba134386729/1.png", alt: "Big interview", company: "Big Interview" },
@@ -22,107 +31,132 @@ const Flags = ({ direction = 'left', onFlagSelect}) => {
     { url: "", img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/4ed2514f-f8f1-41b1-bbe3-410b55eecd05/12.png", alt: "Pathstream", company: "Pathstream" },
   ];
 
+  const repeatLogos = Array(3).fill(logos).flat();
+
+<div className="carousel-container">
+  <div className={`carousel-track ${direction}`}>
+    {repeatLogos.map((logo, index) => (
+      <a 
+        key={index}
+        className="logo-item"
+        href={logo.url}
+        onClick={(e) => {
+          e.preventDefault();
+          if (onFlagSelect) {
+            onFlagSelect("empresas", logo.company);
+          } else {
+            handleLogoClick(logo.company);
+          }
+        }}
+      >
+        <img src={logo.img} alt={logo.alt} />
+      </a>
+    ))}
+  </div>
+</div>
+
+
   return (
     <div className="carousel-container">
-      <div className="carousel-wrapper" ref={wrapperRef}>
-        <div className="logos-set">
-          {logos.map((logo, index) => (
-            <a key={`original-${index}`} className="a-image" href={logo.url}
-            style={{ cursor: "pointer"}}
-            
+      <div className={`carousel-track ${direction}`}>
+        {/* Primera copia */}
+        {logos.map((logo, index) => (
+          <a 
+            key={`set1-${index}`} 
+            className="logo-item" 
+            href={logo.url}
             onClick={(e) => {
               e.preventDefault();
-              onFlagSelect("empresas", logo.company);
-            }}>
-              <img src={logo.img} className="carousel-image" alt={logo.alt} />
-            </a>
-          ))}
-        </div>
-        <div className="logos-set">
-          {logos.map((logo, index) => (
-            <a key={`clone-${index}`} className="a-image" href={logo.url} onClick={(e) => onFlagSelect("empresas", logo.company)}
-            style={{ cursor: "pointer"}}>
-              <img src={logo.img} className="carousel-image" alt={logo.alt} />
-            </a>
-          ))}
-        </div>
+              if (onFlagSelect) {
+                onFlagSelect("empresas", logo.company);
+              } else {
+                handleLogoClick(logo.company);
+              }
+            }}
+          >
+            <img src={logo.img} alt={logo.alt} />
+          </a>
+        ))}
+        {/* Segunda copia */}
+        {logos.map((logo, index) => (
+          <a 
+            key={`set2-${index}`} 
+            className="logo-item" 
+            href={logo.url}
+            onClick={(e) => {
+              e.preventDefault();
+              if (onFlagSelect) {
+                onFlagSelect("empresas", logo.company);
+              } else {
+                handleLogoClick(logo.company);
+              }
+            }}
+          >
+            <img src={logo.img} alt={logo.alt} />
+          </a>
+        ))}
       </div>
       <style jsx>{`
-        .carousel-container {
-          display: flex;
-          position: relative;
-          justify-content: center;
-          align-items: center;
-          width: 100%;
-          height: 160px;
-          overflow: hidden;
-        }
+  .carousel-container {
+    width: 100%;
+    height: 200px; /* Ajusta según tu preferencia */
+    overflow: hidden;
+    position: relative;
+  }
 
-        .carousel-wrapper {
-          display: flex;
-          position: absolute;
-          left: 0;
-          top: 0;
-          white-space: nowrap;
-        }
+  .carousel-track {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: max-content;
+    height: 100%;
+    animation: scroll 40s linear infinite;
+  }
 
-        .logos-set {
-          display: flex;
-        }
+  .carousel-track.right {
+    animation-direction: reverse;
+  }
 
-        .a-image {
-          width: 180px;
-          height:auto;
-          margin-left: 20px;
-          display: inline-flex;
-          flex-shrink: 0;
-        }
+  .logo-item {
+    flex: 0 0 auto; /* Asegura que cada logo tenga un ancho adaptable */
+    width: 200px; /* Ajusta el ancho según tus necesidades */
+    height: auto; /* Ajusta la altura aquí */
+    margin: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
 
-        .a-image:first-child {
-          margin-left: 0;
-        }
+  .logo-item img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; 
+  }
 
-        .carousel-image {
-          width: 100%;
-          height: auto;
-        }
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
 
-        @keyframes move-left {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
+  @media (max-width: 768px) {
+    .logo-item {
+      width: 150px; /* Ajusta para móviles */
+      height: 120px;
+    }
 
-        @keyframes move-right {
-          0% {
-            transform: translateX(-50%);
-          }
-          100% {
-            transform: translateX(0);
-          }
-        }
+    .carousel-container {
+      height: 120px;
+    }
+  }
+`}</style>
 
-        @media (max-width: 500px) {
-          .wrapper-slide {
-            padding-left: 3px;
-          }
-          .label-type {
-            position: absolute;
-            top: 40px;
-            color: white;
-            font-size: 19px;
-          }
-          .button-left {
-            left: -3px;
-          }
-          .button-right {
-            right: -7px;
-          }
-        }
-      `}</style>
     </div>
   );
 };

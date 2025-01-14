@@ -33,7 +33,7 @@ function LibraryPage({ showRoutes = true,  }) {
     const [error, setError] = useState(null);                       // Stores error state
     const [isSmallScreen, SetIsSmallScreen] = useState(false);      // Tracks small screen state
     const location = useLocation();
-    const [debouncedSelectedTags] = useDebounce(selectedTags, 300);
+    const [debouncedSelectedTags, setDebouncedSelectedTags] = useDebounce(selectedTags, 300);
     const certificationsRef = useRef(null);
 
     const NoResultsMessage = () => (
@@ -49,6 +49,21 @@ function LibraryPage({ showRoutes = true,  }) {
             </button>
         </div>
     );
+
+    useEffect(() => {
+        if (location.state?.selectedTags) {
+            console.log('Incoming selected tags:', location.state.selectedTags);
+            
+            // Set the selected tags
+            setSelectedTags(location.state.selectedTags);
+            
+            // Important: We need to force an immediate load with these tags
+            loadCertifications(1, 16, location.state.selectedTags);
+            
+            // Clear the location state to prevent reapplying on subsequent renders
+            window.history.replaceState({}, document.title);
+        }
+    }, [location]);
 
 
     useEffect(() => {
@@ -82,23 +97,23 @@ function LibraryPage({ showRoutes = true,  }) {
     }, []);
 
 
-    const loadCertifications = useCallback(async (page = 1, pageSize = 16) => {
+    const loadCertifications = useCallback(async (page = 1, pageSize = 16, immediateTagsFilter = null) => {
         setLoading(true);
         try {
             let fetchData;
-            // Verificar si hay tags seleccionados
-            const hasSelectedTags = Object.keys(debouncedSelectedTags).length > 0;
+            // Use either immediate tags or debounced tags
+            const tagsToUse = immediateTagsFilter || debouncedSelectedTags;
+            const hasSelectedTags = Object.keys(tagsToUse).length > 0;
             
             if (hasSelectedTags) {
-                console.log('Filtrando por tags:', debouncedSelectedTags);
-                fetchData = await tagFilterService.filterByTags(debouncedSelectedTags, page, pageSize);
+                console.log('Filtering by tags:', tagsToUse);
+                fetchData = await tagFilterService.filterByTags(tagsToUse, page, pageSize);
             } else {
-                console.log('Cargando todas las certificaciones');
+                console.log('Loading all certifications');
                 fetchData = await CertificationsFetcher.getAllCertifications(page, pageSize);
             }
 
             if (fetchData && Array.isArray(fetchData.results)) {
-                // Actualizar directamente las certificaciones
                 setCertifications(fetchData.results);
                 setPagination({
                     count: fetchData.count || 0,
@@ -109,8 +124,8 @@ function LibraryPage({ showRoutes = true,  }) {
                 setCertifications([]);
             }
         } catch (error) {
-            console.error('Error al cargar certificaciones:', error);
-            setError('Error al cargar las certificaciones');
+            console.error('Error loading certifications:', error);
+            setError('Error loading certifications');
             setCertifications([]);
         } finally {
             setLoading(false);
@@ -126,7 +141,7 @@ function LibraryPage({ showRoutes = true,  }) {
 
     useEffect(() => {
         if (!loading) {
-            console.log('Tags actualizados, recargando certificaciones');
+            console.log('Tags actualizados, recargando certificaciones', debouncedSelectedTags);
             updateHistoryState(debouncedSelectedTags);
             loadCertifications(1); // Reiniciar a la primera página
         }
