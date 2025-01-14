@@ -41,109 +41,109 @@ function HomePage () {
                         tag="Arte y Humanidades"
                     />
                     <TopicCircles
-                        topic= "Arte y Humanidades"
+                        topic= "Negocios"
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/1b0794ce-4058-47b7-9b5d-de284d4488c6/TE-ICONO-ARTES+Y+HUMANIDADES.png"
-                        tag="Arte y Humanidades"
+                        tag="Negocios"
+                    />
+                    <TopicCircles
+                        topic= "Ciencias de la Computación"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/1b0794ce-4058-47b7-9b5d-de284d4488c6/TE-ICONO-ARTES+Y+HUMANIDADES.png"
+                        tag="Ciencias de la Computación"
+                    />
+                    <TopicCircles
+                        topic= "Ciencias de Datos"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/1b0794ce-4058-47b7-9b5d-de284d4488c6/TE-ICONO-ARTES+Y+HUMANIDADES.png"
+                        tag="Ciencias de Datos"
+                    />
+                    <TopicCircles
+                        topic= "Tecnología de Información"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/1b0794ce-4058-47b7-9b5d-de284d4488c6/TE-ICONO-ARTES+Y+HUMANIDADES.png"
+                        tag="Tecnología de Información"
+                    />
+                    <TopicCircles
+                        topic= "Salud"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/1b0794ce-4058-47b7-9b5d-de284d4488c6/TE-ICONO-ARTES+Y+HUMANIDADES.png"
+                        tag="Salud"
+                    />
+                    <TopicCircles
+                        topic= "Matemáticas y Lógica"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/b6393b7b-f672-4a8a-be48-72799e17cf28/TE-ICONO-MATEMATICAS+Y+LOGICA.png" 
+                        tag="Matemáticas y Lógica"
+                    />
+                    <TopicCircles
+                        topic= "Desarrollo Personal"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/cd93c4ba-b356-4b01-87a6-6700c8839a4d/TE-ICONO-DESARROLLO+PERSONAL.png"
+                        tag="Desarrollo Personal"
+                    />
+                    <TopicCircles
+                        topic= "Ciencias Físicas e Ingeniería"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/cd93c4ba-b356-4b01-87a6-6700c8839a4d/TE-ICONO-DESARROLLO+PERSONAL.png"
+                        tag="Ciencias Físicas e Ingeniería"
+                    />
+                    <TopicCircles
+                        topic= "Ciencias Físicas e Ingeniería"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/eaea7635-0af1-4704-8cf6-03281c209dd3/TE-ICONO-CIENCIAS+F%C3%8DSICAS+E+INGENIERIA.png"
+                        tag="Ciencias Físicas e Ingeniería"
+                    />
+                    <TopicCircles
+                        topic= "Ciencias Sociales"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/eaea7635-0af1-4704-8cf6-03281c209dd3/TE-ICONO-CIENCIAS+F%C3%8DSICAS+E+INGENIERIA.png"
+                        tag="Ciencias Sociales"
+                    />
+                    <TopicCircles
+                        topic= "Aprendizaje de un Idioma"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/eaea7635-0af1-4704-8cf6-03281c209dd3/TE-ICONO-CIENCIAS+F%C3%8DSICAS+E+INGENIERIA.png"
+                        tag="Aprendizaje de un Idioma"
+                    />
+                    <TopicCircles
+                        topic= "Bienestar"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/a77359c8-7df4-47a6-907d-3b3d42618caf/TE-ICONO-BIENESTAR.png"
+                        tag="Bienestar"
+                    />
+                    <TopicCircles
+                        topic= "Personas y cultura"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bb36fc68-859e-4d86-b0b6-97e79d83b644/TE-ICONO-PERSONAS+Y+CULTURA.png"
+                        tag="Personas y cultura"
+                    />
+                    <TopicCircles
+                        topic= "Personas y cultura"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bb36fc68-859e-4d86-b0b6-97e79d83b644/TE-ICONO-PERSONAS+Y+CULTURA.png"
+                        tag="Personas y cultura"
+                    />
+                    <TopicCircles
+                        topic= "Productividad"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bb36fc68-859e-4d86-b0b6-97e79d83b644/TE-ICONO-PERSONAS+Y+CULTURA.png"
+                        tag="Productividad"
+                    />
+                    <TopicCircles
+                        topic= "Liderazgo"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bb36fc68-859e-4d86-b0b6-97e79d83b644/TE-ICONO-PERSONAS+Y+CULTURA.png"
+                        tag="Liderazgo"
+                    />
+                    <TopicCircles
+                        topic= "Diversidad, equidad e inclusión"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/e6b3b49a-b7c8-4dff-90ba-824523adbe4e/TE-ICONO-DIVERSIDAD_EQUIDAD+E+INCLUSI%C3%93N.png"
+                        tag="Diversidad, equidad e inclusión"
+                    />
+                    <TopicCircles
+                        topic= "Diversidad, equidad e inclusión"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/e6b3b49a-b7c8-4dff-90ba-824523adbe4e/TE-ICONO-DIVERSIDAD_EQUIDAD+E+INCLUSI%C3%93N.png"
+                        tag="Diversidad, equidad e inclusión"
                     />
 
 
 
-                <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/temas/arte-y-humanidades">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/1b0794ce-4058-47b7-9b5d-de284d4488c6/TE-ICONO-ARTES+Y+HUMANIDADES.png" alt="Artes y Humanidades"/>
-            <span class="category-name">Artes y Humanidades</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/temas/negocios">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/0cfa8c38-199b-403e-a05d-b49850ca617f/TE-ICONO-NEGOCIOS.png" alt="Negocios"/>
-            <span class="category-name">Negocios</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/temas/ciencias-de-la-computacion">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/d8dd5eae-3f58-492d-8d05-1cc5113f5f25/TE-ICONO-CIENCIAS+DE+LA+COMPUTACION.png" alt="Ciencias de la Computación"/>
-            <span class="category-name">Ciencias de la Computación</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/temas/ciencias-de-datos">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/918380b3-8296-4eb3-b26c-f97bf01de5eb/TE-ICONO-CIENCIA+Y+DATOS.png" alt="Ciencias de Datos"/>
-            <span class="category-name">Ciencias de Datos</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/temas/tecnologa-de-informacion">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/75995000-8559-48bb-96ed-871fdd7066f9/TE-ICONO-TECNOLOGIA+E+INFORMACION.png" alt="Tecnología de Información"/>
-            <span class="category-name">Tecnología de Información</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/temas/salud">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/234a2a55-0888-4369-a6ae-64f6a7a99618/TE-ICONO-SALUD.png" alt="Salud"/>
-            <span class="category-name">Salud</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/temas/matematicas-y-logica">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/b6393b7b-f672-4a8a-be48-72799e17cf28/TE-ICONO-MATEMATICAS+Y+LOGICA.png" alt="Matemáticas y Lógica"/>
-            <span class="category-name">Matemáticas y Lógica</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/temas/desarrollo-personal">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/cd93c4ba-b356-4b01-87a6-6700c8839a4d/TE-ICONO-DESARROLLO+PERSONAL.png" alt="Desarrollo Personal"/>
-            <span class="category-name">Desarrollo Personal</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/temas/ciencias-fisica-e-ingeria">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/eaea7635-0af1-4704-8cf6-03281c209dd3/TE-ICONO-CIENCIAS+F%C3%8DSICAS+E+INGENIERIA.png" alt="Ciencias Físicas e Ingeniería"/>
-            <span class="category-name">Ciencias Físicas e Ingeniería</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/temas/ciencias-sociales">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/c9f4926a-b119-4287-96e3-f456a789d9b0/TE-ICONO-CIENCIAS+SOCIALES.png" alt="Ciencias Sociales"/>
-            <span class="category-name">Ciencias Sociales</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/temas/aprendizaje-de-idioma">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/318a66f7-8cf8-4053-a4bc-e2764aa6a704/TE-ICONO-LENGUAJES.png" alt="Aprendizaje de un Idioma"/>
-            <span class="category-name">Aprendizaje de un Idioma</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/habilidades/bienestar">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/a77359c8-7df4-47a6-907d-3b3d42618caf/TE-ICONO-BIENESTAR.png" alt="Bienestar"/>
-            <span class="category-name">Bienestar</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/habilidades/personas-y-cultura">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bb36fc68-859e-4d86-b0b6-97e79d83b644/TE-ICONO-PERSONAS+Y+CULTURA.png" alt="Personas y cultura"/>
-            <span class="category-name">Personas y cultura</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/habilidades/productividad">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/91a0e3d3-4578-431c-b09d-08b25497adbc/TE-ICONO-PRODUCTIVIDAD.png" alt="Productividad"/>
-            <span class="category-name">Productividad</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/habilidades/liderazgo">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/37ffffa5-cda9-412e-bb48-8e802cfdc044/TE-ICONO-LIDERAZGO.png" alt="Liderazgo"/>
-            <span class="category-name">Liderazgo</span>
-        </a>
-    </div>
-    <div class="topic-circle">
-        <a href="https://www.top.education/certificaciones/habilidades/diversidad-equidad-e-inclusion">
-            <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/e6b3b49a-b7c8-4dff-90ba-824523adbe4e/TE-ICONO-DIVERSIDAD_EQUIDAD+E+INCLUSI%C3%93N.png" alt="Diversidad, equidad e inclusión"/>
-            <span class="category-name">Diversidad, equidad e inclusión</span>
-        </a>
-    </div>
+
+
+             
+  
+  
+    
+
+    
+   
+
+  
     <div class="topic-circle">
         <a href="https://www.top.education/certificaciones/habilidades/estrategia">
             <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/d64dd080-d117-463e-8429-02dfe4fb88fc/TE-ICONO-ESTRATEGIA.png" alt="Estrategia"/>

@@ -364,6 +364,31 @@ function LibraryPage({ showRoutes = true,  }) {
                 {isMobileView && SearchBar}
             </div>
 
+            
+
+
+            <div
+                id="container-logo-platforms"
+                className={`wrapper-logo-platforms ${isSmallScreen ? 'small-screen' : ''
+                    }`}
+            >
+                <div id="wrapper-logos">
+                    <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "Coursera")}>
+                        <img src="assets/Plataformas/Coursera mini logo.png" />
+                    </div>
+                    <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "EdX")}>
+                        <img src="assets/logos/edx-hover.png" />
+                    </div>
+                    <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "MasterClass")}>
+                        <img src="assets/logos/masterclass-hover.png" />
+                    </div>
+                </div>
+                <div id="wrapper-new-courses">
+                    <img onClick={handleNewInTopClick} src="assets/banners/Botón_Nuevo_en_Top_Education.svg" />
+                </div>
+            </div>
+
+
             <div className={`sliding-menu-index ${isMenuOpen ? 'open' : ''}`}>
                 <button
                     className="btnclose-index-responsive-menu"
@@ -391,28 +416,6 @@ function LibraryPage({ showRoutes = true,  }) {
                 
                 <IndexCategories onTagSelect={handleTagClick}/>
 
-            </div>
-
-
-            <div
-                id="container-logo-platforms"
-                className={`wrapper-logo-platforms ${isSmallScreen ? 'small-screen' : ''
-                    }`}
-            >
-                <div id="wrapper-logos">
-                    <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "Coursera")}>
-                        <img src="assets/Plataformas/Coursera mini logo.png" />
-                    </div>
-                    <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "EdX")}>
-                        <img src="assets/logos/edx-hover.png" />
-                    </div>
-                    <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "MasterClass")}>
-                        <img src="assets/logos/masterclass-hover.png" />
-                    </div>
-                </div>
-                <div id="wrapper-new-courses">
-                    <img onClick={handleNewInTopClick} src="assets/banners/Botón_Nuevo_en_Top_Education.svg" />
-                </div>
             </div>
 
             <div ref={certificationsRef} className="certifications-container">
