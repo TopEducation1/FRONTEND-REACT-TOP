@@ -19,17 +19,17 @@ const FlagsHome = ({ university, image, tag }) => {
     ];
 
     const hispanicUniversities = [
-        { university: "Universidad Anáhuac", image: "/assets/flags/Anáhuac.png", tag: "Universidad Anáhuac" },
+        { university: "Universidad Anáhuac", image: "/assets/flags/Anáhuac.png", tag: "Universidad Anáhuac" },
         { university: "IESE Business School", image: "/assets/flags/IESE+Business+School+University+of+Navarre.png", tag: "IESE Business School" },
         { university: "Universidad de Palermo", image: "/assets/flags/UP+universidad+de+palermo.png", tag: "Universidad de Palermo" },
         { university: "Universidad de los Andes", image: "/assets/flags/universidad+de+los+andes.png", tag: "Universidad de los Andes" },
-        { university: "Universidad Autónoma de Barcelona", image: "/assets/flags/Universitat+Autónoma+de+Barcelona.png", tag: "UAB" },
+        { university: "Universidad Autónoma de Barcelona", image: "/assets/flags/Universitat+Autónoma+de+Barcelona.png", tag: "UAB" },
         { university: "IE Business School", image: "/assets/flags/ie+business+school.png", tag: "IE Business School" },
         { university: "Pontificia Universidad Católica de Chile", image: "/assets/flags/Pontificia+Universidad+Catolica+De+Chile.png", tag: "PUC" },
         { university: "Universitat de Barcelona", image: "/assets/flags/Universitat+de+Barcelona.png", tag: "UB" },
         { university: "Universidad Nacional de Colombia", image: "/assets/flags/Universidad+Nacional+De+Colombia+.png", tag: "UNAL" },
         { university: "Tecnológico de Monterrey", image: "/assets/flags/Tecnológico+de+Monterrey.png", tag: "Tec de Monterrey" },
-        { university: "Universidad Nacional Autónoma de México", image: "/assets/flags/Universidad+Nacional+Autónoma+de+México.png", tag: "UNAM" }
+        { university: "Universidad Nacional Autónoma de México", image: "/assets/flags/Universidad+Nacional+Autónoma+de+México.png", tag: "UNAM" }
     ];
 
 
