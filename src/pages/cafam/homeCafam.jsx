@@ -99,7 +99,7 @@ const HomeCafam = () => {
             </div>
 
 
-            <div id="container-component-certificacionts-cafam">
+            <div id="container-component-certifications-cafam">
 
                 <LibraryPageCafam showRoutes={false} />
 

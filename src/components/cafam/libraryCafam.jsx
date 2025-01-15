@@ -13,6 +13,8 @@ import { useDebounce } from 'use-debounce';
 import IndexCategoriesCafam from "./IndexCategoriesCafam";
 import IndexCategories from "../IndexCategories";
 import Flags from "../Flags";
+import FlagsHome from "../FlagsHome";
+import FlagsCafam from "./FlagsCafam";
 
 /**
  * Pagina de la biblioteca
@@ -345,17 +347,17 @@ function LibraryPageCafam({ showRoutes = true,  }) {
 
     return (
         <>
-            <div className="title-category-cafam">
-                <h2>Biblioteca</h2>
+            <div id="wrapper-title-and-search">
+                <div id="title-certifications-cafam">
+                    <h2>Explora certificaciones</h2>
+                </div>
+
+
+                {!isMobileView && <SearchBarCafam />}
             </div>
 
-            <div id="title-certifications-cafam">
-                <h2>Explora Certificaciones</h2>
-            </div>
-
-
-            {!isMobileView && <SearchBarCafam />}
-            |
+            
+            
 
             <div className="container-tags-cafam">
                 {Object.keys(selectedTags).length === 0 || Object.values(selectedTags).every(tags => tags.length === 0) ? (
@@ -475,7 +477,7 @@ function LibraryPageCafam({ showRoutes = true,  }) {
                 <div id="wrapper-title-industry-cafam">
                     <h1>Explora clases con los líderes de la industria</h1>
                 </div>
-                <Flags onFlagSelect={handleBannerClick}/>
+                <FlagsCafam />
             </div>
         </>
     );

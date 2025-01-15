@@ -43,7 +43,7 @@ body.cafam-layout {
     display: flex;
     justify-content: left;
     align-items: center;
-    padding-left: 102px;
+    padding-left: 150px;
     box-sizing: border-box;
     width: 50%;
 }
@@ -72,7 +72,7 @@ body.cafam-layout {
 #left-wrapper-cafam {
     display: flex;
     justify-content: left;
-    padding-left: 100px;
+    padding-left: 150px;
     box-sizing: border-box;
     align-items: center;
     height: 100%;
@@ -92,7 +92,7 @@ body.cafam-layout {
     height: 130px;
     overflow: hidden;
     justify-content: start;
-    align-items: start;
+    align-items: flex-start;
     padding-top: 0;
     gap: 0;
     margin-top: 80px;
@@ -100,6 +100,8 @@ body.cafam-layout {
 
 #first-h1-left, 
 #second-h1-left {
+  width: 100%;
+  text-align: left;
     padding: 0;
     margin: 0;
     line-height: 1.1;
@@ -110,10 +112,11 @@ body.cafam-layout {
 }
 
 #left-wrapper-cafam p {
-    font-size: 25px;
+    font-size: 24px;
     color: #002A42;
     text-align:  justify;
     margin-top: -5px;
+    max-width: 500px;
 }
 
 #left-wrapper-cafam button {
@@ -130,6 +133,7 @@ body.cafam-layout {
     justify-content: center;
     align-items: center;
     height: 100%;
+    padding-right: 130px;
 }
 
 #right-wrapper-cafam img {
@@ -294,14 +298,20 @@ body.cafam-layout {
     justify-content: center;
     align-items: center;
     text-align: center;
+
+    h1 {
+      font-size: 40px;
+    }
 }
 
-#container-component-certificacionts-cafam {
+#container-component-certifications-cafam {
     display: flex;
+    flex-direction: column;
     width: 100%;
     height: 1650px;
     margin-top: 40px;
     overflow: hidden;
+    padding: 0;
 }
 
 #wrapper-industry-cafam {
@@ -331,14 +341,15 @@ body.cafam-layout {
 }
 
 .container-results-cafam {
-  display: flex;
+  
   position: absolute;
-  top: 1660px;
+  display: flex;
+  top: 1740px;
   flex-direction: column;
   width: 250px;
   overflow-y: scroll;
-  left: 50%;
-  transform: translate(-50%);
+  left: 1010px;
+  
   z-index: 99999;
   gap: 20px;
   background-color: #0750A0;
@@ -808,15 +819,13 @@ body.cafam-layout {
   
   .wrapper-search-bar-cafam.desktop-style {
     display: flex;
-    position: absolute;
     z-index: 9;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    top: 1720px;
-    left: 290px;
-    width: 1220px;
-    height: 60px;
+    width: 50%;
+    height: 100%;
+    margin: 0;
         }
   
   
@@ -824,6 +833,14 @@ body.cafam-layout {
     display: none;
   }
 
+
+  #wrapper-title-and-search {
+
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    height: 100px;
+  }
 
   .input-cafam {
     width: 200px;
@@ -947,10 +964,10 @@ body.cafam-layout {
 
   #title-certifications-cafam {
     display: flex;
-    position: absolute;
-    left: 290px;
-    width: 1220px;
-    height: 50px;
+    left: 0px;
+    width: 50%;
+
+    height: 100%;
     justify-content: center;
     align-items: center;
     color: #0E4194;
@@ -1168,7 +1185,7 @@ body.cafam-layout {
       display: flex;
       flex-direction: column;
       grid-column: 2;
-      justify-content: center;
+      justify-content: start;
       align-items: center;
   }
 
