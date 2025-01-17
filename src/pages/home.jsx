@@ -215,28 +215,57 @@ function HomePage () {
             <FlagsHome />
 
             <div id="fifth-home-section">
+
+                <img src="/assets/Piezas/ellipse-big.png" id="ellipse-big"/>
+                <img src="/assets/Piezas/ellipse-mini.png" id="ellipse-big"/>
+
+
+                <svg id="star" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+  <g filter="url(#filter0_d_625_542)">
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0175 22.9312C19.6174 23.578 24.3451 19.592 24.9919 11.9921C24.3451 19.592 28.3311 24.3197 35.931 24.9665C28.3311 24.3197 23.6035 28.3057 22.9566 35.9056C23.6035 28.3057 19.6174 23.578 12.0175 22.9312Z" fill="white"/>
+  </g>
+  <defs>
+    <filter id="filter0_d_625_542" x="0.0175781" y="-0.0078125" width="47.9136" height="47.9133" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset/>
+      <feGaussianBlur stdDeviation="6"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_625_542"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_625_542" result="shape"/>
+    </filter>
+  </defs>
+</svg>
+
+<svg id="star-1" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+  <g filter="url(#filter0_d_625_539)">
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0175 22.9568C19.6174 23.6036 24.3451 19.6176 24.9919 12.0177C24.3451 19.6176 28.3311 24.3452 35.931 24.9921C28.3311 24.3452 23.6035 28.3313 22.9566 35.9312C23.6035 28.3313 19.6174 23.6036 12.0175 22.9568Z" fill="white"/>
+  </g>
+  <defs>
+    <filter id="filter0_d_625_539" x="0.0175781" y="0.0175781" width="47.9136" height="47.9136" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset/>
+      <feGaussianBlur stdDeviation="6"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_625_539"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_625_539" result="shape"/>
+    </filter>
+  </defs>
+</svg>
+
                 <h1>Editorial Top Education</h1>
                 <p>Descarga gratis nuestros recursos exclusivos. Encuentra la información que necesitas para alcanzar tus metas educativas, personales y profesionales. Te ofrecemos herramientas poderosas para enriquecer tu vida y potenciar tu crecimiento.</p>
 
                 <SliderEditorial />
             </div>
 
-            <div id="sixth-home-section">
-
-                    <h1>Descubre las rutas del conocimiento con genios históricos</h1>
-
-                    <div id="grid-genius">
-                        
-                        <a><img src="assets/SliderImages/6.png"/></a>
-                        <a><img src="assets/SliderImages/2.png"/></a>
-                        <a><img src="assets/SliderImages/3.png"/></a>
-                        <a><img src="assets/SliderImages/4.png"/></a>
-                    </div>
-
-            </div>
-
 
             <div id="seventh-home-section">
+
+                <img id="ellipse-red" src="/assets/Piezas/ellipse-red.png"/>
 
                 <h1>Explora y aprende</h1>
 
@@ -263,6 +292,23 @@ function HomePage () {
 
             </div>
 
+
+            <div id="sixth-home-section">
+
+                    <h1>Descubre las rutas del conocimiento con genios históricos</h1>
+
+                    <div id="grid-genius">
+                        
+                        <a><img src="assets/SliderImages/6.png"/></a>
+                        <a><img src="assets/SliderImages/2.png"/></a>
+                        <a><img src="assets/SliderImages/3.png"/></a>
+                        <a><img src="assets/SliderImages/4.png"/></a>
+                    </div>
+
+            </div>
+
+
+            
 
         </>
     );

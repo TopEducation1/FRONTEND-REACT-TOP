@@ -58,26 +58,12 @@ const FlagsHome = ({ university, image, tag }) => {
         <div id="fourth-home-section">
             <h2>Aprende con las universidades líderes del mundo</h2>
             <div id="fourth-flags-upper">
-                {worldUniversities.map((uni, index) => (
-                    <Flag 
-                        key={`world-${index}`}
-                        university={uni.university}
-                        image={uni.image}
-                        tag={uni.tag}
-                    />
-                ))}
+            <img src="/assets/Piezas/InternationalFlags.svg"/>
             </div>
 
             <h2>y de habla hispana</h2>
             <div id="fourth-flags-lower">
-                {hispanicUniversities.map((uni, index) => (
-                    <Flag 
-                        key={`hispanic-${index}`}
-                        university={uni.university}
-                        image={uni.image}
-                        tag={uni.tag}
-                    />
-                ))}
+                <img src="/assets/Piezas/LatamFlags.svg"/>
             </div>
         </div>
     );

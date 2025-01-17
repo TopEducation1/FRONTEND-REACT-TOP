@@ -15,7 +15,7 @@ body {
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: #0F090B;
+  background-color: #F6F4F0;
 }
 
 
@@ -2032,7 +2032,6 @@ header {
   height: 73.5%;
   justify-content: center;
   margin: 0px 25px;
-  border: 2px solid #d43b3e;
   border-radius: 20px;
   justify-content: center;
   align-items: center;
@@ -2040,6 +2039,7 @@ header {
   box-sizing: border-box;
   text-decoration: none;
   color: inherit;
+  box-shadow: 0px 4px 10px 2px rgba(0, 0, 0, 0.50);
 }
 
 .card-product img {
@@ -2209,6 +2209,7 @@ header {
   height: calc(100vh - 120px);
   box-sizing: border-box;
   padding: 0 100px;
+  background-color:#0F090B ;
 }
 
 #row-video {
@@ -2459,6 +2460,7 @@ header {
   background-color: #0F090B;
   gap: 100px;
   margin-bottom: 100px;
+  box-sizing: border-box;
 }
 
 #fourth-flags-upper {
@@ -2472,8 +2474,8 @@ header {
 
 
   img {
-    max-width: 250px;
-    min-width: 250px;
+    max-width: 1000px;
+    margin-left: 200px;
     cursor: pointer;
   }
 }
@@ -2489,8 +2491,8 @@ header {
 
 
   img {
-    max-width: 250px;
-    min-width: 250px;
+    max-width:1000px;
+    margin-left: 200px;
     cursor: pointer;
   }
 }
@@ -2511,20 +2513,35 @@ header {
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: calc(100vh - 120px);
+  height: 650px;
+  border-radius: 0px 0px 30px 30px;
+  background: linear-gradient(180deg, #F6F4EF 5%, rgba(15, 9, 11, 0.85) 83%);
+  margin-top: -90px;
 }
 
 #fifth-home-section h1 {
-  font-size: 40px;
-  color: #F6F4F0;
+  margin-top: 300px;
+  color: #0F090B;
+text-align: center;
+font-family: Montserrat;
+font-size: 70px;
+font-style: italic;
+font-weight: 400;
+line-height: 70px; /* 100% */
+
 }
 
 
 #fifth-home-section p {
-  text-align: center;
-  font-size: 20px;
+  
   max-width: 800px;
-  color: #F6F4F0;
+  color: #0F090B;
+text-align: center;
+font-family: Lora;
+font-size: 20px;
+font-style: normal;
+font-weight: 400;
+line-height: 30px; /* 150% */
 }
 
 .container-slider-top {
@@ -2575,7 +2592,7 @@ header {
 .wrapper-slide {
   display: flex;
   overflow-x: scroll;
-  width: 94%;
+  width: 100%;
   height: 480px;
   box-sizing: border-box;
   padding-top: 80px;
@@ -2589,11 +2606,10 @@ header {
 .card-product {
   display: flex;
   flex: 0 0 auto;
-  width: 245px;
+  width: 230px;
   height: 73.5%;
   justify-content: center;
   margin: 0px 25px;
-  border: 2px solid #d43b3e;
   border-radius: 20px;
   justify-content: center;
   align-items: center;
@@ -2601,6 +2617,7 @@ header {
   box-sizing: border-box;
   text-decoration: none;
   color: inherit;
+  box-shadow: 0px 4px 10px 2px rgba(0, 0, 0, 0.50);
 }
 
 .card-product img {
@@ -2635,10 +2652,27 @@ header {
   width: 100%;
 }
 
+#ellipse-big {
+  position: absolute;
+}
+
+#star {
+  position: absolute;
+  left: 235px;
+}
+
+#star-1 {
+  position: absolute;
+  right:  240px;
+}
 
 
 
 
+#ellipse-red {
+  position: absolute;
+  top: 4700px;
+}
 
 #sixth-home-section {
   display: flex;
@@ -2649,8 +2683,8 @@ header {
   padding: 10px 40px;
   width: 100%;
   height: calc(100vh - 210px);
-  background-color: #034694;
-  margin-top: 30px;
+  background-color:white;
+  margin-top: 330px;
 }
 
 #sixth-home-section h1 {
@@ -2680,6 +2714,7 @@ header {
   height: 500px;
   background-color: #F6F4F0;
   margin-bottom: 30px;
+  margin-top: 150px;
 }
 
 #seventh-home-section h1 {

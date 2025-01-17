@@ -93,18 +93,8 @@ const SliderEditorial = () => {
                     <img src="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/aed11f9d-1ff5-4fa1-8993-40d1e9ef0a55/Whitepaper+-+Capacitacio%CC%81n+empresarial+del+futuro+elearning+para+el+desarrollo+profesional.png?content-type=image%2Fpng" alt="product-img"/>
                 </a>
             </div>
-            <button className="button-left" onClick={() => handleScroll('left')}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#d43b3e" className="icon icon-tabler icons-tabler-filled icon-tabler-arrow-big-left">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M9.586 4l-6.586 6.586a2 2 0 0 0 0 2.828l6.586 6.586a2 2 0 0 0 2.18 .434l.145 -.068a2 2 0 0 0 1.089 -1.78v-2.586h7a2 2 0 0 0 2 -2v-4l-.005 -.15a2 2 0 0 0 -1.995 -1.85l-7 -.001v-2.585a2 2 0 0 0 -3.414 -1.414z"/>
-                </svg>
-            </button>
-            <button className="button-right" onClick={() => handleScroll('right')}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#d43b3e" className="icon icon-tabler icons-tabler-filled icon-tabler-arrow-big-right">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M12.089 3.634a2 2 0 0 0 -1.089 1.78l-.001 2.586h-6.999a2 2 0 0 0 -2 2v4l.005 .15a2 2 0 0 0 1.995 1.85l6.999 -.001l.001 2.587a2 2 0 0 0 3.414 1.414l6.586 -6.586a2 2 0 0 0 0 -2.828l-6.586 -6.586a2 2 0 0 0 -2.18 -.434l-.145 .068z"/>
-                </svg>
-            </button>
+           
+            
             <div className="cont-line" style={lineStyles}>
                 <div className="point" style={pointLeftStyles}></div>
                 <div className="point" style={pointRightStyles}></div>
