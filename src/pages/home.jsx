@@ -1,29 +1,64 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import SliderEditorial from "../components/SliderEditorial";
 import TopicCircles from "../components/TopicCircles";
 import FlagsHome from "../components/FlagsHome";
+import RotateVideo from "../components/RotateVideo";
+
 
 
 function HomePage () {
+
+
+    const [statePopUp, setStatePopUp] = useState(false);
+    const videoRef = useRef(null);
+
+    const toggleVisibility = () => {
+        setStatePopUp((prevState) => {
+            const newState = !prevState;
+
+            // Si se abre el pop-up, reproduce el video
+            if (newState && videoRef.current) {
+                videoRef.current.play();
+            }
+
+            // Si se cierra el pop-up, pausa y reinicia el video
+            if (!newState && videoRef.current) {
+                videoRef.current.pause();
+                videoRef.current.currentTime = 0; // Opcional: reinicia el video al principio
+            }
+
+            return newState;
+        });
+    };
+
  
     return (
         <>
             <div id="first-home-section">
 
                 <div id="left-first-section">
-                    <h1>Top Education,</h1>
-                    <h2><em>La plataforma que revoluciona la educación en linea</em></h2>
-                    <div id="row-video">
-                        <img src="/assets/Piezas/play.png" alt="play icono"/>
-                        <span>Conoce más de<br/>Top Education</span>
-                    </div>
-                    
+                    <h1>Top Education</h1>
+                    <p>Aprende en línea mientras conectas tu interés con el conocimiento de los mejores del mundo</p>
                 </div>
+
+
                 <div id="right-first-section">
-                    <video src="/assets/video/main-video.mp4" autoPlay loop muted>
-                        Tu navegador no soporta video
-                    </video>
+                    <RotateVideo
+                        onClick={toggleVisibility}
+                    />
                 </div>
+
+               
+                    <div id="pop-up-video" className={statePopUp ? 'visible': ''}>
+                        <div id="wrapper-button-close-popup">
+                        <svg onClick={toggleVisibility} xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#ffffff"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
+                        </div>
+
+                        <video ref={videoRef} src="/assets/video/main-video.mp4" autoPlay></video>
+
+
+                    </div>
+                
                 
             </div>
 
@@ -31,25 +66,22 @@ function HomePage () {
 
             <div id="second-home-section">
 
-                <div className="block-second-section" id="upper-section">
-                    <h1>Descubre más +13.000 certificaciones y crea tu propia ruta de aprendizaje.</h1>
+                <div  id="upper-section">
+                    <h1>Explora +13.000 certificaciones <span><mark>y crea tu propia ruta de aprendizaje.</mark></span></h1>
                 </div>
-                <div className="block-second-section" id="lower-section">
-
-                    <TopicCircles
+                <div className="block-second-section" id="first-section-circles">
+                        <h2>Temas</h2>
+                        <div className="block-circles">
+                        <TopicCircles
                         topic= "Arte y Humanidades"
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/1b0794ce-4058-47b7-9b5d-de284d4488c6/TE-ICONO-ARTES+Y+HUMANIDADES.png"
                         tag="Arte y Humanidades"
                     />
                     <TopicCircles
-                        topic= "Negocios"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/0cfa8c38-199b-403e-a05d-b49850ca617f/TE-ICONO-NEGOCIOS.png"
-                        tag="Negocios"
-                    />
-                    <TopicCircles
                         topic= "Ciencias de la Computación"
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/d8dd5eae-3f58-492d-8d05-1cc5113f5f25/TE-ICONO-CIENCIAS+DE+LA+COMPUTACION.png"
-                        tag="Ciencias de la Computación"
+                        tag
+                        ="Ciencias de la Computación"
                     />
                     <TopicCircles
                         topic= "Ciencias de Datos"
@@ -61,6 +93,7 @@ function HomePage () {
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/75995000-8559-48bb-96ed-871fdd7066f9/TE-ICONO-TECNOLOGIA+E+INFORMACION.png"
                         tag="Tecnología de Información"
                     />
+
                     <TopicCircles
                         topic= "Salud"
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/234a2a55-0888-4369-a6ae-64f6a7a99618/TE-ICONO-SALUD.png"
@@ -72,11 +105,6 @@ function HomePage () {
                         tag="Matemáticas y Lógica"
                     />
                     <TopicCircles
-                        topic= "Desarrollo Personal"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/cd93c4ba-b356-4b01-87a6-6700c8839a4d/TE-ICONO-DESARROLLO+PERSONAL.png"
-                        tag="Desarrollo Personal"
-                    />
-                    <TopicCircles
                         topic= "Ciencias Físicas e Ingeniería"
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/eaea7635-0af1-4704-8cf6-03281c209dd3/TE-ICONO-CIENCIAS+F%C3%8DSICAS+E+INGENIERIA.png"
                         tag="Ciencias Físicas e Ingeniería"
@@ -86,6 +114,40 @@ function HomePage () {
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/c9f4926a-b119-4287-96e3-f456a789d9b0/TE-ICONO-CIENCIAS+SOCIALES.png"
                         tag="Ciencias Sociales"
                     />
+                     <TopicCircles
+                        topic= "Personas y cultura"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bb36fc68-859e-4d86-b0b6-97e79d83b644/TE-ICONO-PERSONAS+Y+CULTURA.png"
+                        tag="Personas y cultura"
+                    />
+                    <TopicCircles
+                        topic= "Diversidad, equidad e inclusión"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/e6b3b49a-b7c8-4dff-90ba-824523adbe4e/TE-ICONO-DIVERSIDAD_EQUIDAD+E+INCLUSI%C3%93N.png"
+                        tag="Diversidad, equidad e inclusión"
+                    />
+                        </div>
+                    
+
+</div>
+
+
+
+
+<div className="block-second-section">
+    <h2>Habilidades</h2>
+    <div className="block-circles">
+    <TopicCircles
+                        topic= "Negocios"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/0cfa8c38-199b-403e-a05d-b49850ca617f/TE-ICONO-NEGOCIOS.png"
+                        tag="Negocios"
+                    />
+                    
+                    <TopicCircles
+                        topic= "Desarrollo Personal"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/cd93c4ba-b356-4b01-87a6-6700c8839a4d/TE-ICONO-DESARROLLO+PERSONAL.png"
+                        tag="Desarrollo Personal"
+                    />
+                    
+                    
                     <TopicCircles
                         topic= "Aprendizaje de un Idioma"
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/318a66f7-8cf8-4053-a4bc-e2764aa6a704/TE-ICONO-LENGUAJES.png"
@@ -96,11 +158,7 @@ function HomePage () {
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/a77359c8-7df4-47a6-907d-3b3d42618caf/TE-ICONO-BIENESTAR.png"
                         tag="Bienestar"
                     />
-                    <TopicCircles
-                        topic= "Personas y cultura"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bb36fc68-859e-4d86-b0b6-97e79d83b644/TE-ICONO-PERSONAS+Y+CULTURA.png"
-                        tag="Personas y cultura"
-                    />
+                   
                     <TopicCircles
                         topic= "Productividad"
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/91a0e3d3-4578-431c-b09d-08b25497adbc/TE-ICONO-PRODUCTIVIDAD.png"
@@ -111,11 +169,7 @@ function HomePage () {
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/37ffffa5-cda9-412e-bb48-8e802cfdc044/TE-ICONO-LIDERAZGO.png"
                         tag="Liderazgo"
                     />
-                    <TopicCircles
-                        topic= "Diversidad, equidad e inclusión"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/e6b3b49a-b7c8-4dff-90ba-824523adbe4e/TE-ICONO-DIVERSIDAD_EQUIDAD+E+INCLUSI%C3%93N.png"
-                        tag="Diversidad, equidad e inclusión"
-                    />
+                    
                     <TopicCircles
                         topic= "Estrategia"
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/d64dd080-d117-463e-8429-02dfe4fb88fc/TE-ICONO-ESTRATEGIA.png"
@@ -141,41 +195,21 @@ function HomePage () {
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/079bb2bb-84f0-4a1f-9929-1112f978ca24/TE-ICONO-CRECIMIENTO+PERSONAL.png"
                         tag="Crecimiento personal"
                     />
+    </div>
+                    
+</div>
+
+
+                   
 
   
-                </div>
+                
 
             </div>
 
 
 
 
-
-            <div id="third-home-section">
-                <div id="left-text-section">
-                    <h3 style={{
-                        color : "#034694"
-                    }}>Descubre Top Education, la plataforma, de aprendizaje en línea que <em>conecta tu interés con el conocimiento de los mejores del mundo.</em></h3>
-
-
-                    <p>Accede a certificaciones impartidas por las compañias más influyentes y las instituciones educativas de mayor prestigio a nivel global</p>
-
-                    <p>Sumérgete en programas especializados diseñados para potenciar tus habilidades, guiados por los líderes de la industria que te compartirán sus estrategias y experiencia de primera mano</p>
-
-                    <p>Cada certificación que completes estará respaldada por tecnología blockchain, garantizando que tus logros sean validados de manera segura y reconocidos a nivel mundial.</p>
-
-
-                    <h3  style={{
-                        color : "#034694"
-                    }}>Con Top Education, <em>estarás un paso más cerca de transformar tu futuro profesional. </em>¡Empieza hoy y alcanza el éxito que mereces!</h3>
-                </div>
-
-
-
-                <div id="right-renata-section">
-                    <img src="/assets/Piezas/TE_Renata_con_portátil.png" />
-                </div>
-            </div>
 
                     
             <FlagsHome />

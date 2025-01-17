@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import FilterBySearch from "../services/filterBySearch";
 import { useDebounce } from "use-debounce";
 import { useNavigate } from 'react-router-dom';
+import { X } from 'lucide-react';
+
 
 
 const SearchBar = () => {
@@ -25,6 +27,12 @@ const SearchBar = () => {
         const newText = event.target.value;
         setText(newText);
 
+    };
+
+    const handleClear = () => {
+        setText('');
+        setResults([]);
+        setTempResults([]);
     };
 
     // Effect to fecth search results when debounced text changes
@@ -105,7 +113,16 @@ const SearchBar = () => {
                     name="text"
                     className="input"
                     onChange={handleWriting}
+                    value={text}
                 />
+                {text && (
+                    <button
+                        onClick={handleClear}
+                        className="clear-button"
+                        >
+                            < X />
+                        </button>
+                )}
                 <svg
                     fill="white"
                     width="20px"
