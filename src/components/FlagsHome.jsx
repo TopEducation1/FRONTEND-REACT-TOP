@@ -3,13 +3,16 @@ import { useEffect, useRef, useState } from 'react';
 
 const FlagsHome = () => {
   const navigate = useNavigate();
-  const imageRef = useRef(null);
-  const mapRef = useRef(null);
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
+  // Referencias para ambas imágenes y mapas
+  const imageRef1 = useRef(null);
+  const imageRef2 = useRef(null);
+  const mapRef1 = useRef(null);
+  const mapRef2 = useRef(null);
+  const [imagesLoaded, setImagesLoaded] = useState({ img1: false, img2: false });
+
 
   const handleUniversityClick = (tag) => {
-    console.log('Clicked:', tag); // Debug log
+    console.log('Clicked:', tag);
     const initialTags = {
       "Universidad": [tag]
     };
@@ -19,18 +22,14 @@ const FlagsHome = () => {
     });
   };
 
-  const resizeMap = () => {
-    if (!mapRef.current || !imageRef.current) {
-      console.log('Refs not ready:', { mapRef: !!mapRef.current, imageRef: !!imageRef.current }); // Debug log
-      return;
-    }
+  const resizeMap = (mapRef, imageRef, originalWidth) => {
+    if (!mapRef.current || !imageRef.current) return;
 
     const areas = mapRef.current.getElementsByTagName('area');
-    const originalWidth = 1761;
     const currentWidth = imageRef.current.clientWidth;
     const scale = currentWidth / originalWidth;
 
-    console.log('Resizing map:', { originalWidth, currentWidth, scale }); // Debug log
+    console.log('Resizing map:', { originalWidth, currentWidth, scale });
 
     Array.from(areas).forEach(area => {
       if (!area.dataset.originalCoords) {
@@ -40,76 +39,154 @@ const FlagsHome = () => {
       const originalCoords = area.dataset.originalCoords.split(',');
       const newCoords = originalCoords.map(coord => Math.round(parseInt(coord) * scale));
       area.coords = newCoords.join(',');
-      
-      console.log(`Area ${area.alt}:`, { original: area.dataset.originalCoords, new: area.coords }); // Debug log
     });
   };
 
-  // Manejador para cuando la imagen carga
-  const handleImageLoad = () => {
-    setImageLoaded(true);
-    setImageDimensions({
-      width: imageRef.current.clientWidth,
-      height: imageRef.current.clientHeight
-    });
-    resizeMap();
+  const handleImageLoad = (imageNum) => {
+    setImagesLoaded(prev => ({
+      ...prev,
+      [imageNum]: true
+    }));
   };
 
   useEffect(() => {
-    if (imageLoaded) {
-      resizeMap();
+    if (imagesLoaded.img1) {
+      resizeMap(mapRef1, imageRef1, 192); // Ancho original de la primera imagen
     }
-    window.addEventListener('resize', resizeMap);
+    if (imagesLoaded.img2) {
+      resizeMap(mapRef2, imageRef2, 1761); // Ancho original de la segunda imagen
+    }
 
-    return () => {
-      window.removeEventListener('resize', resizeMap);
+    const handleResize = () => {
+      if (imagesLoaded.img1) {
+        resizeMap(mapRef1, imageRef1, 1920);
+      }
+      if (imagesLoaded.img2) {
+        resizeMap(mapRef2, imageRef2, 1761);
+      }
     };
-  }, [imageLoaded]);
 
-  // Estilos en línea para debugging
-  const debugStyles = {
-    mapContainer: {
-      position: 'relative',
-      width: '100%',
-    },
-    debugInfo: {
-      position: 'fixed',
-      top: '10px',
-      right: '10px',
-      background: 'rgba(0,0,0,0.8)',
-      color: 'white',
-      padding: '10px',
-      zIndex: 1000,
-      fontSize: '12px',
-    }
-  };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [imagesLoaded]);
+
 
   return (
     <div id="fourth-home-section">
       <h2>Aprende con las universidades líderes del mundo</h2>
       <div id="fourth-flags-upper">
         <img 
+            ref={imageRef1}
           src="/assets/Piezas/InternationalFlags.svg" 
           alt="International Universities Flags" 
           useMap="#world-universities-map"
+          onLoad={() => handleImageLoad('img1')}
           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
         />
-        <map name="world-universities-map">
-          {/* Areas for international universities */}
+        <map name="world-universities-map" ref={mapRef1}>
+        <area 
+            shape="rect" 
+            coords="0,23,53,50" 
+            alt="University of Michigan"
+            onClick={() => handleUniversityClick("University of Michigan")}
+            title="University of Michigan"
+            onMouseEnter={(e) => console.log('Hover:', e.target.alt)} // Debug hover
+          />
+          <area 
+            shape="rect" 
+            coords="4,53,57,80" 
+            alt="Berklee College of Music"
+            onClick={() => handleUniversityClick("Berklee College of Music")}
+            title="Berklee College of Music"
+            onMouseEnter={(e) => console.log('Hover:', e.target.alt)} // Debug hover
+          />
+          <area 
+            shape="rect" 
+            coords="15,77,68,104" 
+            alt="Peking University"
+            onClick={() => handleUniversityClick("Peking University")}
+            title="Peking University"
+            onMouseEnter={(e) => console.log('Hover:', e.target.alt)} // Debug hover
+          />
+          <area 
+            shape="rect" 
+            coords="15,77,68,104" 
+            alt="Columbia University"
+            onClick={() => handleUniversityClick("Columbia University")}
+            title="Columbia University"
+            onMouseEnter={(e) => console.log('Hover:', e.target.alt)} // Debug hover
+          />
+          <area 
+            shape="rect" 
+            coords="64,29,117,56" 
+            alt="Harvard University"
+            onClick={() => handleUniversityClick("Harvard University")}
+            title="Harvard University"
+            onMouseEnter={(e) => console.log('Hover:', e.target.alt)} // Debug hover
+          />
+          <area 
+            shape="rect" 
+            coords="64,55,117,82" 
+            alt="Yale University"
+            onClick={() => handleUniversityClick("Yale University")}
+            title="Yale University"
+            on
+            MouseEnter={(e) => console.log('Hover:', e.target.alt)} // Debug hover
+          />
+          <area 
+            shape="rect" 
+            coords="64,82,117,109" 
+            alt="Stanford University"
+            onClick={() => handleUniversityClick("Stanford University")}
+            title="Stanford University"
+            onMouseEnter={(e) => console.log('Hover:', e.target.alt)} // Debug hover
+          />
+          <area 
+            shape="rect" 
+            coords="138,9,191,36" 
+            alt="University of Toronto"
+            onClick={() => handleUniversityClick("University of Toronto")}
+            title="University of Toronto"
+            onMouseEnter={(e) => console.log('Hover:', e.target.alt)} // Debug hover
+          />
+          <area 
+            shape="rect" 
+            coords="136,33,189,60" 
+            alt="University of Toronto"
+            onClick={() => handleUniversityClick("University of Toronto")}
+            title="University of Toronto"
+            onMouseEnter={(e) => console.log('Hover:', e.target.alt)} // Debug hover
+          />
+          <area 
+            shape="rect" 
+            coords="125,64,178,91" 
+            alt="Massachusetts Institute of Technology"
+            onClick={() => handleUniversityClick("Massachusetts Institute of Technology")}
+            title="Massachusetts Institute of Technology"
+            onMouseEnter={(e) => console.log('Hover:', e.target.alt)} // Debug hover
+          />
+          <area 
+            shape="rect" 
+            coords="118,89,171,116" 
+            alt="The University of Chicago"
+            onClick={() => handleUniversityClick("The University of Chicago")}
+            title="The University of Chicago"
+            onMouseEnter={(e) => console.log('Hover:', e.target.alt)} // Debug hover
+          />
         </map>
       </div>
 
       <h2>y de habla hispana</h2>
-      <div id="fourth-flags-lower" style={debugStyles.mapContainer}>
+      <div id="fourth-flags-lower" >
         <img 
-          ref={imageRef}
+          ref={imageRef2}
           src="/assets/Piezas/LatamFlags.svg" 
           alt="Hispanic Universities Flags"
           useMap="#hispanic-universities-map"
-          onLoad={handleImageLoad}
+          onLoad={() => handleImageLoad('img2')}
           style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
         />
-        <map name="hispanic-universities-map" ref={mapRef}>
+        <map name="hispanic-universities-map" ref={mapRef2}>
           {/* Mantén tus areas existentes */}
           <area 
             shape="rect" 
