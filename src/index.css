@@ -2352,7 +2352,7 @@ header {
   display: flex;
   align-items: center;
   flex-direction: column;
-  width: 130px;
+  width: 120px;
   height: 160px;
   text-align: center;
   transition: transform 0.3s ease;
@@ -2762,6 +2762,7 @@ line-height: 30px; /* 150% */
 }
 
 #seventh-home-section h1 {
+  margin-top: -5px;
   color: #0F090B;
   margin-bottom: 0;
   font-family: Montserrat;

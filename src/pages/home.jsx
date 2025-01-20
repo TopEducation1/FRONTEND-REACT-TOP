@@ -140,6 +140,12 @@ function HomePage () {
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/0cfa8c38-199b-403e-a05d-b49850ca617f/TE-ICONO-NEGOCIOS.png"
                         tag="Negocios"
                     />
+
+                    <TopicCircles
+                        topic= "Crecimiento personal"
+                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/079bb2bb-84f0-4a1f-9929-1112f978ca24/TE-ICONO-CRECIMIENTO+PERSONAL.png"
+                        tag="Crecimiento personal"
+                    />
                     
                     <TopicCircles
                         topic= "Desarrollo Personal"
@@ -190,11 +196,7 @@ function HomePage () {
                         image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/62c55e44-97c0-4afc-8e3f-1f1873a89052/TE-ICONO-CREATIVIDAD.png"
                         tag="Creatividad"
                     />
-                    <TopicCircles
-                        topic= "Crecimiento personal"
-                        image= "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/079bb2bb-84f0-4a1f-9929-1112f978ca24/TE-ICONO-CRECIMIENTO+PERSONAL.png"
-                        tag="Crecimiento personal"
-                    />
+                    
     </div>
                     
 </div>
