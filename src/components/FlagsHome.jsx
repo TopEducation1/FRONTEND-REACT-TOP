@@ -1,72 +1,124 @@
-import  { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-const FlagsHome = ({ university, image, tag }) => {
+const FlagsHome = () => {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
-
-    const worldUniversities = [
-        { university: "University of Toronto", image: "/assets/flags/University+of+Toronto.png", tag: "University of Toronto" },
-        { university: "University of Michigan", image: "/assets/flags/University+of+Michigan.png", tag: "University of Michigan" },
-        { university: "Columbia University", image: "/assets/flags/Columbia+university+flag.png", tag: "Columbia University" },
-        { university: "Peking University", image: "/assets/flags/Peking+university.png", tag: "Peking University" },
-        { university: "Berklee University", image: "/assets/flags/Berklee+university+flag.png", tag: "Berklee University" },
-        { university: "Harvard University", image: "/assets/flags/Harvard+university+flag.png", tag: "Harvard University" },
-        { university: "MIT", image: "/assets/flags/MIT+University+flag.png", tag: "MIT" },
-        { university: "University of Pennsylvania", image: "/assets/flags/University+of+Penn.png", tag: "University of Pennsylvania" },
-        { university: "Stanford University", image: "/assets/flags/Stanford+university+flag+1.png", tag: "Stanford University" },
-        { university: "University of Chicago", image: "/assets/flags/The+university+of+chicago.png", tag: "University of Chicago" },
-        { university: "Yale University", image: "/assets/flags/Yale+university+flag.png", tag: "Yale University" }
-    ];
-
-    const hispanicUniversities = [
-        { university: "Universidad Anáhuac", image: "/assets/flags/Anáhuac.png", tag: "Universidad Anáhuac" },
-        { university: "IESE Business School", image: "/assets/flags/IESE+Business+School+University+of+Navarre.png", tag: "IESE Business School" },
-        { university: "Universidad de Palermo", image: "/assets/flags/UP+universidad+de+palermo.png", tag: "Universidad de Palermo" },
-        { university: "Universidad de los Andes", image: "/assets/flags/universidad+de+los+andes.png", tag: "Universidad de los Andes" },
-        { university: "Universidad Autónoma de Barcelona", image: "/assets/flags/Universitat+Autónoma+de+Barcelona.png", tag: "UAB" },
-        { university: "IE Business School", image: "/assets/flags/ie+business+school.png", tag: "IE Business School" },
-        { university: "Pontificia Universidad Católica de Chile", image: "/assets/flags/Pontificia+Universidad+Catolica+De+Chile.png", tag: "PUC" },
-        { university: "Universitat de Barcelona", image: "/assets/flags/Universitat+de+Barcelona.png", tag: "UB" },
-        { university: "Universidad Nacional de Colombia", image: "/assets/flags/Universidad+Nacional+De+Colombia+.png", tag: "UNAL" },
-        { university: "Tecnológico de Monterrey", image: "/assets/flags/Tecnológico+de+Monterrey.png", tag: "Tec de Monterrey" },
-        { university: "Universidad Nacional Autónoma de México", image: "/assets/flags/Universidad+Nacional+Autónoma+de+México.png", tag: "UNAM" }
-    ];
-
-
-    const handleUniversityClick = (tag) => {
-
-        const initialTags = {
-            "Universidad": [tag]
-        };
-
-        navigate('/library', {
-            state: {selectedTags: initialTags},
-            replace: true
-        });
+  const handleUniversityClick = (tag) => {
+    const initialTags = {
+      "Universidad": [tag]
     };
+    
+    navigate('/library', {
+      state: { selectedTags: initialTags },
+      replace: true
+    });
+  };
 
-    const Flag = ({ university, image, tag }) => (
+  return (
+    <div id="fourth-home-section">
+      <h2>Aprende con las universidades líderes del mundo</h2>
+      <div id="fourth-flags-upper">
         <img 
-            src={image} 
-            alt={university}
-            onClick={() => handleUniversityClick(tag)}
-            title={university}
+          src="/assets/Piezas/InternationalFlags.svg" 
+          alt="International Universities Flags" 
+          useMap="#world-universities-map"
         />
-    );
+        <map name="world-universities-map">
+          {/* Ejemplo de áreas - ajusta las coordenadas según tu imagen */}
+          <area 
+            shape="rect" 
+            coords="0,0,100,50" 
+            alt="University of Toronto"
+            onClick={() => handleUniversityClick("University of Toronto")}
+            title="University of Toronto"
+          />
+          <area 
+            shape="rect" 
+            coords="110,0,210,50" 
+            alt="University of Michigan"
+            onClick={() => handleUniversityClick("University of Michigan")}
+            title="University of Michigan"
+          />
+          {/* Añade más áreas según necesites */}
+        </map>
+      </div>
 
-    return (
-        <div id="fourth-home-section">
-            <h2>Aprende con las universidades líderes del mundo</h2>
-            <div id="fourth-flags-upper">
-            <img src="/assets/Piezas/InternationalFlags.svg"/>
-            </div>
-
-            <h2>y de habla hispana</h2>
-            <div id="fourth-flags-lower">
-                <img src="/assets/Piezas/LatamFlags.svg"/>
-            </div>
-        </div>
-    );
+      <h2>y de habla hispana</h2>
+      <div id="fourth-flags-lower">
+        <img 
+          src="/assets/Piezas/LatamFlags.svg" 
+          alt="Hispanic Universities Flags"
+          useMap="#hispanic-universities-map"
+        />
+        <map name="hispanic-universities-map">
+          {/* Ejemplo de áreas - ajusta las coordenadas según tu imagen */}
+          <area 
+            shape="rect" 
+            coords="499,285,0,56" 
+            alt="Universidad Anáhuac"
+            onClick={() => handleUniversityClick("Universidad Anáhuac")}
+            title="Universidad Anáhuac"
+          />
+          <area 
+            shape="rect" 
+            coords="499,576,0,347" 
+            alt="Universidad de los Andes"
+            onClick={() => handleUniversityClick("Universidad de los Andes")}
+            title="Universidad de los Andes"
+          />
+          <area 
+            shape="rect" 
+            coords="499,857,0,628" 
+            alt="Universidad Autónoma de Barcelona"
+            onClick={() => handleUniversityClick("Universidad Autónoma de Barcelona")}
+            title="Universidad Autónoma de Barcelona"
+          />
+          <area 
+            shape="rect" 
+            coords="1130,283,631,54" 
+            alt="Pontificia Universidad Catolica de Chile"
+            onClick={() => handleUniversityClick("Pontificia Universidad Catolica de Chile")}
+            title="Pontificia Universidad Catolica de Chile"
+          />
+          <area 
+            shape="rect" 
+            coords="1132,852,633,623" 
+            alt="Universitat de Barcelona"
+            onClick={() => handleUniversityClick("Universitat de Barcelona")}
+            title="Universitat de Barcelona"
+          />
+          <area 
+            shape="rect" 
+            coords="1133,1144,634,915" 
+            alt="Universidad Nacional de Colombia"
+            onClick={() => handleUniversityClick("Universidad Nacional de Colombia")}
+            title="Universidad Nacional de Colombia"
+          />
+          <area 
+            shape="rect" 
+            coords="1759,287,1260,58" 
+            alt="Universidad de Palermo"
+            onClick={() => handleUniversityClick("Universidad de Palermo")}
+            title="Universidad de Palermo"
+          />
+          <area 
+            shape="rect" 
+            coords="1760,573,1261,344" 
+            alt="UNAM"
+            onClick={() => handleUniversityClick("UNAM")}
+            title="UNAM"
+          />
+          <area 
+            shape="rect" 
+            coords="1750,857,1251,628" 
+            alt="Tecnológico de Monterrey"
+            onClick={() => handleUniversityClick("Tecnológico de Monterrey")}
+            title="Tecnológico de Monterrey"
+          />
+        </map>
+      </div>
+    </div>
+  );
 };
 
 export default FlagsHome;
