@@ -2013,16 +2013,11 @@ header {
 
 .wrapper-slide {
   display: flex;
-  overflow-x: scroll;
-  width: 94%;
+  width: 100%;
   height: 480px;
   box-sizing: border-box;
   padding-top: 80px;
-  position: relative;
-  scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
-  scroll-padding-left: 0;
-  scroll-padding-right: 0;
+
 }
 
 .card-product {
@@ -2535,7 +2530,7 @@ line-height: 30px; /* 150% */
 
 .container-slider-top {
   display: flex;
-  width: 90%;
+  width: 100%;
   height: 450px;
   justify-content: center;
   align-items: center;
@@ -2580,16 +2575,10 @@ line-height: 30px; /* 150% */
 
 .wrapper-slide {
   display: flex;
-  overflow-x: scroll;
-  width: 100%;
+  width: auto;
   height: 480px;
   box-sizing: border-box;
   padding-top: 80px;
-  position: relative;
-  scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
-  scroll-padding-left: 0;
-  scroll-padding-right: 0;
 }
 
 .card-product {
@@ -2752,7 +2741,7 @@ line-height: 30px; /* 150% */
   margin-top: 70px;
   justify-items: center;
   grid-template-columns: repeat(6, 1fr);
-  width: 90%;
+  width: 100%;
   gap: 20px;
 }
 
