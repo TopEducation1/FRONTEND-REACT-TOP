@@ -295,7 +295,25 @@ function HomePage () {
 
             <div id="sixth-home-section">
 
-                    <h1>Descubre las rutas del conocimiento con genios históricos</h1>
+                <div id="wrapper-title-sixth">
+                    <div id="sixth-1">
+                        <img src="/assets/Piezas/star-title.png"/>
+                    </div>
+                    <div id="sixth-2">
+                        <div id="upper-sixth-2">
+                        <h1>¿Qué hubiese aprendido
+                        Nicola Tesla en Top Education?</h1>
+                        </div>
+
+                        <div id="lower-sixth-2">
+                            <span>Descubre las rutas del conocimiento con Genios Históricos</span>
+                        </div>
+                    
+                    
+                    </div>
+                </div>
+
+                    
 
                     <div id="grid-genius">
                         
@@ -303,6 +321,8 @@ function HomePage () {
                         <a><img src="assets/SliderImages/2.png"/></a>
                         <a><img src="assets/SliderImages/3.png"/></a>
                         <a><img src="assets/SliderImages/4.png"/></a>
+                        <a><img src="assets/SliderImages/1.png"/></a>
+                        <a><img src="assets/SliderImages/5.png"/></a>
                     </div>
 
             </div>
