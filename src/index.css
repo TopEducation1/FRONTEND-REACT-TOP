@@ -2758,6 +2758,7 @@ line-height: 30px; /* 150% */
 
 #grid-genius a img {
   border-radius: 20px;
+  cursor: pointer;
 }
 
 #seventh-home-section {
@@ -2788,7 +2789,7 @@ line-height: 30px; /* 150% */
   align-items: center;
   grid-template-columns: repeat(3, 1fr);
   width: 90%;
-  height: 315px;
+  height: auto;
   margin-top:100px ;
 }
 
@@ -2814,14 +2815,18 @@ line-height: 30px; /* 150% */
 }
 
 #button-all-articles {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 484px;
-  height: 73px;
+  min-height:50px;
   background-color: #D33B3E;
   color: #F6F4EF;
   border: none;
   border-radius: 30px;
   font-size: 20px;
-  margin-top: 100px;
+  margin-top: 50px;
+  cursor: pointer;
 }
 
 #first-team-page {
