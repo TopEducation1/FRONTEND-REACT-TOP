@@ -86,13 +86,6 @@ const FlagsHome = () => {
 
   return (
     <div id="fourth-home-section">
-      {/* Debug info */}
-      <div style={debugStyles.debugInfo}>
-        <p>Image loaded: {imageLoaded.toString()}</p>
-        <p>Width: {imageDimensions.width}</p>
-        <p>Height: {imageDimensions.height}</p>
-      </div>
-
       <h2>Aprende con las universidades líderes del mundo</h2>
       <div id="fourth-flags-upper">
         <img 
