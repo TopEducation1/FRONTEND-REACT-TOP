@@ -8,9 +8,47 @@ import RotateVideo from "../components/RotateVideo";
 
 function HomePage () {
 
-
+    const [mousePosition, setMousePosition] = useState({x: 0, y: 0});
     const [statePopUp, setStatePopUp] = useState(false);
     const videoRef = useRef(null);
+
+    const handleMouseMove = (e) => {
+
+        const container = e.currentTarget;
+        const rect = container.getBoundingClientRect();
+
+
+        const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+        const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+
+        setMousePosition({x, y});
+    };
+
+    const handleMouseLeave = () => {
+        setMousePosition({x: 0, y: 0});
+    };
+
+    const StarSVG = () => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 48 48" fill="none">
+          <g filter="url(#filter0_d_625_539)">
+            <path fillRule="evenodd" clipRule="evenodd" d="M12.0175 22.9568C19.6174 23.6036 24.3451 19.6176 24.9919 12.0177C24.3451 19.6176 28.3311 24.3452 35.931 24.9921C28.3311 24.3452 23.6035 28.3313 22.9566 35.9312C23.6035 28.3313 19.6174 23.6036 12.0175 22.9568Z" fill="white"/>
+          </g>
+          <defs>
+            <filter id="filter0_d_625_539" x="0.0175781" y="0.0175781" width="47.9136" height="47.9136" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+              <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+              <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+              <feOffset/>
+              <feGaussianBlur stdDeviation="6"/>
+              <feComposite in2="hardAlpha" operator="out"/>
+              <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_625_539"/>
+              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_625_539" result="shape"/>
+            </filter>
+          </defs>
+        </svg>
+      );
+    
+
 
     const toggleVisibility = () => {
         setStatePopUp((prevState) => {
@@ -34,7 +72,28 @@ function HomePage () {
  
     return (
         <>
-            <div id="first-home-section">
+            <div id="first-home-section"
+                onMouseLeave={handleMouseLeave}
+                onMouseMove={handleMouseMove}
+            >
+
+{/* Capa de estrellas parallax */}
+<div id="stars-container">
+        <div 
+          className="star-wrapper"
+          style={{
+            transform: `translate(${mousePosition.x * 15}px, ${mousePosition.y * 15}px)`
+          }}
+        >
+          <div id="star-1-parallax"><StarSVG /></div>
+          <div id="star-2-parallax"><StarSVG /></div>
+          <div id="star-3-parallax"><StarSVG /></div>
+          <div id="star-4-parallax"><StarSVG /></div>
+          <div id="star-5-parallax"><StarSVG /></div>
+          <div id="star-6-parallax"><StarSVG /></div>
+          <div id="star-7-parallax"><StarSVG /></div>
+        </div>
+      </div>
 
                 <div id="left-first-section">
                     <h1>Top Education</h1>
