@@ -1,16 +1,18 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const FlagsCafam = ({ direction = 'left', onFlagSelect }) => {
+const FlagsCafam = ({ direction = 'left', handleBannerClick }) => {
   const wrapperRef = useRef(null);
   const navigate = useNavigate();
 
   const handleLogoClick = (company) => {
+    
     const initialTags = {
       "Empresa": [company]
     };
+    console.log(initialTags);
 
-    navigate('cafam/library', {
+    navigate('/cafam/', {
       state: { selectedTags: initialTags },
       replace: true
     });
@@ -28,7 +30,7 @@ const FlagsCafam = ({ direction = 'left', onFlagSelect }) => {
     { url: "https://www.top.education/certificaciones/empresa/the-museum-of-modern-art", img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/6172a009-b534-4e63-8411-0225e403248c/9.png", alt: "MoMA", company: "MoMA" },
     { url: "https://www.top.education/certificaciones/empresa/yad-vashem", img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bbfbb000-c051-4fda-9893-3e962c23616d/10.png", alt: "Yad Vashem", company: "Yad Vashem" },
     { url: "https://www.top.education/certificaciones/empresa/banco-interamericano-de-desarrollo", img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/995e0524-aecc-4840-bbc3-8dbb3046a0be/11.png", alt: "BID", company: "Banco Interamericano de Desarrollo" },
-    { url: "", img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/4ed2514f-f8f1-41b1-bbe3-410b55eecd05/12.png", alt: "Pathstream", company: "Pathstream" },
+    { url: "", img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/4ed2514f-f8f1-41b1-bbe3-410b55eecd05/12.png", alt: "Capitals Coalition", company: "Capitals Coalition" },
   ];
 
   const repeatLogos = Array(3).fill(logos).flat();
@@ -42,11 +44,10 @@ const FlagsCafam = ({ direction = 'left', onFlagSelect }) => {
         href={logo.url}
         onClick={(e) => {
           e.preventDefault();
-          if (onFlagSelect) {
-            onFlagSelect("empresas", logo.company);
-          } else {
-            handleLogoClick(logo.company);
+          if (handleBannerClick) {
+            handleBannerClick(logo.company);
           }
+           
         }}
       >
         <img src={logo.img} alt={logo.alt} />
@@ -59,7 +60,6 @@ const FlagsCafam = ({ direction = 'left', onFlagSelect }) => {
   return (
     <div className="carousel-container">
       <div className={`carousel-track ${direction}`}>
-        {/* Primera copia */}
         {logos.map((logo, index) => (
           <a 
             key={`set1-${index}`} 
@@ -67,17 +67,14 @@ const FlagsCafam = ({ direction = 'left', onFlagSelect }) => {
             href={logo.url}
             onClick={(e) => {
               e.preventDefault();
-              if (onFlagSelect) {
-                onFlagSelect("empresas", logo.company);
-              } else {
-                handleLogoClick(logo.company);
+              if (handleBannerClick) {
+                handleBannerClick(logo.company);
               }
             }}
           >
             <img src={logo.img} alt={logo.alt} />
           </a>
         ))}
-        {/* Segunda copia */}
         {logos.map((logo, index) => (
           <a 
             key={`set2-${index}`} 
@@ -85,10 +82,8 @@ const FlagsCafam = ({ direction = 'left', onFlagSelect }) => {
             href={logo.url}
             onClick={(e) => {
               e.preventDefault();
-              if (onFlagSelect) {
-                onFlagSelect("empresas", logo.company);
-              } else {
-                handleLogoClick(logo.company);
+              if (handleBannerClick) {
+                handleBannerClick(logo.company);
               }
             }}
           >

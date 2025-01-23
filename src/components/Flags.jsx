@@ -59,7 +59,6 @@ const Flags = ({ direction = 'left', onFlagSelect }) => {
   return (
     <div className="carousel-container">
       <div className={`carousel-track ${direction}`}>
-        {/* Primera copia */}
         {logos.map((logo, index) => (
           <a 
             key={`set1-${index}`} 

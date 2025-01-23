@@ -6,36 +6,6 @@ import AnimatedCarousel from "../../components/cafam/AnimatedCarousel.jsx";
 import Flags from "../../components/Flags.jsx";
 import React, { useState, useEffect, useCallback } from "react";
 
-
-const universidadesLatamImagenes = [
-    "assets/cafam/latinoamérica/andes.png",
-    "assets/cafam/latinoamérica/tec.png",
-    "assets/Universidades/UNAM.png",
-    "assets/Universidades/SAE-México.png",
-    "assets/Universidades/Pontificia-Universidad-Católica-de-Chile.png",
-    "assets/Universidades/Universidad-de-Palermo.png",
-    "assets/Universidades/universidad-autónoma-metropolitana.png",
-    "assets/Universidades/Universidad-nacional-de-colombia.png",
-    "assets/Universidades/Pontificia-Universidad-Católica-del-Perú.png"
-];
-
-const universidadesImagenes = [
-    "assets/cafam/mundo/duke.png",
-    "assets/cafam/mundo/yale.png",
-    "assets/cafam/mundo/stanford.png",
-    "assets/Universidades/UNAM.png",
-    "assets/Universidades/University-of-Maryland-College-Park.png",
-    "assets/Universidades/University-of-Virginia.png",
-    "assets/Universidades/Wesleyan-University.png",
-    "assets/Universidades/university-of-minnesota.png",
-    "assets/Universidades/University-of-California,-Irvine.png"
-
-];
-
-
-
-
-
 const HomeCafam = () => {
 
 
@@ -63,40 +33,7 @@ const HomeCafam = () => {
 
             </div>
 
-            <div id="universities-cafam-section">
-                <div id="upper-section-universities" className="block-universities">
-                    <div className="wrapper-title-cafam-universities">
-                        <h1>Aprende de las mejores universidades de Latinoamérica...</h1>
-                    </div>
-
-                    <div id="wrapper-upper-universities-cafam">
-                        <div id="wrapper-slider-upper-universities">
-
-                            <SliderWithDots images={universidadesLatamImagenes} />
-
-                        </div>
-                    </div>
-                </div>
-                <div id="lower-section-universities" className="block-universities">
-
-                    <div id="wrapper-lower-universities-cafam">
-                        
-                    <div className="wrapper-title-cafam-universities">
-                        <h1>y de todo el mundo</h1>
-                    </div>
-                        
-                        <div id="wrapper-slider-lower-universities">
-
-
-                        <SliderWithDots
-                            images={universidadesImagenes}
-                            showAllDots={true}
-                        />
-                    </div></div>
-                    
-
-                </div>
-            </div>
+            
 
 
             <div id="container-component-certifications-cafam">

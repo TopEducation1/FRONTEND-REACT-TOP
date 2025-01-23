@@ -1,4 +1,10 @@
+import SearchBarCafam from './searchBarCafam'
+import React, { useState, useEffect, useCallback } from "react";
+
+
 const HeaderCafam = () => {
+
+    const [isMobileView, setIsMobileView] = useState(false); // Tracks mobile view state
 
 
     return (
@@ -8,7 +14,9 @@ const HeaderCafam = () => {
                     <div id="wrapper-logo-cafam">
                         <img src="/assets/cafam/logos/logo-nav.png"/>
                     </div>
-                    <div id="wrapper-search-cafam"></div>
+                    <div id="wrapper-search-cafam">
+                        <SearchBarCafam />
+                    </div>
                 </nav>
 
         </>

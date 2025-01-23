@@ -1,11 +1,58 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const SliderWithDots = ({ images = [], itemsPerSection = 3 }) => {
+// University Image Arrays
+const universidadesLatamImagenes = [
+  {img: "assets/cafam/latinoamérica/andes.png", universidad: "Universidad de los Andes"},
+  {img: "assets/cafam/latinoamérica/tec.png", universidad: "Tecnológico de Monterrey"},
+  {img: "assets/Universidades/UNAM.png", universidad: "UNAM"},
+  {img: "assets/Universidades/SAE-México.png", universidad: "SAE-México"},
+  {img: "assets/Universidades/Pontificia-Universidad-Católica-de-Chile.png", universidad: "Pontificia Universidad Catolica de Chile"},
+  {img: "assets/Universidades/Universidad-de-Palermo.png", universidad: "Universidad de Palermo"},
+  {img: "assets/Universidades/universidad-autónoma-metropolitana.png", universidad: "Universidad Autónoma Metropolitana"},
+  {img: "assets/Universidades/Universidad-nacional-de-colombia.png", universidad: "Universidad Nacional de Colombia"},
+  {img: "assets/Universidades/Pontificia-Universidad-Católica-del-Perú.png", universidad: "Pontificia Universidad Catolica de Peru"},
+];
+
+const universidadesImagenes = [
+  {img: "assets/cafam/mundo/duke.png", universidad: "Duke University"},
+  {img: "assets/cafam/mundo/yale.png", universidad: "Yale University"},
+  {img: "assets/cafam/mundo/stanford.png", universidad: "Stanford University"},
+  {img: "assets/Universidades/University-of-Maryland-College-Park.png", universidad: "University of Maryland, College Park"},
+  {img: "assets/Universidades/University-of-Virginia.png", universidad: "University of Virginia"},
+  {img: "assets/Universidades/Wesleyan-University.png", universidad: "Wesleyan University"},
+  {img: "assets/Universidades/university-of-minnesota.png", universidad: "University of Minnesota"},
+  {img: "assets/Universidades/University-of-California,-Irvine.png", universidad: "University of California, Irvine"},
+];
+
+// Slider Component
+const SliderWithDots = ({ 
+
+  images = [], 
+  itemsPerSection = 3, 
+  handleBannerClick,
+  showAllDots = false 
+
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsToShow, setItemsToShow] = useState(3);
   const sliderRef = useRef(null);
+  const navigate = useNavigate();
 
-  // Ajuste responsivo
+  const handleLogoClick = (university) => {
+    
+    const initialTags = {
+      "Universidad": [university]
+    };
+    console.log(initialTags);
+
+    navigate('/cafam/', {
+      state: { selectedTags: initialTags },
+      replace: true
+    });
+  };
+
+  // Responsive adjustment
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
@@ -18,23 +65,23 @@ const SliderWithDots = ({ images = [], itemsPerSection = 3 }) => {
       }
     };
 
-    // Establecer estado inicial
+    // Set initial state
     handleResize();
 
-    // Listener de resize
+    // Resize listener
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Calcular número total de secciones
+  // Calculate total sections
   const totalSections = Math.ceil(images.length / itemsToShow);
 
-  // Navegación entre secciones
+  // Navigate between sections
   const goToSection = (index) => {
     setCurrentIndex(index);
   };
 
-  // Renderizado condicional si no hay imágenes
+  // Render nothing if no images
   if (images.length === 0) return null;
 
   return (
@@ -50,7 +97,7 @@ const SliderWithDots = ({ images = [], itemsPerSection = 3 }) => {
             width: `${totalSections * 100}%`
           }}
         >
-          {images.map((img, index) => (
+          {images.map((universidad, index) => (
             <div 
               key={index} 
               className="slider-item"
@@ -61,11 +108,19 @@ const SliderWithDots = ({ images = [], itemsPerSection = 3 }) => {
                 boxSizing: 'border-box'
               }}
             >
-              <div className="slider-card">
+              <div 
+                className="slider-card"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (handleBannerClick) {
+                    handleBannerClick(universidad.universidad);
+                  }
+                }}
+              >
                 <div className="card-content">
                   <img 
-                    src={img} 
-                    alt={`Slide ${index + 1}`} 
+                    src={universidad.img} 
+                    alt={universidad.universidad} 
                     style={{
                       maxWidth: '100%',
                       maxHeight: '100px',
@@ -79,7 +134,7 @@ const SliderWithDots = ({ images = [], itemsPerSection = 3 }) => {
         </div>
       </div>
 
-      {totalSections > 1 && (
+      {(totalSections > 1 || showAllDots) && (
         <div className="slider-dots">
           {[...Array(totalSections)].map((_, index) => (
             <button
@@ -95,4 +150,45 @@ const SliderWithDots = ({ images = [], itemsPerSection = 3 }) => {
   );
 };
 
-export default SliderWithDots;
+// Universities Section Component
+const UniversitiesSection = ({handleBannerClick}) => {
+  const navigate = useNavigate();
+
+
+  return (
+    <div id="universities-cafam-section">
+      <div id="upper-section-universities" className="block-universities">
+        <div className="wrapper-title-cafam-universities">
+          <h1>Aprende de las mejores universidades de Latinoamérica...</h1>
+        </div>
+
+        <div id="wrapper-upper-universities-cafam">
+          <div id="wrapper-slider-upper-universities">
+            <SliderWithDots 
+              images={universidadesLatamImagenes} 
+              handleBannerClick={(university) => handleBannerClick("Universidad", university)}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div id="lower-section-universities" className="block-universities">
+        <div id="wrapper-lower-universities-cafam">
+          <div className="wrapper-title-cafam-universities">
+            <h1>y de todo el mundo</h1>
+          </div>
+          
+          <div id="wrapper-slider-lower-universities">
+            <SliderWithDots
+              images={universidadesImagenes}
+              showAllDots={true}
+              handleBannerClick={(university) => handleBannerClick("Universidad", university.universidad)}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default UniversitiesSection;
