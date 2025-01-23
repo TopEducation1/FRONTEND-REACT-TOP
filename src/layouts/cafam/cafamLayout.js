@@ -10,7 +10,7 @@ function CafamLayout() {
     useEffect(() => {
         // Agregar clase al body
         document.body.classList.add("cafam-layout");
-        
+
         // Asegurar que estamos en una ruta de Cafam
         if (!location.pathname.startsWith('/cafam')) {
             navigate('/cafam', { replace: true });
@@ -28,7 +28,7 @@ function CafamLayout() {
         };
 
         window.addEventListener('beforeunload', handleBeforeUnload);
-        
+
         // Restaurar la última ruta conocida de Cafam si existe
         const lastPath = sessionStorage.getItem('lastCafamPath');
         if (lastPath && location.pathname === '/') {
@@ -43,9 +43,7 @@ function CafamLayout() {
     return (
         <div className="cafam-root-layout">
             <HeaderCafam />
-            <main>
-                <Outlet />
-            </main>
+            <Outlet />
         </div>
     );
 }
