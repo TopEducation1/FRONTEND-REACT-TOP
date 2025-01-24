@@ -28,7 +28,7 @@ const CertificationsListCCafam = ({ certifications }) => {
     }
 
     return (
-        <div className="wrapper-certifications">
+        <div className="wrapper-certifications-cafam">
             {certifications.map(certification => {
                 const topicName = certification.tema_certificacion?.nombre || 'Sin categoría';
 
