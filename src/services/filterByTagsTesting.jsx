@@ -22,7 +22,8 @@ class TagFilterService {
             'Tema': 'temas',
             'Plataforma': 'plataforma',
             'Empresa': 'empresas',
-            'Universidad': 'universidades'
+            'Universidad': 'universidades',
+            'Habilidad': 'habilidades'
         };
 
         Object.entries(tags).forEach(([category, tagList]) => {

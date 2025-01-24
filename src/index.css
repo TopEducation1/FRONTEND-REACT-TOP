@@ -3829,6 +3829,16 @@ line-height: 30px; /* 150% */
 
 @media(max-width: 1070px) {
 
+  .wrapper-logo-nav  {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .navigation-menu {
+    display: none;
+  }
+
   #wrapper-title-sixth {
     margin-top: 0;
   }
