@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext, useLocation, useNavigate } from 'react-router-dom';
 import SkillsTags from "../services/skillsService";
 //import Universities from "../services/universitiesService";
 import Topics from "../services/topicService";
@@ -9,19 +9,19 @@ import CertificationsList from "../components/layoutCertifications";
 import SearchBar from "../components/searchBar";
 import LatestInTopFetcher from "../services/LatestInTopFetcher";
 import RoutesComponent from "../components/RoutesComponent";
-import { useLocation, useNavigate } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
 import IndexCategories from "../components/IndexCategories";
 import IndexCategoriesCafam from "../components/cafam/IndexCategoriesCafam";
+import SlidingMenuIndex from "../components/SlidingMenuIndex";
 
 /**
  * Pagina de la biblioteca
  *  */
 
-function LibraryPage({ showRoutes = true,  }) {
+function LibraryPage({ showRoutes = true }) {
+    const { isMenuOpen, closeIndexResponsiveMenu, openIndexResponsiveMenu } = useOutletContext();
 
     const [width, setWidth] = useState(window.innerWidth);           // Tracks window width
-    const [isMenuOpen, setIsMenuOpen] = useState(false);            // Controls mobile menu visibility
     const [openSections, setOpenSections] = useState([]);           // Tracks open filter sections
     const [selectedTags, setSelectedTags] = useState({});           // Stores selected filter tags
     const [isMobileView, setIsMobileView] = useState(false);        // Tracks mobile view state
@@ -66,20 +66,7 @@ function LibraryPage({ showRoutes = true,  }) {
     }, [location]);
 
 
-    useEffect(() => {
-
-        const handleRezise = () => {
-            SetIsSmallScreen(window.innerWidth <= 800);
-
-        }
-
-        window.addEventListener('resize', handleRezise);
-        handleRezise(); 
-
-        return () => {
-            window.removeEventListener('resize', handleRezise);
-        }
-    }, []);
+    
 
 
 
@@ -157,7 +144,6 @@ function LibraryPage({ showRoutes = true,  }) {
     };
 
     const handleNewInTopClick = async () => {
-        console.log('Clic en Nuevos en Top');
 
         setLoading(true);
 
@@ -296,26 +282,7 @@ function LibraryPage({ showRoutes = true,  }) {
 
     
 
-    /**
-     * Abre el menu  del index responsive
-     */
 
-    const openIndexResponsiveMenu = () => {
-        setIsMenuOpen(true);
-    };
-
-
-    /**
-     * Cierre el menu index reponsive
-     */
-    const closeIndexResponsiveMenu = () => {
-        setIsMenuOpen(false);
-    };
-
-
-    
-
-    
 
     
 
@@ -404,36 +371,8 @@ function LibraryPage({ showRoutes = true,  }) {
                 </div>
             </div>
 
-
-            <div className={`sliding-menu-index ${isMenuOpen ? 'open' : ''}`}>
-                <button
-                    className="btnclose-index-responsive-menu"
-                    onClick={closeIndexResponsiveMenu}
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="#ffffff"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="icon icon-tabler icons-tabler-outline icon-tabler-x"
-                    >
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                        <path d="M18 6l-12 12" />
-                        <path d="M6 6l12 12" />
-                    </svg>
-                </button>
-
-
-                
-                <IndexCategories onTagSelect={handleTagClick}/>
-
-            </div>
-
+            <SlidingMenuIndex />
+            
             <div ref={certificationsRef} className="certifications-container">
                 {loading ? (
                     <span class="loader"></span>

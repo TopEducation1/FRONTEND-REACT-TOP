@@ -6,24 +6,47 @@
   import "../../index.css";
 
   function TopEducationLayout() {
-    // Estado para controlar si se está cargando
     const [isLoading, setIsLoading] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    useEffect(() => {
-      const timer = setTimeout(() => {
-        setIsLoading(false); 
-      }, 3000);
+  const toggleMenu = () => {
+    console.log('Toggle Menu llamado, estado actual:', !isMenuOpen); // Debug
+    setIsMenuOpen(!isMenuOpen);
+  };
+  
+  const openIndexResponsiveMenu = () => {
+    console.log('Abriendo menú, estado actual:', isMenuOpen);
+    setIsMenuOpen(true);
+    console.log('Nuevo estado:', true);
+};
 
-      return () => clearTimeout(timer); 
-    }, []);
+  
+  const closeIndexResponsiveMenu = () => {
+    console.log('Cerrando menú'); // Debug
+    setIsMenuOpen(false);
+  };
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false); 
+    }, 3000);
+
+    return () => clearTimeout(timer); 
+  }, []);
+
+  // Debug del estado
+  useEffect(() => {
+    console.log('Estado del menú:', isMenuOpen);
+  }, [isMenuOpen]);
     return (
       <>
         {isLoading && <LoadingPage />}
         <div className={isLoading ? "content-hidden" : "content-visible"}>
-          <Header />
+          <Header toggleMenu={toggleMenu} 
+          openIndexResponsiveMenu={openIndexResponsiveMenu}
+          isMenuOpen={isMenuOpen}/>
           <main>
-            <Outlet />
+            <Outlet context={{ isMenuOpen, openIndexResponsiveMenu,  closeIndexResponsiveMenu }} />
           </main>
           <Footer />
         </div>
