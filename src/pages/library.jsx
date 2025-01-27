@@ -347,7 +347,7 @@ function LibraryPage({ showRoutes = true }) {
             </div>
 
             
-
+            <IndexCategories onTagSelect={handleTagClick}/>
 
             <div
                 id="container-logo-platforms"
