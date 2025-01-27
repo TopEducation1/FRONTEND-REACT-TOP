@@ -32,8 +32,8 @@ const CertificationsList = ({ certifications }) => {
                 case 2:
                     path = `/certificacion/coursera/${certification.id}`;
                     break;
-                default:
-                    path = `/certificacion/${certification.id}`;
+                case 3:
+                    path = `/certificacion/masterclass/${certification.id}`;
             }
 
             console.log('Navigating to:', path);
