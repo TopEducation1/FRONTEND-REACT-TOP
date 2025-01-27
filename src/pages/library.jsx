@@ -397,9 +397,10 @@ function LibraryPage({ showRoutes = true,  }) {
                     <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "MasterClass")}>
                         <img src="assets/logos/masterclass-hover.png" />
                     </div>
-                </div>
-                <div id="wrapper-new-courses">
-                    <img onClick={handleNewInTopClick} src="assets/banners/Botón_Nuevo_en_Top_Education.svg" />
+                    <div className="container-logo">
+                        <img  id="banner-new-on-top"onClick={handleNewInTopClick} src="assets/banners/Botón_Nuevo_en_Top_Education.svg" />
+                    </div>
+                    
                 </div>
             </div>
 
