@@ -4947,6 +4947,16 @@ line-height: 30px; /* 150% */
 }
 
 
+@media(max-width:450px ) {
+  .wrapper-certifications {
+  }
+
+  .certification-card {
+    width: 200px;
+  }
+
+}
+
 @media(max-width: 400px ) {
 
   .container-routes-section {
