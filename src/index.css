@@ -3587,7 +3587,7 @@ line-height: 30px; /* 150% */
   }
 
   .certification-card {
-    width: 280px;
+    width: 260px;
   }
 
   .unfold-category-button {
@@ -3599,8 +3599,8 @@ line-height: 30px; /* 150% */
   }
 
   .container-tags {
-    left: 20%;
-    width: 75%;
+    left: 22%;
+    width: 77%;
   }
 
   #container-logo-platforms {
@@ -3613,9 +3613,11 @@ line-height: 30px; /* 150% */
     max-width: 200px;
   }
 
+
+
   .container-routes-section {
     position: relative;
-    top: 800px;
+    margin-top: -40px;
   }
 
   #wrapper-new-courses {
@@ -3727,7 +3729,7 @@ line-height: 30px; /* 150% */
     justify-content: center;
     align-items: center;
     position: absolute;
-    top: -100px;
+    margin-top: 20px;
     width: 100%;
     left: 0px;
     height: 100px;
@@ -3735,7 +3737,7 @@ line-height: 30px; /* 150% */
   }
 
   .container-tags {
-    top: 560px;
+    top: 320px;
 
   }
 
