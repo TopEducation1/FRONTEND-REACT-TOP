@@ -76,7 +76,7 @@ header {
   top: 110px;
   left: -100%;
   width: 100%;
-  height: calc(100vh - 110px);
+  height: 100vh;
   background: rgba(24, 24, 24, 0.15);
   box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
   backdrop-filter: blur( 20px );
@@ -3998,6 +3998,10 @@ line-height: 30px; /* 150% */
 }
 
 @media(max-width: 807px ) {
+
+  .container-buttons-pagination {
+    margin-top: 650px;
+  }
   
   .wrapper-certifications {
     grid-template-columns: repeat(3, 1fr);
@@ -4011,9 +4015,7 @@ line-height: 30px; /* 150% */
     width: 245px;
   }
 
-  .index-container {
-    display: none;
-  }
+  
 
   
 
