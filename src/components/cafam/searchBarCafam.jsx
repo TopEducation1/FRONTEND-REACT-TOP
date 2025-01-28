@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import FilterBySearch from "../../services/filterBySearch";
 import { useDebounce } from "use-debounce";
 import { X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
 
 const SearchBar = () => {
   const [position, setPosition] = useState(0);
@@ -12,6 +14,8 @@ const SearchBar = () => {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [debouncedText] = useDebounce(text, 300);
+  const navigate = useNavigate();
+
 
   const handleWriting = (event) => {
     setText(event.target.value);
@@ -52,6 +56,36 @@ const SearchBar = () => {
       setResults(tempResults);
     }
   }, [loading, tempResults]);
+
+  const handleCertificationClick = (certification, e) => {
+    e.preventDefault();
+    try {
+        if (!certification) {
+            throw new Error('No certification data provided');
+        }
+
+        const platformId = certification.plataforma_certificacion_id;
+        let path;
+
+        switch (platformId) {
+            case 1:
+                path = `/cafam/certificacion/${certification.id}`;
+                break;
+            case 2:
+                path = `/cafam/certificacion/${certification.id}`;
+                break;
+            default:
+                path = `/cafam/certificacion/${certification.id}`;
+                break;
+        }
+
+        console.log('Navigating to:', path);
+        navigate(path);
+    } catch (err) {
+        console.error('Navigation error:', err);
+        setError('Error al navegar a la certificación');
+    }
+};
 
   return (
     <>
@@ -94,7 +128,7 @@ const SearchBar = () => {
       {debouncedText.trim() && results.length > 0 && (
         <div className="container-results-cafam">
           {results.map((resultado) => (
-            <div key={resultado.id} className="box-result">
+            <div key={resultado.id} onClick={(e) => handleCertificationClick(resultado, e)} className="box-result">
               <div className="wrapper-img-box">
                 <img src={resultado.url_imagen_universidad_certificacion} alt={resultado.nombre} />
               </div>
