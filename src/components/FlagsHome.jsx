@@ -12,7 +12,7 @@ const FlagsHome = () => {
 
 
   const handleUniversityClick = (tag) => {
-    console.log('Clicked:', tag);
+    //console.log('Clicked:', tag);
     const initialTags = {
       "Universidad": [tag]
     };
@@ -20,6 +20,7 @@ const FlagsHome = () => {
       state: { selectedTags: initialTags },
       replace: true
     });
+    window.scrollTo(0,0);
   };
 
   const resizeMap = (mapRef, imageRef, originalWidth) => {
@@ -29,7 +30,7 @@ const FlagsHome = () => {
     const currentWidth = imageRef.current.clientWidth;
     const scale = currentWidth / originalWidth;
 
-    console.log('Resizing map:', { originalWidth, currentWidth, scale });
+    //console.log('Resizing map:', { originalWidth, currentWidth, scale });
 
     Array.from(areas).forEach(area => {
       if (!area.dataset.originalCoords) {
