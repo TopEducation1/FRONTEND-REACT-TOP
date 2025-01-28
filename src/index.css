@@ -370,7 +370,8 @@ header {
 
 
 .wrapper-search-bar.mobile-style {
-  display: none;
+  display: flex
+;
 }
 
 .input {
@@ -1001,7 +1002,7 @@ header {
 .certification-card {
   display: grid;
   position: relative;
-  grid-template-rows: 35% 35% 30%;
+  grid-template-rows: 38% 30% 32%;
   width: 280px;
   height: 280px;
   background-color: #F6F4EF;
@@ -1048,7 +1049,7 @@ header {
 .container-img-card {
   display: flex;
   box-sizing: border-box;
-  padding-top: 30px;
+  padding-top: 0px;
   justify-content: center;
   align-items: center;
   overflow: hidden;
