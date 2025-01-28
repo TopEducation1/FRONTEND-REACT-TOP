@@ -4861,7 +4861,7 @@ line-height: 30px; /* 150% */
   }
   
   .wrapper-certifications {
-    grid-template-columns: repeat(2, 1fr);
+    /**grid-template-columns: repeat(2, 1fr);**/
   }
 
   .certification-card {
