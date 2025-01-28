@@ -3,7 +3,7 @@ import { use } from 'react';
 import IndexCategories from './IndexCategories';
 import { useOutletContext } from 'react-router-dom';
 
-const SlidingMenuIndex = () => {
+const SlidingMenuIndex = ({ onTagSelect }) => {
     const { isMenuOpen, closeIndexResponsiveMenu } = useOutletContext();
 
 
@@ -29,10 +29,10 @@ const SlidingMenuIndex = () => {
                     </svg>
                 </button>
 
+                <IndexCategories onTagSelect={onTagSelect}/>
 
-                
-                {/**<IndexCategories onTagSelect={handleTagClick}/> */}
 
+            
             </div>
 
     );

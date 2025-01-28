@@ -24,7 +24,7 @@ function LibraryPage({ showRoutes = true }) {
     const [width, setWidth] = useState(window.innerWidth);           // Tracks window width
     const [openSections, setOpenSections] = useState([]);           // Tracks open filter sections
     const [selectedTags, setSelectedTags] = useState({});           // Stores selected filter tags
-    const [isMobileView, setIsMobileView] = useState(false);        // Tracks mobile view state
+    const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 1025);        // Tracks mobile view state
     const [indexPosition, setIndexPosition] = useState(0);          // Tracks index position
     const [filteredResults, setFilteredResults] = useState([]);     // Stores filtered certifications
     const [certifications, setCertifications] = useState([]);       // Stores all certifications
@@ -35,6 +35,9 @@ function LibraryPage({ showRoutes = true }) {
     const location = useLocation();
     const [debouncedSelectedTags, setDebouncedSelectedTags] = useDebounce(selectedTags, 300);
     const certificationsRef = useRef(null);
+
+
+    
 
     const NoResultsMessage = () => (
         <div className="no-results-container">
@@ -49,6 +52,15 @@ function LibraryPage({ showRoutes = true }) {
             </button>
         </div>
     );
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobileView(window.innerWidth <= 1025);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     useEffect(() => {
         if (location.state?.selectedTags) {
@@ -347,7 +359,7 @@ function LibraryPage({ showRoutes = true }) {
             </div>
 
             
-            <IndexCategories onTagSelect={handleTagClick}/>
+            
 
             <div
                 id="container-logo-platforms"
@@ -371,7 +383,11 @@ function LibraryPage({ showRoutes = true }) {
                 </div>
             </div>
 
-            <SlidingMenuIndex />
+            {!isMobileView && (
+                <IndexCategories onTagSelect={handleTagClick} />
+            )}
+
+            <SlidingMenuIndex onTagSelect={handleTagClick} />
             
             <div ref={certificationsRef} className="certifications-container">
                 {loading ? (
