@@ -120,9 +120,9 @@ const MasterClassCertificationPage = () => {
                 <div className="about-area-masterclass" id="wrapper-no-gap-short-info-masterclass">
                     <div id="wrapper-short-info-masterclass">
                         <ul>
-                        <li>Categoría: {certification.tema_certificacion.nombre}</li>
-                        <li>Instructor: Lewis Hamilton</li>
-                        <li>Duración de la clase: {certification.tiempo_certificacion}</li>
+                        <li><strong>Categoría: </strong> {certification.tema_certificacion.nombre}</li>
+                        <li><strong>Instructor: </strong>Lewis Hamilton</li>
+                        <li><strong>Duración de la clase: </strong>{certification.tiempo_certificacion}</li>
 
                         </ul>
                     </div>
