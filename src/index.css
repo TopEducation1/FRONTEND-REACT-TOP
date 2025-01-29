@@ -4309,6 +4309,14 @@ line-height: 30px; /* 150% */
     display: none;
   }
 
+  #content-masterclass-certification {
+    width: 100%;
+  }
+
+  #promotion-wrapper-masterclass-certification {
+    display: none;
+  }
+
   #wrapper-title-sixth {
     margin-top: 0;
   }
