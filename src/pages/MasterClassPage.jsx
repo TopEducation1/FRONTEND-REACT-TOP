@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 import getCertificationById from "../services/getCertificationById";
 import RightPop from "../components/RightPop";
+import YouTubePlayer from "../components/YoutubePlayer";
 
 const MasterclassCertificationPage = () => {
     // Estados de la pagina de certificacion
@@ -109,7 +110,7 @@ const MasterclassCertificationPage = () => {
                 </div>
                 <div className="about-area-masterclass" id="wrapper-video-button-masterclass">
                     <div id="wrapper-video-masterclass">
-                    
+                        <YouTubePlayer url={certification.video_certificacion.url} />
                     </div>
                     <div id="wrapper-button-view-more-masterclass">
                         <button

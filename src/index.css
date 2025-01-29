@@ -3583,6 +3583,11 @@ line-height: 30px; /* 150% */
   span {
     color: white;
   }
+
+  iframe {
+    width:100%;
+    height: 100%;
+  }
 }
 
 
