@@ -103,6 +103,11 @@ const CertificationPage = () => {
                 <title>{certification.nombre}</title>
                 <meta name="description" content={certification.metadescripcion_certificacion}/>
                 <meta property="og:title" content={certification.metadescripcion_certificacion}/>
+                <meta name="keywords" content={certification.palabra_clave_certificacion}/>
+                <meta name="author" content="Top Education"/>
+                <meta name="robots" content="index, follow" />
+                <meta property="og:description" content={certification.metadescripcion_certificacion} />
+                <meta property="og:type" content="website" />
             </Helmet>
 
 
