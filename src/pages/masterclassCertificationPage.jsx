@@ -130,13 +130,13 @@ const MasterClassCertificationPage = () => {
                 <div className="about-area-masterclass">
 
                     <div id="about-masterclass">
-                        <h2>Acerca de esta clase</h2>
+                        <h1>Acerca de esta clase</h1>
                         <p>{certification.experiencia_certificacion}</p>
                     </div>
                 </div>
                 <div className="about-area-masterclass" >
                     <div id="widgets-learning-masterclass">
-                        <h2>Habilidades que obtendrás</h2>
+                        <h1>Habilidades que obtendrás</h1>
                         <div id="wrapper-widgets-learning">
                             
                         {certification.aprendizaje_certificacion.map((item) => {
