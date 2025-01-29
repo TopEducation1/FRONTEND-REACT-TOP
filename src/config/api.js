@@ -1,11 +1,11 @@
 const API_URL = "https://backend-django-top-production.up.railway.app";
-
+//http://127.0.0.1:8000
 console.log('API_URL:', API_URL);
 
 const BASE_URL = API_URL;
 console.log('BASE_URL:', BASE_URL);
 
-// Endpoints
+// Endpoints  
 export const endpoints = {
   certificaciones: `${BASE_URL}/certificaciones/`,
   certificaciones_tags: `${BASE_URL}/certificaciones/filter/`,

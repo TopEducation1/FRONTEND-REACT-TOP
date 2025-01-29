@@ -109,7 +109,7 @@ const MasterClassCertificationPage = () => {
                 </div>
                 <div className="about-area-masterclass" id="wrapper-video-button-masterclass">
                     <div id="wrapper-video-masterclass">
-                        <span>Video</span>
+                    
                     </div>
                     <div id="wrapper-button-view-more-masterclass">
                         <button
