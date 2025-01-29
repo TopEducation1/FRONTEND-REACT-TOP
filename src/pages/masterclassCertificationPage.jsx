@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import getCertificationById from "../services/getCertificationById";
 import RightPop from "../components/RightPop";
 
-const MasterClassCertificationPage = () => {
+const MasterclassCertificationPage = () => {
     // Estados de la pagina de certificacion
     const { id } = useParams();
     const [certification, setCertification] = useState(null);
@@ -284,4 +284,4 @@ const MasterClassCertificationPage = () => {
     )
 };
 
-export default MasterClassCertificationPage;
+export default MasterclassCertificationPage;
