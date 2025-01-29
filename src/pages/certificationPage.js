@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 import getCertificationById from "../services/getCertificationById";
 import RightPop from "../components/RightPop";
+import { Helmet } from 'react-helmet';
 
 const CertificationPage = () => {
     // Estados de la pagina de certificacion
@@ -97,8 +98,12 @@ const CertificationPage = () => {
         <>
            
 
-
-
+            {/**SEO ELEMENTS WITH REACT -HELMET */}
+            <Helmet>
+                <title>{certification.nombre}</title>
+                <meta name="description" content={certification.metadescripcion_certificacion}/>
+                <meta property="og:title" content={certification.metadescripcion_certificacion}/>
+            </Helmet>
 
 
 
