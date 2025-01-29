@@ -16,7 +16,7 @@ import CafamLayout from "./layouts/cafam/cafamLayout.js";
 import ParaEquipos from "./pages/paraEquipos.jsx";
 import StartNow from "./pages/startNow.jsx";
 import EdxCertificationPage from "./pages/EdxCertificationPage.jsx";
-import MasterclassCertificationPage from "./pages/MasterclassCertificationPage.jsx";
+import MasterClassPage from "./pages/MasterClassPage.jsx";
 
 
 function App() {
@@ -39,7 +39,7 @@ function App() {
               <Route element={<TopEducationLayout />}>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/library" element={<LibraryPage />} />
-                  <Route path="/certificacion/masterclass/:id" element={<MasterclassCertificationPage />} />
+                  <Route path="/certificacion/masterclass/:id" element={<MasterClassPage />} />
                   <Route path="/certificacion/edx/:id" element={<EdxCertificationPage />} />
                   <Route path="/certificacion/coursera/:id" element={<CertificationPage />} />
                   <Route path="/certificacion/:id" element={<CertificationPage />} />
