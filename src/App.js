@@ -18,6 +18,7 @@ import StartNow from "./pages/startNow.jsx";
 import EdxCertificationPage from "./pages/EdxCertificationPage.jsx";
 import MasterclassCertificationPage from "./pages/MasterclassCertificationPage.jsx";
 
+
 function App() {
   useEffect(() => {
       document.title = "Top Education";

@@ -12,22 +12,22 @@ const MasterclassCertificationPage = () => {
     const [expandedIndex, setExpandedIndex] = useState(null);
     const [countSkills, setSkillsCount] = useState(0);
     // Estado para manejar la posición del pop up
-    const [positionPopUp, SetPositionPopUp] = useState(false);
+    const [positionPopUp, setPositionPopUp] = useState(false);
     // Estado para maneajr la visibilidad del contenedor del pop up responsive
     const [visibleContainerPopUp, setVisibleContainerPopUp] = useState(true);
 
     useEffect(() => {
 
-        const handleRezise = () => {
-            SetPositionPopUp(window.innerWidth < 1200);
+        const handleResize = () => {
+            setPositionPopUp(window.innerWidth < 1200);
         }
 
-        window.addEventListener('resize', handleRezise);
+        window.addEventListener('resize', handleResize);
 
-        handleRezise(); // Verifica el anchoo de la pagina
+        handleResize(); // Verifica el anchoo de la pagina
 
         return () => {
-            window.removeEventListener('resize', handleRezise);
+            window.removeEventListener('resize', handleResize);
         }
 
     }, []);
