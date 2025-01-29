@@ -1217,6 +1217,7 @@ header {
 #container-areas,
 #container-classes,
 #container-promotion {
+  display: flex;
   width: 100%;
   height: auto;
   background-color: #F6F4EF;
@@ -3476,11 +3477,10 @@ line-height: 30px; /* 150% */
   display: flex;
   flex-direction: row;
   width: 100%;
-  height: 200px;
-  margin-top: 110px;
-  background-color: red;
+  height: auto;
+  margin-top: 120px;
   box-sizing: border-box;
-  padding: 0 20px;
+  padding: 0 30px;
   gap: 40px;
   
 }
@@ -3489,14 +3489,14 @@ line-height: 30px; /* 150% */
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: blue;
   width: 80%;
+  border-radius: 30px;
   border-radius: 30px;
 }
 
 #about-masterclass-certification {
   display: grid;
-  grid-template-rows: repeat(7, auto);
+  grid-template-rows: repeat(6, auto);
   width: 100%;
   height: 100%;
   border-radius: 30px;
@@ -3504,11 +3504,20 @@ line-height: 30px; /* 150% */
   gap: 20px;
 }
 
+#container-classes {
+  flex-direction: column;
+}
+
+#container-areas {
+  flex-direction: column;
+}
+
 #promotion-wrapper-masterclass-certification {
   display: flex;
   width: 20%;
-  height: 100%;
-  background-color: green;
+  height: 3666px;
+  box-sizing: border-box;
+  padding-top: 30px;
 }
 
 
@@ -3522,7 +3531,6 @@ line-height: 30px; /* 150% */
   flex-direction: column;
   padding: 20px;
   box-sizing: border-box;
-  background-color: yellow;
 }
 
 
@@ -3537,7 +3545,6 @@ line-height: 30px; /* 150% */
   align-items: center;
   width: 100%;
   height: auto;
-  background-color:brown;
 
   img {
     max-width: 16%;
@@ -3551,7 +3558,6 @@ line-height: 30px; /* 150% */
   justify-content: left;
   width: 100%;
   height: auto;
-  background-color: #5CC781;
   gap: 0;
 
   h1 {
@@ -3585,7 +3591,6 @@ line-height: 30px; /* 150% */
   justify-content: left;
   width: 100%;
   height: auto;
-  background-color: #D33B3E;
 
   button {
     display: flex;
@@ -3597,9 +3602,64 @@ line-height: 30px; /* 150% */
     border-radius: 30px;
     border: none;
     color: white;
+    cursor: pointer;
   }
 }
 
+
+#wrapper-no-gap-short-info-masterclass {
+  padding: 0;
+}
+
+#wrapper-short-info-masterclass {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100px;
+  background-color: rgba(3, 70, 148, 1);
+  color: white;
+
+}
+
+#learn-masterclass {
+  width: 100%;
+  height: auto;
+}
+
+#about-masterclass {
+  width: 100%;
+  height: auto;
+}
+
+#widgets-learning-masterclass {
+  width: 100%;
+  height: auto;
+}
+
+#wrapper-widgets-learning {
+  display: flex;
+  justify-content: start;
+  flex-direction: row;
+  height: 70%;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+
+.skill-item {
+  width: auto;
+  height: 40px; 
+  box-sizing: border-box;
+  padding: 5px 10px;
+  background-color: rgba(3, 70, 148, 1);
+  border-radius: 15px;
+  gap: 5px;
+}
+
+#wrapper-modules-masterclass {
+  width: 100%;
+  height: auto;
+}
 /* Desktop Styles (1024px and up) */
 @media screen and (max-width: 1450px) {
 

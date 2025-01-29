@@ -112,20 +112,174 @@ const MasterClassCertificationPage = () => {
                         <span>Video</span>
                     </div>
                     <div id="wrapper-button-view-more-masterclass">
-                        <button>Ver en la página oficial
+                        <button
+                        onClick={() => window.open(certification.url_certificacion_original, '_blank')}>Ver en la página oficial
                         </button>
                     </div>
                 </div>
-                <div className="about-area-masterclass"></div>
-                <div className="about-area-masterclass"></div>
-                <div className="about-area-masterclass"></div>
-                <div className="about-area-masterclass"></div>
-                <div className="about-area-masterclass"></div>
+                <div className="about-area-masterclass" id="wrapper-no-gap-short-info-masterclass">
+                    <div id="wrapper-short-info-masterclass">
+                        <ul>
+                        <li>Categoría: {certification.tema_certificacion.nombre}</li>
+                        <li>Instructor: Lewis Hamilton</li>
+                        <li>Duración de la clase: {certification.tiempo_certificacion}</li>
+
+                        </ul>
+                    </div>
+                </div>
+                <div className="about-area-masterclass">
+
+                    <div id="about-masterclass">
+                        <h2>Acerca de esta clase</h2>
+                        <p>{certification.experiencia_certificacion}</p>
+                    </div>
+                </div>
+                <div className="about-area-masterclass" >
+                    <div id="widgets-learning-masterclass">
+                        <h2>Habilidades que obtendrás</h2>
+                        <div id="wrapper-widgets-learning">
+                            
+                        {certification.aprendizaje_certificacion.map((item) => {
+            // Dividimos el string usando el guión como separador
+            const habilidades = item.nombre.split(' - ');
+            
+            // Creamos un div para cada habilidad
+            return habilidades.map((habilidad, index) => (
+                <div key={index} className="skill-item">
+                    <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#ffffff"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
+                    {habilidad}
+                </div>
+            ));
+        })}
+                        </div>
+                    </div>
+                </div>
+                <div className="about-area-masterclass" id="wrapper-modules-masterclass">
+    <div id="container-modules-detail" className="grid-main-info-section">
+        {certification.contenido_certificacion.contenido_certificacion.reduce((modules, content, index) => {
+            // Si el contenido está vacío (""), lo ignoramos
+            if (content === "") return modules;
+            
+            // Si el contenido comienza con "Lección", es un título
+            if (content.startsWith("Lección")) {
+                modules.push({
+                    index: modules.length,
+                    titulo: content,
+                    descripcion: certification.contenido_certificacion.contenido_certificacion[index + 1] || ""
+                });
+            }
+            return modules;
+        }, []).map((modulo, index) => {
+            const isExpanded = expandedIndex === index;
+            return (
+                <div
+                    key={index}
+                    className={`module-card ${isExpanded ? 'expanded' : 'closed'}`}
+                >
+                    <div className="first-row">
+                        <div className="wrapper-info">
+                            <h2>{modulo.titulo}</h2>
+                        </div>
+                        <div
+                            className="wrapper-row"
+                            onClick={() => setExpandedIndex(isExpanded ? null : index)}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M6 9l6 6l6 -6" />
+                            </svg>
+                        </div>
+                    </div>
+                    {isExpanded && (
+                        <div className="second-row">
+                            <div className="content-module-container">
+                                <div className="content-module">
+                                    {modulo.descripcion}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        })}
+    </div>
+</div>
             </div>
+
+            <div id="container-areas">
+                    <div id="wrapper-title-areas"><h1>Explora áreas del conocimiento</h1></div>
+
+                    <div id="wrapper-show-areas">
+
+                        <div className="area-circle-object">
+                            <img src="/assets/Areas-Conocimiento/area-conocimiento-1.png" alt="Área de Conocimiento 1" />
+                        </div>
+
+                        <div className="area-circle-object">
+                            <img src="/assets/Areas-Conocimiento/area-conocimiento-2.png" alt="Área de Conocimiento 1" />
+                        </div>
+                        <div className="area-circle-object">
+                            <img src="/assets/Areas-Conocimiento/area-conocimiento-3.png" alt="Área de Conocimiento 1" />
+                        </div>
+                    </div>
+                </div>
+
+                <div id="container-classes">
+                    <div id="wrapper-title-classes"><h1>Clases recomendadas para ti</h1></div>
+
+                    <div id="wrapper-slider-masterclass">
+
+                        <div className="card-masterclass">
+                            <img src="/assets/MasterClass/masterclass-1.png" alt="masterclass-imagen" />
+                        </div>
+                        <div className="card-masterclass">
+                            <img src="/assets/MasterClass/masterclass-2.png" alt="masterclass-imagen" />
+                        </div>
+                        <div className="card-masterclass">
+                            <img src="/assets/MasterClass/masterclass-3.png" alt="masterclass-imagen" />
+                        </div>
+
+                    </div>
+                </div>  
+
+                <div id="container-promotion">
+                    <div id="promotion-grid">
+                        <div className="div-grid-promotion" id="upper-left-div">
+                            <img src="/assets/banners/promotion-banner.jpg" />
+                        </div>
+                        <div className="div-grid-promotion" id="upper-right-div">
+                            <h2>Con Top Education, ahorras dinero y tienes más contenidos</h2>
+                            <p>Imagina tener acceso ilimitado al catalogo de edX, Masterclass, y Coursera, todo en una sola plataforma y por menos de la mitad del precio que pagarias por las tres plataformas.</p>
+                        </div>
+                        <div className="div-grid-promotion" id="bottom-div">
+                            <button id="button-join-now-grid">¡Únete ahora!</button>
+                        </div>
+                    </div>
+                </div>
+            
           </div>
+          
 
-            <div id="promotion-wrapper-masterclass-certification"></div>
-
+            <div id="promotion-wrapper-masterclass-certification">
+            {visibleContainerPopUp && (
+                positionPopUp ? (
+                    // Posición dentro del contenedor responsive
+                    <div id="container-pop-up-responsive">
+                        <button onClick={hadleClickButtonPopUp} id="close-pop">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-x">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M18 6l-12 12" />
+                                <path d="M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <RightPop />
+                    </div>
+                ) : (
+                    // Posición original
+                    <RightPop />
+                )
+            )}
+            </div>
+        
         </div>
     )
 };
