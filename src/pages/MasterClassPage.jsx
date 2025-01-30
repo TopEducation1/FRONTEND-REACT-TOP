@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import getCertificationById from "../services/getCertificationById";
 import RightPop from "../components/RightPop";
 import YouTubePlayer from "../components/YoutubePlayer";
+import { Helmet } from 'react-helmet';
 
 const MasterclassCertificationPage = () => {
     // Estados de la pagina de certificacion
@@ -95,6 +96,20 @@ const MasterclassCertificationPage = () => {
     }
 
     return (
+        <>
+        {/**SEO ELEMENTS WITH REACT -HELMET */}
+                    <Helmet>
+                        <title>{certification.nombre}</title>
+                        <meta name="description" content={certification.metadescripcion_certificacion}/>
+                        <meta property="og:title" content={certification.metadescripcion_certificacion}/>
+                        <meta name="keywords" content={certification.palabra_clave_certificacion}/>
+                        <meta name="author" content="Top Education"/>
+                        <meta name="robots" content="index, follow" />
+                        <meta property="og:description" content={certification.metadescripcion_certificacion} />
+                        <meta property="og:type" content="website" />
+                    </Helmet>
+
+        
         <div id="wrapper-full-content-masterclass" >
 
           <div id="content-masterclass-certification">
@@ -283,6 +298,15 @@ const MasterclassCertificationPage = () => {
         
         </div>
     )
+        </>
+
+
+        
+
+
+)
 };
+
+    
 
 export default MasterclassCertificationPage;
