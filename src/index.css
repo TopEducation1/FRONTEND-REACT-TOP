@@ -3753,6 +3753,44 @@ line-height: 30px; /* 150% */
 
 @media (max-width: 1281px) {
 
+  #upper-section {
+  
+    h3 {
+      font-size: 22px;
+    }
+  }
+
+  #mid-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 5px;
+  }
+
+  #wrapper-full-content-masterclass {
+    gap: 5px;
+    padding: 0 5px;
+  }
+
+  #container-right-pop {
+    width: 260px;
+    padding: 0;
+    }
+
+    #mid-section {
+      span{
+        font-size: 15px;
+      }
+    }
+
+    #bottom-section {
+      span {
+        font-size: 15px;
+      }
+    }
+
   #grid-articles {
     width: 100%;
   }
@@ -4111,6 +4149,8 @@ line-height: 30px; /* 150% */
 
 @media(max-width: 1025px) {
 
+
+
   .certification-card {
     justify-content: center;
     width: 280px  ;
@@ -4319,6 +4359,7 @@ line-height: 30px; /* 150% */
 
   #promotion-wrapper-masterclass-certification {
     display: flex;
+    width: 0;
   }
 
   .video-frame {
