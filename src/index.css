@@ -1984,7 +1984,7 @@ header {
 }
 
 #container-pop-up-responsive {
-  display: none;
+  display: flex;
 }
 
 #first-section {
@@ -4318,7 +4318,7 @@ line-height: 30px; /* 150% */
   }
 
   #promotion-wrapper-masterclass-certification {
-    display: none;
+    display: flex;
   }
 
   .video-frame {
@@ -5247,6 +5247,27 @@ line-height: 30px; /* 150% */
 }
 
 @media(max-width: 400px ) {
+
+  #upper-left-div {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    img {
+      max-width: 100%;
+    }
+  }
+
+  #promotion-grid {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #upper-right-div {
+    margin-left: 0;
+  }
+
 
   #wrapper-title-sixth {
     flex-direction: column;

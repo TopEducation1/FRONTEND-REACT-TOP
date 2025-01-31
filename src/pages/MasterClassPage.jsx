@@ -7,7 +7,8 @@ import { Helmet } from 'react-helmet';
 
 const MasterclassCertificationPage = () => {
     // Estados de la pagina de certificacion
-    const { id } = useParams();
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 1200);
+    const [visibleContainerPopUp, setVisibleContainerPopUp] = useState(true);    const { id } = useParams();
     const [certification, setCertification] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -16,28 +17,21 @@ const MasterclassCertificationPage = () => {
     // Estado para manejar la posición del pop up
     const [positionPopUp, setPositionPopUp] = useState(false);
     // Estado para maneajr la visibilidad del contenedor del pop up responsive
-    const [visibleContainerPopUp, setVisibleContainerPopUp] = useState(true);
 
     useEffect(() => {
-
         const handleResize = () => {
-            setPositionPopUp(window.innerWidth < 1200);
-        }
+            setIsMobile(window.innerWidth < 1200);
+        };
 
         window.addEventListener('resize', handleResize);
-
-        handleResize(); // Verifica el anchoo de la pagina
-
         return () => {
             window.removeEventListener('resize', handleResize);
-        }
-
+        };
     }, []);
 
-    const hadleClickButtonPopUp = () => {
+    const handleClickButtonPopUp = () => {
         setVisibleContainerPopUp(false);
-
-    }
+    };
 
     useEffect(() => {
         const loadCertification = async () => {
@@ -277,10 +271,10 @@ const MasterclassCertificationPage = () => {
 
             <div id="promotion-wrapper-masterclass-certification">
             {visibleContainerPopUp && (
-                positionPopUp ? (
+                isMobile     ? (
                     // Posición dentro del contenedor responsive
                     <div id="container-pop-up-responsive">
-                        <button onClick={hadleClickButtonPopUp} id="close-pop">
+                        <button onClick={handleClickButtonPopUp} id="close-pop">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-x">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                 <path d="M18 6l-12 12" />

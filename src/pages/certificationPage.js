@@ -33,7 +33,7 @@ const CertificationPage = () => {
 
     }, []);
 
-    const hadleClickButtonPopUp = () => {
+    const handleClickButtonPopUp = () => {
         setVisibleContainerPopUp(false);
 
     }
@@ -275,7 +275,7 @@ const CertificationPage = () => {
                 positionPopUp ? (
                     // Posición dentro del contenedor responsive
                     <div id="container-pop-up-responsive">
-                        <button onClick={hadleClickButtonPopUp} id="close-pop">
+                        <button onClick={handleClickButtonPopUp} id="close-pop">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-x">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                 <path d="M18 6l-12 12" />
