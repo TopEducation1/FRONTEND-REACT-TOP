@@ -3051,7 +3051,18 @@ h2 span:nth-child(3) {
   width: 70%;
   padding-left: 70px;
   box-sizing: border-box;
+
+  p {
+    font-family: Montserrat;
+  }
+
+  .second-p-second {
+    font-family: "Lora", serif;
+  }
+
 }
+
+
 
 
 #left-wrapper-second p {

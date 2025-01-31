@@ -34,7 +34,7 @@ function ParaEquipos () {
                 <div id="left-wrapper-second">
                     <p style={{color: "#034694"}}>Con nuestra ayuda, podrás crear una universidad corporativa</p>
 
-                    <p>Que te permitirá alcanzar los objetivos de desarrollo profesional y potenciar el talento de tu equipo, garantizando asi un crecimiento sostenible y una mayor competitividad en el mercado</p>
+                    <p className="second-p-second">Que te permitirá alcanzar los objetivos de desarrollo profesional y potenciar el talento de tu equipo, garantizando asi un crecimiento sostenible y una mayor competitividad en el mercado</p>
                 </div>
                 <div id="right-wrapper-second">
                     <img src="/assets/Piezas/pieza-teams.png"/>
