@@ -8,18 +8,33 @@ function ParaEquipos () {
         <>
             <div id="first-team-page">
                 <div id="wrapper-team-title"><h1>Entrena a tu equipo de trabajo <em style={{color: "#5CC781"}}>sin realizar grandes inversiones</em> en infraestructura o logística.</h1></div>
+                <img className="ellipse" src="/assets/Piezas/ellipse-1-para-equipos.png" alt="ellipse" />
+                <img className="ellipse" src="/assets/Piezas/ellipse-2-para-equipos.png" alt="ellipse" />
+            </div>
+
+            <div id="second-team-title">
+                    <h2>Numerosas compañias invierten grandes sumas de dinero en la formación de empleados sin ver mejoras significatvas</h2>
+            </div>
+
+            <div id="blue-section-team">
+                <div id="left-image-blue-team">
+                    <img src="/assets/Piezas/red-flag.png" alt="red-flag" />
+                </div>
+                <div id="right-text-blue-team">
+                <h2>
+                    <span><strong>Top Education </strong>optimiza los procesos de</span>
+                    <span>capacitación, reduciendo costos y</span>
+                    <span>aumentando la eficiencia.</span>
+                </h2>
+                </div>
             </div>
 
 
             <div id="second-team-page">
                 <div id="left-wrapper-second">
-                    <p style={{
-                        color: "#5CC781"
-                    }}><em>Numerosas compañías invierten grande sumas de dinero en la formación de empleados sin ver mejoras significativas</em></p>
+                    <p style={{color: "#034694"}}>Con nuestra ayuda, podrás crear una universidad corporativa</p>
 
-                    <p><strong>Top Education optimiza los procesos de capacitación, reduciendo costos y aumentando la eficiencia</strong></p>
-
-                    <p>Con nuestra ayuda, podrás crear una universidad corporativa, que te permitirá alcanzar los objetivos de desarrollo profesional y potenciar el talento de tu equipo, garantizando así un crecimiento sostenible y una mayor competitividad en el mercado</p>
+                    <p>Que te permitirá alcanzar los objetivos de desarrollo profesional y potenciar el talento de tu equipo, garantizando asi un crecimiento sostenible y una mayor competitividad en el mercado</p>
                 </div>
                 <div id="right-wrapper-second">
                     <img src="/assets/Piezas/pieza-teams.png"/>
@@ -50,9 +65,7 @@ function ParaEquipos () {
 
             <div id="fourth-train-section">
                 <div id="upper-train-section">
-                    <h1 style={{
-                        color: "#5CC781"
-                    }}>Entrena a tu equipo directivo con GetSmarter with edX</h1>
+                <h1>Entrena a tu equipo directivo con <span>GetSmarter with edX</span></h1>
                 </div>
                 <div id="mid-train-section">
                     <div id="left-train">
@@ -87,26 +100,11 @@ function ParaEquipos () {
                     <img src="/assets/Piezas/pieza-trial.png"/>
                 </div>
                 <div id="right-trial">
-                    <h2>Haz la prueba de Top Education para equipos</h2>
 
 
                     <p>Decenas de organizaciones ya han potenciado las habilidades de sus equipos y han visto un crecimiento significativo en sus negocios con nuestras soluciones educativas.
-
-                    Haz la prueba de Top Education para equipos y agenda una demostración personalizada ahora mismo.
-
-                    Descubre cómo mejorar las habilidades de tu equipo y hacer crecer tu negocio. No dejes pasar esta oportunidad de alcanzar nuevos logros juntos.</p>
-
-
-                    <p style={{
-                        color: "#034694"
-                    }}><em>Haz la prueba de Top Education para equipos y agenda una demostración personalizada ahora mismo.</em></p>
-
-
-                    <p>Descubre cómo mejorar las habilidades de tu equipo y hacer crecer tu negocio. <strong>No dejes pasar esta oportunidad de alcanzar nuevos logros juntos.</strong></p>
-
-                    <div id="wrapper-alternative-button-reserve">
-                        <button id="button-alternative-reserve">Reserva una demostración</button>
-                    </div>
+                    </p>
+                    
 
             
 
@@ -114,6 +112,18 @@ function ParaEquipos () {
 
 
             </div>
+
+            <div id="green-section-for-teams">
+                <div id="left-wrapper-green-section">
+                
+                <p>Haz la prueba de Top Education para equipos y agenda una demostración  personalizada ahora mismo.</p>
+                        <button id="button-alternative-reserve">Reserva una demostración</button>
+
+                </div>
+                <img src="/assets/Piezas/frame-green-part.png" alt="frame" />
+            </div>
+
+            
 
 
             <div id="sixth-masterclass-section">
