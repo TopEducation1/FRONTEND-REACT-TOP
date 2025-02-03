@@ -21,6 +21,8 @@ function StartNow() {
 
 
             <div id="second-prices-section">
+
+                <div id="wrapper-title-second-prices-section"></div>
                 <h1>¿Por qué <em>Top Education</em> es la mejor opción?</h1>
 
                 <p><em>"Por menos de la mitad del precio que gastarias pagando edX, MasterClass y Coursera individualmente, obtienes acceso a las tres plataformas con Top Education".</em></p>

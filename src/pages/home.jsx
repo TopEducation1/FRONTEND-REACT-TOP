@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import SliderEditorial from "../components/SliderEditorial";
 import TopicCircles from "../components/TopicCircles";
 import FlagsHome from "../components/FlagsHome";
@@ -51,23 +51,25 @@ function HomePage () {
 
 
     const toggleVisibility = () => {
-        setStatePopUp((prevState) => {
-            const newState = !prevState;
-
-            // Si se abre el pop-up, reproduce el video
-            if (newState && videoRef.current) {
-                videoRef.current.play();
-            }
-
-            // Si se cierra el pop-up, pausa y reinicia el video
-            if (!newState && videoRef.current) {
-                videoRef.current.pause();
-                videoRef.current.currentTime = 0; // Opcional: reinicia el video al principio
-            }
-
-            return newState;
-        });
+        setStatePopUp(prev => !prev);
     };
+
+
+    useEffect(() => {
+        if (statePopUp && videoRef.current) {
+            videoRef.current.play().catch(error =>{
+                videoRef.current.play().catch(error => {
+                    videoRef.current.muted = true;
+                    videoRef.current.play();
+                });
+
+            } 
+        )
+        } else if (!statePopUp && videoRef.current) {
+            videoRef.current.pause();
+            videoRef.current.currentTime = 0;
+        }
+    }, [statePopUp]);   
 
  
     return (
@@ -113,7 +115,7 @@ function HomePage () {
                         <svg onClick={toggleVisibility} xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#ffffff"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-x"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 6l-12 12" /><path d="M6 6l12 12" /></svg>
                         </div>
 
-                        <video ref={videoRef} src="/assets/video/main-video.mp4" autoPlay muted></video>
+                        <video ref={videoRef} src="/assets/video/main-video.mp4" controls></video>
 
 
                     </div>
