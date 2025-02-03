@@ -40,10 +40,10 @@ function App() {
               <Route element={<TopEducationLayout />}>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/library" element={<LibraryPage />} />
-                  <Route path="/certificacion/masterclass/:id" element={<MasterClassPage />} />
-                  <Route path="/certificacion/edx/:id" element={<EdxCertificationPage />} />
-                  <Route path="/certificacion/coursera/:id" element={<CertificationPage />} />
-                  <Route path="/certificacion/:id" element={<CertificationPage />} />
+                  <Route path="/certificacion/masterclass/:nombre" element={<MasterClassPage />} />
+                  <Route path="/certificacion/edx/:nombre" element={<EdxCertificationPage />} />
+                  <Route path="/certificacion/coursera/:nombre" element={<CertificationPage />} />
+                  <Route path="/certificacion/:nombre" element={<CertificationPage />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/para-equipos" element={<ParaEquipos />} />
                   <Route path="/empieza-ahora" element={<StartNow />} />

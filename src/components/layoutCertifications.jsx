@@ -19,28 +19,33 @@ const CertificationsList = ({ certifications }) => {
     const handleCertificationClick = (certification) => {
         try {
             if (!certification) {
+
                 throw new Error('No certification data provided');
+
             }
 
-            const platformId = certification.plataforma_certificacion_id;
-            let path;
+            const path = `/certificaciones/${certification.nombre}`;
+            navigate(path);
 
-            switch (platformId) {
+
+            {/** 
+                switch (platformId) {
                 case 1:
-                    path = `/certificacion/edx/${certification.id}`;
+                    path = `/certificacion/edx/${certification.id}/${certification.nombre}`;
                     break;
                 case 2:
-                    path = `/certificacion/coursera/${certification.id}`;
+                    path = `/certificacion/coursera/${certification.id}/${certification.nombre}`;
                     break;
                 case 3:
-                    path = `/certificacion/masterclass/${certification.id}`;
+                    path = `/certificacion/masterclass/${certification.id}/${certification.nombre}`;
                     break;
-            }
+            }*/}
 
-            console.log('Navigating to:', path);
-            navigate(path);
+            
+
+            //console.log('Navigating to:', path);
         } catch (err) {
-            console.error('Navigation error:', err);
+            //console.error('Navigation error:', err);
             setError('Error al navegar a la certificación');
         }
     };

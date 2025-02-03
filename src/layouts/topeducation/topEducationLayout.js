@@ -10,18 +10,18 @@ function TopEducationLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-    console.log("Toggle Menu llamado, estado actual:", !isMenuOpen); // Debug
+    //console.log("Toggle Menu llamado, estado actual:", !isMenuOpen); // Debug
     setIsMenuOpen(!isMenuOpen);
   };
 
   const openIndexResponsiveMenu = () => {
-    console.log("Abriendo menú, estado actual:", isMenuOpen);
+    //console.log("Abriendo menú, estado actual:", isMenuOpen);
     setIsMenuOpen(true);
-    console.log("Nuevo estado:", true);
+    //console.log("Nuevo estado:", true);
   };
 
   const closeIndexResponsiveMenu = () => {
-    console.log("Cerrando menú"); // Debug
+    //console.log("Cerrando menú"); // Debug
     setIsMenuOpen(false);
   };
 
@@ -51,7 +51,7 @@ function TopEducationLayout() {
 
   // Debug del estado
   useEffect(() => {
-    console.log("Estado del menú:", isMenuOpen);
+    //console.log("Estado del menú:", isMenuOpen);
   }, [isMenuOpen]);
   return (
     <>

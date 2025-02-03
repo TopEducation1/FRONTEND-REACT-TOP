@@ -6,7 +6,7 @@ import { Helmet } from 'react-helmet';
 
 const CertificationPage = () => {
     // Estados de la pagina de certificacion
-    const { id } = useParams();
+    const { nombre } = useParams();
     const [certification, setCertification] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -28,12 +28,15 @@ const CertificationPage = () => {
         handleRezise(); // Verifica el anchoo de la pagina
 
         return () => {
+
             window.removeEventListener('resize', handleRezise);
         }
+
 
     }, []);
 
     const handleClickButtonPopUp = () => {
+
         setVisibleContainerPopUp(false);
 
     }
@@ -42,22 +45,22 @@ const CertificationPage = () => {
         const loadCertification = async () => {
             try {
                 setLoading(true);
-                const data = await getCertificationById(id);
+                const data = await getCertificationById(nombre);
                 setCertification(data);
-                console.log("INFORMACIÓN ESPECIFICA DE LA CERTIFICACION");
-                console.log(data);
+                //console.log("INFORMACIÓN ESPECIFICA DE LA CERTIFICACION");
+                //console.log(data);
             } catch (error) {
                 setError(error.message);
-                console.error('Error al cargar la certificación:', error);
+                //console.error('Error al cargar la certificación:', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (id) {
+        if (nombre) {
             loadCertification();
         }
-    }, [id]);
+    }, [nombre]);
 
     useEffect(() => {
         if (certification && certification.habilidades_certificacion) {
