@@ -6,9 +6,16 @@ function StartNow() {
 
         <>
             <div id="first-startnow-section">
-                <h1><em style={{
-                    color: "#034694"
-                }}>Lleva tu carrera al siguiente nivel</em> con Top Education</h1>
+                <div id="left-startnow-first-section"><h1>Lleva tu carrera al siguiente nivel</h1></div>
+                <div id="right-startnow-first-section">
+                    <img src="/assets/Piezas/rectangle-startnow.png" alt="rectangulo-degradado" />
+                    <div id="wrapper-stonks">
+                    <img id="circle-stonks-img" src="/assets/Piezas/circle-stonks.png" alt="stonks-circle" />
+                    <img id="trending-up-img" src="/assets/Piezas/trending-up.png" alt="trending-up-logo" />
+                    </div>
+                    
+                </div>
+                
             </div>
 
 
