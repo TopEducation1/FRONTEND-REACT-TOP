@@ -144,7 +144,7 @@ const CertificationPage = () => {
 
                     {/* Fast info section */}
                     <div id="container-fast-info" className="grid-main-info-section">
-                        <div className="fast-info"><h3>Idioma</h3>{certification.lenguaje_certificacion}</div>
+                        <div className="fast-info"><h3>Idioma </h3>{certification.lenguaje_certificacion}</div>
                         <div className="fast-info"><h3>Nivel</h3>{certification.nivel_certificacion}</div>
                         <div className="fast-info"><h3>Cronograma</h3>{certification.tiempo_certificacion}</div>
                     </div>
