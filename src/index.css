@@ -5664,8 +5664,17 @@ h2 span:nth-child(3) {
 
 
 @media(max-width:450px ) {
-  .wrapper-certifications {
+
+  #upper-section {
+
+    h1 {
+      span mark {
+        font-size: 45px;
+      }
+    }
   }
+
+
 
   .certification-card {
     width: 200px;
