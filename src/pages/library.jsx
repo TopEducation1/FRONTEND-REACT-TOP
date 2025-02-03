@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Link, useOutletContext, useLocation, useNavigate } from 'react-router-dom';
-import SkillsTags from "../services/skillsService";
+import {useOutletContext, useLocation, useNavigate } from 'react-router-dom';
 //import Universities from "../services/universitiesService";
-import Topics from "../services/topicService";
 import tagFilterService from "../services/filterByTagsTesting";
 import CertificationsFetcher from "../services/certificationsFetcher";
 import CertificationsList from "../components/layoutCertifications";
@@ -384,7 +382,7 @@ function LibraryPage({ showRoutes = true }) {
             </div>
 
             {!isMobileView && (
-                <IndexCategories onTagSelect={handleTagClick} />
+                <IndexCategories onTagSelect={handleTagClick} selectedTags={selectedTags}/>
             )}
 
             <SlidingMenuIndex onTagSelect={handleTagClick} />

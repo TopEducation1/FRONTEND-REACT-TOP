@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from 'react-router-dom';
 
-const IndexCategories = ({ onTagSelect }) => {
-    const [isSticky, setIsSticky] = useState(false);
+const IndexCategories = ({ onTagSelect, selectedTags }) => {
     const [openSections, setOpenSections] = useState([]);
     const indexRef = useRef(null);
-    const certificationsRef = useRef(null);
+
 
     const sections = [
         {
             title: "Tema",
-            subsections: ["Arte y Humanidades",  "Ciencias de la Computación", "Ciencias de Datos", "Tecnología de la información", "Salud", "Matemáticas y Logica", , "Ciencías, Física e Ingenieria", "Ciencias Sociales", ]
+            subsections: ["Arte y Humanidades",  "Ciencias de la Computación", "Ciencias de Datos", "Tecnología de la información", "Salud", "Matemáticas y Logica", "Ciencías, Física e Ingenieria", "Ciencias Sociales", ]
         },
         {
             title : "Habilidad",
@@ -67,6 +66,7 @@ const IndexCategories = ({ onTagSelect }) => {
                                 e.preventDefault();
                                 onTagSelect(category, subsection);
                             }}
+                            style={{ pointerEvents : isSectionDisabled(category) ? 'none' : 'auto', opacity : isSectionDisabled(category) ? 0.5 : 1}}
                         >
                             {subsection}
                         </Link>
@@ -85,6 +85,7 @@ const IndexCategories = ({ onTagSelect }) => {
                                             e.preventDefault();
                                             onTagSelect(category, subsubsection);
                                         }}
+                                        style={{ pointerEvents: isSectionDisabled(category) ? 'none' : 'auto', opacity: isSectionDisabled(category) ? 0.5 : 1 }}
                                     >
                                         {subsubsection}
                                     </Link>
@@ -98,10 +99,23 @@ const IndexCategories = ({ onTagSelect }) => {
         });
     };
 
+    const isSectionDisabled = (sectionTitle) => {
+        if (!selectedTags || !selectedTags.Plataforma) {
+            return false; // Si no hay tags seleccionados, no deshabilitar nada
+        }
+    
+        if (selectedTags.Plataforma.includes("MasterClass")) {
+            return sectionTitle === "Tema";
+        } else if (selectedTags.Plataforma.includes("Coursera") || selectedTags.Plataforma.includes("EdX")) {
+            return sectionTitle === "Habilidad";
+        }
+        return false;
+    };
+
     return (
         <div
             ref={indexRef}
-            className={`index-container ${isSticky ? 'sticky' : ''}`}
+            className="index-container"
         >
             <div className="category-wrapper">
                 {sections.map((section, index) => (
@@ -112,6 +126,8 @@ const IndexCategories = ({ onTagSelect }) => {
                         <button
                             className="unfold-category-button"
                             onClick={() => toggleSection(index)}
+                            disabled={isSectionDisabled(section.title)}
+                            style={{ opacity : isSectionDisabled(section.title) ? 0.5 : 1}}
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"

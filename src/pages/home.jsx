@@ -4,6 +4,7 @@ import TopicCircles from "../components/TopicCircles";
 import FlagsHome from "../components/FlagsHome";
 import RotateVideo from "../components/RotateVideo";
 import MovingText from "../components/ComingSoon";
+import { Helmet } from "react-helmet";
 
 function HomePage() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -100,6 +101,18 @@ function HomePage() {
 
   return (
     <>
+      {/**SEO ELEMENTS WITH REACT -HELMET */}
+      <Helmet>
+        <title>Top Education</title>
+        <meta name="description" content="" />
+        <meta property="og:title" content="" />
+        <meta name="keywords" content="" />
+        <meta name="author" content="Top Education" />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:description" content="" />
+        <meta property="og:type" content="website" />
+      </Helmet>
+
       <div
         id="first-home-section"
         onMouseLeave={handleMouseLeave}
@@ -317,7 +330,7 @@ function HomePage() {
 
       <div id="fifth-home-section">
         <img src="/assets/Piezas/ellipse-big.png" id="ellipse-big" alt="" />
-        <img src="/assets/Piezas/ellipse-mini.png" id="ellipse-big" alt=""/>
+        <img src="/assets/Piezas/ellipse-mini.png" id="ellipse-big" alt="" />
 
         <svg
           id="star"
@@ -441,23 +454,23 @@ function HomePage() {
       </div>
 
       <div id="seventh-home-section">
-        <img id="ellipse-red" src="/assets/Piezas/ellipse-red.png" alt=""/>
+        <img id="ellipse-red" src="/assets/Piezas/ellipse-red.png" alt="" />
 
         <h1>Explora y aprende</h1>
 
         <div id="grid-articles">
           <div class="article">
-            <img src="/assets/Piezas/1-article.png " alt=""/>
+            <img src="/assets/Piezas/1-article.png " alt="" />
             <h3>edx vs coursera ¿Cuál plataforma educativa es mejor?</h3>
           </div>
           <div class="article">
-            <img src="/assets/Piezas/2-article.png " alt=""/>
+            <img src="/assets/Piezas/2-article.png " alt="" />
             <h3>
               Así puedes certificarte en las mejores universidades del mundo
             </h3>
           </div>
           <div class="article">
-            <img src="/assets/Piezas/3-article.png " alt=""/>
+            <img src="/assets/Piezas/3-article.png " alt="" />
             <h3>
               5 grandes cursos de edx con certificado de universidadesen estados
               unidos
@@ -470,11 +483,11 @@ function HomePage() {
 
       <div id="sixth-home-section">
         <div id="wrapper-coming-soon">
-            <MovingText />
+          <MovingText />
         </div>
         <div id="wrapper-title-sixth">
           <div id="sixth-1">
-            <img src="/assets/Piezas/star-title.png" alt=""/>
+            <img src="/assets/Piezas/star-title.png" alt="" />
           </div>
           <div id="sixth-2">
             <div id="upper-sixth-2">
