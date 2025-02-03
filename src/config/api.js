@@ -8,6 +8,7 @@ const BASE_URL = API_URL;
 // Endpoints  
 export const endpoints = {
   certificaciones: `${BASE_URL}/certificaciones/`,
+  
   certificaciones_tags: `${BASE_URL}/certificaciones/filter/`,
   certificaciones_busqueda: `${BASE_URL}/certificaciones/busqueda/`,
   certificaciones_id: (slug) => `${BASE_URL}/certificacion/${slug}/`,
