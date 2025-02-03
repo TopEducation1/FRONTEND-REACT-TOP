@@ -1,57 +1,80 @@
-  import React, { useState, useEffect } from "react";
-  import LoadingPage from "../../components/LoadingPage.jsx";
-  import Header from "../../components/header.jsx";
-  import Footer from "../../components/Footer.jsx";
-  import { Outlet } from "react-router-dom";
-  import "../../index.css";
+import React, { useState, useEffect } from "react";
+import LoadingPage from "../../components/LoadingPage.jsx";
+import Header from "../../components/header.jsx";
+import Footer from "../../components/Footer.jsx";
+import { Outlet } from "react-router-dom";
+import "../../index.css";
 
-  function TopEducationLayout() {
-    const [isLoading, setIsLoading] = useState(true);
+function TopEducationLayout() {
+  const [isLoading, setIsLoading] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-    console.log('Toggle Menu llamado, estado actual:', !isMenuOpen); // Debug
+    console.log("Toggle Menu llamado, estado actual:", !isMenuOpen); // Debug
     setIsMenuOpen(!isMenuOpen);
   };
-  
-  const openIndexResponsiveMenu = () => {
-    console.log('Abriendo menú, estado actual:', isMenuOpen);
-    setIsMenuOpen(true);
-    console.log('Nuevo estado:', true);
-};
 
-  
+  const openIndexResponsiveMenu = () => {
+    console.log("Abriendo menú, estado actual:", isMenuOpen);
+    setIsMenuOpen(true);
+    console.log("Nuevo estado:", true);
+  };
+
   const closeIndexResponsiveMenu = () => {
-    console.log('Cerrando menú'); // Debug
+    console.log("Cerrando menú"); // Debug
     setIsMenuOpen(false);
   };
 
   useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "//js.hs-scripts.com/45381980.js";
+    script.async = true;
+    script.id = "hs-script-loader";
+    document.body.appendChild(script);
+
+
+    return () => {
+      const existingScript = document.getElementById("hs-script-loader");
+      if (existingScript) {
+        document.body.removeChild(existingScript);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     const timer = setTimeout(() => {
-      setIsLoading(false); 
+      setIsLoading(false);
     }, 3000);
 
-    return () => clearTimeout(timer); 
+    return () => clearTimeout(timer);
   }, []);
 
   // Debug del estado
   useEffect(() => {
-    console.log('Estado del menú:', isMenuOpen);
+    console.log("Estado del menú:", isMenuOpen);
   }, [isMenuOpen]);
-    return (
-      <>
-        {isLoading && <LoadingPage />}
-        <div className={isLoading ? "content-hidden" : "content-visible"}>
-          <Header toggleMenu={toggleMenu} 
+  return (
+    <>
+      {isLoading && <LoadingPage />}
+      <div className={isLoading ? "content-hidden" : "content-visible"}>
+        <Header
+          toggleMenu={toggleMenu}
           openIndexResponsiveMenu={openIndexResponsiveMenu}
-          isMenuOpen={isMenuOpen}/>
-          <main>
-            <Outlet context={{ isMenuOpen, openIndexResponsiveMenu,  closeIndexResponsiveMenu }} />
-          </main>
-          <Footer />
-        </div>
-      </>
-    );
-  }
+          isMenuOpen={isMenuOpen}
+        />
+        <main>
+          <Outlet
+            context={{
+              isMenuOpen,
+              openIndexResponsiveMenu,
+              closeIndexResponsiveMenu,
+            }}
+          />
+        </main>
+        <Footer />
+      </div>
+    </>
+  );
+}
 
-  export default TopEducationLayout;
+export default TopEducationLayout;
