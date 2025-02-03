@@ -24,8 +24,9 @@ const CertificationsList = ({ certifications }) => {
 
             }
 
-            const path = `/certificaciones/${certification.nombre}`;
+            const path = `/certificacion/${certification.slug}`;
             navigate(path);
+            //console.log(path);
 
 
             {/** 

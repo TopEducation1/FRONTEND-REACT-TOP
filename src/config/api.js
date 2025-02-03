@@ -1,5 +1,5 @@
-const API_URL = "https://backend-django-top-production.up.railway.app";
-//http://127.0.0.1:8000
+const API_URL = "http://127.0.0.1:8000";
+//https://backend-django-top-production.up.railway.app
 //console.log('API_URL:', API_URL);
 
 const BASE_URL = API_URL;
@@ -10,8 +10,8 @@ export const endpoints = {
   certificaciones: `${BASE_URL}/certificaciones/`,
   certificaciones_tags: `${BASE_URL}/certificaciones/filter/`,
   certificaciones_busqueda: `${BASE_URL}/certificaciones/busqueda/`,
-  certificaciones_id: (id, nombre) => `${BASE_URL}/certificaciones/${id}/${nombre}`,
-  certificaciones_by_name: (nombre) => `${BASE_URL}/certificaciones/nombre/${nombre}/`,
+  certificaciones_id: (slug) => `${BASE_URL}/certificacion/${slug}/`,
+  certificaciones_by_name: (slug) => `${BASE_URL}/certificacion/${slug}/`,
   habilidades: `${BASE_URL}/certificaciones/skills/`,
   temas: `${BASE_URL}/certificaciones/topics/`,
   universidades: `${BASE_URL}/certificaciones/universities/`,

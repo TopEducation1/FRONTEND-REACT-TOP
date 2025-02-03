@@ -1,8 +1,8 @@
 import { endpoints } from "../config/api";
 
-const getCertificationById = async (id, nombre) => {
+const getCertificationById = async (slug) => {
     try {
-        const url = endpoints.certificaciones_by_name(nombre);
+        const url = endpoints.certificaciones_by_name(slug);
         const response = await fetch(url);
         
         if (!response.ok) {

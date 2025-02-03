@@ -43,13 +43,12 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
                 <div className="navigation-menu">
                     <ul>
                         <li><Link to="/library">Explora</Link></li>
-                        <li><a href="/para-equipos">Para Equipos</a></li>
+                        <li><a href="/para-equipos">Para equipos</a></li>
                         <li><a href="/blog">Recursos</a></li>
                         <li><a id="start-now" href="/empieza-ahora">Empieza ahora</a></li>
                         {/** <li><a href="/rutas-del-conocimiento">Rutas de conocimiento</a></li>*/}
                     </ul>
                 </div>
-
             </nav>
 
             

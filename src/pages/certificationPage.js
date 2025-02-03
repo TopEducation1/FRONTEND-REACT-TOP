@@ -6,7 +6,7 @@ import { Helmet } from 'react-helmet';
 
 const CertificationPage = () => {
     // Estados de la pagina de certificacion
-    const { nombre } = useParams();
+    const { slug } = useParams();
     const [certification, setCertification] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -45,7 +45,7 @@ const CertificationPage = () => {
         const loadCertification = async () => {
             try {
                 setLoading(true);
-                const data = await getCertificationById(nombre);
+                const data = await getCertificationById(slug);
                 setCertification(data);
                 //console.log("INFORMACIÓN ESPECIFICA DE LA CERTIFICACION");
                 //console.log(data);
@@ -57,10 +57,10 @@ const CertificationPage = () => {
             }
         };
 
-        if (nombre) {
+        if (slug) {
             loadCertification();
         }
-    }, [nombre]);
+    }, [slug]);
 
     useEffect(() => {
         if (certification && certification.habilidades_certificacion) {

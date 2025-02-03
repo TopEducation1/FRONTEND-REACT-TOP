@@ -2354,7 +2354,6 @@ header {
   display: flex;
   box-sizing: border-box;
   justify-content: center;
-  text-align: center;
   flex-direction: column;
   width: 60%;
   color: #F6F4F0;
@@ -2366,6 +2365,7 @@ header {
     font-weight: 400;
     line-height: 40px;
     text-align: left;
+  
 
   }
 
@@ -2376,7 +2376,6 @@ header {
     font-style: italic;
     font-weight: 400;
     line-height: 40px;
-    text-align: justify;
     margin-top: 0;
   }
 
