@@ -8,12 +8,15 @@ function ParaEquipos () {
         <>
             <div id="first-team-page">
                 <div id="wrapper-team-title"><h1>Entrena a tu equipo de trabajo <em style={{color: "#5CC781"}}>sin realizar grandes inversiones</em> en infraestructura o logística.</h1></div>
-                <img className="ellipse" src="/assets/Piezas/ellipse-1-para-equipos.png" alt="ellipse" />
-                <img className="ellipse" src="/assets/Piezas/ellipse-2-para-equipos.png" alt="ellipse" />
+                {/**<div className="parallax-container">
+    
+  </div> */}
+  <img className="ellipse parallax ellipse-1" src="/assets/Piezas/ellipse-1-para-equipos.png" alt="ellipse" />
+  <img className="ellipse parallax ellipse-2" src="/assets/Piezas/ellipse-2-para-equipos.png" alt="ellipse" />
             </div>
 
             <div id="second-team-title">
-                    <h2>Numerosas compañias invierten grandes sumas de dinero en la formación de empleados sin ver mejoras significatvas</h2>
+                    <h2>Numerosas compañias invierten grandes sumas de dinero en la formación de empleados <span>sin ver mejoras significatvas</span></h2>
             </div>
 
             <div id="blue-section-team">
@@ -22,7 +25,8 @@ function ParaEquipos () {
                 </div>
                 <div id="right-text-blue-team">
                 <h2>
-                    <span><strong>Top Education </strong>optimiza los procesos de</span>
+                    <span><strong 
+                    >Top Education </strong>optimiza los procesos de</span>
                     <span>capacitación, reduciendo costos y</span>
                     <span>aumentando la eficiencia.</span>
                 </h2>
@@ -37,7 +41,7 @@ function ParaEquipos () {
                     <p className="second-p-second">Que te permitirá alcanzar los objetivos de desarrollo profesional y potenciar el talento de tu equipo, garantizando asi un crecimiento sostenible y una mayor competitividad en el mercado</p>
                 </div>
                 <div id="right-wrapper-second">
-                    <img src="/assets/Piezas/pieza-teams.png"/>
+                    <img src="/assets/Piezas/pieza-teams.png" alt="" />
                 </div>
             </div>
 
