@@ -17,6 +17,7 @@ import ParaEquipos from "./pages/paraEquipos.jsx";
 import StartNow from "./pages/startNow.jsx";
 import EdxCertificationPage from "./pages/EdxCertificationPage.jsx";
 import MasterClassPage from "./pages/MasterClassPage.jsx";
+import RutasConocimiento from "./pages/RutasConocimiento.jsx";
 
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/para-equipos" element={<ParaEquipos />} />
                   <Route path="/empieza-ahora" element={<StartNow />} />
+                  <Route path="/rutas-del-conocimiento" element={< RutasConocimiento/>} />
               </Route>
 
               {/* Ruta por defecto */}
