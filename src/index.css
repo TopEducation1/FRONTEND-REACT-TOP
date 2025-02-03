@@ -4124,6 +4124,10 @@ h2 span:nth-child(3) {
 
 @media (max-width: 1281px) {
 
+  #wrapper-coming-soon {
+    margin-top: 400px;
+  }
+
   #upper-section {
   
     h3 {
@@ -4167,7 +4171,7 @@ h2 span:nth-child(3) {
   }
 
   #wrapper-title-sixth {
-    margin-top: 200px;
+    margin-top: 50px;
     margin-left: 100px;
   }
 
@@ -4525,6 +4529,11 @@ h2 span:nth-child(3) {
 }
 
 @media(max-width: 1025px) {
+
+  #wrapper-coming-soon {
+    margin-top: 0;
+    height: 60px;
+  }
 
 
 
