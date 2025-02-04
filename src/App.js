@@ -18,6 +18,7 @@ import StartNow from "./pages/startNow.jsx";
 import EdxCertificationPage from "./pages/EdxCertificationPage.jsx";
 import MasterClassPage from "./pages/MasterClassPage.jsx";
 import RutasConocimiento from "./pages/RutasConocimiento.jsx";
+import BlogDetailPage from "./pages/BlogDetailPage.jsx";
 
 
 function App() {
@@ -40,11 +41,12 @@ function App() {
               <Route element={<TopEducationLayout />}>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/library" element={<LibraryPage />} />
+                  <Route path="/blog/:slug" element={<BlogDetailPage/>} />
                   <Route path="/certificacion/masterclass/:slug" element={<MasterClassPage />} />
                   <Route path="/certificacion/edx/:slug" element={<EdxCertificationPage />} />
                   <Route path="/certificacion/coursera/:slug" element={<CertificationPage />} />
                   <Route path="/certificacion/:slug" element={<CertificationPage />} />
-                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/blogs" element={<Blog />} />
                   <Route path="/para-equipos" element={<ParaEquipos />} />
                   <Route path="/empieza-ahora" element={<StartNow />} />
                   <Route path="/rutas-del-conocimiento" element={< RutasConocimiento/>} />

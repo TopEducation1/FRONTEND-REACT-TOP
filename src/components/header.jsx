@@ -66,7 +66,7 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
               <a href="/para-equipos">Para equipos</a>
             </li>
             <li>
-              <a href="/blog">Recursos</a>
+              <a href="/blogs">Recursos</a>
             </li>
             <li>
               <a id="start-now" href="/empieza-ahora">

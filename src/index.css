@@ -2220,8 +2220,10 @@ header {
   display: flex;
   justify-content: right;
   align-items: center;
-  width: 50%;
+  width: 60%;
   height: 100%;
+  box-sizing: border-box;
+  padding-right: 50px;
 
   h1 {
     color: #0F090B;
@@ -2247,10 +2249,10 @@ header {
   display: flex;
   justify-content:left;
   align-items: center;
-  width: 50%;
+  width: 40%;
   height: 100%;
   box-sizing: border-box;
-  padding-left: 150px;
+  padding-left: 50px;
 }
 
 #wrapper-title-blogs-section 

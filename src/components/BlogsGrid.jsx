@@ -1,97 +1,117 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import BlogsFetcher from '../services/BlogsFetcher';
+    import React, { useState, useCallback, useEffect } from 'react';
+    import { useNavigate } from 'react-router-dom';
+    import BlogsFetcher from '../services/BlogsFetcher';
 
-const BlogsGrid = () => {
+    const BlogsGrid = () => {
 
-    
-    const navigate = useNavigate();
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [blogs, setBlogs] = useState([]);
+        
+        const navigate = useNavigate();
+        const [error, setError] = useState(null);
+        const [loading, setLoading] = useState(false);
+        const [blogs, setBlogs] = useState([]);
 
-    // Estados para la paginación
-    const [pagination, setPagination] = useState({
-        count: 0,
-        current_page: 1,
-        total_pages: 1,
-    });
+        // Estados para la paginación
+        const [pagination, setPagination] = useState({
+            count: 0,
+            current_page: 1,
+            total_pages: 1,
+        });
 
 
-    const loadBlogs = useCallback(async (page = 1, pageSize = 16) => {
+        const loadBlogs = useCallback(async (page = 1, pageSize = 16) => {
 
-        setLoading(true);
+            setLoading(true);
 
-        try {
+            try {
 
-            let fetchData;
-            fetchData = await BlogsFetcher.getAllBlogs(page, pageSize);
+                let fetchData;
+                fetchData = await BlogsFetcher.getAllBlogs(page, pageSize);
 
-            console.log(fetchData.results)
+                console.log(fetchData.results)
 
-            if (fetchData && Array.isArray(fetchData.results)) {
+                if (fetchData && Array.isArray(fetchData.results)) {
 
-                setBlogs(fetchData.results);
+                    setBlogs(fetchData.results);
 
-                setPagination({
-                    count: fetchData.count || 0,
-                    current_page: page,
-                    total_pages: Math.ceil(fetchData.count / pageSize) || 1,
-                });
+                    setPagination({
+                        count: fetchData.count || 0,
+                        current_page: page,
+                        total_pages: Math.ceil(fetchData.count / pageSize) || 1,
+                    });
 
-            } else {
+                } else {
 
+                    setBlogs([]);
+                }
+            } catch (error) {
+
+                console.error('Error loading certifications:', error);
+                setError('Error loading certifications');
                 setBlogs([]);
+
+            } finally {
+
+                setLoading(false);
             }
-        } catch (error) {
 
-            console.error('Error loading certifications:', error);
-            setError('Error loading certifications');
-            setBlogs([]);
+        }, []);
 
-        } finally {
+        useEffect(() => {
+            loadBlogs();
+        }, [loadBlogs]);
 
-            setLoading(false);
+
+        const handleBlogClick = (blog) => {
+
+            try {
+
+                if (!blog) {
+
+                    throw new Error("No blog data provided");
+
+                }
+
+                const path = `/blog/${blog.slug}`;
+                navigate(path);
+
+            } catch (error) {
+
+                setError('Error al navegar hacia el blog');
+            }
         }
 
-    }, []);
+        if (!Array.isArray(blogs)) {
+            
+            return <div className="error-message">Error: No se pudieron cargar las certificaciones</div>;
 
-    useEffect(() => {
-        loadBlogs();
-    }, [loadBlogs]);
+        }
 
+        return (
+            <>
+                <div id="wrapper-grid-blogs">
+                    <div id="grid-all-blogs">
+                        {blogs.map(blog => {
 
-    if (!Array.isArray(blogs)) {
-        
-        return <div className="error-message">Error: No se pudieron cargar las certificaciones</div>;
-
+                            return (
+                                <div
+                                    onClick={() => handleBlogClick(blog)}
+                                    key={blog.id}
+                                    className='blog-card'
+                                >
+                                    <div id="wrapper-image-card-blog">
+                                        <img src="/assets/Piezas/demo-blog.png" alt="imagen de prueba blog" />
+                                    </div>
+                                    <div id="wrapper-title-card-blog">
+                                        <h1>{blog.titulo_blog}</h1>
+                                    </div>
+                                    
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+            </>
+        )
     }
 
-    return (
-        <>
-            <div id="wrapper-grid-blogs">
-                <div id="grid-all-blogs">
-                    {blogs.map(blog => {
-
-                        return (
-                            <div
-                                key={blog.id}
-                                className='blog-card'
-                            >
-                                <div id="wrapper-image-card-blog">
-                                    <img src="/assets/Piezas/demo-blog.png" alt="imagen de prueba blog" />
-                                </div>
-                                <div id="wrapper-title-card-blog">
-                                    <h1>{blog.titulo_blog}</h1>
-                                </div>
-                                
-                            </div>
-                        )
-                    })}
-                </div>
-            </div>
-        </>
-    )
-}
-
-export default BlogsGrid;
+    export default BlogsGrid;

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const CertificationsList = ({ certifications }) => {
+    
     const navigate = useNavigate();
     const [error, setError] = useState(null);
 
