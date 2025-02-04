@@ -76,7 +76,6 @@ const BlogDetailPage = () => {
                 return;
             }
             
-            // Detectar encabezados en mayúsculas sin #
             if (/^[A-ZÁÉÍÓÚÑ\s-]+$/.test(trimmedLine) && trimmedLine.length > 5) {
                 if (currentList.length > 0) {
                     elements.push(
@@ -174,6 +173,10 @@ const BlogDetailPage = () => {
                         </div>
                     </article>
                 )}
+            </div>
+
+            <div id="wrapper-right-content-blog">
+                <h1>Contenido en trabajo</h1>
             </div>
         </div>
     );
