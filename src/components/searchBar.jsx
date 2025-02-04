@@ -9,9 +9,8 @@ import { X } from 'lucide-react';
 const SearchBar = () => {
 
     // Estados para el componente de la barra de busqueda 
-    const [position, setPosition] = useState(0);
-    const [isMobileView, setIsMobileView] = useState(false);
-    const [error, setError] = useState(null);
+    //const [isMobileView, setIsMobileView] = useState(false);
+    //const [error, setError] = useState(null);
     const [results, setResults] = useState([]);
     const [tempResults, setTempResults] = useState([]); // Temporarily store results while loading new ones
     const [text, setText] = useState('');
@@ -54,7 +53,7 @@ const SearchBar = () => {
 
             } catch (error) {
                 console.error('Error al enviar datos: ', error);
-                setError(error);
+                //setError(error);
                 setTempResults([]);
                 setLoading(false);
             }
@@ -90,7 +89,7 @@ const SearchBar = () => {
             navigate(path);
         } catch (err) {
             console.error('Navigation error:', err);
-            setError('Error al navegar a la certificación');
+            //setError('Error al navegar a la certificación');
         }
     };
 
@@ -106,7 +105,7 @@ const SearchBar = () => {
 
     return (
         <>
-            <div className={`wrapper-search-bar ${isMobileView ? 'mobile-style' : 'desktop-style'}`}>
+            <div className="wrapper-search-bar">
                 <input
                     type="text"
                     placeholder="¿Qué quieres aprender?"
@@ -151,21 +150,9 @@ const SearchBar = () => {
                     ))}
                 </div>
             )
-
-
-
             }
-
-
-
-
         </>
-
-
     )
-
-
-
 };
 
 export default SearchBar;

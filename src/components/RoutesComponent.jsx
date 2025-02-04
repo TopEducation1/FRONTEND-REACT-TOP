@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 // Componente de el slider para las rutas del conocimiento
 const RoutesComponent = () => {

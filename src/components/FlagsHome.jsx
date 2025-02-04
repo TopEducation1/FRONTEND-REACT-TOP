@@ -16,11 +16,14 @@ const FlagsHome = () => {
     const initialTags = {
       "Universidad": [tag]
     };
+
     navigate('/library', {
       state: { selectedTags: initialTags },
       replace: true
     });
+
     window.scrollTo(0,0);
+
   };
 
   const resizeMap = (mapRef, imageRef, originalWidth) => {
@@ -33,6 +36,7 @@ const FlagsHome = () => {
     //console.log('Resizing map:', { originalWidth, currentWidth, scale });
 
     Array.from(areas).forEach(area => {
+
       if (!area.dataset.originalCoords) {
         area.dataset.originalCoords = area.coords;
       }
@@ -44,27 +48,33 @@ const FlagsHome = () => {
   };
 
   const handleImageLoad = (imageNum) => {
+
     setImagesLoaded(prev => ({
       ...prev,
       [imageNum]: true
     }));
+
   };
 
   useEffect(() => {
+
     if (imagesLoaded.img1) {
       resizeMap(mapRef1, imageRef1, 192); // Ancho original de la primera imagen
     }
+
     if (imagesLoaded.img2) {
       resizeMap(mapRef2, imageRef2, 1761); // Ancho original de la segunda imagen
     }
 
     const handleResize = () => {
+
       if (imagesLoaded.img1) {
         resizeMap(mapRef1, imageRef1, 1920);
       }
       if (imagesLoaded.img2) {
         resizeMap(mapRef2, imageRef2, 1761);
       }
+      
     };
 
     window.addEventListener('resize', handleResize);

@@ -16,6 +16,7 @@ export const endpoints = {
   universidades: `${BASE_URL}/certificaciones/universities/`,
   certificacionesCafam: `${BASE_URL}/certificacionesInterest/`,
   ultimas_certificaciones: `${BASE_URL}/ultimasCertificaciones/`,
+  blogs : `${BASE_URL}/blogs/`
 };
 
 

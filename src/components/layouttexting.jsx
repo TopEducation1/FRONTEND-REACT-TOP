@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-
 const CertificationsList = ({ certifications }) => {
     const getImageUrl = (url) => {
         if (!url) return null;

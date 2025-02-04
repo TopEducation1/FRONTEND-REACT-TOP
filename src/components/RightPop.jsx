@@ -16,7 +16,7 @@ const RightPop = () => {
             {/* Bottom section */}
             <div className="grid-pop-section" id="bottom-section">
                 <span>¿Te gustaría contratar nuestros servicios para tu empresa?</span>
-                <a>Conoce Top Education for teams</a>
+                <a href="/para-equipos" >Conoce Top Education for teams</a>
             </div>
         </div>
     )

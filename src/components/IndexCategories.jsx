@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { Link } from 'react-router-dom';
 
 const IndexCategories = ({ onTagSelect, selectedTags }) => {
+    
     const [openSections, setOpenSections] = useState([]);
     const indexRef = useRef(null);
 

@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from 'react-router-dom';
-import getCertificationById from "../services/getCertificationById";
-import RightPop from "../components/RightPop";
+//import React, { useEffect, useState } from "react";
+//import { useParams } from 'react-router-dom';
+//import getCertificationById from "../services/getCertificationById";
+//import RightPop from "../components/RightPop";
 
-// Nuevo componente YouTubePlayer
 const YouTubePlayer = ({ url }) => {
     const getEmbedUrl = (url) => {
         if (!url) return '';

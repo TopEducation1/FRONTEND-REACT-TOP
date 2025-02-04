@@ -17,6 +17,7 @@ const CertificationsList = ({ certifications }) => {
     };
 
     const handleCertificationClick = (certification) => {
+
         try {
             if (!certification) {
 
@@ -46,6 +47,7 @@ const CertificationsList = ({ certifications }) => {
 
             //console.log('Navigating to:', path);
         } catch (err) {
+
             //console.error('Navigation error:', err);
             setError('Error al navegar a la certificación');
         }
@@ -57,6 +59,7 @@ const CertificationsList = ({ certifications }) => {
         }
 
         const platformImages = {
+
             1: '/assets/Plataformas/Edx Mini logo.png',
             2: '/assets/Plataformas/Coursera mini logo.png',
             3: '/assets/Plataformas/MasterClass logo mini.svg'
@@ -66,6 +69,7 @@ const CertificationsList = ({ certifications }) => {
     };
 
     if (!Array.isArray(certifications)) {
+        
         return <div className="error-message">Error: No se pudieron cargar las certificaciones</div>;
     }
 
