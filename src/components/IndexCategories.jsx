@@ -118,7 +118,14 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
             ref={indexRef}
             className="index-container"
         >
+            
+            <div className="title-category">
+        <h2>Biblioteca</h2>
+    </div>
             <div className="category-wrapper">
+
+            
+            
                 {sections.map((section, index) => (
                     <div
                         className={`category-item ${openSections.includes(index) ? "open" : ""}`}

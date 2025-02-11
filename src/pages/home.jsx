@@ -237,14 +237,14 @@ function HomePage() {
               tag="Matemáticas y Lógica"
             />
             <TopicCircles
-              topic="Ciencias Físicas e Ingeniería"
+              topic="Ciencias, física e ingeniería"
               image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/eaea7635-0af1-4704-8cf6-03281c209dd3/TE-ICONO-CIENCIAS+F%C3%8DSICAS+E+INGENIERIA.png"
-              tag="Ciencias Físicas e Ingeniería"
+              tag="Ciencias, física e ingeniería"
             />
             <TopicCircles
-              topic="Ciencias Sociales"
+              topic="Ciencias sociales"
               image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/c9f4926a-b119-4287-96e3-f456a789d9b0/TE-ICONO-CIENCIAS+SOCIALES.png"
-              tag="Ciencias Sociales"
+              tag="Ciencias sociales"
             />
             <TopicCircles
               topic="Personas y cultura"

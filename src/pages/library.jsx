@@ -308,12 +308,10 @@ function LibraryPage({ showRoutes = true }) {
 
     return (
         <>
-            <div className="title-category">
-                <h2>Biblioteca</h2>
-            </div>
+           
 
 
-            {!isMobileView && <SearchBar />}
+             <SearchBar />
             |
 
             <div className="container-tags">
@@ -353,7 +351,7 @@ function LibraryPage({ showRoutes = true }) {
                     </svg>
                     <span>Filtrar</span>
                 </button>
-                {isMobileView && SearchBar}
+                 < SearchBar />
             </div>
 
             

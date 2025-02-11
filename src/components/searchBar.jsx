@@ -4,28 +4,18 @@ import { useDebounce } from "use-debounce";
 import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
 
-
-
 const SearchBar = () => {
-
-    // Estados para el componente de la barra de busqueda 
-    //const [isMobileView, setIsMobileView] = useState(false);
-    //const [error, setError] = useState(null);
     const [results, setResults] = useState([]);
-    const [tempResults, setTempResults] = useState([]); // Temporarily store results while loading new ones
+    const [tempResults, setTempResults] = useState([]);
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(false);
-    // Use debounce to reduce the number of API calls
+    const [resultsVisible, setResultsVisible] = useState(false);
     const [debouncedText] = useDebounce(text, 300);
     const navigate = useNavigate();
-    
 
-
-    // Manejar la escritura en el input 
     const handleWriting = event => {
         const newText = event.target.value;
         setText(newText);
-
     };
 
     const handleClear = () => {
@@ -34,35 +24,54 @@ const SearchBar = () => {
         setTempResults([]);
     };
 
-    // Effect to fecth search results when debounced text changes
     useEffect(() => {
         const fetchResults = async () => {
-
-            if(!debouncedText.trim() || debouncedText.trim().length < 3) {
-                // Clear results if the input text is empty or less than 3 characters
+            if (!debouncedText.trim() || debouncedText.trim().length < 3) {
                 setResults([]);
                 return;
             }
 
             try {
                 setLoading(true);
-                setTempResults([]); // Clear temporary results
+                setTempResults([]);
                 const data = await FilterBySearch.getResults(debouncedText);
                 setTempResults(Array.isArray(data) ? data : []);
                 setLoading(false);
-
             } catch (error) {
                 console.error('Error al enviar datos: ', error);
-                //setError(error);
                 setTempResults([]);
                 setLoading(false);
             }
         };
 
         fetchResults();
-
     }, [debouncedText]);
 
+    useEffect(() => {
+        if (!loading) {
+            setResults(tempResults);
+        }
+    }, [loading, tempResults]);
+
+    useEffect(() => {
+        if (debouncedText.trim() && results.length > 0) {
+            setResultsVisible(true);
+        } else {
+            setResultsVisible(false);
+        }
+    }, [debouncedText, results]);
+
+    useEffect(() => {
+        if (resultsVisible) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [resultsVisible]);
 
     const handleCertificationClick = (certification, e) => {
         e.preventDefault();
@@ -89,19 +98,8 @@ const SearchBar = () => {
             navigate(path);
         } catch (err) {
             console.error('Navigation error:', err);
-            //setError('Error al navegar a la certificación');
         }
     };
-
-    // Update main results state after loading is complete
-    useEffect(() => {
-        if(!loading) {
-            setResults(tempResults);
-        }
-    }, [loading, tempResults]);
-
-
-
 
     return (
         <>
@@ -115,12 +113,9 @@ const SearchBar = () => {
                     value={text}
                 />
                 {text && (
-                    <button
-                        onClick={handleClear}
-                        className="clear-button"
-                        >
-                            < X />
-                        </button>
+                    <button onClick={handleClear} className="clear-button">
+                        <X />
+                    </button>
                 )}
                 <svg
                     fill="white"
@@ -133,26 +128,21 @@ const SearchBar = () => {
                 </svg>
                 {loading && <span className="loader-search"></span>}
             </div>
-            
-
-            
 
             {debouncedText.trim() && results.length > 0 && (
                 <div className="container-results">
                     {results.map((resultado) => (
                         <div key={resultado.id} onClick={(e) => handleCertificationClick(resultado, e)} className="box-result">
                             <div className="wrapper-img-box">
-                                <img src={resultado.url_imagen_universidad_certificacion}></img>
+                                <img src={resultado.url_imagen_universidad_certificacion} alt={resultado.nombre} />
                             </div>
                             <div className="wrapper-name-box">{resultado.nombre}</div>
-
                         </div>
                     ))}
                 </div>
-            )
-            }
+            )}
         </>
-    )
+    );
 };
 
 export default SearchBar;
