@@ -1003,7 +1003,8 @@ header {
   display: grid;
   position: relative;
   grid-template-rows: 35% 35% 30%;
-  width: 340px;
+  width: 280px;
+  /*340px*/
   height: 280px;
   background-color: #F6F4EF;
   color: #0F090B;
@@ -1128,7 +1129,7 @@ header {
   width: 75%;
   height: 100px;
   top: 250px;
-  left: 320px;
+  left: 350px;
   box-sizing: border-box;
   overflow-x: scroll;
   border-bottom: 1px solid #F6F4EF;
@@ -4407,6 +4408,10 @@ line-height: normal;
 
 
 @media screen and (max-width: 1450px) {
+
+  .certification-card {
+    width: 340px;
+  }
 
   .container-results {
     overflow-x: hidden;
