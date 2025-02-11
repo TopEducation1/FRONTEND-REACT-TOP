@@ -4499,6 +4499,23 @@ line-height: normal;
 
 @media (max-width: 1281px) {
 
+  #wrapper-form form input {
+    width: 400px;
+    height: 40px;
+    border-radius: 20px;
+}
+  #blog-section {
+    margin-top: 300px ;
+  }
+
+  #wrapper-button button {
+    margin-top: 20px;
+  }
+
+  #grid-all-blogs {
+    width: 90%;
+  } 
+
   #wrapper-coming-soon {
     margin-top: 400px;
   }
