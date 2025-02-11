@@ -16,7 +16,7 @@ function ParaEquipos () {
             </div>
 
             <div id="second-team-title">
-                    <h2>Numerosas compañias invierten grandes sumas de dinero en la formación de empleados <span>sin ver mejoras significatvas</span></h2>
+                    <h2>Numerosas compañias invierten grandes sumas de dinero en la formación de empleados <span>sin ver mejoras significativas</span></h2>
             </div>
 
             <div id="blue-section-team">
@@ -60,7 +60,7 @@ function ParaEquipos () {
 
 
 
-                <div id="wrapper-button-reserva">
+                <div id="wrapper-button-reserva-first">
                     <button id="button-reserva">Reserva una demostración empresarial</button>
                 </div>
                 

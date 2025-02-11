@@ -73,7 +73,7 @@ const BlogDetailPage = () => {
         <meta name="robots" content="index, follow" />
         <meta
           property="og:description"
-          content={certification.metadescripcion_blog}
+          content={blog.metadescripcion_blog}
         />
         <meta property="og:type" content="website" />
       </Helmet>
