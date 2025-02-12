@@ -33,13 +33,13 @@ const BlogDetailPage = () => {
     console.log("Content to render:", content); // Debug log
 
     if (!content) {
-      console.log("No content available"); // Debug log
+      //console.log("No content available"); // Debug log
       return null;
     }
 
     // Verifica si el contenido ya está en el campo contenido_blog o solo contenido
     const htmlContent = content.contenido_blog || content;
-    console.log("HTML content to render:", htmlContent); // Debug log
+    //console.log("HTML content to render:", htmlContent); // Debug log
 
     return (
       <div
@@ -50,33 +50,35 @@ const BlogDetailPage = () => {
   };
 
   // Debug log para ver el estado del blog
-  console.log("Current blog state:", blog);
+  //console.log("Current blog state:", blog);
 
   return (
     <>
       {/**SEO ELEMENTS WITH REACT -HELMET */}
-      <Helmet>
-        <title>{blog.nombre_blog}</title>
-        <meta
-          name="description"
-          content={blog.metadescripcion_blog}
-        />
-        <meta
-          property="og:title"
-          content={blog.metadescripcion_blog}
-        />
-        <meta
-          name="keywords"
-          content={blog.palabra_clave_blog}
-        />
-        <meta name="author" content="Top Education" />
-        <meta name="robots" content="index, follow" />
-        <meta
-          property="og:description"
-          content={blog.metadescripcion_blog}
-        />
-        <meta property="og:type" content="website" />
-      </Helmet>
+      {blog && (
+        <Helmet>
+          <title>{blog.nombre_blog}</title>
+          <meta
+            name="description"
+            content={blog.metadescripcion_blog}
+          />
+          <meta
+            property="og:title"
+            content={blog.metadescripcion_blog}
+          />
+          <meta
+            name="keywords"
+            content={blog.palabra_clave_blog}
+          />
+          <meta name="author" content="Top Education" />
+          <meta name="robots" content="index, follow" />
+          <meta
+            property="og:description"
+            content={blog.metadescripcion_blog}
+          />
+          <meta property="og:type" content="website" />
+        </Helmet>
+      )}
 
       <div id="body-blog">
         <div id="wrapper-content-blog">
@@ -91,7 +93,7 @@ const BlogDetailPage = () => {
           {blog && (
             <article className="blog-article">
               <h1 className="blog-main-title">
-                {blog.titulo_blog || blog.nombre_blog}
+                {blog.nombre_blog}
               </h1>
 
               <div className="blog-meta">
