@@ -6164,6 +6164,9 @@ line-height: normal;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     gap: 50px;
+    justify-content: start;
+    padding:  0 55px;
+    box-sizing: border-box;
   }
 
   .container-logo {
@@ -6184,7 +6187,7 @@ line-height: normal;
   .container-routes-section {
     width: 100%;
     position: absolute;
-    top: 2950px;
+    top: 2750px;
     left: 0;
     height: auto;
   }
@@ -6349,10 +6352,16 @@ line-height: normal;
 
   .wrapper-certifications {
     grid-template-columns: repeat(2, 1fr);
+    width: 100%;
   }
 
   .certification-card {
-    width: 220px;
+    width: 210px;
+  }
+
+  .certifications-container {
+    top: 530px;
+    width: 100%;
   }
 
   #container-logo-platforms {
@@ -6363,11 +6372,8 @@ line-height: normal;
   }
 
   #wrapper-logos {
-    display: grid;
-    width: auto;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    column-gap: 70px;
+    display: flex;
+    flex-direction: row;
   }
 
   #container-tags-card {
@@ -6395,9 +6401,7 @@ line-height: normal;
     top: 400px;
   }
 
-  .certifications-container {
-    top: 530px;
-  }
+ 
 }
 
 
@@ -6435,6 +6439,29 @@ line-height: normal;
 
   #button-reserva-masterclass {
     width: 70%;
+  }
+
+  .wrapper-certifications {
+    background-color: black;
+    padding: 0;
+    grid-template-columns: 100%;
+  }
+
+  .certifications-container {
+    width: 100%;
+    padding: 0;
+  }
+
+  .certification-card {
+    width: 270px;
+  }
+
+  .container-buttons-pagination {
+    margin-top: 2550px;
+  }
+
+  .container-routes-section {
+    margin-top: 2100px;
   }
 
 }
@@ -6524,6 +6551,7 @@ line-height: normal;
 
   .wrapper-certifications {
     grid-template-columns: repeat(1, 1fr);
+    width: 100%;
   }
 
   .certification-card {
