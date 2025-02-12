@@ -6422,6 +6422,13 @@ line-height: normal;
 
 @media(max-width: 400px) {
 
+  #wrapper-button-reserva-first {
+
+    button {
+      width: 60%;
+    }
+  }
+
   #button-alternative-reserve {
     width: 70%;
   }
