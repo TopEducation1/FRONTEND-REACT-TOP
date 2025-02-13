@@ -6435,7 +6435,7 @@ line-height: normal;
   }
 
   .article {
-    width: 380px;
+    width: 320px;
   }
 
   #ellipse-red {
@@ -6481,6 +6481,10 @@ line-height: normal;
   #grid-genius {
     width: 100%;
     grid-template-columns: 100%;
+  }
+
+  .logo-nav {
+    transform: scale(0.3);
   }
 
   .container-buttons-pagination {
