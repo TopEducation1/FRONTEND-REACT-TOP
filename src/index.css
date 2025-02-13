@@ -6472,6 +6472,15 @@ line-height: normal;
     h1 {
       text-align: center;
     }
+
+    p {
+      text-align: center;
+    }
+  }
+
+  #grid-genius {
+    width: 100%;
+    grid-template-columns: 100%;
   }
 
   .container-buttons-pagination {
