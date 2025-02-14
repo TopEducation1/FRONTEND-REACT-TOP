@@ -6,6 +6,7 @@ import RotateVideo from "../components/RotateVideo";
 import MovingText from "../components/ComingSoon";
 import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
+import HomeGridBlogs from "../components/HomeGridBlogs";
 
 
 function HomePage() {
@@ -461,25 +462,7 @@ function HomePage() {
 
         <h1>Explora y aprende</h1>
 
-        <div id="grid-articles">
-          <div class="article">
-            <img src="/assets/Piezas/1-article.png " alt="" />
-            <h3>edx vs coursera ¿Cuál plataforma educativa es mejor?</h3>
-          </div>
-          <div class="article">
-            <img src="/assets/Piezas/2-article.png " alt="" />
-            <h3>
-              Así puedes certificarte en las mejores universidades del mundo
-            </h3>
-          </div>
-          <div class="article">
-            <img src="/assets/Piezas/3-article.png " alt="" />
-            <h3>
-              5 grandes cursos de edx con certificado de universidadesen estados
-              unidos
-            </h3>
-          </div>
-        </div>
+          <HomeGridBlogs />
             <Link to="/recursos">
             <button id="button-all-articles">Ver más artículos</button>
             </Link>
