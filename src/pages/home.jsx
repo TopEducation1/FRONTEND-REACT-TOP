@@ -5,6 +5,8 @@ import FlagsHome from "../components/FlagsHome";
 import RotateVideo from "../components/RotateVideo";
 import MovingText from "../components/ComingSoon";
 import { Helmet } from "react-helmet";
+import { Link } from 'react-router-dom';
+
 
 function HomePage() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -478,8 +480,10 @@ function HomePage() {
             </h3>
           </div>
         </div>
-
-        <button id="button-all-articles">Ver más artículos</button>
+            <Link to="/recursos">
+            <button id="button-all-articles">Ver más artículos</button>
+            </Link>
+        
       </div>
 
       <div id="sixth-home-section">
