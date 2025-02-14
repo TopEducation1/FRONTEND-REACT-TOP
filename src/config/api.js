@@ -1,5 +1,5 @@
-const API_URL = "http://127.0.0.1:8000";
-//https://backend-django-top-production.up.railway.app
+const API_URL = "https://backend-django-top-production.up.railway.app";
+//http://127.0.0.1:8000
 
 const BASE_URL = API_URL;
 
