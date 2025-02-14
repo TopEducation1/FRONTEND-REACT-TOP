@@ -1,11 +1,23 @@
 import Flags from "../components/Flags";
 import SliderMasterClass from "../components/SliderMasterClass";
+import { Helmet } from "react-helmet";
 
 function ParaEquipos () {
 
     return (
 
         <>
+
+        {/**SEO ELEMENTS WITH REACT -HELMET */}
+        <Helmet>
+                <title>Para Equipos | Capacita a tu equipo con Top Education</title>
+                <meta name="description" content="Capacita a tu equipo sin grandes inversiones. Optimiza el desarrollo profesional con soluciones educativas personalizadas. Impulsa productividad e innovación." />
+                <meta property="og:title" content="Capacita a tu equipo con Top Education" />
+                <meta name="author" content="Top Education" />
+                <meta name="robots" content="index, follow" />
+                <meta property="og:description" content="Potencia tu perfil profesional con una suscripción a Top Education. Accede a +13,000 certificaciones y recursos exclusivos para transformar tu futuro." />
+                <meta property="og:type" content="website" />
+              </Helmet>
             <div id="first-team-page">
                 <div id="wrapper-team-title"><h1>Entrena a tu equipo de trabajo <em style={{color: "#5CC781"}}>sin realizar grandes inversiones</em> en infraestructura o logística.</h1></div>
                 {/**<div className="parallax-container">

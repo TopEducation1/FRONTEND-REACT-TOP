@@ -47,7 +47,7 @@ function App() {
                   <Route path="/certificacion/edx/:slug" element={<EdxCertificationPage />} />
                   <Route path="/certificacion/coursera/:slug" element={<CertificationPage />} />
                   <Route path="/certificacion/:slug" element={<CertificationPage />} />
-                  <Route path="/blogs" element={<Blog />} />
+                  <Route path="/recursos" element={<Blog />} />
                   <Route path="/para-equipos" element={<ParaEquipos />} />
                   <Route path="/empieza-ahora" element={<StartNow />} />
                   <Route path="/rutas-del-conocimiento" element={< RutasConocimiento/>} />

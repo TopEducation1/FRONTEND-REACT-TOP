@@ -2,6 +2,7 @@
 
 import BlogSearchBar from "../components/BlogSearchBar";
 import BlogsGrid from "../components/BlogsGrid";
+import { Helmet } from "react-helmet";
 
 
 function BlogPage() {
@@ -9,6 +10,17 @@ function BlogPage() {
     
     return (
         <>
+
+        {/**SEO ELEMENTS WITH REACT -HELMET */}
+              <Helmet>
+                <title>Recursos | Top Education</title>
+                <meta name="description" content="Descubre ebooks y blogs exclusivos de Top Education. Accede a contenido valioso para potenciar tu conocimiento y alcanzar tus metas personales y profesionales." />
+                <meta property="og:title" content="Top Education | Aprende con edX, Coursera y MasterClass" />
+                <meta name="author" content="Top Education" />
+                <meta name="robots" content="index, follow" />
+                <meta property="og:description" content="Descubre ebooks y blogs exclusivos de Top Education. Accede a contenido valioso para potenciar tu conocimiento y alcanzar tus metas personales y profesionales." />
+                <meta property="og:type" content="website" />
+              </Helmet>
             <div id="first-section">
                 <h1>
                     Editorial Top Education

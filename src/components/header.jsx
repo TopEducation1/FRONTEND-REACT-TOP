@@ -51,7 +51,7 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
               <a href="/para-equipos">Para equipos</a>
             </li>
             <li>
-              <a href="/blogs">Recursos</a>
+              <a href="/recursos">Recursos</a>
             </li>
             <li>
               <a id="start-now" href="/empieza-ahora">
@@ -81,7 +81,7 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
               <a href="/para-equipos">Para Equipos</a>
             </li>
             <li>
-              <a href="/blog">Recursos</a>
+              <a href="/recursos">Recursos</a>
             </li>
           </ul>
         </div>

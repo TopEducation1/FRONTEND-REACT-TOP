@@ -1,3 +1,5 @@
+import { Helmet } from "react-helmet";
+
 function StartNow() {
 
 
@@ -5,6 +7,19 @@ function StartNow() {
     return (
 
         <>
+
+
+        {/**SEO ELEMENTS WITH REACT -HELMET */}
+        <Helmet>
+                <title>Empieza Ahora | Top Education</title>
+                <meta name="description" content="Potencia tu perfil profesional con una suscripción a Top Education. Accede a +13,000 certificaciones y recursos exclusivos para transformar tu futuro." />
+                <meta property="og:title" content="Empieza Ahora" />
+                <meta name="author" content="Top Education" />
+                <meta name="robots" content="index, follow" />
+                <meta property="og:description" content="Potencia tu perfil profesional con una suscripción a Top Education. Accede a +13,000 certificaciones y recursos exclusivos para transformar tu futuro." />
+                <meta property="og:type" content="website" />
+              </Helmet>
+
             <div id="first-startnow-section">
                 <div id="left-startnow-first-section"><h1>Lleva tu carrera al siguiente nivel</h1></div>
                 <div id="right-startnow-first-section">
