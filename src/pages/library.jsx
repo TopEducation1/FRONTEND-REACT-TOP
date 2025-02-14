@@ -11,6 +11,8 @@ import { useDebounce } from 'use-debounce';
 import IndexCategories from "../components/IndexCategories";
 import IndexCategoriesCafam from "../components/cafam/IndexCategoriesCafam";
 import SlidingMenuIndex from "../components/SlidingMenuIndex";
+import { Helmet } from "react-helmet";
+
 
 /**
  * Pagina de la biblioteca
@@ -90,7 +92,7 @@ function LibraryPage({ showRoutes = true }) {
 
     const updateHistoryState = useCallback((tags) => {
         const queryString = tagFilterService.buildQueryString(tags);
-        window.history.pushState({}, '', tags && Object.keys(tags).length > 0 ? `/library/filter/${queryString}` : '/library');
+        window.history.pushState({}, '', tags && Object.keys(tags).length > 0 ? `/explora/filter/${queryString}` : '/explora');
     }, []);
 
 
@@ -309,6 +311,17 @@ function LibraryPage({ showRoutes = true }) {
     return (
         <>
            
+           {/**SEO ELEMENTS WITH REACT -HELMET */}
+                 <Helmet>
+                   <title>Certificaciones | Top Education
+                   </title>
+                   <meta name="description" content="Explora más de 13,000 certificaciones de las mejores universidades y empresas líderes del mundo.   " />
+                   <meta property="og:title" content="Top Education | Aprende con edX, Coursera y MasterClass" />
+                   <meta name="author" content="Top Education" />
+                   <meta name="robots" content="index, follow" />
+                   <meta property="og:description" content="Explora más de 13,000 certificaciones de las mejores universidades y empresas líderes del mundo." />
+                   <meta property="og:type" content="website" />
+                 </Helmet>
 
 
              <SearchBar />

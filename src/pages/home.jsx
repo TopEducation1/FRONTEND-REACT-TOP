@@ -104,12 +104,13 @@ function HomePage() {
       {/**SEO ELEMENTS WITH REACT -HELMET */}
       <Helmet>
         <title>Top Education</title>
-        <meta name="description" content="" />
-        <meta property="og:title" content="" />
+        <meta name="description" content="Conoce Top Education, la plataforma donde aprendes de las mejores universidades de Latinoamérica y el mundo con +13,000 certificaciones.
+" />
+        <meta property="og:title" content="Top Education | Aprende con edX, Coursera y MasterClass" />
         <meta name="keywords" content="" />
         <meta name="author" content="Top Education" />
         <meta name="robots" content="index, follow" />
-        <meta property="og:description" content="" />
+        <meta property="og:description" content="Conoce Top Education, la plataforma donde aprendes de las mejores universidades de Latinoamérica y el mundo con +13,000 certificaciones." />
         <meta property="og:type" content="website" />
       </Helmet>
 

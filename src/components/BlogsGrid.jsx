@@ -46,8 +46,8 @@ const BlogsGrid = () => {
     }, []);
 
     useEffect(() => {
-        loadBlogs();
-    }, [loadBlogs]);
+        loadBlogs(pagination.current_page);
+    }, [pagination.current_page, loadBlogs]);
 
     const handleBlogClick = (blog) => {
         try {
@@ -61,6 +61,14 @@ const BlogsGrid = () => {
             setError('Error al navegar hacia el blog');
         }
     };
+
+
+    const handlePageChange = (newPage) => {
+
+        if (newPage => 1 && newPage <= pagination.total_pages) {
+            setPagination((prev) =>({...prev, current_page: newPage}));
+        }
+    };  
 
     if (!Array.isArray(blogs)) {
 
@@ -95,6 +103,26 @@ const BlogsGrid = () => {
                         );
                     })}
 
+                </div>
+
+
+                {/*Controles para la paginación de los blogs */}
+                <div id="pagination-controls">
+                    <button
+                     onClick={() => handlePageChange(pagination.current_page -1)}
+                     disabled={pagination.current_page === 1}
+                    >
+                       Anterior
+                    </button>
+                    <span>
+                        Pagina {pagination.current_page} de {pagination.total_pages}
+                    </span>
+                    <button
+                        onClick={() => handlePageChange(pagination.current_page +1)}
+                        disabled={pagination.current_page === pagination.total_pages}
+                    >
+                        Siguiente
+                    </button>
                 </div>
             </div>
         </>

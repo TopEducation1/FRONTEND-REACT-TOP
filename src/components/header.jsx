@@ -45,7 +45,7 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
         <div className="navigation-menu">
           <ul>
             <li>
-              <Link to="/library">Explora</Link>
+              <Link to="/explora">Explora</Link>
             </li>
             <li>
               <a href="/para-equipos">Para equipos</a>
@@ -74,7 +74,7 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
                 className="button-explore"
                 onClick={toggleMenu}
               >
-                <Link to="/library">Explora</Link>
+                <Link to="/explora">Explora</Link>
               </a>
             </li>
             <li>

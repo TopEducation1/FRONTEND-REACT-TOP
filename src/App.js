@@ -41,7 +41,7 @@ function App() {
               {/* Rutas principales */}
               <Route element={<TopEducationLayout />}>
                   <Route path="/" element={<HomePage />} />
-                  <Route path="/library" element={<LibraryPage />} />
+                  <Route path="/explora" element={<LibraryPage />} />
                   <Route path="/blog/:slug" element={<BlogDetailPage/>} />
                   <Route path="/certificacion/masterclass/:slug" element={<MasterClassPage />} />
                   <Route path="/certificacion/edx/:slug" element={<EdxCertificationPage />} />
