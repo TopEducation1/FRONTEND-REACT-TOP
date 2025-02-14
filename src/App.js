@@ -42,7 +42,7 @@ function App() {
               <Route element={<TopEducationLayout />}>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/explora" element={<LibraryPage />} />
-                  <Route path="/blog/:slug" element={<BlogDetailPage/>} />
+                  <Route path="/recursos/:slug" element={<BlogDetailPage/>} />
                   <Route path="/certificacion/masterclass/:slug" element={<MasterClassPage />} />
                   <Route path="/certificacion/edx/:slug" element={<EdxCertificationPage />} />
                   <Route path="/certificacion/coursera/:slug" element={<CertificationPage />} />

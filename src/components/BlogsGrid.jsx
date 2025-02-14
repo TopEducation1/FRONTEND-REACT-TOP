@@ -55,7 +55,7 @@ const BlogsGrid = () => {
                 throw new Error("No blog data provided");
             }
 
-            const path = `/blog/${blog.slug}`;
+            const path = `/recursos/${blog.slug}`;
             navigate(path);
         } catch (error) {
             setError('Error al navegar hacia el blog');

@@ -8,6 +8,8 @@ const BlogDetailPage = () => {
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showToolTip, setShowTooltip] = useState(false);
+  const [tooltipMessage, setTooltipMessage] = useState("Copiar link");
 
   useEffect(() => {
     const loadBlog = async () => {
@@ -29,28 +31,62 @@ const BlogDetailPage = () => {
     }
   }, [slug]);
 
+  const copyToClipboard = () => {
+    const url = window.location.href;
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setTooltipMessage("Link copiado"); // Cambia el mensaje del tooltip
+        setTimeout(() => {
+          setTooltipMessage("Copiar link"); // Restaura el mensaje después de 2 segundos
+        }, 2000);
+      })
+      .catch((err) => {
+        console.error("Error al copiar el link: ", err);
+      });
+  };
+
   const renderBlogContent = (content) => {
     console.log("Content to render:", content); // Debug log
 
     if (!content) {
-      //console.log("No content available"); // Debug log
       return null;
     }
 
     // Verifica si el contenido ya está en el campo contenido_blog o solo contenido
     const htmlContent = content.contenido_blog || content;
-    //console.log("HTML content to render:", htmlContent); // Debug log
+
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = htmlContent;
+
+
+    const links = tempDiv.querySelectorAll("a");
+
+    links.forEach((link) => {
+      const linkText = link.textContent.trim();
+      if (linkText.startsWith("CTA")) {
+        const url = link.getAttribute("href");
+        const text = linkText.replace("CTA", "").trim()
+        
+        
+        const newContent = `
+          <a href="${url}" target="_blank" rel="noopener noreferrer">
+            <img src="${blog.url_img_cta}" alt="${text}" style="cursor: pointer;" />
+          </a>
+        `;
+
+        link.outerHTML = newContent;  
+      }
+    });
+
 
     return (
       <div
         className="blog-content"
-        dangerouslySetInnerHTML={{ __html: htmlContent }}
+        dangerouslySetInnerHTML={{ __html: tempDiv.innerHTML }}
       />
     );
   };
-
-  // Debug log para ver el estado del blog
-  //console.log("Current blog state:", blog);
 
   return (
     <>
@@ -92,9 +128,30 @@ const BlogDetailPage = () => {
 
           {blog && (
             <article className="blog-article">
-              <h1 className="blog-main-title">
-                {blog.nombre_blog}
-              </h1>
+              <span id="category-blog">{blog.categoria_blog_id}</span>
+              <h1 className="blog-main-title">{blog.nombre_blog}</h1>
+              <p id="metadescription-blog">{blog.metadescripcion_blog}</p>
+              
+              <div id="author-share">
+                <div id="wrapper-author">
+                  <div id="wrapper-icon-author">
+                    <img id="icon-author-img" src={blog.url_img_autor} alt="" />
+                  </div>
+                  <div id="wrapper-name-date">
+                    <span id="span-author">{blog.autor_blog_id}</span>
+                    <span id="span-date">{blog.fecha_redaccion_blog}</span>
+                  </div>
+                </div>
+
+                <div id="wrapper-button-share"
+                  onClick={copyToClipboard}
+                  onMouseEnter={() => setShowTooltip(true)}
+                  onMouseLeave={() => setShowTooltip(false)}
+                >
+                  {showToolTip && <span id="tooltip-clipboard">{tooltipMessage}</span>}
+                  <img src="/assets/Piezas/share.png" alt="Share icon" />
+                </div>
+              </div>
 
               <div className="blog-meta">
                 {blog.fecha_blog_redaccion && (
@@ -105,20 +162,10 @@ const BlogDetailPage = () => {
                 )}
               </div>
 
-              {/* Mostrar el contenido sin procesar para debug */}
-              <div style={{ display: "none" }}>
-                Raw content:{" "}
-                {JSON.stringify(blog.contenido_blog || blog.contenido)}
-              </div>
-
               {/* Renderizar el contenido HTML */}
               {renderBlogContent(blog.contenido_blog || blog.contenido)}
             </article>
           )}
-        </div>
-
-        <div id="wrapper-right-content-blog">
-          <h1>Contenido en trabajo</h1>
         </div>
       </div>
     </>
