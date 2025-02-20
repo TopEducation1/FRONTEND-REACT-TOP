@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import getBlogBySlug from "../services/getBlogBySlug";
 import { Helmet } from "react-helmet";
+import LatestBlogsGrid from "../components/cafam/LatestBlogsGrid";
 
 const BlogDetailPage = () => {
   const { slug } = useParams();
@@ -16,10 +17,10 @@ const BlogDetailPage = () => {
       try {
         setLoading(true);
         const data = await getBlogBySlug(slug);
-        console.log("Blog data received:", data); // Debug log
+        console.log("Blog data received:", data); 
         setBlog(data);
       } catch (error) {
-        console.error("Error loading blog:", error); // Debug log
+        console.error("Error loading blog:", error); 
         setError(error.message);
       } finally {
         setLoading(false);
@@ -166,7 +167,15 @@ const BlogDetailPage = () => {
               {renderBlogContent(blog.contenido_blog || blog.contenido)}
             </article>
           )}
+          <div id="wrapper-interest-links">
+            <h2>Te puede interesar</h2>
+            < LatestBlogsGrid/>
+          </div>
         </div>
+
+        
+
+
       </div>
     </>
   );
