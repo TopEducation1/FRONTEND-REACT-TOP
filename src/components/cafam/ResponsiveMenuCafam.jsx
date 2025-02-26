@@ -18,13 +18,32 @@ const ResponsiveMenuCafam = ({ onTagSelect, isOpen, onClose }) => {
         return () => window.removeEventListener('resize', handleResize);
     }, [onClose]);
 
+    useEffect(() => {
+        
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+
+
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, [isOpen]);
+
     if (!isMobile || !isOpen) {
         return null;
     }
 
+    
+
     return (
         <div className={`${styles.cafamMenuResponsive} ${isOpen ? styles.open : ''}`}>
-            <IndexCategoriesCafam onTagSelect={onTagSelect}/>
+            <div className={`${styles.menuContentContainer}`}>
+                <IndexCategoriesCafam onTagSelect={onTagSelect}/>
+            </div>
+            
             
             <div className={styles.wrapperCloseResponsiveMenuCafam}>
                 <svg 
@@ -34,7 +53,7 @@ const ResponsiveMenuCafam = ({ onTagSelect, isOpen, onClose }) => {
                     height="30"  
                     viewBox="0 0 24 24"  
                     fill="none"  
-                    stroke="#0750A0"  
+                    stroke="blue"  
                     strokeWidth="2"  
                     strokeLinecap="round"  
                     strokeLinejoin="round"

@@ -57,8 +57,17 @@ const CertificationSideBarCafam  = ({ certificationsCafam }) => {
                                     }}
                                 />
                             </div>
+
+
+                            <div id="container-title-certification-cafam">
                             <h3>{certification.nombre}</h3>
+                            </div>
+
+                            <div id="container-tags-card-cafam">
                             <div className="tag-category-cafam">{certification.tema_certificacion.nombre}</div>
+                            </div>
+                            
+                            
                         </div>
                     )
                 })}

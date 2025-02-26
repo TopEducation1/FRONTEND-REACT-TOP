@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const CertificationsListCCafam = ({ certifications }) => {
+const CertificationsListCafam = ({ certifications }) => {
     const navigate = useNavigate();
     // Estado para manejar la carga
     const [loading, setLoading] = useState(true);
@@ -80,6 +80,8 @@ const CertificationsListCCafam = ({ certifications }) => {
                         </div>
                         
                         <div id="container-tags-card-cafam">
+                        
+                        <div className="tag-category-cafam">{certification.tema_certificacion.nombre}</div>
                         <div className="tag-platform-cafam">
                             <img
                                 src={getImageUrl(certification.url_imagen_plataforma_certificacion)}
@@ -92,7 +94,6 @@ const CertificationsListCCafam = ({ certifications }) => {
                                 }}
                             />
                         </div>
-                        <div className="tag-category-cafam">{certification.tema_certificacion.nombre}</div>
                         </div>
                         
                     </div>
@@ -102,4 +103,4 @@ const CertificationsListCCafam = ({ certifications }) => {
     );
 };
 
-export default CertificationsListCCafam;
+export default CertificationsListCafam;

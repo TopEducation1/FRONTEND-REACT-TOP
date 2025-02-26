@@ -674,7 +674,6 @@ body.cafam-layout {
     text-decoration: none;
     cursor: pointer;
     padding: 0; 
-    background-color: red;  
   }
 
   #container-title-certification-cafam {
@@ -685,7 +684,6 @@ body.cafam-layout {
     align-items: center;
     overflow-y: auto;
     height: 80px;
-    background-color: yellow;
   
     h3 {
       word-wrap: break-word;
@@ -702,28 +700,16 @@ body.cafam-layout {
     text-decoration: none;
   }
   
-  .certification-card-cafam h3 {
-    position: absolute;
-    left: 20px;
-    right: 10px;
-    top: 140px;
-    word-wrap: break-word;
-    font-size: 16px;
-    text-decoration: none;
-    color: #0F090B;
-    text-align: left;
-  }
   
   .container-img-card-cafam {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 100px;
+    height: 140px;
     overflow: hidden;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
-    background-color: brown;
 
   
   }
@@ -744,9 +730,9 @@ body.cafam-layout {
     justify-content: center;
     height: 70px;
     align-items: center;
-    background-color: green;
     border-bottom-right-radius: 20px;
     border-bottom-left-radius: 20px;
+    gap: 10px;
   }
 
   #container-tags-card {
@@ -1435,6 +1421,8 @@ body.cafam-layout {
   #wrapper-right-column {
     padding-right: 50px;
   }
+
+  
   
   
   .wrapper-search-bar-cafam.desktop-style {
@@ -1573,6 +1561,19 @@ body.cafam-layout {
       grid-column: 2;
       justify-content: start;
       align-items: center;
+  }
+
+}
+
+@media(max-width: 1025px) {
+
+  #wrapper-logo-cafam {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  padding: 0;
   }
 
 }
@@ -1963,16 +1964,7 @@ body.cafam-layout {
     overflow: hidden;
   }
   
-  .certification-card-cafam h3 {
-    position: absolute;
-    left: 10px;
-    top: 73px;
-    word-wrap: break-word;
-    font-size: 14px;
-    text-decoration: none;
-    color: #0F090B;
-    text-align: left;
-  }
+ 
   
   .tag-category-cafam {
   
@@ -2044,9 +2036,6 @@ body.cafam-layout {
     grid-template-columns: repeat(2, 1fr);
   }
   
-  .certification-card-cafam h3 {
-    margin-top: 30px;
-  }
   
   .container-logo-cafam {
     width: 120px;
@@ -2162,10 +2151,25 @@ right: -7px;
     }
 }
 
+#wrapper-sideBar-certifications {
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+#wrapper-content-cafam {
+  align-items: center;
+  padding: 5%;
+  gap: 20px;
+}
+
 .index-container-cafam {
+  position: relative;
+  width: 100%;
   margin-left: 50%;
   transform: translateX(-50%);
-  background-color: blue;
   margin-top: 20px;
   height: auto;
 }
@@ -2191,6 +2195,13 @@ right: -7px;
   top: 1550px;
 }
 
+.wrapper-certifications-cafam {
+  align-items: center;
+  justify-items: center;
+  padding: 0;
+  grid-template-columns: repeat(2, 1fr);
+  width: 100%;
+}
 
 #wrapper-industry-cafam {
   margin-top: 50px;
@@ -2200,6 +2211,16 @@ right: -7px;
   top: 4050px;
 }
 
+.certification-card-cafam {
+  width: 220px;
+}
+
+#container-tags-card-cafam {
+  gap: 0px;
+  box-sizing: border-box;
+  padding: 0 2px;
+}
+
 
 
 }
@@ -2207,6 +2228,45 @@ right: -7px;
   
   
 @media (max-width: 400px) {
+
+  .wrapper-title-cafam-universities {
+    h1 {
+        font-size: 30px;
+    }
+}
+
+  #main-section-cafam {
+    padding-top: 30px;
+    box-sizing: border-box;
+  }
+
+
+  #left-wrapper-cafam {
+    p {
+       font-size: 20px;
+    }
+}
+
+
+    #first-h1-left {
+      font-size: 30px;
+    }
+
+    #second-h1-left {
+      font-size: 30px;
+    }
+
+  #footer-images-cafam {
+    top: 6200px;
+}
+
+  .container-buttons-pagination-cafam {
+    top: 3650px;
+}
+
+  #wrapper-industry-cafam {
+    margin-top: 2200px;
+  }
 
   .certification-card-cafam {
     width: 270px;
@@ -2218,6 +2278,41 @@ right: -7px;
   }
 
   
+  #container-title-certification-cafam {
+    display: flex
+;
+    justify-content: center;
+    padding: 5px 20px;
+    box-sizing: border-box;
+    align-items: center;
+    overflow-y: auto;
+    height: 80px;
+}
+
+#container-tags-card-cafam {
+  display: flex
+;
+  width: 100%;
+  height: auto;
+  flex-direction: row;
+  justify-content: center;
+  height: 70px;
+  align-items: center;
+  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.container-img-card-cafam {
+  display: flex
+;
+  box-sizing: border-box;
+  padding-top: 5px;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
 
   .tag-category-cafam {
     transform: scale(0.8);
