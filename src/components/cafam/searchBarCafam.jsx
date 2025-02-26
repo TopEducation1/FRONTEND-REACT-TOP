@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import FilterBySearch from "../../services/filterBySearch";
 import { useDebounce } from "use-debounce";
-import { X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-
+import { X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const SearchBar = () => {
   const [position, setPosition] = useState(0);
@@ -16,13 +15,12 @@ const SearchBar = () => {
   const [debouncedText] = useDebounce(text, 300);
   const navigate = useNavigate();
 
-
   const handleWriting = (event) => {
     setText(event.target.value);
   };
 
   const handleClear = () => {
-    setText('');
+    setText("");
     setResults([]);
     setTempResults([]);
   };
@@ -60,36 +58,40 @@ const SearchBar = () => {
   const handleCertificationClick = (certification, e) => {
     e.preventDefault();
     try {
-        if (!certification) {
-            throw new Error('No certification data provided');
-        }
+      if (!certification) {
+        throw new Error("No certification data provided");
+      }
 
-        const platformId = certification.plataforma_certificacion_id;
-        let path;
+      const platformId = certification.plataforma_certificacion_id;
+      let path;
 
-        switch (platformId) {
-            case 1:
-                path = `/cafam/certificacion/${certification.id}`;
-                break;
-            case 2:
-                path = `/cafam/certificacion/${certification.id}`;
-                break;
-            default:
-                path = `/cafam/certificacion/${certification.id}`;
-                break;
-        }
+      switch (platformId) {
+        case 1:
+          path = `/cafam/certificacion/${certification.slug}`;
+          break;
+        case 2:
+          path = `/cafam/certificacion/${certification.slug}`;
+          break;
+        default:
+          path = `/cafam/certificacion/${certification.slug}`;
+          break;
+      }
 
-        console.log('Navigating to:', path);
-        navigate(path);
+      //console.log('Navigating to:', path);
+      navigate(path);
     } catch (err) {
-        console.error('Navigation error:', err);
-        setError('Error al navegar a la certificación');
+      console.error("Navigation error:", err);
+      setError("Error al navegar a la certificación");
     }
-};
+  };
 
   return (
     <>
-      <div className={`wrapper-search-bar-cafam ${isMobileView ? "mobile-style" : "desktop-style"}`}>
+      <div
+        className={`wrapper-search-bar-cafam ${
+          isMobileView ? "mobile-style" : "desktop-style"
+        }`}
+      >
         <input
           type="text"
           placeholder="¿Qué quieres aprender?"
@@ -117,7 +119,7 @@ const SearchBar = () => {
         </svg>
 
         {loading && <span className="loader-search"></span>}
-        
+
         {text && (
           <button onClick={handleClear} className="clear-button">
             <X />
@@ -128,9 +130,16 @@ const SearchBar = () => {
       {debouncedText.trim() && results.length > 0 && (
         <div className="container-results-cafam">
           {results.map((resultado) => (
-            <div key={resultado.id} onClick={(e) => handleCertificationClick(resultado, e)} className="box-result">
+            <div
+              key={resultado.id}
+              onClick={(e) => handleCertificationClick(resultado, e)}
+              className="box-result"
+            >
               <div className="wrapper-img-box">
-                <img src={resultado.url_imagen_universidad_certificacion} alt={resultado.nombre} />
+                <img
+                  src={resultado.url_imagen_universidad_certificacion}
+                  alt={resultado.nombre}
+                />
               </div>
               <div className="wrapper-name-box">{resultado.nombre}</div>
             </div>

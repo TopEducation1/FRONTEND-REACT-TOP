@@ -1,0 +1,27 @@
+.cafamMenuResponsive {
+    animation: slideInFromLeft 0.3s forwards;
+    transform-origin: left;
+    display: flex;
+    width: 100%;
+    height: calc(100vh -  90px);
+    background: rgba(24, 24, 24, 0.15);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    margin-top: 90px;
+    justify-content: center;
+    align-items: center;
+}
+
+.wrapperCloseResponsiveMenuCafam {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 15px auto auto ;
+    cursor: pointer;
+    width: auto;
+    height: auto;
+}
+
+
+

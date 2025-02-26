@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import getBlogBySlug from "../services/getBlogBySlug";
 import { Helmet } from "react-helmet";
 import LatestBlogsGrid from "../components/cafam/LatestBlogsGrid";
+import GridMasterclass from "../components/GridMasterclass";
 
 const BlogDetailPage = () => {
   const { slug } = useParams();
@@ -170,6 +171,7 @@ const BlogDetailPage = () => {
           <div id="wrapper-interest-links">
             <h2>Te puede interesar</h2>
             < LatestBlogsGrid/>
+            <a href="/explora"><button id="explore-13000">Explora más de 13000 certificaciones</button></a>
           </div>
         </div>
 
@@ -177,6 +179,8 @@ const BlogDetailPage = () => {
 
 
       </div>
+
+      < GridMasterclass/>
     </>
   );
 };

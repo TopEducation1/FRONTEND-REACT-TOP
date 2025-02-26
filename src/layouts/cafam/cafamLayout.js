@@ -1,11 +1,21 @@
-import "../../cafam.css";
-import React, { useEffect } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Outlet, useLocation, useNavigate} from "react-router-dom";
 import HeaderCafam from "../../components/cafam/HeaderCafam";
+import "../../cafam.css";
+
+
+/**
+ * Cafam layout
+ * @returns {ReactNode} Cafam layout
+ */
 
 function CafamLayout() {
+
     const location = useLocation();
     const navigate = useNavigate();
+    const [ isLoading, setIsLoading ] = useState(false);
+
+          
 
     useEffect(() => {
         // Agregar clase al body
@@ -40,10 +50,21 @@ function CafamLayout() {
         };
     }, [location.pathname, navigate]);
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+          setIsLoading(false);
+        }, 3000);
+    
+        return () => clearTimeout(timer);
+      }, []);
+    
+
     return (
         <div className="cafam-root-layout">
             <HeaderCafam />
+            <main>
             <Outlet />
+            </main>
         </div>
     );
 }

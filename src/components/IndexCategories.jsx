@@ -14,7 +14,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
         },
         {
             title : "Habilidad",
-            subsections: ["Negocios", "Desarrollo Personal", "Aprendizaje de idioma", "Crecimiento personal", "Bienestar", "Productividad", "Liderazgo", "Estrategia", "Comunicación", "Trabajo en equipo", "Creatividad"]
+            subsections: ["Negocios", "Desarrollo Personal", "Aprendizaje de idioma", "Bienestar", "Productividad", "Liderazgo", "Estrategia", "Comunicación", "Trabajo en equipo", "Creatividad"]
         },
         {
             title: "Plataforma",

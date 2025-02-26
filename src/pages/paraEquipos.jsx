@@ -73,7 +73,9 @@ function ParaEquipos () {
 
 
                 <div id="wrapper-button-reserva-first">
+                    <a href="https://meetings.hubspot.com/top-education-master">
                     <button id="button-reserva">Reserva una demostración empresarial</button>
+                    </a>
                 </div>
                 
             </div>
@@ -105,7 +107,9 @@ function ParaEquipos () {
                 </div>
 
                 <div id="wrapper-button-reserva-getsmarter">
+                    <a href="https://meetings.hubspot.com/top-education-master">
                     <button id="button-reserva">Reserva una demostración empresarial</button>
+                    </a>
                 </div>
                 
             </div>
@@ -133,7 +137,10 @@ function ParaEquipos () {
                 <div id="left-wrapper-green-section">
                 
                 <p>Haz la prueba de Top Education para equipos y agenda una demostración  personalizada ahora mismo.</p>
-                        <button id="button-alternative-reserve">Reserva una demostración</button>
+                <a href="https://meetings.hubspot.com/top-education-master">
+                <button id="button-alternative-reserve">Reserva una demostración</button>
+                </a>
+                        
 
                 </div>
                 <img src="/assets/Piezas/frame-green-part.png" alt="frame" />
@@ -156,7 +163,10 @@ function ParaEquipos () {
 
 
 <div id="wrapper-button-reserva-masterclass">
-                    <button id="button-reserva-masterclass">Reserva una demostración empresarial</button>
+    <a href="https://meetings.hubspot.com/top-education-master">
+    <button id="button-reserva-masterclass">Reserva una demostración empresarial</button>
+    </a>
+                    
                 </div>
             </div>
 

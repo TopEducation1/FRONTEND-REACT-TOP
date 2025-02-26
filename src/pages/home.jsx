@@ -209,6 +209,11 @@ function HomePage() {
         <div className="block-second-section" id="first-section-circles">
           <h2>Temas</h2>
           <div className="block-circles">
+          <TopicCircles
+              topic="Diversidad, equidad e inclusión"
+              image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/e6b3b49a-b7c8-4dff-90ba-824523adbe4e/TE-ICONO-DIVERSIDAD_EQUIDAD+E+INCLUSI%C3%93N.png"
+              tag="Diversidad, equidad e inclusión"
+            />
             <TopicCircles
               topic="Arte y Humanidades"
               image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/1b0794ce-4058-47b7-9b5d-de284d4488c6/TE-ICONO-ARTES+Y+HUMANIDADES.png"
@@ -255,11 +260,7 @@ function HomePage() {
               image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bb36fc68-859e-4d86-b0b6-97e79d83b644/TE-ICONO-PERSONAS+Y+CULTURA.png"
               tag="Personas y cultura"
             />
-            <TopicCircles
-              topic="Diversidad, equidad e inclusión"
-              image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/e6b3b49a-b7c8-4dff-90ba-824523adbe4e/TE-ICONO-DIVERSIDAD_EQUIDAD+E+INCLUSI%C3%93N.png"
-              tag="Diversidad, equidad e inclusión"
-            />
+            
           </div>
         </div>
 
@@ -463,9 +464,9 @@ function HomePage() {
         <h1>Explora y aprende</h1>
 
           <HomeGridBlogs />
-            <Link to="/recursos">
-            <button id="button-all-articles">Ver más artículos</button>
-            </Link>
+          <Link to="/recursos" onClick={() => window.scrollTo(0, 0)}>
+    <button id="button-all-articles">Ver más artículos</button>
+</Link>
         
       </div>
 

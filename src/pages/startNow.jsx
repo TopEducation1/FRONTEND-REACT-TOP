@@ -60,7 +60,13 @@ function StartNow() {
 
                 <div id="wrapper-trial-images">
                     <img src="/assets/banners/Plan mensual Top Education.webp"/>
+                    <a href="">
+                    <button class="button-banner-start-1">Empezar ahora</button>
+                    </a>
                     <img src="/assets/banners/Plan menusal Top Education-2.webp"/>
+                    <a href="">
+                    <button class="button-banner-start-2">Empezar ahora</button>
+                    </a>
                 </div>
             </div>
 

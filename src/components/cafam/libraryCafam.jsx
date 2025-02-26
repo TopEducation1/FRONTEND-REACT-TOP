@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import SkillsTags from "../../services/skillsService";
+//import SkillsTags from "../../services/skillsService";
 //import Universities from "../services/universitiesService";
-import Topics from "../../services/topicService";
+//import Topics from "../../services/topicService";
 import tagFilterService from "../../services/filterByTagsTesting";
 import CertificationsFetcher from "../../services/certificationsFetcher";
 import CertificationsListCafam from "../../components/cafam/layoutCertificationsCafam";
-import SearchBarCafam from "../../components/cafam/searchBarCafam";
+//import SearchBarCafam from "../../components/cafam/searchBarCafam";
 import RoutesComponent from "../../components/RoutesComponent";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useOutletContext } from "react-router-dom";
 import { useDebounce } from "use-debounce";
 import IndexCategoriesCafam from "./IndexCategoriesCafam";
-import IndexCategories from "../IndexCategories";
-import Flags from "../Flags";
-import FlagsHome from "../FlagsHome";
+//import IndexCategories from "../IndexCategories";
+//import Flags from "../Flags";
+//import FlagsHome from "../FlagsHome";
 import FlagsCafam from "./FlagsCafam";
 import UniversitiesSection from "./SliderWithDots";
 
@@ -22,7 +22,6 @@ import UniversitiesSection from "./SliderWithDots";
  *  */
 
 function LibraryPageCafam({ showRoutes = true }) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Controls mobile menu visibility
   const [openSections, setOpenSections] = useState([]); // Tracks open filter sections
   const [selectedTags, setSelectedTags] = useState({}); // Stores selected filter tags
   const [isMobileView, setIsMobileView] = useState(false); // Tracks mobile view state
@@ -35,19 +34,22 @@ function LibraryPageCafam({ showRoutes = true }) {
   const [isSmallScreen, setIsSmallScreen] = useState(false); // Tracks small screen state
   const location = useLocation();
   const [debouncedSelectedTags] = useDebounce(selectedTags, 300);
+  const [width, setWidth] = useState(window.innerWidth);
+  
+
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsSmallScreen(window.innerWidth <= 1100);
-    };
+      const handleResize = () => {
+        setIsMobileView(window.innerWidth <= 1025);
+      };
 
-    window.addEventListener("resize", handleResize);
-    handleResize();
+      handleResize();
+  
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+  
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
   // Estados para la paginación
   const [pagination, setPagination] = useState({
@@ -306,20 +308,8 @@ function LibraryPageCafam({ showRoutes = true }) {
     },
   ];
 
-  /**
-   * Abre el menu  del index responsive
-   */
-
-  const openIndexResponsiveMenu = () => {
-    setIsMenuOpen(true);
-  };
-
-  /**
-   * Cierre el menu index reponsive
-   */
-  const closeIndexResponsiveMenu = () => {
-    setIsMenuOpen(false);
-  };
+ 
+  
 
   /**
    * Calcula el margen dinámico de una sección del menú de índice
@@ -398,6 +388,8 @@ function LibraryPageCafam({ showRoutes = true }) {
 
   return (
     <>
+
+   
       <UniversitiesSection
         handleBannerClick={(category, university) =>
           handleBannerClick(category, university)
@@ -449,7 +441,7 @@ function LibraryPageCafam({ showRoutes = true }) {
       </div>
 
       <div className="container-buttons-reponsive-index">
-        <button id="button-filter-cafam" onClick={openIndexResponsiveMenu}>
+        <button id="button-filter-cafam" >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -463,34 +455,14 @@ function LibraryPageCafam({ showRoutes = true }) {
           </svg>
           <span>Filtrar</span>
         </button>
-        {isMobileView && SearchBar}
+          {isMobileView }
       </div>
 
-      <div className={`sliding-menu-index ${isMenuOpen ? "open" : ""}`}>
-        <button
-          className="btnclose-index-responsive-menu"
-          onClick={closeIndexResponsiveMenu}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#ffffff"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="icon icon-tabler icons-tabler-outline icon-tabler-x"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M18 6l-12 12" />
-            <path d="M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
+      
+      
+      {!isMobileView && <IndexCategoriesCafam onTagSelect={handleTagClick} /> }
 
-      <IndexCategoriesCafam onTagSelect={handleTagClick} />
+      
 
       <div
         id="container-logo-platforms-cafam"
@@ -503,23 +475,23 @@ function LibraryPageCafam({ showRoutes = true }) {
             className="container-logo"
             onClick={() => handleBannerClick("Plataforma", "Coursera")}
           >
-            <img src="assets/Plataformas/Coursera mini logo.png" />
+            <img src="assets/Plataformas/Coursera mini logo.png" alt="Logo de Coursera" />
           </div>
           <div
             className="container-logo"
             onClick={() => handleBannerClick("Plataforma", "edX")}
           >
-            <img src="assets/logos/edx-hover.png" />
+            <img src="assets/logos/edx-hover.png" alt="Logo de Edx" />
           </div>
           <div
             className="container-logo"
             onClick={() => handleBannerClick("Plataforma", "MasterClass")}
           >
-            <img src="assets/logos/masterclass-hover.png" />
+            <img src="assets/logos/masterclass-hover.png" alt="Logo de Masterclass"/>
           </div>
         </div>
         <div id="wrapper-new-courses">
-          <img src="assets/banners/Botón_Nuevo_en_Top_Education.svg" />
+          <img src="assets/banners/Botón_Nuevo_en_Top_Education.svg" alt ="Logo de Nuevo en top education" />
         </div>
       </div>
 

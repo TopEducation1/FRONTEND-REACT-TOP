@@ -1,16 +1,18 @@
 import LibraryPageCafam from "../../components/cafam/libraryCafam.jsx";
+//import SliderWithDots from "../../components/cafam/SliderWithDots";
+//import AnimatedCarousel from "../../components/cafam/AnimatedCarousel.jsx";
+//import Flags from "../../components/Flags.jsx";
+//import React, { useState, useEffect, useCallback } from "react";
+//import SlidingMenuIndex from "../../components/SlidingMenuIndex.jsx"
 
-import SliderWithDots from "../../components/cafam/SliderWithDots";
-
-import AnimatedCarousel from "../../components/cafam/AnimatedCarousel.jsx";
-import Flags from "../../components/Flags.jsx";
-import React, { useState, useEffect, useCallback } from "react";
 
 const HomeCafam = () => {
 
+    
 
     return (
         <>
+            
             <div id="main-section-cafam">
 
                 <div id="left-wrapper-cafam">
@@ -28,7 +30,7 @@ const HomeCafam = () => {
 
                 </div>
                 <div id="right-wrapper-cafam">
-                    <img src="assets/cafam/images/imagen-main-cafam.png" />
+                    <img src="assets/cafam/images/imagen-main-cafam.png" alt="Imagen de cafam " />
                 </div>
 
             </div>

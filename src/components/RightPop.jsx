@@ -11,12 +11,13 @@ const RightPop = () => {
             {/* Middle section */}
             <div className="grid-pop-section" id="mid-section">
                 <span>Con una membresía en Top Education, tendrás acceso a esta certificación y cientos más. <b>¡Haz la prueba ahora!</b></span>
-                <button id="button-test-top">Probar Top Education</button>
+                <a href="/empieza-ahora">
+                <button id="button-test-top">Probar Top Education</button></a>
             </div>
             {/* Bottom section */}
             <div className="grid-pop-section" id="bottom-section">
                 <span>¿Te gustaría contratar nuestros servicios para tu empresa?</span>
-                <a href="/para-equipos" >Conoce Top Education for teams</a>
+                <a href="/para-equipos" target="_blank" rel="noopener noreferrer">Conoce Top Education for teams</a>
             </div>
         </div>
     )

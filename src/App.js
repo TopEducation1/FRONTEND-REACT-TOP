@@ -1,9 +1,11 @@
 import React, { useEffect } from "react";
-import { 
-  BrowserRouter as Router, 
-  Routes, 
-  Route, 
-  Navigate 
+import {
+
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  
 } from "react-router-dom";
 
 import CertificationPage from "./pages/certificationPage";
@@ -21,42 +23,60 @@ import MasterClassPage from "./pages/MasterClassPage.jsx";
 import RutasConocimiento from "./pages/RutasConocimiento.jsx";
 import BlogDetailPage from "./pages/BlogDetailPage.jsx";
 
-
 function App() {
   useEffect(() => {
-      document.title = "Top Education";
+    document.title = "Top Education";
   }, []);
 
   return (
-      <Router>
-          <Routes>
-              {/* Rutas de Cafam - Con mejor manejo de subrutas */}
-              <Route path="/cafam" element={<CafamLayout />}>
-                  <Route index element={<HomeCafam />} />
-                  <Route path="certificacion/:id" element={<CertificationPageCafam />} />
-                  {/* Capturar todas las subrutas de cafam no definidas */}
-                  <Route path="*" element={<Navigate to="/cafam" replace />} />
-              </Route>
+    <Router>
+      <Routes>
+        {/* Rutas de Cafam - Con mejor manejo de subrutas */}
+        <Route path="/cafam" element={<CafamLayout />}>
+          <Route index element={<HomeCafam />} />
+          <Route path="certificacion">
+            <Route path="edx/:slug" element={<CertificationPageCafam />} />
+            <Route path="coursera/:slug" element={<CertificationPageCafam />} />
+            <Route
+              path="masterclass/:slug"
+              element={<CertificationPageCafam />}
+            />
+          </Route>
+          {/* Capturar todas las subrutas de cafam no definidas */}
+          <Route path="*" element={<Navigate to="/cafam" replace />} />
+        </Route>
 
-              {/* Rutas principales */}
-              <Route element={<TopEducationLayout />}>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/explora" element={<LibraryPage />} />
-                  <Route path="/recursos/:slug" element={<BlogDetailPage/>} />
-                  <Route path="/certificacion/masterclass/:slug" element={<MasterClassPage />} />
-                  <Route path="/certificacion/edx/:slug" element={<EdxCertificationPage />} />
-                  <Route path="/certificacion/coursera/:slug" element={<CertificationPage />} />
-                  <Route path="/certificacion/:slug" element={<CertificationPage />} />
-                  <Route path="/recursos" element={<Blog />} />
-                  <Route path="/para-equipos" element={<ParaEquipos />} />
-                  <Route path="/empieza-ahora" element={<StartNow />} />
-                  <Route path="/rutas-del-conocimiento" element={< RutasConocimiento/>} />
-              </Route>
+        {/* Rutas principales */}
+        <Route element={<TopEducationLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/explora" element={<LibraryPage />} />
+          <Route path="/recursos/:slug" element={<BlogDetailPage />} />
+          <Route
+            path="/certificacion/masterclass/:slug"
+            element={<MasterClassPage />}
+          />
+          <Route
+            path="/certificacion/edx/:slug"
+            element={<EdxCertificationPage />}
+          />
+          <Route
+            path="/certificacion/coursera/:slug"
+            element={<CertificationPage />}
+          />
+          <Route path="/certificacion/:slug" element={<CertificationPage />} />
+          <Route path="/recursos" element={<Blog />} />
+          <Route path="/para-equipos" element={<ParaEquipos />} />
+          <Route path="/empieza-ahora" element={<StartNow />} />
+          <Route
+            path="/rutas-del-conocimiento"
+            element={<RutasConocimiento />}
+          />
+        </Route>
 
-              {/* Ruta por defecto */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-      </Router>
+        {/* Ruta por defecto */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
   );
 }
 

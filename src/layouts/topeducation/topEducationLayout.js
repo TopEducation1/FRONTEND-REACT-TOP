@@ -3,7 +3,7 @@ import LoadingPage from "../../components/LoadingPage.jsx";
 import Header from "../../components/header.jsx";
 import Footer from "../../components/Footer.jsx";
 import { Outlet } from "react-router-dom";
-import "../../index.css";
+
 
 function TopEducationLayout() {
   const [isLoading, setIsLoading] = useState(true);
@@ -55,8 +55,6 @@ function TopEducationLayout() {
   }, [isMenuOpen]);
   return (
     <>
-      {isLoading && <LoadingPage />}
-      <div className={isLoading ? "content-hidden" : "content-visible"}>
         <Header
           toggleMenu={toggleMenu}
           openIndexResponsiveMenu={openIndexResponsiveMenu}
@@ -72,7 +70,6 @@ function TopEducationLayout() {
           />
         </main>
         <Footer />
-      </div>
     </>
   );
 }

@@ -5,6 +5,7 @@ const CertificationsListCCafam = ({ certifications }) => {
     const navigate = useNavigate();
     // Estado para manejar la carga
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const getImageUrl = (url) => {
         if (!url) return null;
@@ -18,14 +19,35 @@ const CertificationsListCCafam = ({ certifications }) => {
         e.target.style.backgroundColor = '#f0f0f0';
     };
 
-    const handleCertificationClick = (certificationId) => {
-
-        //console.log(certificationId)
-        if (certificationId) {
-            navigate(`/cafam/certificacion/${certificationId}`);
+    const handleCertificationClick = (certification) => {
+        try {
+            if (!certification) {
+                throw new Error('No certification data provided');
+            }
+    
+            let path;
+            // Define the path based on the platform ID
+            switch (certification.plataforma_certificacion_id) {
+                case 1:
+                    path = `/cafam/certificacion/edx/${certification.slug}`;
+                    break;
+                case 2:
+                    path = `/cafam/certificacion/coursera/${certification.slug}`;
+                    break;
+                case 3:
+                    path = `/cafam/certificacion/masterclass/${certification.slug}`;
+                    break;
+                default:
+                    // Fallback to generic path if platform ID is not recognized
+                    path = `/cafam/certificacion/${certification.slug}`;
+            }
+    
+            navigate(path);
+        } catch (err) {
+            console.error('Navigation error:', err);
+            setError('Error al navegar a la certificación');
         }
-        
-    }
+    };
 
     return (
         <div className="wrapper-certifications-cafam">
@@ -34,7 +56,7 @@ const CertificationsListCCafam = ({ certifications }) => {
 
                 return (
                     <div
-                        onClick={() => { handleCertificationClick(certification.id) }}
+                        onClick={() => { handleCertificationClick(certification) }}
                         key={certification.id}
                         className='certification-card-cafam'
                         style={{ cursor: 'pointer' }}
@@ -52,7 +74,12 @@ const CertificationsListCCafam = ({ certifications }) => {
                                 }}
                             />
                         </div>
+
+                        <div id="container-title-certification-cafam">
                         <h3>{certification.nombre}</h3>
+                        </div>
+                        
+                        <div id="container-tags-card-cafam">
                         <div className="tag-platform-cafam">
                             <img
                                 src={getImageUrl(certification.url_imagen_plataforma_certificacion)}
@@ -66,6 +93,8 @@ const CertificationsListCCafam = ({ certifications }) => {
                             />
                         </div>
                         <div className="tag-category-cafam">{certification.tema_certificacion.nombre}</div>
+                        </div>
+                        
                     </div>
                 );
             })}

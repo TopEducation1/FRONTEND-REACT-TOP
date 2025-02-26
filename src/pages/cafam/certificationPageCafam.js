@@ -6,7 +6,7 @@ import CertificationSideBarCafam from "../../components/cafam/CertificationsSide
 
 const CertificationPageCafam = () => {
     // Estados de la pagina de certificacion
-    const { id } = useParams();
+    const { slug } = useParams();
     const [certification, setCertification] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -57,7 +57,7 @@ const CertificationPageCafam = () => {
         const loadCertification = async () => {
             try {
                 setLoading(true);
-                const data = await getCertificationById(id);
+                const data = await getCertificationById(slug);
                 setCertification(data);
                 console.log("INFORMACIÓN ESPECIFICA DE LA CERTIFICACION");
                 console.log(data);
@@ -69,10 +69,10 @@ const CertificationPageCafam = () => {
             }
         };
 
-        if (id) {
+        if (slug) {
             loadCertification();
         }
-    }, [id]);
+    }, [slug]);
 
     // Calculate skills rows
     useEffect(() => {

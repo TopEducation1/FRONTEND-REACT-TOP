@@ -102,9 +102,9 @@ const LatestBlogsGrid = () => {
                         onClick={() => handleBlogClick(blog)}
                         key={blog.id}
                         className="blog-card-detail">
-                             <div id="wrapper-image-card-blog-detail">
+                             {/**<div id="wrapper-image-card-blog-detail">
                                     <img src={imageUrl} alt={blog.nombre_blog} />
-                                </div>
+                                </div> */}
                                 <div id="wrapper-title-card-blog-detail">
                                     <h1>{blog.nombre_blog}</h1>
                                 </div>

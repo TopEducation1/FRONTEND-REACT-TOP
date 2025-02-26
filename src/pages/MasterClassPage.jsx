@@ -6,9 +6,10 @@ import YouTubePlayer from "../components/YoutubePlayer";
 import { Helmet } from 'react-helmet';
 
 const MasterclassCertificationPage = () => {
+
     // Estados de la pagina de certificacion
     const [isMobile, setIsMobile] = useState(window.innerWidth < 1200);
-    const [visibleContainerPopUp, setVisibleContainerPopUp] = useState(true);    const { id } = useParams();
+    const [visibleContainerPopUp, setVisibleContainerPopUp] = useState(true);    const { slug } = useParams();
     const [certification, setCertification] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -37,7 +38,7 @@ const MasterclassCertificationPage = () => {
         const loadCertification = async () => {
             try {
                 setLoading(true);
-                const data = await getCertificationById(id);
+                const data = await getCertificationById(slug);
                 setCertification(data);
                 console.log("INFORMACIÓN ESPECIFICA DE LA CERTIFICACION");
                 console.log(data);
@@ -49,10 +50,10 @@ const MasterclassCertificationPage = () => {
             }
         };
 
-        if (id) {
+        if (slug) {
             loadCertification();
         }
-    }, [id]);
+    }, [slug]);
 
     useEffect(() => {
         if (certification && certification.habilidades_certificacion) {

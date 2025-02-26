@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const CertificationsList = ({ certifications }) => {
-    
     const navigate = useNavigate();
     const [error, setError] = useState(null);
 
@@ -18,38 +17,31 @@ const CertificationsList = ({ certifications }) => {
     };
 
     const handleCertificationClick = (certification) => {
-
         try {
             if (!certification) {
-
                 throw new Error('No certification data provided');
-
             }
 
-            const path = `/certificacion/${certification.slug}`;
-            navigate(path);
-            //console.log(path);
-
-
-            {/** 
-                switch (platformId) {
+            let path;
+            // Define the path based on the platform ID
+            switch (certification.plataforma_certificacion_id) {
                 case 1:
-                    path = `/certificacion/edx/${certification.id}/${certification.nombre}`;
+                    path = `/certificacion/edx/${certification.slug}`;
                     break;
                 case 2:
-                    path = `/certificacion/coursera/${certification.id}/${certification.nombre}`;
+                    path = `/certificacion/coursera/${certification.slug}`;
                     break;
                 case 3:
-                    path = `/certificacion/masterclass/${certification.id}/${certification.nombre}`;
+                    path = `/certificacion/masterclass/${certification.slug}`;
                     break;
-            }*/}
+                default:
+                    // Fallback to generic path if platform ID is not recognized
+                    path = `/certificacion/${certification.slug}`;
+            }
 
-            
-
-            //console.log('Navigating to:', path);
+            navigate(path);
         } catch (err) {
-
-            //console.error('Navigation error:', err);
+            console.error('Navigation error:', err);
             setError('Error al navegar a la certificación');
         }
     };
@@ -60,7 +52,6 @@ const CertificationsList = ({ certifications }) => {
         }
 
         const platformImages = {
-
             1: '/assets/Plataformas/Edx Mini logo.png',
             2: '/assets/Plataformas/Coursera mini logo.png',
             3: '/assets/Plataformas/MasterClass logo mini.svg'
@@ -70,7 +61,6 @@ const CertificationsList = ({ certifications }) => {
     };
 
     if (!Array.isArray(certifications)) {
-        
         return <div className="error-message">Error: No se pudieron cargar las certificaciones</div>;
     }
 
@@ -103,30 +93,26 @@ const CertificationsList = ({ certifications }) => {
                             </div>
 
                             <div id="container-title-certification">
-                            <h3>{certification.nombre}</h3>
+                                <h3>{certification.nombre}</h3>
                             </div>
-                            
                             
                             <div id="container-tags-card">
-                            
-                            
-                            <div className="tag-category">
-                                {certification.tema_certificacion?.nombre || 'Sin categoría'}
-                            </div>
+                                <div className="tag-category">
+                                    {certification.tema_certificacion?.nombre || 'Sin categoría'}
+                                </div>
 
-                            <div className="tag-platform">
-                                <img
-                                    src={platformImage}
-                                    alt={`${certification.plataforma_certificacion?.nombre || 'platform'}-logo`}
-                                    onError={handleImageError}
-                                    style={{
-                                        display: 'block',
-                                        height: 'auto'
-                                    }}
-                                />
+                                <div className="tag-platform">
+                                    <img
+                                        src={platformImage}
+                                        alt={`${certification.plataforma_certificacion?.nombre || 'platform'}-logo`}
+                                        onError={handleImageError}
+                                        style={{
+                                            display: 'block',
+                                            height: 'auto'
+                                        }}
+                                    />
+                                </div>
                             </div>
-                            </div>
-                            
                         </div>
                     );
                 })}

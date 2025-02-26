@@ -17,7 +17,7 @@ const FlagsHome = () => {
       "Universidad": [tag]
     };
 
-    navigate('/library', {
+    navigate('/explora', {
       state: { selectedTags: initialTags },
       replace: true
     });

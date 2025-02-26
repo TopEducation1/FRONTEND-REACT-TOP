@@ -13,7 +13,7 @@ const TopicCircles = ({ topic, image, tag }) => {
             "Tema": [tag]
         };
 
-        navigate('/library', {
+        navigate('/explora', {
             state: {selectedTags: initialTags},
             replace: true
         });
