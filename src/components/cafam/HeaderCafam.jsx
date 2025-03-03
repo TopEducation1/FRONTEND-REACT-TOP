@@ -3,6 +3,7 @@ import SearchBarCafam from "./searchBarCafam";
 import React, { useState, useEffect } from "react";
 
 const HeaderCafam = () => {
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (

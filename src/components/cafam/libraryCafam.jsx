@@ -16,6 +16,7 @@ import IndexCategoriesCafam from "./IndexCategoriesCafam";
 //import FlagsHome from "../FlagsHome";
 import FlagsCafam from "./FlagsCafam";
 import UniversitiesSection from "./SliderWithDots";
+import { CafamProvider, useCafam } from "../../context/cafam/CafamContext";
 
 /**
  * Pagina de la biblioteca
@@ -387,9 +388,12 @@ function LibraryPageCafam({ showRoutes = true }) {
   };
 
   return (
+
     <>
 
-   
+     
+
+      
       <UniversitiesSection
         handleBannerClick={(category, university) =>
           handleBannerClick(category, university)
@@ -522,7 +526,13 @@ function LibraryPageCafam({ showRoutes = true }) {
         />
       </div>
     </>
+
+    
   );
+  
 }
+
+
+
 
 export default LibraryPageCafam;

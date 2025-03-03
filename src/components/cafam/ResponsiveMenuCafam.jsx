@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react"
 import styles from '../../cafam-responsive-menu.module.css';
 import IndexCategoriesCafam from "./IndexCategoriesCafam";
+import { useCafam } from "../../context/cafam/CafamContext";
 
-const ResponsiveMenuCafam = ({ onTagSelect, isOpen, onClose }) => {
+const ResponsiveMenuCafam = ({ isOpen, onClose }) => {
+
+    const { onTagSelect } = useCafam();
+
     const [isMobile, setIsMobile] = useState(
         typeof window !== 'undefined' && window.innerWidth < 1025
     );
@@ -40,12 +44,16 @@ const ResponsiveMenuCafam = ({ onTagSelect, isOpen, onClose }) => {
 
     return (
         <div className={`${styles.cafamMenuResponsive} ${isOpen ? styles.open : ''}`}>
+
             <div className={`${styles.menuContentContainer}`}>
+
                 <IndexCategoriesCafam onTagSelect={onTagSelect}/>
+
             </div>
             
             
             <div className={styles.wrapperCloseResponsiveMenuCafam}>
+
                 <svg 
                     onClick={onClose}
                     xmlns="http://www.w3.org/2000/svg"  
@@ -58,6 +66,7 @@ const ResponsiveMenuCafam = ({ onTagSelect, isOpen, onClose }) => {
                     strokeLinecap="round"  
                     strokeLinejoin="round"
                 >
+                    
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <path d="M18 6l-12 12" />
                     <path d="M6 6l12 12" />

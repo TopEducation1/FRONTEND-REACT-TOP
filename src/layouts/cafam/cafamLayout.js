@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate} from "react-router-dom";
 import HeaderCafam from "../../components/cafam/HeaderCafam";
 import "../../cafam.css";
+import { CafamProvider } from "../../context/cafam/CafamContext";
 
 
 /**
@@ -60,12 +61,16 @@ function CafamLayout() {
     
 
     return (
-        <div className="cafam-root-layout">
+        <CafamProvider onTagSelect={() => {}}>
+            <div className="cafam-root-layout">
             <HeaderCafam />
             <main>
             <Outlet />
             </main>
         </div>
+
+        </CafamProvider>
+        
     );
 }
 
