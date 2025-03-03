@@ -1454,6 +1454,14 @@ body.cafam-layout {
 
 @media(max-width: 1250px) {
 
+  .wrapper-certifications-cafam {
+    column-gap: 5px;
+  }
+
+  .certifications-container-cafam {
+    padding: 5px;
+  }
+
 
     .index-container-cafam {
       width: auto;
@@ -1477,6 +1485,7 @@ body.cafam-layout {
     #wrapper-content-cafam {
       align-items: center;
       padding: 5%;
+      height: auto;
     }
   
     #left-wrapper-cafam  {
@@ -1493,6 +1502,7 @@ body.cafam-layout {
       display: flex;
       justify-content: center;
       align-items: center;
+   
   
       h1 {
         text-align: center;
@@ -1505,7 +1515,7 @@ body.cafam-layout {
     }
   
     .certifications-container-cafam {
-      top: 2450px;
+      top: 2150px;
       width: 100%;
       left: 0;
     
@@ -1519,15 +1529,15 @@ body.cafam-layout {
     }
   
     #wrapper-industry-cafam {
-      top: 4280px;
+      top: 3500px;
     }
   
     #footer-images-cafam {
-      top: 4900px;
+      top: 3870px;
     }
   
     .container-buttons-pagination-cafam {
-      top: 1850px;
+      top: 1250px;
     }
   }
   
@@ -1637,10 +1647,13 @@ body.cafam-layout {
   
   #left-wrapper-cafam {
     width: 100%;
+    padding-left: 0;
   }
   
   #right-wrapper-cafam {
     width: 100%;
+    height: auto;
+    margin-top: 100px;
   }
   
   #title-certifications-cafam {
@@ -1651,7 +1664,7 @@ body.cafam-layout {
   }
   
   .container-tags-cafam {
-  top: 2200px;
+  top: 2000px;
   }
   
   
@@ -2146,7 +2159,7 @@ right: -7px;
 
   #wrapper-title-library-cafam {
     h1 {
-        font-size: 50px;
+        font-size: 30px;
         text-align: center;
     }
 }
@@ -2179,7 +2192,7 @@ right: -7px;
 }
 
 .container-tags-cafam {
-  margin-top: 100px;
+  top: 10px;
   width: 100%;
   left: 0;
   position: relative;
@@ -2229,6 +2242,12 @@ right: -7px;
   
 @media (max-width: 400px) {
 
+  .certifications-container-cafam {
+    left: 0;
+    width: 100%;
+    top: 1900px;
+  }
+
   .wrapper-title-cafam-universities {
     h1 {
         font-size: 30px;
@@ -2257,7 +2276,7 @@ right: -7px;
     }
 
   #footer-images-cafam {
-    top: 6200px;
+    top: 6100px;
 }
 
   .container-buttons-pagination-cafam {
@@ -2265,7 +2284,7 @@ right: -7px;
 }
 
   #wrapper-industry-cafam {
-    margin-top: 2200px;
+    margin-top: 2100px;
   }
 
   .certification-card-cafam {
