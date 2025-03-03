@@ -23,6 +23,7 @@ const universidadesImagenes = [
   {img: "assets/Universidades/Wesleyan-University.png", universidad: "Wesleyan University"},
   {img: "assets/Universidades/university-of-minnesota.png", universidad: "University of Minnesota"},
   {img: "assets/Universidades/University-of-California,-Irvine.png", universidad: "University of California, Irvine"},
+  {img: "assets/Universidades/Yad-Vashem.png", universidad: "Yad Vashem"}
 ];
 
 // Slider Component
