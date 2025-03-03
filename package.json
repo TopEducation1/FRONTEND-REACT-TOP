@@ -11,14 +11,12 @@
     "axios": "^1.7.7",
     "frontend-react": "file:",
     "lucide-react": "^0.471.1",
-    "node-fetch": "^2.7.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-helmet": "^6.1.0",
     "react-router-dom": "^6.26.2",
     "react-scripts": "5.0.1",
     "react-slick": "^0.30.3",
-    "react-snap": "^1.23.0",
     "react-transition-group": "^4.4.5",
     "serve": "^14.2.4",
     "slick-carousel": "^1.8.1",
@@ -35,9 +33,6 @@
     "build": "cross-env CI=false DISABLE_ESLINT_PLUGIN=true react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
-  },
-  "reactSnap": {
-    "skipThirdPartyRequests": true
   },
   "eslintConfig": {
     "extends": [
