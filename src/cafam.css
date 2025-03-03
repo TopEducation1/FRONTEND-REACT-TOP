@@ -2206,7 +2206,11 @@ right: -7px;
 
   p {
     width: 100%;
-    text-align: center;;
+    text-align: center;
+  }
+
+  .module-card.closed{
+    max-height: 300px;
   }
   
   

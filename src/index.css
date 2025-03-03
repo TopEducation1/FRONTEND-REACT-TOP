@@ -1496,6 +1496,7 @@ cursor: pointer;
 
 .module-card.closed {
   border-radius: 30px;
+  max-height: 300px;
 }
 
 .module-card.expanded {
