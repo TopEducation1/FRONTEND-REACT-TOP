@@ -1454,6 +1454,14 @@ body.cafam-layout {
 
 @media(max-width: 1250px) {
 
+  #container-component-certifications-cafam {
+    margin-top: 100px;
+  }
+
+  #main-section-cafam {
+    margin-top: 50px;
+  }
+
   .wrapper-certifications-cafam {
     column-gap: 5px;
   }
