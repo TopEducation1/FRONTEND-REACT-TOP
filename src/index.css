@@ -1414,6 +1414,7 @@ cursor: pointer;
 #container-modules p {
   width: 95%;
   margin-top: 0;
+  text-align: justify;
 }
 
 #container-learning h2 {
