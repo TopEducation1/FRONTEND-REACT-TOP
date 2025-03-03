@@ -7,26 +7,52 @@ const CertificationSideBarCafam  = ({ certificationsCafam }) => {
 
     const navigate = useNavigate();
     const [certifications, setCertifications] = useState([]);
+    const [error, setError] = useState(false);
 
     const getImageUrl = (url) => {
         if (!url) return null;
         return url.startsWith('/') ? url : `/${url}`;
+
     };
 
     const handleImageError = (e) => {
+
         console.error('Error loading image:', e.target.src);
         // Mantener la imagen pero con un estilo que indique error
         e.target.style.opacity = '0.5';
         e.target.style.backgroundColor = '#f0f0f0';
+
     };
 
-    const handleCertificationClick = (certificationId) => {
-
-        //console.log(certificationId)
-        if (certificationId) {
-            navigate(`/cafam/certificacion/${certificationId}`);
+    const handleCertificationClick = (certification) => {
+        try {
+            if (!certification) {
+                throw new Error('No certification data provided');
+            }
+    
+            let path;
+            // Define the path based on the platform ID
+            switch (certification.plataforma_certificacion_id) {
+                case 1:
+                    path = `/cafam/certificacion/edx/${certification.slug}`;
+                    break;
+                case 2:
+                    path = `/cafam/certificacion/coursera/${certification.slug}`;
+                    break;
+                case 3:
+                    path = `/cafam/certificacion/masterclass/${certification.slug}`;
+                    break;
+                default:
+                    // Fallback to generic path if platform ID is not recognized
+                    path = `/cafam/certificacion/${certification.slug}`;
+                    break;
+            }
+    
+             navigate(path);
+        } catch (err) {
+            console.error('Navigation error:', err);
+            setError('Error al navegar a la certificación');
         }
-        
     }
 
 
@@ -40,7 +66,7 @@ const CertificationSideBarCafam  = ({ certificationsCafam }) => {
 
                     return (
                         <div
-                            onClick={() => handleCertificationClick(certification.id)}
+                            onClick={() => handleCertificationClick(certification)}
                             key={certification.id}
                             style = {{ cursor: "pointer"}}
                             className='certification-card-cafam'
