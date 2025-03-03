@@ -1,5 +1,6 @@
 const API_URL = "https://backend-django-top-production.up.railway.app";
-//http://127.0.0.1:8000
+
+//http://127.0.0.1:8000 LOCAL HOST API URL FOR TESTING
 
   const BASE_URL = API_URL;
 
