@@ -2192,10 +2192,31 @@ right: -7px;
 }
 
 .container-tags-cafam {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+  overflow-x: auto;
+  white-space: nowrap;
+  gap: 8px;
+  padding: 8px 0;
   top: 10px;
   width: 100%;
   left: 0;
   position: relative;
+
+  p {
+    width: 100%;
+    text-align: center;;
+  }
+  
+  
+}
+
+
+.tag-cafam  {
+    flex-shrink: 0;
+    min-width: 200px;
+    cursor: pointer;
 }
 
 .certifications-container-cafam {
