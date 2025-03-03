@@ -27,12 +27,10 @@ const universidadesImagenes = [
 
 // Slider Component
 const SliderWithDots = ({ 
-
   images = [], 
   itemsPerSection = 3, 
   handleBannerClick,
   showAllDots = false 
-
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsToShow, setItemsToShow] = useState(3);
@@ -40,7 +38,6 @@ const SliderWithDots = ({
   const navigate = useNavigate();
 
   const handleLogoClick = (university) => {
-    
     const initialTags = {
       "Universidad": [university]
     };
@@ -113,7 +110,7 @@ const SliderWithDots = ({
                 onClick={(e) => {
                   e.preventDefault();
                   if (handleBannerClick) {
-                    handleBannerClick(universidad.universidad);
+                    handleBannerClick(universidad.universidad); // Asegúrate de pasar el nombre correcto
                   }
                 }}
               >
@@ -161,7 +158,6 @@ const UniversitiesSection = ({handleBannerClick}) => {
         <div className="wrapper-title-cafam-universities">
           <h1>Aprende de las mejores universidades de Latinoamérica...</h1>
         </div>
-
         <div id="wrapper-upper-universities-cafam">
           <div id="wrapper-slider-upper-universities">
             <SliderWithDots 
@@ -171,7 +167,6 @@ const UniversitiesSection = ({handleBannerClick}) => {
           </div>
         </div>
       </div>
-
       <div id="lower-section-universities" className="block-universities">
         <div id="wrapper-lower-universities-cafam">
           <div className="wrapper-title-cafam-universities">
@@ -182,7 +177,7 @@ const UniversitiesSection = ({handleBannerClick}) => {
             <SliderWithDots
               images={universidadesImagenes}
               showAllDots={true}
-              handleBannerClick={(university) => handleBannerClick("Universidad", university.universidad)}
+              handleBannerClick={(university) => handleBannerClick("Universidad", university)}
             />
           </div>
         </div>
