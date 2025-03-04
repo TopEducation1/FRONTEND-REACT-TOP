@@ -8,6 +8,13 @@ import LibraryPageCafam from "../../components/cafam/libraryCafam.jsx";
 
 const HomeCafam = () => {
 
+
+    const scrollToLibrary = () => {
+        const librarySection = document.getElementById("container-component-certifications-cafam");
+        if (librarySection) {
+          librarySection.scrollIntoView({ behavior: "smooth" });
+        }
+      };
     
 
     return (
@@ -25,7 +32,7 @@ const HomeCafam = () => {
                         <p>
                             Descubre una nueva forma de aprender, a tu ritmo y desde cualquier lugar. Con acceso a las mejores herramientas educativas y contenido diseñado para ti, nuestra plataforma te brinda oportunidades ilimitadas para crecer y destacar en el área que elijas.
                         </p>
-                        <button>Explora</button>
+                        <button id="button-explora-cafam" onClick={scrollToLibrary}>Explora</button>
                     </div>
 
                 </div>
