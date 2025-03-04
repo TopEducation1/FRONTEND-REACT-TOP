@@ -25,6 +25,11 @@ const SearchBar = () => {
     setTempResults([]);
   };
 
+  const formatImageUrl = (url) => {
+    if (!url) return ""; // Si la URL está vacía, retorna una cadena vacía
+    return url.startsWith("/") ? url : `/${url}`; // Agrega el slash solo si no lo tiene
+  };
+
   useEffect(() => {
     const fetchResults = async () => {
       if (!debouncedText.trim() || debouncedText.trim().length < 3) {
@@ -55,30 +60,34 @@ const SearchBar = () => {
     }
   }, [loading, tempResults]);
 
-  const handleCertificationClick = (certification, e) => {
-    e.preventDefault();
+  const handleCertificationClick = (certification) => {
+
+    console.log(certification);
     try {
+      
       if (!certification) {
+        
         throw new Error("No certification data provided");
       }
 
-      const platformId = certification.plataforma_certificacion_id;
       let path;
-
-      switch (platformId) {
+      switch (certification.plataforma_certificacion) {
         case 1:
-          path = `/cafam/certificacion/${certification.slug}`;
+          path = `/cafam/certificacion/edx/${certification.slug}`;
           break;
         case 2:
-          path = `/cafam/certificacion/${certification.slug}`;
+          path = `/cafam/certificacion/coursera/${certification.slug}`;
+          break;
+        case 3:
+          path = `/cafam/certificacion/masterclass/${certification.slug}`;
           break;
         default:
           path = `/cafam/certificacion/${certification.slug}`;
-          break;
       }
 
-      //console.log('Navigating to:', path);
       navigate(path);
+      console.log("NAVIGATING TO")
+      console.log(path)
     } catch (err) {
       console.error("Navigation error:", err);
       setError("Error al navegar a la certificación");
@@ -132,12 +141,12 @@ const SearchBar = () => {
           {results.map((resultado) => (
             <div
               key={resultado.id}
-              onClick={(e) => handleCertificationClick(resultado, e)}
+              onClick={() => handleCertificationClick(resultado)}
               className="box-result"
             >
               <div className="wrapper-img-box">
                 <img
-                  src={resultado.url_imagen_universidad_certificacion}
+                  src={formatImageUrl(resultado.url_imagen_universidad_certificacion)}
                   alt={resultado.nombre}
                 />
               </div>
