@@ -1499,6 +1499,7 @@ body.cafam-layout {
       display: flex;
       justify-content: center;
       align-items: center;
+      margin-top: 30px;
    
   
       h1 {
@@ -1506,6 +1507,8 @@ body.cafam-layout {
         line-height: 1.2;
       }
     }
+
+    
   
     #container-component-certifications-cafam{
       height: 3200px;
@@ -1641,6 +1644,8 @@ body.cafam-layout {
     grid-template-rows: 50% 50%;
     grid-template-columns: 100%;
   }
+
+  
   
   #left-wrapper-cafam {
     width: 100%;
@@ -1650,7 +1655,8 @@ body.cafam-layout {
   #right-wrapper-cafam {
     width: 100%;
     height: auto;
-    margin-top: 100px;
+    margin-top: 50px;
+    order: 2 !important;
   }
   
   #title-certifications-cafam {
@@ -2074,6 +2080,8 @@ body.cafam-layout {
 
   @media (max-width: 500px) {
 
+    
+
     #left-wrapper-cafam {
       padding-left: 0;
     }
@@ -2239,15 +2247,20 @@ right: -7px;
 }
 
 #wrapper-industry-cafam {
-  margin-top: 50px;
+  margin-top:1000px;
 }
 
 #footer-images-cafam {
-  top: 4050px;
+  top: 4220px;
 }
 
 .certification-card-cafam {
   width: 220px;
+
+}
+
+.certification-card-cafam {
+  width: 200px;
 }
 
 #container-tags-card-cafam {
@@ -2306,11 +2319,24 @@ right: -7px;
 }
 
   #wrapper-industry-cafam {
-    margin-top: 2100px;
+    margin-top: 3000px;
+  }
+
+  #footer-images-cafam {
+
+    top: 6250px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
   }
 
   .certification-card-cafam {
     width: 270px;
+  }
+
+  .container-buttons-pagination-cafam {
+    box-sizing: border-box;
+    padding: 0 15px;
   }
 
   .wrapper-certifications-cafam {
