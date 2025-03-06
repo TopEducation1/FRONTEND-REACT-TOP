@@ -4980,11 +4980,11 @@ line-height: normal;
   .container-buttons-pagination {
     left: 10%;
     width: 80%;
-    margin-top: 650px;
+    margin-top: 920px;
   }
 
   .container-routes-section {
-    margin-top: 700px;
+    margin-top: 1000px;
     left: 0;
     width: 100%;
   }
@@ -6467,11 +6467,11 @@ line-height: normal;
   }
 
   .container-buttons-pagination {
-    top: 1800px;
+    top: 2050px;
   }
 
   .container-routes-section {
-    margin-top: 120px;
+    margin-top: 420px;
 
   }
 }
@@ -6585,7 +6585,7 @@ line-height: normal;
 @media(max-width: 807px) {
 
   .container-buttons-pagination {
-    margin-top: 650px;
+    margin-top: -20px;
   }
 
   .wrapper-certifications {
@@ -7300,6 +7300,72 @@ line-height: normal;
 
 @media(max-width:450px) {
 
+  
+
+  .container-title-search h2 {
+    width: 80%;
+    font-size: 35px;
+  }
+
+  .container-slider {
+    top: 0;
+    position: relative;
+  }
+
+
+
+  .container-routes-section {
+    top: 2300px;
+
+    p {
+      margin-top: 130px;
+    }
+  }
+
+  .container-buttons-pagination  {
+    margin-top: 0px;
+  }
+
+  #container-title-certification {
+    height: auto;
+    padding: 5px 10px;
+    box-sizing: border-box;
+    margin-top: 0;
+
+    h3 {
+
+      margin-top: 0;
+      top: 0;
+    }
+  }
+
+  #container-tags-card {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 5px 10px;
+    box-sizing: border-box;
+
+  }
+
+  .certification-card {
+    height: 220px;
+    justify-content: flex-start;
+
+    h3 {
+      position: relative;
+      left: 0;
+      top: 0;
+      margin-top: 0;
+    }
+  }
+
+  .container-img-card {
+    width: 100%;
+    height: auto;
+  }
+
   #title-and-search-blog-section {
     display: flex;
     flex-direction: column;
@@ -7336,6 +7402,10 @@ line-height: normal;
 }
 
 @media(max-width: 400px) {
+
+  .container-routes-section {
+    margin-top: 3000px;
+  }
 
   .blog-card-detail {
     width: 320px;
@@ -7539,11 +7609,22 @@ line-height: normal;
   }
 
   .container-buttons-pagination {
-    margin-top: 3100px;
+    margin-top: 2850px;
   }
 
   .container-routes-section {
-    margin-top: 2800px;
+    margin-top: 3300px;
+
+
+    p {
+      position: relative;
+      margin-top: 170px;
+      font-size: 15px;
+    }
+  }
+
+  #wrapper-logos {
+    padding:  0 45px;
   }
 
 }
