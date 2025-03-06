@@ -735,16 +735,7 @@ body.cafam-layout {
     gap: 10px;
   }
 
-  #container-tags-card {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    box-sizing: border-box;
-    padding: 0 10px;
-    align-items: center;
-    border-bottom-right-radius: 30px;
-    border-bottom-left-radius: 30px;
-  }
+ 
   
   .tag-category-cafam {
     display: flex;
