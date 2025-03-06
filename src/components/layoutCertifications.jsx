@@ -71,7 +71,58 @@ const CertificationsList = ({ certifications }) => {
             <div className="wrapper-certifications">
                 {certifications.map(certification => {
                     const platformImage = getPlatformImage(certification);
-                    
+
+                    // Render a different card for masterclass
+                    if (certification.plataforma_certificacion_id === 3) {
+                        return (
+                            <div
+                                onClick={() => handleCertificationClick(certification)}
+                                key={certification.id}
+                                className="masterclass-card-certification"
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <div className="container-img-card-masterclass">
+                                    <img
+                                        src={getImageUrl(certification.imagen_final)}
+                                        alt="imagen-certificacion"
+                                        onError={handleImageError}
+                                        style={{
+                                            display: 'block',
+                                            maxWidth: '100%',
+                                            height: 'auto'
+                                        }}
+                                    />
+                                </div>
+
+                                <div id="container-title-certification-masterclass">
+                                    <h3>{certification.nombre}</h3>
+                                    <p className="masterclass-description">
+                                        {certification.descripcion || ''}
+                                    </p>
+                                </div>
+                                
+                                <div id="container-tags-card-masterclass">
+                                    <div className="tag-category">
+                                        {certification.tema_certificacion?.nombre || 'Sin categoría'}
+                                    </div>
+
+                                    <div className="tag-platform">
+                                        <img
+                                            src={platformImage}
+                                            alt={`${certification.plataforma_certificacion?.nombre || 'platform'}-logo`}
+                                            onError={handleImageError}
+                                            style={{
+                                                display: 'block',
+                                                height: 'auto'
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    }
+
+                    // Default card for other certifications
                     return (
                         <div
                             onClick={() => handleCertificationClick(certification)}

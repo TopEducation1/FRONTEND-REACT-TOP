@@ -67,6 +67,69 @@ header {
 }
 
 
+.masterclass-card-certification {
+  display:flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  max-height: 340px;
+  padding: 0;
+  border-radius: 30px;
+  background-color: #F6F4EF;
+
+}
+
+.container-img-card-masterclass {
+  display: flex;
+  width: 100%;
+  max-height: 180px;
+  padding: 0;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+
+  img {
+    width: 100%;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+
+  }
+  
+}
+
+#container-title-certification-masterclass {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  padding: 5px 10px;
+  box-sizing: border-box;
+  height: 100px;
+  max-height: 100px;
+
+
+  h3 {
+    font-size: 16px;
+  }
+
+}
+
+
+#container-tags-card-masterclass{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 60px;
+  box-sizing: border-box;
+  padding: 5px 10px 10px 10px;
+  justify-content: space-around;
+  gap: 10px;
+  width: 100%;
+  border-bottom-right-radius: 30px;
+  border-bottom-left-radius: 30px;
+}
+
+
 .sliding-menu {
   display: flex;
   flex-direction: column;
@@ -1644,7 +1707,7 @@ cursor: pointer;
   justify-content: center;
   align-items: center;
   position: absolute;
-  top: 1200px;
+  top: 1350px;
   width: 1150px;
   left: 30px;
   height: 100px;
@@ -1672,7 +1735,7 @@ cursor: pointer;
   padding: 20px 0px;
   width: 100%;
   height: 800px;
-  top: 1700px;
+  top: 1800px;
   left: 0;
   text-align: center;
   color: #F6F4EF;
@@ -4845,6 +4908,10 @@ line-height: normal;
 
 @media screen and (max-width: 1450px) {
 
+  .masterclass-card-certification {
+    width: 330px;
+  }
+
   .certification-card {
     width: 340px;
   }
@@ -6176,6 +6243,10 @@ line-height: normal;
 
 @media(max-width: 1025px) {
 
+  .masterclass-card-certification {
+    width: 95%;
+  }
+
   #wrapper-interest-links {
     justify-content: center;
     align-items: center;
@@ -6403,8 +6474,6 @@ line-height: normal;
 
 
 @media(max-width: 885px) {
-
-
 
   #second-team-title {
     align-items: center;
@@ -7408,15 +7477,69 @@ line-height: normal;
   }
 
   .certification-card {
-    width: 270px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    width: 280px;
+    height: auto;
+  }
+
+  .container-img-card {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0;
+    height: auto;
+  }
+
+
+
+  #container-title-certification {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 20px 10px;
+    margin-top: 0;
+
+    h3 {
+      text-align: center;
+      position: relative;
+      top: 0;
+      left: 0;
+      margin-top: 0;
+    }
+  }
+
+  .tag-category {
+    transform: scale(1);
+  }
+
+  .tag-platform {
+    transform: scale(1);
+  }
+
+
+  #container-tags-card {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    padding:20px 10px;
+    align-items: center;
+    height: 60px;
+
   }
 
   .container-buttons-pagination {
-    margin-top: 2550px;
+    margin-top: 3100px;
   }
 
   .container-routes-section {
-    margin-top: 2100px;
+    margin-top: 2800px;
   }
 
 }
@@ -7507,6 +7630,8 @@ line-height: normal;
     grid-template-columns: repeat(1, 1fr);
     width: 100%;
   }
+
+  
 
   .certification-card {
     width: 280px;
