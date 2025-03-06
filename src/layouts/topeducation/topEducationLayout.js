@@ -56,8 +56,10 @@ function TopEducationLayout() {
     //console.log("Estado del menú:", isMenuOpen);
   }, [isMenuOpen]);
 
+  const excludedRoutes = ["/explora", "/certificacion"]
 
-  const shouldRenderFooter = !location.pathname.includes("/explora");
+  const shouldRenderFooter = !excludedRoutes.some(route => location.pathname.startsWith(route));
+
 
   return (
     <>

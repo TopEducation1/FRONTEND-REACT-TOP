@@ -73,31 +73,33 @@ const SearchBar = () => {
         };
     }, [resultsVisible]);
 
-    const handleCertificationClick = (certification, e) => {
-        e.preventDefault();
+    const handleCertificationClick = (certification) => {
         try {
             if (!certification) {
                 throw new Error('No certification data provided');
             }
 
-            const platformId = certification.plataforma_certificacion_id;
             let path;
-
-            switch (platformId) {
+            // Define the path based on the platform ID
+            switch (certification.plataforma_certificacion_id) {
                 case 1:
-                    path = `/certificacion/edx/${certification.id}`;
+                    path = `/certificacion/edx/${certification.slug}`;
                     break;
                 case 2:
-                    path = `/certificacion/coursera/${certification.id}`;
+                    path = `/certificacion/coursera/${certification.slug}`;
+                    break;
+                case 3:
+                    path = `/certificacion/masterclass/${certification.slug}`;
                     break;
                 default:
-                    path = `/certificacion/${certification.id}`;
+                    // Fallback to generic path if platform ID is not recognized
+                    path = `/certificacion/${certification.slug}`;
             }
 
-            console.log('Navigating to:', path);
             navigate(path);
         } catch (err) {
             console.error('Navigation error:', err);
+            setError('Error al navegar a la certificación');
         }
     };
 

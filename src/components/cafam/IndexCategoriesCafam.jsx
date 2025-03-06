@@ -13,10 +13,6 @@ const IndexCategoriesCafam = ({ onTagSelect }) => {
             subsections: ["Arte y Humanidades", "Negocios", "Ciencias de la Computación", "Ciencias de Datos", "Tecnología de la información", "Salud", "Matemáticas y Logica", "Desarrollo Personal", "Ciencías, Física e Ingenieria", "Ciencias Sociales", "Aprendizaje de un Idioma"]
         },
         {
-            title: "Plataforma",
-            subsections: ["EdX", "Coursera", "MasterClass"]
-        },
-        {
             title: "Empresa",
             subsections: ["Capitals Coalition", "DeepLearning.AI", "Big Interview", "UBITS", "HubSpot Academy", "SV Academy", "Pathstream", "Salesforce", "The Museum of Moder Art", "Banco Interamericano de Desarrollo", "Yad Vashem", " Google", "Microsoft"]
         },
