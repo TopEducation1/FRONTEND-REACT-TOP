@@ -33,11 +33,18 @@ function LibraryPage({ showRoutes = true }) {
   const [error, setError] = useState(null); // Stores error state
   const [isSmallScreen, SetIsSmallScreen] = useState(false); // Tracks small screen state
   const location = useLocation();
-  const [debouncedSelectedTags, setDebouncedSelectedTags] = useDebounce(
+  const [debouncedSelectedTags] = useDebounce(
     selectedTags,
-    300
+    100
   );
   const certificationsRef = useRef(null);
+
+
+
+  useEffect(() => {
+
+    window.scrollTo(0,0);
+  }, []);
 
   const NoResultsMessage = () => (
     <div className="no-results-container">
@@ -86,13 +93,10 @@ function LibraryPage({ showRoutes = true }) {
     if (location.state?.selectedTags) {
       console.log("Incoming selected tags:", location.state.selectedTags);
 
-      // Set the selected tags
       setSelectedTags(location.state.selectedTags);
 
-      // Important: We need to force an immediate load with these tags
       loadCertifications(1, 16, location.state.selectedTags);
 
-      // Clear the location state to prevent reapplying on subsequent renders
       window.history.replaceState({}, document.title);
     }
   }, [location]);
@@ -115,78 +119,44 @@ function LibraryPage({ showRoutes = true }) {
     );
   }, []);
 
-  const loadCertifications = useCallback(
-    async (page = 1, pageSize = 16, immediateTagsFilter = null) => {
-      setLoading(true);
-      try {
-        let fetchData;
-        // Use either immediate tags or debounced tags
-        const tagsToUse = immediateTagsFilter || debouncedSelectedTags;
-        const hasSelectedTags = Object.keys(tagsToUse).length > 0;
+  const loadCertifications = useCallback(async (page = 1, pageSize = 16) => {
+    setLoading(true);
+    const abortController = new AbortController();
 
-        if (hasSelectedTags) {
+    try {
+      const fetchData = await tagFilterService.filterByTags(debouncedSelectedTags, page, pageSize, {
+        signal: abortController.signal,
+      });
 
-          //console.log("Filtering by tags:", tagsToUse);
-          fetchData = await tagFilterService.filterByTags(
-            tagsToUse,
-            page,
-            pageSize
-          );
-
-        } else {
-
-          //console.log("Loading all certifications");
-          fetchData = await CertificationsFetcher.getAllCertifications(
-            page,
-            pageSize
-          );
-
-        }
-
-        if (fetchData && Array.isArray(fetchData.results)) {
-
-          setCertifications(fetchData.results);
-          setPagination({
-            count: fetchData.count || 0,
-            current_page: page,
-            total_pages: Math.ceil(fetchData.count / pageSize) || 1,
-          });
-
-        } else {
-
-          setCertifications([]);
-        }
-      } catch (error) {
-
-        console.error("Error loading certifications:", error);
-        setError("Error loading certifications");
+      if (fetchData && Array.isArray(fetchData.results)) {
+        setCertifications(fetchData.results);
+      } else {
         setCertifications([]);
-      } finally {
-
-        setLoading(false);
       }
-    },
-
-    [debouncedSelectedTags]
-  );
-
-  useEffect(() => {
-
-    updateHistoryState(debouncedSelectedTags);
-    loadCertifications();
-  }, [debouncedSelectedTags, loadCertifications]);
-
-  useEffect(() => {
-
-    if (!loading) {
-      console.log(
-        "Tags actualizados, recargando certificaciones",
-        debouncedSelectedTags
-      );
-      updateHistoryState(debouncedSelectedTags);
-      loadCertifications(1); // Reiniciar a la primera página
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        setError("Error loading certifications");
+      }
+    } finally {
+      setLoading(false);
     }
-  }, [debouncedSelectedTags, loadCertifications]);
+
+    return () => abortController.abort();
+  }, [debouncedSelectedTags]);
+
+  useEffect(() => {
+    if (Object.keys(debouncedSelectedTags).length === 0) {
+      setCertifications([]);
+      setLoading(true);
+      loadCertifications(1);
+    } else {
+      loadCertifications(1);
+    }
+  
+    // Actualizar el estado de la URL
+    updateHistoryState(debouncedSelectedTags);
+  }, [debouncedSelectedTags]);
+  
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.total_pages && !loading) {
@@ -223,27 +193,27 @@ function LibraryPage({ showRoutes = true }) {
   };
 
   const handleBannerClick = (category, tag) => {
-    console.log("Banner clicked:", category, tag);
-
-    // Actualizar los tags seleccionados
     setSelectedTags((prevTags) => {
       const updatedTags = { ...prevTags };
-
-      //Si la categoria no existe, crear un nuevo array
-      if (!updatedTags[category]) {
-        updatedTags[category] = [];
-      }
-
-      if (!updatedTags[category].includes(tag)) {
-        updatedTags[category] = [...updatedTags[category], tag];
+  
+      // Si la categoría es "Universidad" o "Empresa", solo permite una selección
+      if (category === "Universidad" || category === "Empresa") {
+        // Si ya hay una etiqueta seleccionada en la categoría, la eliminamos
+        if (updatedTags[category]) {
+          updatedTags[category] = [];
+        }
+        // Agregamos la nueva etiqueta
+        updatedTags[category] = [tag];
       } else {
-        updatedTags[category] = updatedTags[category].filter((t) => t !== tag);
-
-        if (updatedTags[category].length === 0) {
-          delete updatedTags[category];
+        // Para otras categorías, permitimos múltiples selecciones
+        if (!updatedTags[category]) {
+          updatedTags[category] = [];
+        }
+        if (!updatedTags[category].includes(tag)) {
+          updatedTags[category] = [...updatedTags[category], tag];
         }
       }
-
+  
       return updatedTags;
     });
   };
@@ -257,15 +227,27 @@ function LibraryPage({ showRoutes = true }) {
   const handleTagClick = (category, tag) => {
     setSelectedTags((prevTags) => {
       const updatedTags = { ...prevTags };
-      if (!updatedTags[category]) {
-        updatedTags[category] = [];
+  
+      // Si la categoría es "Universidad" o "Empresa", solo permite seleccionar uno
+      if (category === "Universidad" || category === "Empresa") {
+        if (updatedTags[category]) {
+          updatedTags[category] = [];
+        }
+        // Agregar etiqueta
+        updatedTags[category] = [tag];
+      } else {
+        if (!updatedTags[category]) {
+          updatedTags[category] = [];
+        }
+        if (!updatedTags[category].includes(tag)) {
+          updatedTags[category] = [...updatedTags[category], tag];
+        }
       }
-      if (!updatedTags[category].includes(tag)) {
-        updatedTags[category] = [...updatedTags[category], tag];
-      }
+  
       return updatedTags;
     });
   };
+
 
   const removeTag = (category, tagToRemove) => {
     console.log("Removing tag:", category, tagToRemove); // Para debugging
@@ -274,7 +256,6 @@ function LibraryPage({ showRoutes = true }) {
       const updatedTags = { ...prevTags };
 
       if (updatedTags[category]) {
-        // Filtramos el tag específico que queremos remover
         const filteredTags = updatedTags[category].filter(
           (tag) => tag !== tagToRemove
         );
@@ -323,17 +304,7 @@ function LibraryPage({ showRoutes = true }) {
     }
   }, []);
 
-  useEffect(() => {
 
-    if (!loading) {
-
-      console.log("Tags actualizados, recargando certificaciones");
-      updateHistoryState(debouncedSelectedTags);
-      loadCertifications(1); 
-      // Reiniciar a la primera página
-    }
-
-  }, [debouncedSelectedTags, loadCertifications]);
 
   return (
     <>

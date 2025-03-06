@@ -13,10 +13,15 @@ const TopicCircles = ({ topic, image, tag }) => {
             "Tema": [tag]
         };
 
+        // Navegar a la biblioteca con los tags 
         navigate('/explora', {
             state: {selectedTags: initialTags},
             replace: true
         });
+
+
+        // Evitar que nos lleve a la parte de abajo de la pagina
+        window.scrollTo(0, 0);
     };
 
 

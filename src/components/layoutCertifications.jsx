@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
+import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
 
-const CertificationsList = ({ certifications }) => {
+
+// Uso de memo => Evita que el componente se renderice si sus props no cambian (Se usa para optimización al momento de cargar las certificaciones)
+
+
+const CertificationsList = memo(({ certifications }) => {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
 
-    const getImageUrl = (url) => {
-        if (!url) return null;
-        return url.startsWith('/') ? url : `/${url}`;
-    };
+    
 
     const handleImageError = (e) => {
         console.error('Error loading image:', e.target.src);
@@ -46,19 +49,22 @@ const CertificationsList = ({ certifications }) => {
         }
     };
 
-    const getPlatformImage = (certification) => {
+    const getImageUrl = useCallback((url) => {
+        if (!url) return null;
+        return url.startsWith('/') ? url : `/${url}`;
+      }, []);
+      
+      const getPlatformImage = useCallback((certification) => {
         if (certification.url_imagen_plataforma_certificacion) {
-            return getImageUrl(certification.url_imagen_plataforma_certificacion);
+          return getImageUrl(certification.url_imagen_plataforma_certificacion);
         }
-
         const platformImages = {
-            1: '/assets/Plataformas/Edx Mini logo.png',
-            2: '/assets/Plataformas/Coursera mini logo.png',
-            3: '/assets/Plataformas/MasterClass logo mini.svg'
+          1: '/assets/Plataformas/Edx Mini logo.png',
+          2: '/assets/Plataformas/Coursera mini logo.png',
+          3: '/assets/Plataformas/MasterClass logo mini.svg'
         };
-
         return platformImages[certification.plataforma_certificacion_id] || '/images/platforms/default-platform.png';
-    };
+      }, []);
 
     if (!Array.isArray(certifications)) {
         return <div className="error-message">Error: No se pudieron cargar las certificaciones</div>;
@@ -170,6 +176,6 @@ const CertificationsList = ({ certifications }) => {
             </div>
         </>
     );
-};
+});
 
 export default CertificationsList;

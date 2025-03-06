@@ -480,7 +480,7 @@ function HomePage() {
           </div>
           <div id="sixth-2">
             <div id="upper-sixth-2">
-              <h1>¿Qué hubiese aprendido Nicola Tesla en Top Education?</h1>
+              <h1>¿Qué hubiese aprendido Nikola Tesla en Top Education?</h1>
             </div>
 
             <div id="lower-sixth-2">

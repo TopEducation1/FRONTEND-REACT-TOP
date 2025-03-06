@@ -44,6 +44,84 @@ a {
 
 
 
+.footer-top {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 300px;
+  margin-top: 100px;
+  bottom: 0;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.footer-section {
+  display: flex;
+  height: 100%;
+
+}
+
+
+#first-section-footer {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  width: 30%;
+  box-sizing: border-box;
+  padding-right: 20px;
+
+  a {
+    color: #F6F4EF;
+    font-size: 20px;
+    text-decoration: underline;
+  }
+}
+
+#second-section-footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 40%;
+
+
+  img {
+    max-width: 65%;
+    max-height: 100%;
+  }
+}
+
+#third-section-footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  width: 30%;
+  box-sizing: border-box;
+  padding-left: 20px;
+  color: #F6F4EF;
+}
+
+#wrapper-social-media-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-direction: row;
+  width: 50%;
+  height: 50px;
+}
+
+.social-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+}
+
+
+
 
 .app-container {
   display: grid;
@@ -2457,6 +2535,7 @@ cursor: pointer;
   background-color: rgba(235, 235, 235, 0.641); 
   border-radius: 20px;
   overflow: hidden;
+  cursor: pointer;
 }
 
 
@@ -6247,6 +6326,9 @@ line-height: normal;
 
 @media(max-width: 1025px) {
 
+
+
+
   .masterclass-card-certification {
     width: 95%;
   }
@@ -6478,6 +6560,17 @@ line-height: normal;
 
 
 @media(max-width: 885px) {
+
+  #first-section-footer {
+    padding-right: 0;
+    text-align: right;
+  }
+
+
+  #third-section-footer {
+    padding-left: 0;
+    text-align: left;
+  }
 
   #second-team-title {
     align-items: center;
@@ -6776,6 +6869,40 @@ line-height: normal;
 
 
 @media(max-width: 650px) {
+
+
+  .footer-top {
+    flex-direction: column;
+    height: auto;
+    gap: 20px;
+  }
+
+  #first-section-footer, #second-section-footer, #third-section-footer {
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    order: 0;
+  }
+
+  #first-section-footer {
+    order: 3;
+    height: 30%;
+    margin-top: 30px;
+    margin-bottom: 20px;
+  }
+
+  #second-section-footer {
+    order: 1;
+    height: 30%;
+  }
+
+  #third-section-footer {
+    order: 2;
+    height: 30%;
+  }
+
+  
 
   .certification-card {
     height: 250px;

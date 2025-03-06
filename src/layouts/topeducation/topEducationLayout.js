@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import LoadingPage from "../../components/LoadingPage.jsx";
 import Header from "../../components/header.jsx";
 import Footer from "../../components/Footer.jsx";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+
 
 
 function TopEducationLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   const toggleMenu = () => {
     //console.log("Toggle Menu llamado, estado actual:", !isMenuOpen); // Debug
@@ -53,6 +55,10 @@ function TopEducationLayout() {
   useEffect(() => {
     //console.log("Estado del menú:", isMenuOpen);
   }, [isMenuOpen]);
+
+
+  const shouldRenderFooter = !location.pathname.includes("/explora");
+
   return (
     <>
         <Header
@@ -69,7 +75,8 @@ function TopEducationLayout() {
             }}
           />
         </main>
-        <Footer />
+        {shouldRenderFooter && <Footer />}
+        
     </>
   );
 }

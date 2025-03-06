@@ -17,12 +17,13 @@ const HomeGridBlogs = () => {
 
     const loadBlogs = useCallback(async (page = 1) => {
         setLoading(true);
-        const pageSize = 3; // Changed to show only 3 blogs
+        const pageSize = 3; 
 
         try {
             const fetchData = await BlogsFetcher.getAllBlogs(page, pageSize);
 
             if (fetchData && Array.isArray(fetchData.results)) {
+
                 setBlogs(fetchData.results);
                 setPagination({
                     count: fetchData.count || 0,
@@ -30,10 +31,12 @@ const HomeGridBlogs = () => {
                     total_pages: Math.ceil(fetchData.count / pageSize) || 1,
                 });
             } else {
+
                 setBlogs([]);
             }
         } catch (error) {
-            console.error('Error loading blogs:', error);
+
+            //console.error('Error loading blogs:', error);
             setError('Error loading blogs');
             setBlogs([]);
         } finally {
@@ -46,28 +49,41 @@ const HomeGridBlogs = () => {
     }, [pagination.current_page, loadBlogs]);
 
     const handleBlogClick = (blog) => {
+
         try {
+
             if (!blog) {
+
                 throw new Error("No blog data provided");
             }
-            const path = `/blog/${blog.slug}`;
+
+            const path = `recursos/${blog.slug}`;
             navigate(path);
+
         } catch (error) {
+
             setError('Error al navegar hacia el blog');
         }
     };
 
     const handlePageChange = (newPage) => {
+
         if (newPage >= 1 && newPage <= pagination.total_pages) {
+
             setPagination((prev) => ({...prev, current_page: newPage}));
+
         }
+    
     };
 
     if (!Array.isArray(blogs)) {
+
         return <div className="error-message">Error: No se pudieron cargar los blogs</div>;
+
     }
 
     return (
+
         <div id="wrapper-grid-blogs-home">
             <div id="grid-all-blogs-home">
                 {blogs.map(blog => {
