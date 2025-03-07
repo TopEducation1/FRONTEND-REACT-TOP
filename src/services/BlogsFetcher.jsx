@@ -32,8 +32,8 @@ const BlogsFetcher = {
 
             const data = await response.json();
 
-            console.log("DATA DE BLOGS");
-            console.log(data);
+            //console.log("DATA DE BLOGS");
+            //console.log(data);
 
             return data;
 

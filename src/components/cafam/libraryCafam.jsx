@@ -41,7 +41,7 @@ function LibraryPageCafam({ showRoutes = true }) {
 
   useEffect(() => {
       const handleResize = () => {
-        setIsMobileView(window.innerWidth <= 1025);
+        setIsMobileView(window.innerWidth <= 1249);
       };
 
       handleResize();

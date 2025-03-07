@@ -1,6 +1,7 @@
 import React from "react";
 
 const RotateVideo = ({ onClick }) => {
+  
     const styles = {
         container: {
           position: 'relative',
@@ -80,9 +81,9 @@ const RotateVideo = ({ onClick }) => {
             >
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
-              width="55" 
+              width="55"
               height="55" 
-              viewBox="0 0 24 24" 
+              viewBox="0 0 24 24"
               fill="#ffffff"
             >
               <path stroke="none" d="M0 0h24v24H0z" fill="none"/>

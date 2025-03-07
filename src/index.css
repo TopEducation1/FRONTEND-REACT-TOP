@@ -3196,6 +3196,10 @@ line-height: normal;
   flex-direction: column;
   width: 40%;
 
+  video {
+    max-width: 100%;
+    height: auto;
+  }
 
 }
 
@@ -5072,6 +5076,10 @@ line-height: normal;
 
 @media (max-width: 1281px) {
 
+  .footer-top {
+    margin-top: 300px;
+  }
+
   #wrapper-form form input {
     width: 400px;
     height: 40px;
@@ -5153,7 +5161,7 @@ line-height: normal;
   }
 
   #button-all-articles {
-    margin-top: 50px;
+    margin-top: -30px;
   }
 
   #seventh-home-section {
@@ -5354,7 +5362,7 @@ line-height: normal;
     justify-content: center;
     align-items: center;
     position: absolute;
-    margin-top: 20px;
+    margin-top: 200px;
     width: 100%;
     left: 0px;
     height: 100px;
@@ -5420,7 +5428,7 @@ line-height: normal;
   .container-routes-section {
     width: 100%;
     position: absolute;
-    top: 2500px;
+    top: 2700px;
     left: 0;
   }
 
