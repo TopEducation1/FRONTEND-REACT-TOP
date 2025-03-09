@@ -6494,6 +6494,10 @@ line-height: normal;
     display: flex;
     position: absolute;
     left: 50px;
+
+    svg {
+      cursor: pointer;
+    }
   }
 
   .index-container {

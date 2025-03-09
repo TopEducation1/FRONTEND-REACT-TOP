@@ -121,7 +121,7 @@ const FlagsHome = () => {
           />
           <area 
             shape="rect" 
-            coords="15,77,68,104" 
+            coords="68,6,116,26" 
             alt="Columbia University"
             onClick={() => handleUniversityClick("Columbia University")}
             title="Columbia University"
