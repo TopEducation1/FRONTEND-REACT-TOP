@@ -456,10 +456,11 @@ header {
 }
 
 .wrapper-certifications {
+  display: grid;
   width: 100%;
   justify-items: center;
   grid-template-columns: repeat(4, 1fr);
-  column-gap: 5px;
+  column-gap: 10px;
   row-gap: 10px;
   padding: 0;
 }
@@ -6603,39 +6604,6 @@ line-height: normal;
     height: 30%;
   }
 
-  
-
-  .certification-card {
-    height: 250px;
-  }
-
-
-
-  .certification-card h3 {
-    position: absolute;
-    left: 10px;
-    top: 73px;
-    word-wrap: break-word;
-    font-size: 14px;
-    text-decoration: none;
-    color: #0F090B;
-    text-align: left;
-  }
-
-  .tag-category {
-
-    top: 170px;
-    left: -2px;
-    transform: scale(0.8);
-  }
-
-  .tag-platform {
-    left: 50%;
-    transform: scale(0.8);
-  }
-
-
-
 
   .box-result {
     width: 100%;
@@ -6770,19 +6738,6 @@ line-height: normal;
     margin-top: 200px;
   }
 
-  .certification-card h3 {
-    margin-top: 30px;
-  }
-
-
-  .tag-platform {
-    transform: scale(0.9);
-  }
-
-  .tag-category {
-    transform: scale(0.9);
-    left: 6px;
-  }
 
   #wrapper-new-courses img {
     width: 90%;
@@ -7499,9 +7454,13 @@ line-height: normal;
   .wrapper-logo-nav{
     width: 80%;
   }
+  .wrapper-logos .container-logo{
+    padding: 3px 5px;
+    margin-right: 5px;
+  }
   .wrapper-logos .container-logo img{
-    width: auto;
-    height: 30px;
+    max-width: 90px;
+    height: 20px;
   }
   .cont-explora{
     top: 150px;
@@ -7524,8 +7483,8 @@ line-height: normal;
   }
 
   .wrapper-search-bar{
-    top: 100px;
-    right: 15%;
+    top: 130px;
+    right: 10%;
     width: 80%;
   }
   .wrapper-certifications {
