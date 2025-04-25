@@ -27,10 +27,6 @@ function HomePage() {
     setMousePosition({ x, y });
   };
 
-  const handleMouseLeave = () => {
-
-    setMousePosition({ x: 0, y: 0 });
-  };
 
   const StarSVG = () => (
     <svg
