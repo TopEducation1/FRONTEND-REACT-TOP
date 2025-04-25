@@ -7404,13 +7404,14 @@ line-height: normal;
   }
 
 }
-#left-wrapper-green-section {
+@media(max-width: 480px){
+  #left-wrapper-green-section {
     p {
         color: #F6F4EF;
         font-size: 50px;
         font-style: italic;
     }
-
+  }
   .container-results {
     grid-template-columns: 1fr;
   }
