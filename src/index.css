@@ -449,7 +449,7 @@ header {
   border-radius: var(--esquinaSm);
 
 }
-@media (max-width: var(--tablet)){
+@media (max-width: 768px){
   .wrapper-logos{
     width: 80%;
   }
@@ -457,8 +457,12 @@ header {
     width: auto;
     height: 30px;
   }
-  .cont-filter{
+  .cont-explora{
+    top: 150px;
     width: 100%;
+  }
+  .cont-filter{
+    width: 100% !important;
     padding: 10px;
     padding-top: 30px;
   }
@@ -479,6 +483,9 @@ header {
     top: 100px;
     right: 20%;
     width: 60%;
+  }
+  .wrapper-certifications {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 /*VISTA RESULTADOS CERTIFICACIONES*/
@@ -5206,18 +5213,6 @@ line-height: normal;
     font-size: 35px;
   }
 
-  .index-container {
-    width: 20%;
-    margin-top: 200px;
-    height: 1900px;
-  }
-
-  .container-buttons-pagination {
-    left: 20%;
-    width: 80%;
-    top: 1850px;
-  }
-
 
 }
 
@@ -5303,17 +5298,6 @@ line-height: normal;
 
 
 
-  .container-buttons-pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    margin-top: 200px;
-    width: 100%;
-    left: 0px;
-    height: 100px;
-    color: #F6F4EF;
-  }
 
 
 
@@ -6443,10 +6427,6 @@ line-height: normal;
   }
 
 
-  .container-buttons-pagination {
-    top: 2050px;
-  }
-
   .container-routes-section {
     margin-top: 420px;
 
@@ -6569,13 +6549,8 @@ line-height: normal;
 
 @media(max-width: 807px) {
 
-  .container-buttons-pagination {
-    margin-top: -20px;
-  }
 
-  .wrapper-certifications {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  
 
   .certification-card {
     width: 245px;
@@ -6842,25 +6817,6 @@ line-height: normal;
 
 @media(max-width: 630px) {
 
-  .container-buttons-pagination {
-    margin-top: 1000px;
-  }
-
-  .container-routes-section {
-    top: 2900px;
-  }
-
-  .wrapper-certifications {
-    /**grid-template-columns: repeat(2, 1fr);**/
-  }
-
-  .certification-card {
-    width: 250px;
-  }
-
-  .tags-card {
-    width: 250px;
-  }
 
   .title-certification {
     margin-top: 30px;
@@ -7210,10 +7166,6 @@ line-height: normal;
     transform: scale(0.3);
   }
 
-  .container-buttons-pagination {
-    margin-top: 400px;
-  }
-
   .nav-main {
     width: 90%;
   }
@@ -7288,10 +7240,6 @@ line-height: normal;
     p {
       margin-top: 130px;
     }
-  }
-
-  .container-buttons-pagination  {
-    margin-top: 0px;
   }
 
   .title-certification {
@@ -7572,20 +7520,8 @@ line-height: normal;
 
   }
 
-  .container-buttons-pagination {
-    margin-top: 2850px;
-  }
-
-  .container-routes-section {
-    margin-top: 3300px;
 
 
-    p {
-      position: relative;
-      margin-top: 170px;
-      font-size: 15px;
-    }
-  }
 
   #wrapper-logos {
     padding:  0 45px;
@@ -7659,17 +7595,11 @@ line-height: normal;
   }
 
 
-  .container-routes-section {
-    margin-top: 2050px;
-  }
 
   .container-burguer-button {
     left: 20px;
   }
 
-  .container-buttons-pagination {
-    margin-top: 3150px;
-  }
 
   .nav-main {
     width: 90%;
