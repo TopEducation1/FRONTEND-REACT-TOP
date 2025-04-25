@@ -493,6 +493,86 @@ header {
   .wrapper-certifications {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  /*ESTILOS PRACTICANTE*/
+  .blog-card-detail {
+    width: 380px;
+  }
+
+  #wrapper-image-card-blog-detail {
+
+    img {
+      max-width: 380px;
+      min-width: 380px;
+    }
+  }
+
+  
+  #wrapper-title-card-blog-detail {
+    padding: 10px 5px;
+
+  }
+
+  #interest-blogs-column {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  #wrapper-author {
+    width: 40%;
+  }
+
+  #ellipse-red {
+    margin-top: -1750px;
+  }
+
+  #seventh-home-section {
+    height: 1800px;
+  }
+  #wrapper-image-card-blog {
+
+    img {
+      max-width: 250px;
+      min-width: 250px;
+      height: auto;
+      min-height: auto;
+    }
+    
+  }
+
+  #wrapper-title-card-blog {
+    height: auto;
+  }
+
+  #wrapper-title-blogs-section {
+    padding-left: 20px;
+  }
+
+  #body-blog {
+    grid-template-columns: 100%;
+    grid-template-rows: auto auto;
+    gap: 30px;
+  }
+
+  #container-logo-platforms {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+  }
+
+
+  .wrapper-certifications {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .certification-card {
+    width: 240px;
+  }
+
+  .tags-card {
+    width: 240px;
+  }
 }
 /*VISTA RESULTADOS CERTIFICACIONES*/
 .certifications-container{
@@ -6569,89 +6649,6 @@ line-height: normal;
 
 }
 
-
-
-@media(max-width: 768px) {
-
-  .blog-card-detail {
-    width: 380px;
-  }
-
-  #wrapper-image-card-blog-detail {
-
-    img {
-      max-width: 380px;
-      min-width: 380px;
-    }
-  }
-
-  
-  #wrapper-title-card-blog-detail {
-    padding: 10px 5px;
-
-  }
-
-  #interest-blogs-column {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-  }
-
-  #wrapper-author {
-    width: 40%;
-  }
-
-  #ellipse-red {
-    margin-top: -1750px;
-  }
-
-  #seventh-home-section {
-    height: 1800px;
-  }
-  #wrapper-image-card-blog {
-
-    img {
-      max-width: 250px;
-      min-width: 250px;
-      height: auto;
-      min-height: auto;
-    }
-    
-  }
-
-  #wrapper-title-card-blog {
-    height: auto;
-  }
-
-  #wrapper-title-blogs-section {
-    padding-left: 20px;
-  }
-
-  #body-blog {
-    grid-template-columns: 100%;
-    grid-template-rows: auto auto;
-    gap: 30px;
-  }
-
-  #container-logo-platforms {
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60%;
-  }
-
-
-  .wrapper-certifications {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .certification-card {
-    width: 240px;
-  }
-
-  .tags-card {
-    width: 240px;
-  }
-}
 
 
 
