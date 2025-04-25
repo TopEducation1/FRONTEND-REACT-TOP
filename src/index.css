@@ -7233,10 +7233,11 @@ line-height: normal;
   .wrapper-logos .container-logo{
     padding: 3px 5px;
     margin-right: 5px;
+    font-size: 12px;
   }
   .wrapper-logos .container-logo img{
     max-width: 90px;
-    height: 20px;
+    height: 12px;
   }
   .cont-explora{
     top: 150px;
@@ -7259,7 +7260,7 @@ line-height: normal;
   }
 
   .wrapper-search-bar{
-    top: 130px;
+    top: 115px;
     right: 10%;
     width: 80%;
   }
