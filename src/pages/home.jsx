@@ -139,22 +139,22 @@ function HomePage() {
               tag="Aprendizaje de idioma"
             />
             <TopicCircles
-              topic="Arte y Humanidades"
+              topic="Arte y humanidades"
               type="Tema"
               image="assets/temas/Arte y humanidades.png"
-              tag="Arte y Humanidades"
+              tag="Arte y humanidades"
             />
             <TopicCircles
-              topic="Ciencias de Datos"
+              topic="Ciencias de datos"
               type="Tema"
-              image="assets/temas/Ciencias de Datos.png"
-              tag="Ciencias de Datos"
+              image="assets/temas/Ciencias de datos.png"
+              tag="Ciencias de datos"
             />
             <TopicCircles
-              topic="Ciencias de la Computación"
+              topic="Ciencias de la computación"
               type="Tema"
-              image="assets/temas/Ciencias de la Computación.png"
-              tag="Ciencias de la Computación"
+              image="assets/temas/Ciencias de la computación.png"
+              tag="Ciencias de la computación"
             />
             <TopicCircles
               topic="Ciencias sociales"
@@ -166,19 +166,19 @@ function HomePage() {
               topic="Ciencía física e ingeniería"
               type="Tema"
               image="assets/temas/Ciencía física e Ingeniería.png"
-              tag="Ciencia física e Ingeniería"
+              tag="Ciencia física e ingeniería"
             />
             <TopicCircles
-              topic="Desarrollo Personal"
+              topic="Desarrollo personal"
               type="Tema"
-              image="assets/temas/Desarrollo Personal.png"
-              tag="Desarrollo Personal"
+              image="assets/temas/Desarrollo personal.png"
+              tag="Desarrollo personal"
             />
             <TopicCircles
-              topic="Matemáticas y Lógica"
+              topic="Matemáticas y lógica"
               type="Tema"
-              image="assets/temas/Matemáticas y Lógica.png"
-              tag="Matemáticas y Lógica"
+              image="assets/temas/Matemáticas y lógica.png"
+              tag="Matemáticas y lógica"
             />
             <TopicCircles
               topic="Negocios"
@@ -193,7 +193,7 @@ function HomePage() {
               tag="Salud"
             />
             <TopicCircles
-              topic="Tecnología de Información"
+              topic="Tecnología de información"
               type="Tema"
               image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/75995000-8559-48bb-96ed-871fdd7066f9/TE-ICONO-TECNOLOGIA+E+INFORMACION.png"
               tag="Tecnología de la información"

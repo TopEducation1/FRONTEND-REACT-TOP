@@ -141,25 +141,25 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
                 <a className="item-tema" onClick={() => handleItemMenuClick("Tema", "Aprendizaje de idioma")} ><img class="item-ico" src={`https://${host}/assets/temas/Aprendizaje de idioma.png`} alt=""/>Aprendizaje de idioma</a>
               </li>
               <li className="list-item">
-                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Arte y Humanidades')}><img class="item-ico" src={`https://${host}/assets/temas/Arte y Humanidades.png`} alt=""/>Arte y Humanidades</a>
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Arte y humanidades')}><img class="item-ico" src={`https://${host}/assets/temas/Arte y humanidades.png`} alt=""/>Arte y Humanidades</a>
               </li>
               <li className="list-item">
-                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Ciencias de Datos')} ><img class="item-ico" src={`https://${host}/assets/temas/Ciencias de Datos.png`} alt=""/>Ciencias de Datos</a>
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Ciencias de datos')} ><img class="item-ico" src={`https://${host}/assets/temas/Ciencias de datos.png`} alt=""/>Ciencias de Datos</a>
               </li>
               <li className="list-item">
-                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Ciencias de la Computación')} ><img class="item-ico" src={`https://${host}/assets/temas/Ciencias de la Computación.png`} alt=""/>Ciencias de la Computación</a>
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Ciencias de la computación')} ><img class="item-ico" src={`https://${host}/assets/temas/Ciencias de la computación.png`} alt=""/>Ciencias de la Computación</a>
               </li>  
               <li className="list-item">
-                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Ciencias Sociales')} ><img class="item-ico" src={`https://${host}/assets/temas/Ciencias Sociales.png`} alt=""/>Ciencias Sociales</a>
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Ciencias sociales')} ><img class="item-ico" src={`https://${host}/assets/temas/Ciencias sociales.png`} alt=""/>Ciencias Sociales</a>
               </li>
               <li className="list-item">
-                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Ciencía física e Ingeniería')} ><img class="item-ico" src={`https://${host}/assets/temas/Ciencía física e Ingeniería.png`} alt=""/>Ciencía física e Ingeniería</a>
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Ciencía física e ingeniería')} ><img class="item-ico" src={`https://${host}/assets/temas/Ciencía física e Ingeniería.png`} alt=""/>Ciencía física e Ingeniería</a>
               </li>
               <li className="list-item">
-                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Desarrollo Personal')} ><img class="item-ico" src={`https://${host}/assets/temas/Desarrollo Personal.png`} alt=""/>Desarrollo Personal</a>
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Desarrollo personal')} ><img class="item-ico" src={`https://${host}/assets/temas/Desarrollo personal.png`} alt=""/>Desarrollo Personal</a>
               </li>
               <li className="list-item">
-                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Matemáticas y Lógica')} ><img class="item-ico" src={`https://${host}/assets/temas/Matemáticas y Lógica.png`} alt=""/>Matemáticas y Lógica</a>
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Matemáticas y lógica')} ><img class="item-ico" src={`https://${host}/assets/temas/Matemáticas y lógica.png`} alt=""/>Matemáticas y Lógica</a>
               </li>
               <li className="list-item">
                 <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Negocios')} ><img class="item-ico" src={`https://${host}/assets/temas/Negocios.png`} alt=""/>Negocios</a>
@@ -183,7 +183,7 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
               <a className="item-tema" onClick={() => handleItemMenuClick('Habilidad', 'Creatividad')} ><img class="item-ico" src={`https://${host}/assets/temas/Creatividad.png`} alt=""/>Creatividad</a>
               </li>
               <li className="list-item">
-              <a className="item-tema" onClick={() => handleItemMenuClick('Habilidad', 'Crecimiento Personal')} ><img class="item-ico" src={`https://${host}/assets/temas/Crecimiento Personal.png`} alt=""/>Crecimiento Personal</a>
+              <a className="item-tema" onClick={() => handleItemMenuClick('Habilidad', 'Crecimiento personal')} ><img class="item-ico" src={`https://${host}/assets/temas/Crecimiento personal.png`} alt=""/>Crecimiento personal</a>
               </li>  
               <li className="list-item">
               <a className="item-tema" onClick={() => handleItemMenuClick('Habilidad', 'Diversidad, equidad e inclusión')} ><img class="item-ico" src={`https://${host}/assets/temas/Diversidad, equidad e inclusión.png`} alt=""/>Diversidad, equidad e inclusión</a>

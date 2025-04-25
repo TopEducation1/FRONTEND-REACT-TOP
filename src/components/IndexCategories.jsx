@@ -10,11 +10,11 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
     const sections = [
         {
             title: "Tema",
-            subsections: ["Aprendizaje de idioma","Arte y Humanidades","Ciencias de Datos","Ciencias de la Computación", "Ciencias Sociales","Ciencía física e Ingeniería","Desarrollo Personal","Matemáticas y Lógica","Negocios","Salud","Tecnología de la información"    ]
+            subsections: ["Aprendizaje de idioma","Arte y humanidades","Ciencias de datos","Ciencias de la computación", "Ciencias sociales","Ciencía física e ingeniería","Desarrollo personal","Matemáticas y lógica","Negocios","Salud","Tecnología de la información"    ]
         },
         {
             title : "Habilidad",
-            subsections: [ "Bienestar", "Comunicación", "Creatividad", "Crecimiento Personal","Diversidad, equidad e inclusión","Estrategia","Liderazgo","Personas y cultura","Productividad","Trabajo en equipo"]
+            subsections: [ "Bienestar", "Comunicación", "Creatividad", "Crecimiento personal","Diversidad, equidad e inclusión","Estrategia","Liderazgo","Personas y cultura","Productividad","Trabajo en equipo"]
         },
         {
             title: "Universidad",
