@@ -5505,12 +5505,6 @@ line-height: normal;
 
 @media(max-width: 1070px) {
 
-  .wrapper-logo-nav {
-    width: 100%;
-    padding: 0;
-    margin: 0;
-  }
-
   .navigation-menu {
     display: none;
   }
@@ -6847,20 +6841,6 @@ line-height: normal;
 @media (min-width: 1700px) {
   .wrapper-certifications {
     grid-template-columns: repeat(5, 1fr);
-  }
-}
-
-@media (min-width: 2000px) {
-  .wrapper-certifications {
-    grid-template-columns: repeat(6, 1fr);
-  }
-
-  .navigation-menu {
-    left: 500px;
-  }
-
-  .wrapper-logo-nav {
-    left: 100px;
   }
 }
 
