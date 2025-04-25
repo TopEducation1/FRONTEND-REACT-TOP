@@ -4887,7 +4887,6 @@ line-height: normal;
   border-radius: 15px;
   cursor: pointer;
 
-
   img {
     max-width: 380px;
     height: auto;
@@ -4899,7 +4898,6 @@ line-height: normal;
     #0F090B;
     font-size: 20px;
   }
-
 
 }
 
@@ -4917,9 +4915,7 @@ line-height: normal;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
   margin-top: 30px;
-  padding-top: 30px ;
-
-
+  padding-top: 30px;
   
 }
 
@@ -4928,7 +4924,6 @@ line-height: normal;
   font-family: Montserrat;
   font-size: 40px;
 }
-
 
 #masterclass-grid-3 {
   display: flex;
@@ -4951,64 +4946,8 @@ line-height: normal;
   cursor: pointer;
 }
 
-@media screen and (max-width: 1450px) {
-
-  .masterclass-card-certification {
-    width: 330px;
-  }
-
-  .certification-card {
-    width: 340px;
-  }
-
-  .container-results {
-    overflow-x: hidden;
-    left: 0;
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 20px;
-  }
-
-  .title-category {
-    width: 20%;
-    height: 120px;
-  }
-
-
- 
-
-  
-
-
-  #container-logo-platforms {
-    width: 60%;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .index-container {
-    width: 20%;
-    margin-top: 200px;
-    height: 1800px;
-    box-sizing: border-box;
-  }
-
-
-  .container-routes-section {
-    margin-top: 1000px;
-    left: 0;
-    width: 100%;
-  }
-}
-
 
 @media (max-width: 1281px) {
-
-  .footer-top {
-    margin-top: 300px;
-  }
 
   #wrapper-form form input {
     width: 400px;
@@ -5078,9 +5017,6 @@ line-height: normal;
     margin-left: 100px;
   }
 
-  #sixth-home-section {
-    height: 1000px;
-  }
 
   #grid-genius {
     display: flex;
@@ -5094,14 +5030,6 @@ line-height: normal;
     margin-top: -30px;
   }
 
-  #seventh-home-section {
-    height: 1150px;
-  }
-
-  #seventh-home-section h1 {
-    margin-top: 450px;
-  }
-
   #ellipse-red {
     margin-top: -90px;
   }
@@ -5110,12 +5038,9 @@ line-height: normal;
     gap: 20px;
   }
 
-
   .nav-main {
     width: 70%;
   }
-
-
 
   .unfold-category-button {
     font-size: 20px;
@@ -5125,19 +5050,6 @@ line-height: normal;
     width: 100%;
   }
 
-  
-
-
-
-
-  .container-routes-section {
-    position: relative;
-    margin-top: -40px;
-
-    p  {
-      max-width: 90%;
-    }
-  }
 
   #wrapper-new-courses {
     margin: 0;
@@ -5163,8 +5075,6 @@ line-height: normal;
 
 }
 
-
-
 @media (max-width: 500px) {
 
   .blog-main-title {
@@ -5187,7 +5097,6 @@ line-height: normal;
   .wrapper-slide {
     padding-left: 3px;
   }
-
 
   .label-type {
     position: absolute;
@@ -5225,7 +5134,6 @@ line-height: normal;
 
   }
 
-
   .card-masterclass {
     border-radius: 15px;
   }
@@ -5242,11 +5150,6 @@ line-height: normal;
   #wrapper-title-classes {
     padding: 0 40px;
   }
-
-
-
-
-
 
   #grid-responsive-index {
     display: grid;
@@ -5267,42 +5170,10 @@ line-height: normal;
 
   }
 
-
-
-
-
   .sliding-menu-index {
     padding: 0;
     overflow-y: auto;
   }
-
-
-
-
-
-
-  .container-routes-section {
-    width: 100%;
-    position: absolute;
-    top: 2700px;
-    left: 0;
-  }
-
-
-
-
-
-
-
-
-
-
-
-  .container-routes-section p {
-    width: 99%;
-    margin-top: 200px;
-  }
-
 
 
 
@@ -5323,12 +5194,6 @@ line-height: normal;
     width: 230px;
     overflow-y: auto;
   }
-
-
-
-
-
-
 }
 
 @media(max-width: 1040px) {
@@ -5481,9 +5346,6 @@ line-height: normal;
 
   }
 
-  .container-routes-section {
-    top: 2250px;
-  }
 }
 
 
@@ -5561,7 +5423,6 @@ line-height: normal;
   #lower-train-section {
     margin-top: -50px;
   }
-
 
 
   #fourth-home-section h2 {
@@ -6145,14 +6006,6 @@ line-height: normal;
     row-gap: 20px;
   }
 
-  /*.container-routes-section {
-    width: 100%;
-    position: absolute;
-    top: 2550px;
-    left: 0;
-    height: auto;
-  }**/
-
 
 
 
@@ -6168,21 +6021,9 @@ line-height: normal;
     height: auto;
     height: 400px;
   }
-
-  .container-routes-section p {
-    width: 85%;
-    margin-top: 200px;
-  }
-
-
-
-
 }
 
 @media(max-width: 1025px) {
-
-
-
 
   .masterclass-card-certification {
     width: 95%;
@@ -6357,18 +6198,6 @@ line-height: normal;
   }
 
 
-
-
-  #banner-new-on-top {
-    min-width: 1400px;
-    height: auto;
-  }
-
-
-  .container-routes-section {
-    margin-top: 420px;
-
-  }
 }
 
 
@@ -6707,21 +6536,6 @@ line-height: normal;
     margin-right: 20px;
   }
 
-
-  .container-routes-section {
-    width: 100%;
-    position: absolute;
-    top: 2750px;
-    left: 0;
-    height: auto;
-  }
-
-  .container-routes-section p {
-    width: 99%;
-    margin-top: 200px;
-  }
-
-
   #wrapper-new-courses img {
     width: 90%;
     height: 55px;
@@ -7006,15 +6820,6 @@ line-height: normal;
   }
 
 
-
-  .container-routes-section {
-    top: 2300px;
-
-    p {
-      margin-top: 130px;
-    }
-  }
-
   .title-certification {
     height: auto;
     padding: 5px 10px;
@@ -7092,9 +6897,6 @@ line-height: normal;
 
 @media(max-width: 400px) {
 
-  .container-routes-section {
-    margin-top: 3000px;
-  }
 
   .blog-card-detail {
     width: 320px;
@@ -7124,9 +6926,6 @@ line-height: normal;
     margin-top: 0;
   }
 
-  #ellipse-red {
-    margin-top: -1700px;
-  }
 
   .blog-card-home {
     width: 300px;
@@ -7140,8 +6939,6 @@ line-height: normal;
   #wrapper-image-card-blog {
     height: 150px;
   }
-
-  
 
   #grid-all-blogs {
     row-gap: 50px;
