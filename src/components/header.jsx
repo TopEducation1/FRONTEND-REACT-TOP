@@ -53,7 +53,7 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
   return (
     <header>
       {/* Navigation bar */}
-      <nav className="nav-main relative mx-2 w-full rounded-[36px] border border-white/80 bg-white/80 px-4 py-3 backdrop-blur-md dark:border-white-700/80 dark:bg-neutral-950/80 dark:backdrop-blur-md md:flex md:items-center md:justify-between md:px-6 md:py-0 lg:px-8 xl:mx-auto">
+      <nav className="nav-main relative mx-2 w-full rounded-[36px] border border-white/80 bg-neutral-950/80 px-4 py-3 backdrop-blur-md dark:border-white-700/80 dark:bg-neutral-950/80 dark:backdrop-blur-md md:flex md:items-center md:justify-between md:px-6 md:py-0 lg:px-8 xl:mx-auto">
         {/* Burguer button */}
         <div className="container-burguer-button">
           <svg
