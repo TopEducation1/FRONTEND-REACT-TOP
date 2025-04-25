@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import ReactModal from 'react-modal';
+//import ReactModal from 'react-modal';
 
-ReactModal.setAppElement('#root');
+//ReactModal.setAppElement('#root');
 const FinisherHeaderComponent = () => {
     const [isOpen, setIsOpen] = useState(false);
     const openModal = () => {
@@ -61,9 +61,9 @@ const FinisherHeaderComponent = () => {
             <div className="grid columns-1 justify-items-center content-evenly gap-4 z-10">
                 <h1 className="text-7xl text-white text-center leading-21">Conecta los puntos,<br></br>forma tu historia</h1>
                 <p className="text-white text-center font-['Montserrat'] text-2xl">Crea tu ruta de aprendizaje con los mas top del mundo.</p>
-                <button onClick={openModal} className="btn btn-col-4 py-3 px-5 w-auto">¿Qués es <span id='top'>Top</span><span id='education'>.Education</span>?</button>
+                <button className="btn btn-col-4 py-3 px-5 w-auto">¿Qués es <span id='top'>Top</span><span id='education'>.Education</span>?</button>
                 
-                <ReactModal
+                {/*<ReactModal
                 isOpen={isOpen}
                 onRequestClose={closeModal}
                 contentLabel="Video Pop-up"
@@ -74,16 +74,9 @@ const FinisherHeaderComponent = () => {
                     </button>
                     <div className="video-container">
                         <video src="/assets/video/main-video.mp4" controls="true"></video>
-                        {/*<iframe
-                        width="560"
-                        height="315"
-                        src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                        title="YouTube video player"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen></iframe>*/}
+                        
                     </div>
-                </ReactModal>
+                </ReactModal>*/}
                 <div id="root"></div>
             </div>
         </div>
