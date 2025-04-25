@@ -152,4 +152,5 @@ const CertificationsList = memo(({ certifications }) => {
     );
 });
 
+
 export default CertificationsList;
