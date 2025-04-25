@@ -1390,9 +1390,7 @@ body.cafam-layout {
     margin-top: 670px;
   }
   
-  .container-slider {
-    margin-top: 130px;
-  }
+
 
   .container-slider {
     display: flex;
@@ -1400,9 +1398,7 @@ body.cafam-layout {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    position: absolute;
-    left: 0;
-    top: 260px;
+    position: relative;
   }
   
   
@@ -1904,10 +1900,6 @@ body.cafam-layout {
   
   
   
-  .container-slider {
-    margin-top: 130px;
-  }
-  
   
   
   
@@ -1918,9 +1910,8 @@ body.cafam-layout {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    position: absolute;
-    left: 0;
-    top: 260px;
+    position: relative;
+
   }
   .wrapper-certifications-cafam {
     width: 100%;
