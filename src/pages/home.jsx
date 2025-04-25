@@ -9,7 +9,7 @@ import { Helmet } from "react-helmet";
 import { Link } from 'react-router-dom';
 
 import HomeGridBlogs from "../components/HomeGridBlogs";
-import FinisherHeaderComponent from '../components/FinisherHeaderComponent';
+//import FinisherHeaderComponent from '../components/FinisherHeaderComponent';
 
 function HomePage() {
 
@@ -123,7 +123,7 @@ function HomePage() {
         <meta property="og:description" content="Conoce Top Education, la plataforma donde aprendes de las mejores universidades de Latinoamérica y el mundo con +13,000 certificaciones." />
         <meta property="og:type" content="website" />
       </Helmet>
-      <FinisherHeaderComponent />
+      {/*<FinisherHeaderComponent />*/}
       
       <div id="second-home-section" className="container dark:bg-black-900 mx-auto px-4 justify-center-safe gap-2 ">
         <div id="upper-section">
