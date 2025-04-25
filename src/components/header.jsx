@@ -31,7 +31,6 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
     }
   }, []);
 
-  
 
   const handleItemMenuClick = (category, tag) => {
       console.log(category, tag);
@@ -95,18 +94,18 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
         <div className={`navigation-menu ${isMenuOpen ? "open" : ""}`}>
           <ul>
             <li>
-              <Link className="dark:text-white" id="btn-explora" to="/explora" 
+              <Link className="text-white" id="btn-explora" to="/explora" 
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}>Explora</Link>
             </li>
             <li>
-              <a className="dark:text-white" href="/para-equipos">Para equipos</a>
+              <a className="text-white" href="/para-equipos">Para equipos</a>
             </li>
             <li>
-              <a className="dark:text-white" href="/recursos">Recursos</a>
+              <a className="text-white" href="/recursos">Recursos</a>
             </li>
             <li>
-              <a className="dark:text-white btn btn-col-2 " id="start-now"  href="/empieza-ahora">
+              <a className="text-white btn btn-col-2 " id="start-now"  href="/empieza-ahora">
                 Empieza ahora
               </a>
             </li>
