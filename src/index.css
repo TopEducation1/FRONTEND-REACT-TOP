@@ -450,6 +450,9 @@ header {
 
 }
 @media (max-width: 768px){
+  .nav-main{
+    width: 90%;
+  }
   .wrapper-logos{
     width: 80%;
   }
