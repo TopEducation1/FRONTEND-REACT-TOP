@@ -6322,11 +6322,11 @@ line-height: normal;
 
   .container-burguer-button {
     display: flex;
-    position: absolute;
-    left: 50px;
-
+    padding: 8px 10px;
     svg {
       cursor: pointer;
+      height: 50px;
+      width: 50px;
     }
   }
 
@@ -7536,6 +7536,10 @@ line-height: normal;
     height: auto;
   }
 
+  .container-logo #top,.container-logo #education{
+    font-size: 10px !important;
+  }
+
   /*ESTILOS PRACTICANTE*/
   .blog-card-detail {
     width: 380px;
@@ -7615,4 +7619,5 @@ line-height: normal;
   .tags-card {
     width: 240px;
   }
+  
 }
