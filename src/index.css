@@ -6916,7 +6916,7 @@ line-height: normal;
 
 }
 /*RESPONSIVE INTEGRACIÓN BYCODE*/
-@media(max-width: var(--tablet)){
+@media(max-width: 768px){
   .nav-main{
     width: 90%;
     justify-content: space-between;
@@ -7061,7 +7061,7 @@ line-height: normal;
   
 }
 
-@media(max-width: var(--mobil)){
+@media(max-width: 520px){
   .wrapper-certifications {
     gap: 5px;
     grid-template-columns: repeat(2, 1fr);
