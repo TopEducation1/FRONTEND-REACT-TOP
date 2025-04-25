@@ -106,7 +106,7 @@ const CertificationsList = memo(({ certifications }) => {
                                 </div>
                                 <div className="tag-platform">
                                     <img
-                                        src={`http://${host}:3000/${certification.plataforma_certificacion.plat_img}`}
+                                        src={`https://${host}/${certification.plataforma_certificacion.plat_img}`}
                                         alt={certification.plataforma_certificacion.nombre}
                                         onError={handleImageError}
                                     />
@@ -139,7 +139,7 @@ const CertificationsList = memo(({ certifications }) => {
                             </div>                              
                             <div className="tag-platform">
                                 <img
-                                    src={`http://${host}:3000/${certification.plataforma_certificacion.plat_img}`}
+                                    src={`https://${host}/${certification.plataforma_certificacion.plat_img}`}
                                     alt={certification.plataforma_certificacion.nombre}
                                     onError={handleImageError}
                                 />

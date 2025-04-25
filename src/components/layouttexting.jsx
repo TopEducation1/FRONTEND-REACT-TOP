@@ -23,7 +23,6 @@ const CertificationsList = ({ certifications }) => {
             ) : (
                 certifications.map((certification) => {
                     const topicName = certification.tema_certificacion?.nombre || 'Sin categoría';
-
                     return (
                         <div
                             key={certification.id}
@@ -43,11 +42,11 @@ const CertificationsList = ({ certifications }) => {
                                     }}
                                 />
                             </div>
-
+                            <div className="tags-card"><div className="tag-category" >{topicName}</div></div>
                             <h3>{certification.nombre}</h3>
                             <div className="tag-platform">
                                 <img
-                                    src={getImageUrl(certification.url_imagen_plataforma_certificacion)}
+                                    src={getImageUrl(certification.plataforma_certificacion.plat_img)}
                                     alt="platform-logo"
                                     onError={handleImageError}
                                     style={{
@@ -57,7 +56,6 @@ const CertificationsList = ({ certifications }) => {
                                     }}
                                 />
                             </div>
-                            <div className="tag-category">{topicName}</div>
                         </div>
                     );
                 })
