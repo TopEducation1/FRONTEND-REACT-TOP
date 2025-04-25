@@ -463,6 +463,7 @@ header {
   column-gap: 10px;
   row-gap: 10px;
   padding: 0;
+  padding-top: 10px;
 }
 .wrapper-certifications .certification-card{
   display: flex;
@@ -6140,8 +6141,6 @@ line-height: normal;
 
   }
 
-
-
   .container-burguer-button {
     display: flex;
     padding: 8px 10px;
@@ -6168,7 +6167,6 @@ line-height: normal;
   .title-category {
     display: none;
   }
-
 
 }
 
@@ -6303,76 +6301,7 @@ line-height: normal;
 }
 
 
-
-
-@media(max-width: 740px) {
-
-  .wrapper-certifications {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .certification-card {
-    width: 235px;
-  }
-
-  .tags-card {
-    width: 235px;
-  }
-}
-
-
-@media(max-width: 728px) {
-
-  .wrapper-certifications {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .certification-card {
-    width: 300px;
-  }
-
-  .tags-card {
-    width: 300px;
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@media(max-width: 690px) {
-  .tag-category {
-    left: 2px;
-    transform: scale(0.9);
-  }
-
-  .tag-platform {
-    left: 53%;
-    transform: scale(0.9);
-  }
-
-}
-
-
-
 @media(max-width: 650px) {
-
 
   .footer-top {
     flex-direction: column;
@@ -6433,23 +6362,6 @@ line-height: normal;
   }
 }
 
-
-
-
-
-
-@media(max-width: 630px) {
-
-
-  .title-certification {
-    margin-top: 30px;
-
-    h3 {
-      margin-top: 30px;
-      font-size: 15px;
-    }
-  }
-}
 @media (max-width: 545px) {
 
   .container-results {
@@ -6721,110 +6633,16 @@ line-height: normal;
     grid-template-columns: 100%;
   }
 
-  .logo-nav {
-    transform: scale(0.3);
-  }
-
-  .nav-main {
-    width: 90%;
-  }
-
-  .wrapper-certifications {
-    grid-template-columns: repeat(2, 1fr);
-    width: 100%;
-  }
-
-  .certification-card {
-    width: 210px;
-  }
-
-
-  #container-logo-platforms {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: auto;
-  }
-
-  #wrapper-logos {
-    display: flex;
-    flex-direction: row;
-  }
-
-  .tags-card {
-    width: 220px;
-  }
-
-  .tag-category {
-    transform: scale(0.8);
-  }
-
-  .tag-platform {
-    transform: scale(0.7);
-  }
-
-  .title-certification {
-    margin-top: 30px;
-
-    h3 {
-      margin-top: 30px;
-      font-size: 15px;
-    }
-  }
-
-
- 
 }
 
 
 @media(max-width:450px) {
-
 
   .container-slider {
     top: 0;
     position: relative;
   }
 
-
-  .title-certification {
-    height: auto;
-    padding: 5px 10px;
-    box-sizing: border-box;
-    margin-top: 0;
-
-    h3 {
-
-      margin-top: 0;
-      top: 0;
-    }
-  }
-
-  .tags-card {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    padding: 5px 10px;
-    box-sizing: border-box;
-
-  }
-
-  .certification-card {
-    height: 220px;
-    justify-content: flex-start;
-
-    h3 {
-      position: relative;
-      left: 0;
-      top: 0;
-      margin-top: 0;
-    }
-  }
-
-  .container-img-card {
-    width: 100%;
-    height: auto;
-  }
 
   #title-and-search-blog-section {
     display: flex;
@@ -6853,16 +6671,9 @@ line-height: normal;
     }
   }
 
-
-
-  .certification-card {
-    width: 200px;
-  }
-
 }
 
 @media(max-width: 400px) {
-
 
   .blog-card-detail {
     width: 320px;
@@ -6939,7 +6750,6 @@ line-height: normal;
     margin-top: 20px;
   }
   #wrapper-button-reserva-first {
-
     button {
       width: auto;
     }
@@ -6991,67 +6801,8 @@ line-height: normal;
     padding: 5px 20px;
   }
 
-
-
-  .certification-card {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-direction: column;
-    width: 50%;
-    height: auto;
-  }
-
-  .container-img-card {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 0;
-    height: auto;
-  }
-
-
-
-  .title-certification {
-    width: 100%;
-    height: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    box-sizing: border-box;
-    padding: 20px 10px;
-    margin-top: 0;
-
-    h3 {
-      text-align: center;
-      position: relative;
-      top: 0;
-      left: 0;
-      margin-top: 0;
-    }
-  }
-
-
-
-  .tags-card {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    padding:20px 10px;
-    align-items: center;
-    height: 60px;
-
-  }
-
-
-
-
-  #wrapper-logos {
-    padding:  0 45px;
-  }
-
 }
+
 
 @media(max-width: 480px){
   #left-wrapper-green-section {
@@ -7092,7 +6843,6 @@ line-height: normal;
     margin-left: 0;
   }
 
-
   #wrapper-title-sixth {
     flex-direction: column;
   }
@@ -7120,23 +6870,9 @@ line-height: normal;
     font-size: 50px;
   }
 
-
-
   .container-burguer-button {
     left: 20px;
   }
-
-
-  .nav-main {
-    width: 90%;
-  }
-
-  .wrapper-certifications {
-    grid-template-columns: repeat(1, 1fr);
-    width: 100%;
-  }
-
-  
 
   .certification-card {
     width: 280px;
