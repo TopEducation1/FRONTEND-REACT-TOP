@@ -449,7 +449,7 @@ header {
   border-radius: var(--esquinaSm);
 
 }
-@media (max-width: var(mobil)){
+@media (max-width: var(--tablet)){
   .wrapper-logos{
     width: 80%;
   }
@@ -474,6 +474,11 @@ header {
   }
   .wrapper-certifications .certification-card{
     width: calc(50% - 10px);
+  }
+  .wrapper-search-bar{
+    top: 100px;
+    right: 20%;
+    width: 60%;
   }
 }
 /*VISTA RESULTADOS CERTIFICACIONES*/
@@ -5000,14 +5005,6 @@ line-height: normal;
     height: 120px;
   }
 
-  .wrapper-search-bar.desktop-style {
-    width: 100%;
-    display: none;
-    align-items: center;
-    padding-top: 10px;
-    box-sizing: border-box;
-
-  }
 
  
 
@@ -6341,13 +6338,7 @@ line-height: normal;
     margin-top: 500px;
   }
 
-  .wrapper-search-bar {
-    display: flex;
-    width: 100%;
-    margin-top: 20px;
 
-
-  }
 
   #wrapper-title-blogs-section {
     display: flex;
@@ -6898,9 +6889,6 @@ line-height: normal;
   }
 
 
-  .wrapper-search-bar {
-    margin-top: 0;
-  }
 
   #wrapper-title-classes {
     display: flex;
