@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useOutletContext, useLocation, useNavigate } from "react-router-dom";
+import { useOutletContext, useLocation } from "react-router-dom";
 //import Universities from "../services/universitiesService";
 import tagFilterService from "../services/filterByTagsTesting";
-import CertificationsFetcher from "../services/certificationsFetcher";
 import CertificationsList from "../components/layoutCertifications";
 import SearchBar from "../components/searchBar";
+import CertificationsFetcher from "../services/certificationsFetcher";
 import LatestInTopFetcher from "../services/LatestInTopFetcher";
 import RoutesComponent from "../components/RoutesComponent";
 import { useDebounce } from "use-debounce";
 import IndexCategories from "../components/IndexCategories";
-import IndexCategoriesCafam from "../components/cafam/IndexCategoriesCafam";
 import SlidingMenuIndex from "../components/SlidingMenuIndex";
 import { Helmet } from "react-helmet";
 
@@ -38,8 +37,6 @@ function LibraryPage({ showRoutes = true }) {
     100
   );
   const certificationsRef = useRef(null);
-
-
 
   useEffect(() => {
 
@@ -73,7 +70,7 @@ function LibraryPage({ showRoutes = true }) {
       <p>No hay resultados que coincidan con los filtros seleccionados.</p>
       <button
         onClick={() => setSelectedTags({})}
-        className="clear-filters-button"
+        className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full"
       >
         Limpiar filtros
       </button>
@@ -119,44 +116,58 @@ function LibraryPage({ showRoutes = true }) {
     );
   }, []);
 
-  const loadCertifications = useCallback(async (page = 1, pageSize = 16) => {
-    setLoading(true);
-    const abortController = new AbortController();
+  const loadCertifications = useCallback(
+    async (page = 1, pageSize = 16) => {
+      setLoading(true);
+      setTempCertifications([]);
+      try {
+        let fetchData;
+        if (Object.keys(selectedTags).length > 0) {
+          fetchData = await tagFilterService.filterByTags(
+            debouncedSelectedTags,
+            page,
+            pageSize
+          );
+          const queryString = tagFilterService.buildQueryString(selectedTags);
+        } else {
+          fetchData = await CertificationsFetcher.getAllCertifications(
+            page,
+            pageSize
+          );
+        }
 
-    try {
-      const fetchData = await tagFilterService.filterByTags(debouncedSelectedTags, page, pageSize, {
-        signal: abortController.signal,
-      });
-
-      if (fetchData && Array.isArray(fetchData.results)) {
-        setCertifications(fetchData.results);
-      } else {
-        setCertifications([]);
+        if (fetchData && Array.isArray(fetchData.results)) {
+          setTempCertifications(
+            fetchData.results.length > 0 ? fetchData.results : []
+          );
+          setPagination({
+            count: fetchData.count || 0,
+            current_page: page,
+            total_pages: Math.ceil(fetchData.count / pageSize) || 1,
+          });
+        } else {
+          setTempCertifications([]);
+        }
+      } catch (error) {
+        setError("Error al cargar las certificaciones");
+        setTempCertifications([]);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      if (error.name !== "AbortError") {
-        setError("Error loading certifications");
-      }
-    } finally {
-      setLoading(false);
-    }
-
-    return () => abortController.abort();
-  }, [debouncedSelectedTags]);
+    },
+    [debouncedSelectedTags]
+  );
 
   useEffect(() => {
-    if (Object.keys(debouncedSelectedTags).length === 0) {
-      setCertifications([]);
-      setLoading(true);
-      loadCertifications(1);
-    } else {
-      loadCertifications(1);
-    }
-  
-    // Actualizar el estado de la URL
     updateHistoryState(debouncedSelectedTags);
-  }, [debouncedSelectedTags]);
-  
+    loadCertifications();
+  }, [debouncedSelectedTags, loadCertifications]);
+
+  useEffect(() => {
+    if (!loading) {
+      setCertifications(tempCertifications);
+    }
+  }, [loading, tempCertifications]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.total_pages && !loading) {
@@ -193,30 +204,20 @@ function LibraryPage({ showRoutes = true }) {
   };
 
   const handleBannerClick = (category, tag) => {
+    console.log(category, tag);
+
     setSelectedTags((prevTags) => {
       const updatedTags = { ...prevTags };
-  
-      // Si la categoría es "Universidad" o "Empresa", solo permite una selección
-      if (category === "Universidad" || category === "Empresa") {
-        // Si ya hay una etiqueta seleccionada en la categoría, la eliminamos
-        if (updatedTags[category]) {
-          updatedTags[category] = [];
-        }
-        // Agregamos la nueva etiqueta
-        updatedTags[category] = [tag];
-      } else {
-        // Para otras categorías, permitimos múltiples selecciones
-        if (!updatedTags[category]) {
-          updatedTags[category] = [];
-        }
-        if (!updatedTags[category].includes(tag)) {
-          updatedTags[category] = [...updatedTags[category], tag];
-        }
-      }
-  
+      const tagSet = new Set(updatedTags[category] || []);
+      tagSet.add(tag);
+      updatedTags[category] = [...tagSet];
       return updatedTags;
     });
+
+    loadCertifications(1);
   };
+
+  
 
   /**
    * Maneja el clic en una etiqueta de filtro
@@ -276,6 +277,7 @@ function LibraryPage({ showRoutes = true }) {
   const PaginationControls = () => (
     <div className="container-buttons-pagination">
       <button
+        className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full"
         onClick={() => handlePageChange(pagination.current_page - 1)}
         disabled={pagination.current_page === 1 || loading}
       >
@@ -285,6 +287,7 @@ function LibraryPage({ showRoutes = true }) {
         Página {pagination.current_page} de {pagination.total_pages}
       </span>
       <button
+        className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full"
         onClick={() => handlePageChange(pagination.current_page + 1)}
         disabled={pagination.current_page === pagination.total_pages || loading}
       >
@@ -327,90 +330,35 @@ function LibraryPage({ showRoutes = true }) {
         />
         <meta property="og:type" content="website" />
       </Helmet>
-      <SearchBar />|
-      <div className="container-tags">
-        {Object.keys(selectedTags).length === 0 ||
-        Object.values(selectedTags).every((tags) => tags.length === 0) ? (
-          <p>Aún no has seleccionado tags</p>
-        ) : (
-          Object.entries(selectedTags).map(([category, tags], index) =>
-            tags.map((tag, tagIndex) => (
-              <div key={`${category}-${tagIndex}`} className="tag">
-                <span>{tag}</span>
-                <button
-                  onClick={() => removeTag(category, tag)}
-                  className="remove-tag-button"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="black"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="icon icon-tabler icons-tabler-outline icon-tabler-x"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M18 6l-12 12" />
-                    <path d="M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            ))
-          )
-        )}
-      </div>
-      <div className="container-buttons-reponsive-index">
-        <button id="button-filter" onClick={openIndexResponsiveMenu}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="#000000"
-            className="icon icon-tabler icons-tabler-filled icon-tabler-filter"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M20 3h-16a1 1 0 0 0 -1 1v2.227l.008 .223a3 3 0 0 0 .772 1.795l4.22 4.641v8.114a1 1 0 0 0 1.316 .949l6 -2l.108 -.043a1 1 0 0 0 .576 -.906v-6.586l4.121 -4.12a3 3 0 0 0 .879 -2.123v-2.171a1 1 0 0 0 -1 -1z" />
-          </svg>
-          <span>Filtrar</span>
-        </button>
-        <SearchBar />
-      </div>
-      <div
-        id="container-logo-platforms"
-        className={`wrapper-logo-platforms ${
+      <div className="preLoad"></div>
+      <SearchBar />
+      
+      <div className="cont-explora">
+      <div className={`wrapper-logo-platforms ${
           isSmallScreen ? "small-screen" : ""
         }`}
       >
-        <div id="wrapper-logos">
+        <div className="wrapper-logos">
           <div
             className="container-logo"
             onClick={() => handleBannerClick("Plataforma", "Coursera")}
           >
-            <img src="assets/Plataformas/Coursera mini logo.png" />
+            <img src="assets/Plataformas/coursera-logo.png" />
           </div>
           <div
             className="container-logo"
             onClick={() => handleBannerClick("Plataforma", "EdX")}
           >
-            <img src="assets/logos/edx-hover.png" />
+            <img src="assets/Plataformas/edx-logo.png" />
           </div>
           <div
             className="container-logo"
             onClick={() => handleBannerClick("Plataforma", "MasterClass")}
           >
-            <img src="assets/logos/masterclass-hover.png" />
+            <img src="assets/Plataformas/masterclass-logo.png" />
           </div>
-          <div className="container-logo">
-            <img
-              id="banner-new-on-top"
-              onClick={handleNewInTopClick}
-              src="assets/banners/Botón_Nuevo_en_Top_Education.svg"
-            />
+          <div className="container-logo"
+            onClick={() => handleBannerClick("Plataforma", "Nuevo en Top.Education")}>Nuevo en&nbsp;<span id="top">Top.</span><span id="education">Education</span>
           </div>
         </div>
       </div>
@@ -420,22 +368,198 @@ function LibraryPage({ showRoutes = true }) {
           selectedTags={selectedTags}
         />
       )}
-      <SlidingMenuIndex onTagSelect={handleTagClick} />
-      <div ref={certificationsRef} className="certifications-container">
-        {loading ? (
-          <span class="loader"></span>
-        ) : certifications.length === 0 ? (
-          <NoResultsMessage />
-        ) : (
-          <CertificationsList certifications={certifications} />
-        )}
-        <PaginationControls />
+      <div className="cont-filter">
+        <div className="container-tags">
+          {Object.keys(selectedTags).length === 0 ||
+          Object.values(selectedTags).every((tags) => tags.length === 0) ? (
+            <p>Aún no has seleccionado tags</p>
+          ) : (
+            Object.entries(selectedTags).map(([category, tags], index) =>
+              tags.map((tag, tagIndex) => (
+                <div key={`${category}-${tagIndex}`} className="tag">
+                  <span>{tag}</span>
+                  <button
+                    onClick={() => removeTag(category, tag)}
+                    className="remove-tag-button"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="black"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="icon icon-tabler icons-tabler-outline icon-tabler-x"
+                    >
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                      <path d="M18 6l-12 12" />
+                      <path d="M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              ))
+            )
+          )}
+        </div>
+        <div className="container-buttons-reponsive-index">
+          <button id="button-filter" onClick={openIndexResponsiveMenu}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="#000000"
+              className="icon icon-tabler icons-tabler-filled icon-tabler-filter"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M20 3h-16a1 1 0 0 0 -1 1v2.227l.008 .223a3 3 0 0 0 .772 1.795l4.22 4.641v8.114a1 1 0 0 0 1.316 .949l6 -2l.108 -.043a1 1 0 0 0 .576 -.906v-6.586l4.121 -4.12a3 3 0 0 0 .879 -2.123v-2.171a1 1 0 0 0 -1 -1z" />
+            </svg>
+            <span>Filtrar</span>
+          </button>
+          <SearchBar />
+        </div>
+        <SlidingMenuIndex onTagSelect={handleTagClick} />
+        <div ref={certificationsRef} className="certifications-container">
+          {loading ? (
+            <div class="grid grid-cols-4 gap-4 p-5">
+              <div class="mx-auto w-full rounded-md border border-gray-300 p-4">
+                <div class="flex animate-pulse space-x-4">
+                  <div class="size-10 rounded-full bg-gray-200"></div>
+                  <div class="flex-1 space-y-6 py-1">
+                    <div class="h-2 rounded bg-gray-200"></div>
+                    <div class="space-y-3">
+                      <div class="grid grid-cols-3 gap-4">
+                        <div class="col-span-2 h-2 rounded bg-gray-200"></div>
+                        <div class="col-span-1 h-2 rounded bg-gray-200"></div>
+                      </div>
+                      <div class="h-2 rounded bg-gray-200"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mx-auto w-full rounded-md border border-gray-300 p-4">
+                <div class="flex animate-pulse space-x-4">
+                  <div class="size-10 rounded-full bg-gray-200"></div>
+                  <div class="flex-1 space-y-6 py-1">
+                    <div class="h-2 rounded bg-gray-200"></div>
+                    <div class="space-y-3">
+                      <div class="grid grid-cols-3 gap-4">
+                        <div class="col-span-2 h-2 rounded bg-gray-200"></div>
+                        <div class="col-span-1 h-2 rounded bg-gray-200"></div>
+                      </div>
+                      <div class="h-2 rounded bg-gray-200"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mx-auto w-full max-w-sm rounded-md border border-gray-300 p-4">
+                <div class="flex animate-pulse space-x-4">
+                  <div class="size-10 rounded-full bg-gray-200"></div>
+                  <div class="flex-1 space-y-6 py-1">
+                    <div class="h-2 rounded bg-gray-200"></div>
+                    <div class="space-y-3">
+                      <div class="grid grid-cols-3 gap-4">
+                        <div class="col-span-2 h-2 rounded bg-gray-200"></div>
+                        <div class="col-span-1 h-2 rounded bg-gray-200"></div>
+                      </div>
+                      <div class="h-2 rounded bg-gray-200"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mx-auto w-full rounded-md border border-gray-300 p-4">
+                <div class="flex animate-pulse space-x-4">
+                  <div class="size-10 rounded-full bg-gray-200"></div>
+                  <div class="flex-1 space-y-6 py-1">
+                    <div class="h-2 rounded bg-gray-200"></div>
+                    <div class="space-y-3">
+                      <div class="grid grid-cols-3 gap-4">
+                        <div class="col-span-2 h-2 rounded bg-gray-200"></div>
+                        <div class="col-span-1 h-2 rounded bg-gray-200"></div>
+                      </div>
+                      <div class="h-2 rounded bg-gray-200"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mx-auto w-full rounded-md border border-gray-300 p-4">
+                <div class="flex animate-pulse space-x-4">
+                  <div class="size-10 rounded-full bg-gray-200"></div>
+                  <div class="flex-1 space-y-6 py-1">
+                    <div class="h-2 rounded bg-gray-200"></div>
+                    <div class="space-y-3">
+                      <div class="grid grid-cols-3 gap-4">
+                        <div class="col-span-2 h-2 rounded bg-gray-200"></div>
+                        <div class="col-span-1 h-2 rounded bg-gray-200"></div>
+                      </div>
+                      <div class="h-2 rounded bg-gray-200"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mx-auto w-full rounded-md border border-gray-300 p-4">
+                <div class="flex animate-pulse space-x-4">
+                  <div class="size-10 rounded-full bg-gray-200"></div>
+                  <div class="flex-1 space-y-6 py-1">
+                    <div class="h-2 rounded bg-gray-200"></div>
+                    <div class="space-y-3">
+                      <div class="grid grid-cols-3 gap-4">
+                        <div class="col-span-2 h-2 rounded bg-gray-200"></div>
+                        <div class="col-span-1 h-2 rounded bg-gray-200"></div>
+                      </div>
+                      <div class="h-2 rounded bg-gray-200"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mx-auto w-full max-w-sm rounded-md border border-gray-300 p-4">
+                <div class="flex animate-pulse space-x-4">
+                  <div class="size-10 rounded-full bg-gray-200"></div>
+                  <div class="flex-1 space-y-6 py-1">
+                    <div class="h-2 rounded bg-gray-200"></div>
+                    <div class="space-y-3">
+                      <div class="grid grid-cols-3 gap-4">
+                        <div class="col-span-2 h-2 rounded bg-gray-200"></div>
+                        <div class="col-span-1 h-2 rounded bg-gray-200"></div>
+                      </div>
+                      <div class="h-2 rounded bg-gray-200"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mx-auto w-full rounded-md border border-gray-300 p-4">
+                <div class="flex animate-pulse space-x-4">
+                  <div class="size-10 rounded-full bg-gray-200"></div>
+                  <div class="flex-1 space-y-6 py-1">
+                    <div class="h-2 rounded bg-gray-200"></div>
+                    <div class="space-y-3">
+                      <div class="grid grid-cols-3 gap-4">
+                        <div class="col-span-2 h-2 rounded bg-gray-200"></div>
+                        <div class="col-span-1 h-2 rounded bg-gray-200"></div>
+                      </div>
+                      <div class="h-2 rounded bg-gray-200"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : certifications.length === 0 ? (
+            <NoResultsMessage />
+          ) : (
+            <CertificationsList certifications={certifications} />
+          )}
+          <PaginationControls />
+        </div>
       </div>
       {showRoutes && (
         <div className="container-routes-section">
           <RoutesComponent />
         </div>
       )}
+      </div>
     </>
   );
 }

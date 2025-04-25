@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
+import React,{ useEffect, useRef, useState } from 'react';
 
 const FlagsHome = () => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const FlagsHome = () => {
       replace: true
     });
 
-    window.scrollTo(0,0);
+    //window.scrollTo(0,0);
 
   };
 

@@ -9,14 +9,14 @@ import { useCallback } from 'react';
 
 const CertificationsList = memo(({ certifications }) => {
     const navigate = useNavigate();
+    const host = window.location.hostname;
     const [error, setError] = useState(null);
 
-    
-
-    const handleImageError = (e) => {
+    const handleImageError = (e) => {        
         console.error('Error loading image:', e.target.src);
-        e.target.style.opacity = '0.5';
-        e.target.style.backgroundColor = '#f0f0f0';
+        e.target.style.opacity = '0.5';
+        e.target.style.backgroundColor = '#f0f0f0';
+
     };
 
     const handleCertificationClick = (certification) => {
@@ -59,9 +59,9 @@ const CertificationsList = memo(({ certifications }) => {
           return getImageUrl(certification.url_imagen_plataforma_certificacion);
         }
         const platformImages = {
-          1: '/assets/Plataformas/Edx Mini logo.png',
-          2: '/assets/Plataformas/Coursera mini logo.png',
-          3: '/assets/Plataformas/MasterClass logo mini.svg'
+          1: '/assets/Plataformas/edx-logo.png',
+          2: '/assets/Plataformas/coursera-logo.png',
+          3: '/assets/Plataformas/masterclass-logo.png'
         };
         return platformImages[certification.plataforma_certificacion_id] || '/images/platforms/default-platform.png';
       }, []);
@@ -84,45 +84,32 @@ const CertificationsList = memo(({ certifications }) => {
                             <div
                                 onClick={() => handleCertificationClick(certification)}
                                 key={certification.id}
-                                className="masterclass-card-certification"
-                                style={{ cursor: 'pointer' }}
+                                className="certification-card"
                             >
-                                <div className="container-img-card-masterclass">
+                                <div className="container-img-card">
                                     <img
                                         src={getImageUrl(certification.imagen_final)}
                                         alt="imagen-certificacion"
                                         onError={handleImageError}
-                                        style={{
-                                            display: 'block',
-                                            maxWidth: '100%',
-                                            height: 'auto'
-                                        }}
                                     />
                                 </div>
-
-                                <div id="container-title-certification-masterclass">
+                                <div className="tags-card">
+                                    <div className={`tag-category ${certification.tema_certificacion?.tem_col || 'tag-verde'}`}>
+                                        {certification.tema_certificacion?.nombre || 'Sin categoría'}
+                                    </div>
+                                </div>
+                                <div className="title-certification">
                                     <h3>{certification.nombre}</h3>
                                     <p className="masterclass-description">
                                         {certification.descripcion || ''}
                                     </p>
                                 </div>
-                                
-                                <div id="container-tags-card-masterclass">
-                                    <div className="tag-category">
-                                        {certification.tema_certificacion?.nombre || 'Sin categoría'}
-                                    </div>
-
-                                    <div className="tag-platform">
-                                        <img
-                                            src={platformImage}
-                                            alt={`${certification.plataforma_certificacion?.nombre || 'platform'}-logo`}
-                                            onError={handleImageError}
-                                            style={{
-                                                display: 'block',
-                                                height: 'auto'
-                                            }}
-                                        />
-                                    </div>
+                                <div className="tag-platform">
+                                    <img
+                                        src={`http://${host}:3000/${certification.plataforma_certificacion.plat_img}`}
+                                        alt={certification.plataforma_certificacion.nombre}
+                                        onError={handleImageError}
+                                    />
                                 </div>
                             </div>
                         );
@@ -134,41 +121,28 @@ const CertificationsList = memo(({ certifications }) => {
                             onClick={() => handleCertificationClick(certification)}
                             key={certification.id}
                             className="certification-card"
-                            style={{ cursor: 'pointer' }}
                         >
                             <div className="container-img-card">
                                 <img
                                     src={getImageUrl(certification.imagen_final)}
                                     alt="imagen-certificacion"
                                     onError={handleImageError}
-                                    style={{
-                                        display: 'block',
-                                        maxWidth: '100%',
-                                        height: 'auto'
-                                    }}
                                 />
                             </div>
-
-                            <div id="container-title-certification">
-                                <h3>{certification.nombre}</h3>
-                            </div>
-                            
-                            <div id="container-tags-card">
-                                <div className="tag-category">
+                            <div className="tags-card">
+                                <div className={`tag-category ${certification.tema_certificacion?.tem_col || 'tag-verde'}`}>
                                     {certification.tema_certificacion?.nombre || 'Sin categoría'}
                                 </div>
-
-                                <div className="tag-platform">
-                                    <img
-                                        src={platformImage}
-                                        alt={`${certification.plataforma_certificacion?.nombre || 'platform'}-logo`}
-                                        onError={handleImageError}
-                                        style={{
-                                            display: 'block',
-                                            height: 'auto'
-                                        }}
-                                    />
-                                </div>
+                            </div>
+                            <div className="title-certification">
+                                <h3>{certification.nombre}</h3>
+                            </div>                              
+                            <div className="tag-platform">
+                                <img
+                                    src={`http://${host}:3000/${certification.plataforma_certificacion.plat_img}`}
+                                    alt={certification.plataforma_certificacion.nombre}
+                                    onError={handleImageError}
+                                />
                             </div>
                         </div>
                     );

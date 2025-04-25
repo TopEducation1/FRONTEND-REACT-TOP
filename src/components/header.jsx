@@ -1,9 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import { useNavigate } from 'react-router-dom';
 const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
   const [position, setPosition] = useState(0);
+  const [showSubmenu, setShowSubmenu] = useState(false);
 
+  const [selectedTags, setSelectedTags] = useState({});
+  const navigate = useNavigate();
+
+  const handleMouseOver = () => {
+    setShowSubmenu(true);
+  };
+  
+  const handleMouseOut = (event) => {
+    // Verifica si el cursor está sobre el submenú antes de ocultarlo
+    if (!event.relatedTarget || !event.relatedTarget.closest('.cont-submenu')) {
+      setShowSubmenu(false);
+    }
+  };
+  
   useEffect(() => {
     const headerElement = document.querySelector("header");
 
@@ -14,10 +29,29 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
     }
   }, []);
 
+  
+
+  const handleItemMenuClick = (category, tag) => {
+      console.log(category, tag);
+
+      const initialTags = {
+          [category]: [tag]
+      };
+      navigate('/explora/filter?page=1&page_size=16&', {
+          state: {selectedTags: initialTags},
+          replace: true
+      })
+
+      // Redirigir a la página con los parámetros correspondientes
+      //navigate(`/explora/filter/?category=${category}&tag=${tag}`);
+  };
+  
+  
+
   return (
     <header>
       {/* Navigation bar */}
-      <nav className="nav-main">
+      <nav className="nav-main relative mx-2 w-full rounded-[36px] border border-white/80 bg-white/80 px-4 py-3 backdrop-blur-md dark:border-white-700/80 dark:bg-neutral-950/80 dark:backdrop-blur-md md:flex md:items-center md:justify-between md:px-6 md:py-0 lg:px-8 xl:mx-auto">
         {/* Burguer button */}
         <div className="container-burguer-button">
           <svg
@@ -58,21 +92,151 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
         <div className="navigation-menu">
           <ul>
             <li>
-              <Link to="/explora">Explora</Link>
+              <Link className="dark:text-white" id="btn-explora" to="/explora" 
+                onMouseOver={handleMouseOver}
+                onMouseOut={handleMouseOut}>Explora</Link>
             </li>
             <li>
-              <a href="/para-equipos">Para equipos</a>
+              <a className="dark:text-white" href="/para-equipos">Para equipos</a>
             </li>
             <li>
-              <a href="/recursos">Recursos</a>
+              <a className="dark:text-white" href="/recursos">Recursos</a>
             </li>
             <li>
-              <a id="start-now" href="/empieza-ahora">
+              <a className="dark:text-white btn btn-col-2 " id="start-now"  href="/empieza-ahora">
                 Empieza ahora
               </a>
             </li>
             {/** <li><a href="/rutas-del-conocimiento">Rutas de conocimiento</a></li>*/}
           </ul>
+          {showSubmenu && (<div className="cont-submenu " onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
+            <ul className="submenu-list">
+              <li className="list-item item-tit"><h3>Plataformas</h3></li>
+              <li className="list-item">
+                <a className="item-plat"
+                  onClick={() => handleItemMenuClick("Plataforma", "EdX")}>
+                  <img src="/assets/temas/EdX.png" alt="" />
+                  <span>EdX</span>
+                </a>
+              </li>
+              <li className="list-item">
+                <a className="item-plat"
+                  onClick={() => handleItemMenuClick("Plataforma", "Coursera")}>
+                  <img src="/assets/temas/Coursera.png" alt="" />
+                  <span>Coursera</span>
+                </a>
+              </li>
+              <li className="list-item">
+                <a className="item-plat"
+                  onClick={() => handleItemMenuClick("Plataforma", "MasterClass")}>
+                  <img src="/assets/temas/MasterClass.png" alt="" />
+                  <span>MasterClass</span>
+                </a>
+              </li>  
+            </ul>
+            <ul className="submenu-list">
+              <li className="list-item item-tit"><h3>Temas</h3></li>
+              <li className="list-item">
+                <a className="item-tema" onClick={() => handleItemMenuClick("Tema", "Aprendizaje de idioma")} ><img class="item-ico" src="/assets/temas/Aprendizaje de idioma.png" alt=""/>Aprendizaje de idioma</a>
+              </li>
+              <li className="list-item">
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Arte y Humanidades')}><img class="item-ico" src="/assets/temas/Arte y Humanidades.png" alt=""/>Arte y Humanidades</a>
+              </li>
+              <li className="list-item">
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Ciencias de Datos')} ><img class="item-ico" src="/assets/temas/Ciencias de Datos.png" alt=""/>Ciencias de Datos</a>
+              </li>
+              <li className="list-item">
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Ciencias de la Computación')} ><img class="item-ico" src="/assets/temas/Ciencias de la Computación.png" alt=""/>Ciencias de la Computación</a>
+              </li>  
+              <li className="list-item">
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Ciencias Sociales')} ><img class="item-ico" src="/assets/temas/Ciencias Sociales.png" alt=""/>Ciencias Sociales</a>
+              </li>
+              <li className="list-item">
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Ciencía física e Ingeniería')} ><img class="item-ico" src="/assets/temas/Ciencía física e Ingeniería.png" alt=""/>Ciencía física e Ingeniería</a>
+              </li>
+              <li className="list-item">
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Desarrollo Personal')} ><img class="item-ico" src="/assets/temas/Desarrollo Personal.png" alt=""/>Desarrollo Personal</a>
+              </li>
+              <li className="list-item">
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Matemáticas y Lógica')} ><img class="item-ico" src="/assets/temas/Matemáticas y Lógica.png" alt=""/>Matemáticas y Lógica</a>
+              </li>
+              <li className="list-item">
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Negocios')} ><img class="item-ico" src="/assets/temas/Negocios.png" alt=""/>Negocios</a>
+              </li>
+              <li className="list-item">
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Salud')} ><img class="item-ico" src="/assets/temas/Salud.png" alt=""/>Salud</a>
+              </li>
+              <li className="list-item">
+                <a className="item-tema" onClick={() => handleItemMenuClick('Tema', 'Tecnología de la información')} ><img class="item-ico" src="/assets/temas/Tecnología de la información.png" alt=""/>Tecnología de la información</a>
+              </li>
+            </ul>
+            <ul className="submenu-list">
+              <li className="list-item item-tit"><h3>Habilidades</h3></li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Habilidad', 'Bienestar')} ><img class="item-ico" src="/assets/temas/Bienestar.png" alt=""/>Bienestar</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Habilidad', 'Comunicación')} ><img class="item-ico" src="/assets/temas/Comunicación.png" alt=""/>Comunicación</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Habilidad', 'Creatividad')} ><img class="item-ico" src="/assets/temas/Creatividad.png" alt=""/>Creatividad</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Habilidad', 'Crecimiento Personal')} ><img class="item-ico" src="/assets/temas/Crecimiento Personal.png" alt=""/>Crecimiento Personal</a>
+              </li>  
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Habilidad', 'Diversidad, equidad e inclusión')} ><img class="item-ico" src="/assets/temas/Diversidad, equidad e inclusión.png" alt=""/>Diversidad, equidad e inclusión</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Habilidad', 'Estrategia')} ><img class="item-ico" src="/assets/temas/Estrategia.png" alt=""/>Estrategia</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Habilidad', 'Liderazgo')} ><img class="item-ico" src="/assets/temas/Liderazgo.png" alt=""/>Liderazgo</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Habilidad', 'Personas y cultura')} ><img class="item-ico" src="/assets/temas/Personas y cultura.png" alt=""/>Personas y cultura</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Habilidad', 'Productividad')} ><img class="item-ico" src="/assets/temas/Productividad.png" alt=""/>Productividad</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Habilidad', 'Trabajo en equipo')} ><img class="item-ico" src="/assets/temas/Trabajo en equipo.png" alt=""/>Trabajo en equipo</a>
+              </li>
+            </ul>
+            <ul className="submenu-list">
+              <li className="list-item item-tit"><h3>Universidades</h3></li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Universidad', 'Arte y Humanidades')} ><img class="item-ico" src="#" alt=""/>University of Michigan</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Universidad', 'Arte y Humanidades')} ><img class="item-ico" src="#" alt=""/>Berklee College of Music</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Universidad', 'Arte y Humanidades')} ><img class="item-ico" src="#" alt=""/>Peking University</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Universidad', 'Arte y Humanidades')} ><img class="item-ico" src="#" alt=""/>Universidad de Columbia</a>
+              </li>  
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Universidad', 'Arte y Humanidades')} ><img class="item-ico" src="#" alt=""/>Universidad de Harvard</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Universidad', 'Arte y Humanidades')} ><img class="item-ico" src="#" alt=""/>Universidad de YALE</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Universidad', 'Arte y Humanidades')} ><img class="item-ico" src="#" alt=""/>Universidad de Stanford</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Universidad', 'Arte y Humanidades')} ><img class="item-ico" src="#" alt=""/>Universidad de Toronto</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Universidad', 'Arte y Humanidades')} ><img class="item-ico" src="#" alt=""/>Universidad de Chicago</a>
+              </li>
+              <li className="list-item">
+              <a className="item-tema" onClick={() => handleItemMenuClick('Universidad', 'Arte y Humanidades')} ><img class="item-ico" src="#" alt=""/>Univerdad PENN</a>
+              </li>
+            </ul>
+          </div>)}
         </div>
       </nav>
 
@@ -87,8 +251,9 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
                 className="button-explore"
                 onClick={toggleMenu}
               >
-                <Link to="/explora">Explora</Link>
+                <Link to="/explora">Explora </Link>
               </a>
+              
             </li>
             <li>
               <a href="/para-equipos">Para Equipos</a>

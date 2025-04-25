@@ -1,34 +1,31 @@
+import React from 'react';
 import  { useNavigate } from 'react-router-dom';
 
 
-const TopicCircles = ({ topic, image, tag }) => {
+const TopicCircles = ({ topic, image, tag, type }) => {
 
     const navigate = useNavigate();
-
-
     const handleTopicClick = (e) => {
         e.preventDefault();
 
         const initialTags = {
-            "Tema": [tag]
+            [type]: [tag]
         };
 
         // Navegar a la biblioteca con los tags 
-        navigate('/explora', {
+        const img = e.currentTarget.querySelector('.topic-circle img');
+        img.classList.add('scale-animation'); // Añade la clase de animación
+        
+        
+        setTimeout(()=>{navigate('/explora', {
             state: {selectedTags: initialTags},
             replace: true
-        });
-
-
-        // Evitar que nos lleve a la parte de abajo de la pagina
-        window.scrollTo(0, 0);
+        })}, 1000); // 5000 milisegundos = 5 segundos
     };
-
-
 
     return (
     <div class="topic-circle">
-        <a onClick={handleTopicClick}>
+        <a onClick={handleTopicClick} >
             <img src={image} alt={topic}/>
             <span class="category-name">{topic}</span>
         </a>
@@ -37,3 +34,4 @@ const TopicCircles = ({ topic, image, tag }) => {
 }
 
 export default TopicCircles;
+

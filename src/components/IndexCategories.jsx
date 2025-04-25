@@ -10,19 +10,11 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
     const sections = [
         {
             title: "Tema",
-            subsections: ["Arte y Humanidades",  "Ciencias de la Computación", "Ciencias de Datos", "Tecnología de la información", "Salud", "Matemáticas y Logica", "Ciencías, Física e Ingenieria", "Ciencias Sociales", ]
+            subsections: ["Aprendizaje de idioma","Arte y Humanidades","Ciencias de Datos","Ciencias de la Computación", "Ciencias Sociales","Ciencía física e Ingeniería","Desarrollo Personal","Matemáticas y Lógica","Negocios","Salud","Tecnología de la información"    ]
         },
         {
             title : "Habilidad",
-            subsections: ["Negocios", "Desarrollo Personal", "Aprendizaje de idioma", "Bienestar", "Productividad", "Liderazgo", "Estrategia", "Comunicación", "Trabajo en equipo", "Creatividad"]
-        },
-        {
-            title: "Plataforma",
-            subsections: ["EdX", "Coursera", "MasterClass"]
-        },
-        {
-            title: "Empresa",
-            subsections: ["Capitals Coalition", "DeepLearning.AI", "Big Interview", "UBITS", "HubSpot Academy", "SV Academy", "Pathstream", "Salesforce", "The Museum of Moder Art", "Banco Interamericano de Desarrollo", "Yad Vashem", " Google", "Microsoft"]
+            subsections: [ "Bienestar", "Comunicación", "Creatividad", "Crecimiento Personal","Diversidad, equidad e inclusión","Estrategia","Liderazgo","Personas y cultura","Productividad","Trabajo en equipo"]
         },
         {
             title: "Universidad",
@@ -44,9 +36,15 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                     subsections: ["University of New Mexico", "Parsons School of Design, The New School", "University of Michigan", "University of Virginia", "University of Illinois Urbana-Champaign", "University of California, Irvine", "The University of North Carolina at Chapel Hill", "Northwestern University", "University of Colorado Boulder", "Wesleyan University", "California Institute of the Arts", "Duke University", "University of Pennsylvania", "Berklee college of music", "Columbia", "Harvard University", "Yale university", "Stanford University"]
                 }
             ]
+        },{
+            title: "Empresa",
+            subsections: ["Capitals Coalition", "DeepLearning.AI", "Big Interview", "UBITS", "HubSpot Academy", "SV Academy", "Pathstream", "Salesforce", "The Museum of Moder Art", "Banco Interamericano de Desarrollo", "Yad Vashem", " Google", "Microsoft"]
+        },{
+            title: "Aliados",
+            subsections: ["EdX", "Coursera", "MasterClass"]
         }
     ];
-
+    
 
     const toggleSection = (index) => {
         setOpenSections(prev =>
@@ -61,6 +59,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
             if (typeof subsection === "string") {
                 return (
                     <div key={subIndex}>
+                        
                         <Link
                             to="#"
                             onClick={(e) => {
@@ -68,7 +67,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                                 onTagSelect(category, subsection);
                             }}
                             style={{ pointerEvents : isSectionDisabled(category) ? 'none' : 'auto', opacity : isSectionDisabled(category) ? 0.5 : 1}}
-                        >
+                        ><img className="sect-ico" src={`./assets/temas/${subsection }.png`} alt="" />
                             {subsection}
                         </Link>
                     </div>
@@ -116,15 +115,10 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
     return (
         <div
             ref={indexRef}
-            className="index-container"
+            className="cont-menu-categ"
         >
-            
-            <div className="title-category">
-        <h2>Biblioteca</h2>
-    </div>
             <div className="category-wrapper">
-
-            
+                <h2>Biblioteca</h2>
             
                 {sections.map((section, index) => (
                     <div
@@ -157,16 +151,16 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                             </span>
 
                         </button>
-                        {openSections.includes(index) && (
                             <div className="unfold-list">
                                 {renderSubsections(section.title, section.subsections)}
                             </div>
-                        )}
+                        
                     </div>
                 ))}
             </div>
         </div>
     );
+
 };
 
 export default IndexCategories;

@@ -1,6 +1,5 @@
 import { endpoints } from "../config/api";
 
-
 const FilterBySearch = {
 
     async getResults(stringQuery) {

@@ -50,6 +50,7 @@ function App() {
         <Route element={<TopEducationLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/explora" element={<LibraryPage />} />
+          <Route path="/explora/filter" element={<LibraryPage />} />
           <Route path="/recursos/:slug" element={<BlogDetailPage />} />
           <Route
             path="/certificacion/masterclass/:slug"
