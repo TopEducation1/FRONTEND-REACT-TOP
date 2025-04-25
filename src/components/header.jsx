@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
+import { useOutletContext } from "react-router-dom";
 const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
   const [position, setPosition] = useState(0);
   const [showSubmenu, setShowSubmenu] = useState(false);
@@ -90,7 +91,8 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
         </div>
 
         {/* Navigation menu */}
-        <div className="navigation-menu">
+        
+        <div className={`navigation-menu ${isMenuOpen ? "open" : ""}`}>
           <ul>
             <li>
               <Link className="dark:text-white" id="btn-explora" to="/explora" 
@@ -242,7 +244,6 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
       </nav>
 
       {/* Menu responsive */}
-
       <div className={`menu-responsive-1 ${position ? "position" : ""}`}>
         <div className="navigation-menu-responsive">
           <ul>
@@ -628,7 +629,9 @@ const Header = ({ toggleMenu, openIndexResponsiveMenu, isMenuOpen }) => {
           </svg>
         </div>
       </div>
+      
     </header>
+    
   );
 };
 export default Header;

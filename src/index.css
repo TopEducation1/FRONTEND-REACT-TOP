@@ -915,34 +915,31 @@ header {
 .sliding-menu {
   display: flex;
   flex-direction: column;
-  padding: 30px 15px;
+  padding: 80px 15px 30px 15px;
   box-sizing: border-box;
-  justify-content: center;
-  align-items: center;
   position: fixed;
-  top: 110px;
-  left: -100%;
+  top: -100%;
+  left: 0px;
   width: 100%;
-  height: calc(100vh - 110px);
+  height: 100vh;
   background: rgba(var(--negroRGB),.8);
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  transition: left 0.3s ease-in-out;
-  z-index: 999;
+  transition: top 0.3s ease;
+  z-index: 998;
   overflow-y: auto;
 }
-.sliding-menu button {
-  position: absolute;
-  top: 10px;
-  right: 20px;
+.sliding-menu .close-menu {
+  position: fixed;
+  top: 90px;
+  right: 30px;
   border: none;
   background-color: transparent;
   cursor: pointer;
-
+  z-index: 1000;
 }
 
 .sliding-menu.open {
-  left: 0;
+  top: 0;
 }
 
 
@@ -1345,7 +1342,7 @@ cursor: pointer;
   padding: 8px 12px;
   border: none;
   background: transparent;
-  color: #F6F4EF;
+  color: var(--blanco);
   cursor: pointer;
   text-align: left;
   display: flex;
@@ -1881,8 +1878,7 @@ cursor: pointer;
   justify-content: center;
   text-align: center;
   width: 100%;
-  height: 50px;
-  color: #F6F4EF;
+  color: var(--blanco);
   font-size: 30px;
 }
 
@@ -6143,7 +6139,7 @@ line-height: normal;
 
   .container-burguer-button {
     display: flex;
-    padding: 8px 10px;
+    padding: 0px;
     svg {
       cursor: pointer;
       height: 50px;
@@ -6158,10 +6154,6 @@ line-height: normal;
     margin-top: 50px;
     height: 100%;
     overflow-y: scroll;
-  }
-
-  .unfold-list {
-    margin: 60px 0px 0px 0px;
   }
 
   .title-category {
@@ -6870,10 +6862,6 @@ line-height: normal;
     font-size: 50px;
   }
 
-  .container-burguer-button {
-    left: 20px;
-  }
-
   .certification-card {
     width: 280px;
   }
@@ -6918,13 +6906,14 @@ line-height: normal;
 /*RESPONSIVE INTEGRACIÓN BYCODE*/
 @media(max-width: 768px){
   .nav-main{
-    width: 90%;
+    width: 95%;
     justify-content: space-between;
   }
   .wrapper-logo-platforms {
-    width: 80%;
-    left: 10%;
-    padding: 8px 10px 30px 10px;
+    top: 65px;
+    width: 90%;
+    left: 5%;
+    padding: 8px 10px 45px 10px;
   }
   .wrapper-logos,.cont-menu-categ{
     width: 100%;
@@ -6932,10 +6921,11 @@ line-height: normal;
   .cont-menu-categ .category-wrapper{
     position: relative;
     padding: 0px;
+    top: inherit;
     height: 100%;
   }
   .wrapper-logo-nav{
-    width: 50%;
+    width: 40%;
   }
   .wrapper-logos .container-logo{
     padding: 3px 5px;
@@ -6953,7 +6943,6 @@ line-height: normal;
   .cont-filter{
     width: 100% !important;
     padding: 10px;
-    padding-top: 40px;
   }
   .container-tags{
     width: 100%;
@@ -6968,10 +6957,10 @@ line-height: normal;
   }
 
   .wrapper-search-bar{
-    top: 110px;
+    top: 100px;
     padding-top: 0px;
-    right: 10%;
-    width: 80%;
+    right: 6%;
+    width: 88%;
   }
   .wrapper-certifications {
     gap: 10px;
@@ -6983,6 +6972,20 @@ line-height: normal;
 
   .container-logo #top,.container-logo #education{
     font-size: 10px !important;
+  }
+
+  .category-item:hover{
+    height: auto;
+    transition: height 1s ease !important;
+  }
+  .category-item:hover .unfold-category-button{
+    border-radius: 15px 15px 0px 0px !important;
+  }
+  .category-item:hover > .unfold-list{
+    position: relative;
+    left: 0px;
+    margin-top: 0px;
+    border-radius: 0px 0px 15px 15px;
   }
 
   /*ESTILOS PRACTICANTE*/
