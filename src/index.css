@@ -453,6 +453,9 @@ header {
   .wrapper-logos{
     width: 80%;
   }
+  .wrapper-logo-nav{
+    width: 80%;
+  }
   .wrapper-logos .container-logo img{
     width: auto;
     height: 30px;
