@@ -14,8 +14,8 @@ const CertificationsList = memo(({ certifications }) => {
 
     const handleImageError = (e) => {        
         console.error('Error loading image:', e.target.src);
-        e.target.style.opacity = '0.5';
-        e.target.style.backgroundColor = '#f0f0f0';
+        e.target.style.opacity = '0.5';
+        e.target.style.backgroundColor = '#f0f0f0';
 
     };
 
