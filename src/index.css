@@ -6707,23 +6707,6 @@ line-height: normal;
     margin-right: 20px;
   }
 
-  #container-logo-platforms {
-    width: 100%;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-    padding-left: 40px;
-    padding-right: 40px;
-    margin-top: 120px;
-    position: relative;
-  }
-
-
-
-  .tag-platform {
-    top: 207px;
-    left: 7px;
-
-  }
 
   .container-routes-section {
     width: 100%;
@@ -6747,14 +6730,9 @@ line-height: normal;
 
 @media (max-width: 500px) {
 
-
-
-
   .wrapper-slide {
     padding-left: 3px;
   }
-
-
 
   .label-type {
     position: absolute;
@@ -7442,6 +7420,7 @@ line-height: normal;
 @media(max-width: 768px){
   .nav-main{
     width: 90%;
+    justify-content: space-between;
   }
   .wrapper-logo-platforms {
     width: 80%;
@@ -7452,7 +7431,7 @@ line-height: normal;
     width: 100%;
   }
   .wrapper-logo-nav{
-    width: 80%;
+    width: 50%;
   }
   .wrapper-logos .container-logo{
     padding: 3px 5px;
