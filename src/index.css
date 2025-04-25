@@ -7531,7 +7531,7 @@ line-height: normal;
 
 }
 /*RESPONSIVE INTEGRACIÓN BYCODE*/
-@media (max-width: 768px){
+@media(max-width: 768px){
   .nav-main{
     width: 90%;
   }
