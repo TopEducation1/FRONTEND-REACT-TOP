@@ -520,6 +520,10 @@ function LibraryPageCafam({ showRoutes = true }) {
 
       {showRoutes && (
         <div className="container-routes-section">
+          <div className="container-title-search">
+                <h2>¿Encontraste lo que estabas buscando?</h2>
+            </div>
+            <p>Quizás te interese explorar nuestras Rutas del Conocimiento, donde podrás seguir el camino de grandes figuras históricas y aprender de los mejores en cada campo. ¡Descubre cursos inspirados en Einstein, Da Vinci, Marie Curie y más!</p>
           <RoutesComponent />
         </div>
       )}

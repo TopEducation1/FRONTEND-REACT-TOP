@@ -9,11 +9,11 @@ import { useOutletContext } from "react-router-dom";
  * @returns {ReactNode} Menu HTML
  */
 
-const SlidingMenuIndex = ({ onTagSelect }) => {
+  const SlidingMenuIndex = ({ onTagSelect }) => {
   const { isMenuOpen, closeIndexResponsiveMenu } = useOutletContext();
 
   return (
-    <div className={`sliding-menu ${isMenuOpen ? "open" : ""}`}>
+    <div className={`sliding-menu`}>
       <button className="close-menu" onClick={closeIndexResponsiveMenu}>
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -19,6 +19,15 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
         {
             title: "Universidad",
             subsections: [
+                
+                {
+                    title: "Latinoamérica",
+                    subsections: ["Universidad Nacional de Colombia", "Tecnológico de Monterrey", "Pontificia Universidad Católica del Perú", "UNAM", "Universidad Anáhuac", "SAE Institute México", "Pontificia Universidad Católica de Chile", "Universidad de Palermo", "Universidad de los Andes", "Universidad Austral"]
+                },
+                {
+                    title: "Norteamérica",
+                    subsections: ["University of New Mexico", "Parsons School of Design, The New School", "University of Michigan", "University of Virginia", "University of Illinois Urbana-Champaign", "University of California, Irvine", "The University of North Carolina at Chapel Hill", "Northwestern University", "University of Colorado Boulder", "Wesleyan University", "California Institute of the Arts", "Duke University", "University of Pennsylvania", "Berklee college of music", "Columbia University", "Harvard University", "Yale University", "Stanford University"]
+                },
                 {
                     title: "Oceania",
                     subsections: ["Macquarie University"]
@@ -26,19 +35,11 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                 {
                     title: "Europa",
                     subsections: ["IE Business School", "Universidad Autónoma de Barcelona", "Universidad Carlos III de Madrid"]
-                },
-                {
-                    title: "Latinoamérica",
-                    subsections: ["Universidad Nacional de Colombia", "Tecnológico de Monterrey", "Pontificia Universidad Católica del Perú", "UNAM", "Universidad Anáhuac", "SAE Institute México", "Pontificia Universidad Católica de Chile", "Universidad de Palermo", "Universidad de los Andes", "Universidad Austral"]
-                },
-                {
-                    title: "Norteamérica",
-                    subsections: ["University of New Mexico", "Parsons School of Design, The New School", "University of Michigan", "University of Virginia", "University of Illinois Urbana-Champaign", "University of California, Irvine", "The University of North Carolina at Chapel Hill", "Northwestern University", "University of Colorado Boulder", "Wesleyan University", "California Institute of the Arts", "Duke University", "University of Pennsylvania", "Berklee college of music", "Columbia", "Harvard University", "Yale university", "Stanford University"]
                 }
             ]
         },{
             title: "Empresa",
-            subsections: ["Capitals Coalition", "DeepLearning.AI", "Big Interview", "UBITS", "HubSpot Academy", "SV Academy", "Pathstream", "Salesforce", "The Museum of Moder Art", "Banco Interamericano de Desarrollo", "Yad Vashem", " Google", "Microsoft"]
+            subsections: ["Capitals Coalition", "DeepLearning AI", "Big Interview", "UBITS", "HubSpot Academy", "SV Academy", "Pathstream", "Salesforce", "The Museum of Moder Art", "Banco Interamericano de Desarrollo", "Yad Vashem", "Google", "Microsoft"]
         },{
             title: "Aliados",
             subsections: ["EdX", "Coursera", "MasterClass"]
@@ -58,7 +59,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
         return subsections.map((subsection, subIndex) => {
             if (typeof subsection === "string") {
                 return (
-                    <div key={subIndex}>
+                    <div key={subIndex} className="item">
                         
                         <Link
                             to="#"
@@ -67,18 +68,20 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                                 onTagSelect(category, subsection);
                             }}
                             style={{ pointerEvents : isSectionDisabled(category) ? 'none' : 'auto', opacity : isSectionDisabled(category) ? 0.5 : 1}}
-                        ><img className="sect-ico" src={`./assets/temas/${subsection }.png`} alt="" />
+                        >
+                            {}
+                            <img className="sect-ico" src={(category=="Universidades")?`./assets/category/TE-${subsection }.webp`:`./assets/category/${subsection }.png`} alt="" />
                             {subsection}
                         </Link>
                     </div>
                 );
             } else if (subsection.title && subsection.subsections) {
                 return (
-                    <div key={subIndex}>
+                    <div key={subIndex} className="submenu">
                         <h3>{subsection.title}</h3>
-                        <div className="unfold-list">
+                        <div className={`unfold-list list-${subsection.title}`}>
                             {subsection.subsections.map((subsubsection, subsubIndex) => (
-                                <div key={subsubIndex}>
+                                <div key={subsubIndex} className="subitem">
                                     <Link
                                         to="#"
                                         onClick={(e) => {
@@ -87,6 +90,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                                         }}
                                         style={{ pointerEvents: isSectionDisabled(category) ? 'none' : 'auto', opacity: isSectionDisabled(category) ? 0.5 : 1 }}
                                     >
+                                        <img className="sect-ico" src={`./assets/category/TE-${subsubsection }.webp`} alt="" />
                                         {subsubsection}
                                     </Link>
                                 </div>
@@ -122,7 +126,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
             
                 {sections.map((section, index) => (
                     <div
-                        className={`category-item ${openSections.includes(index) ? "open" : ""}`}
+                        className={`category-item item-${section.title} ${openSections.includes(index) ? "open" : ""}`}
                         key={index}
                     >
                         <button
@@ -151,7 +155,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                             </span>
 
                         </button>
-                            <div className="unfold-list">
+                            <div className="unfold-list subprimery">
                                 {renderSubsections(section.title, section.subsections)}
                             </div>
                         

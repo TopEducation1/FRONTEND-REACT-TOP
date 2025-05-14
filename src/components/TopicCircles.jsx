@@ -26,7 +26,10 @@ const TopicCircles = ({ topic, image, tag, type }) => {
     return (
     <div class="topic-circle">
         <a onClick={handleTopicClick} >
-            <img src={image} alt={topic}/>
+            <div className='topic-cont-img'>
+                <img className='topic-img-f' src={`assets/temas/${topic}-g.png`} alt={topic}/>
+                <img className='topic-img-b' src={`assets/temas/${topic}.png`} alt={topic}/>
+            </div>
             <span class="category-name">{topic}</span>
         </a>
     </div>
