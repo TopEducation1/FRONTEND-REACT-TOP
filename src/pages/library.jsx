@@ -37,9 +37,25 @@ function LibraryPage({ showRoutes = true }) {
     100
   );
   const certificationsRef = useRef(null);
+  const images = [
+    {
+      id: 1, url: "assets/SliderImages/1.png", category: "recursos", link: "recursos/tipos-de-estrategias-de-aprendizaje-y-como-aplicarlas"
+    },{
+      id: 2, url: "assets/SliderImages/2.png", category: "recursos", link: "#"
+    },{
+      id: 3, url: "assets/SliderImages/3.png", category: "recursos", link: "#"
+    },{
+      id: 4, url: "assets/SliderImages/4.png", category: "recursos", link: "#"
+    },{
+      id: 5, url: "assets/SliderImages/5.png", category: "recursos", link: "#"
+    },{
+      id: 6, url: "assets/SliderImages/6.png", category: "recursos", link: "#"
+    },{
+      id: 7, url:"assets/SliderImages/7.png", category: "recursos", link: "#"
+    }
+  ]
 
   useEffect(() => {
-
     window.scrollTo(0,0);
   }, []);
 
@@ -556,7 +572,12 @@ function LibraryPage({ showRoutes = true }) {
       </div>
       {showRoutes && (
         <div className="container-routes-section">
-          <RoutesComponent />
+          <div className="container-title-search">
+                <h2>¿Encontraste lo que estabas buscando?</h2>
+            </div>
+            <p>Quizás te interese explorar nuestras Rutas del Conocimiento, donde podrás seguir el camino de grandes figuras históricas y aprender de los mejores en cada campo. ¡Descubre cursos inspirados en Einstein, Da Vinci, Marie Curie y más!</p>
+
+          <RoutesComponent  images={images} />
         </div>
       )}
       </div>

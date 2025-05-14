@@ -120,26 +120,9 @@ const CertificationPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                     <div className="lg:col-start-1 lg:col-span-8 space-y-[35px] pb-8 border-1 border-[#ECECEC] rounded-[15px] z-1">
                         <div className="container-main-info">
-                            {/*<div className="cert-img">
-                                <img src={getImageUrl(certification.url_imagen_universidad_certificacion)} alt="Logo de la certificación" />
-                            </div>*/}
                             <div className="cert-int px-8 pt-8">
                                 <h1 className="text-size-32 md:text-4xl mb-2 font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-10 md:leading-10 aos-init aos-animate">{certification.nombre}</h1>
                                 <p className="text-sm md:text-lg text-contentColor dark:contentColor-dark mb-25px !leading-[1.2em] aos-init aos-animate">{certification.metadescripcion_certificacion}</p>
-                                {/*<div className="flex items-center justify-items-center-safe w-full gap-[10px] my-5">
-                                    <img src="http://localhost:3000/assets/temas/user-te.png" class="w-[60px] aspect-square rounded-full object-cover"/>
-                                    <div className="w-3/5">
-                                        <h2 className="font-bold text-edblue leading-[1.2]">Instructor/es</h2>
-                                        <ul>
-                                            {certification.instructores_certificacion.map((instructor, index) => (
-                                                <li key={index}>{instructor.name}</li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                    <div className="w-2/5 flex justify-end">
-                                        <button onClick={() => window.open(certification.url_certificacion_original, '_blank')} className="btn btn-col-1 font-bold py-2 px-4 rounded-full">Ver en la página oficial</button>
-                                    </div>                   
-                                </div>*/}
                                 <div className="border-b border-[#E5E5E5] pb-[25px] flex xs:flex-wrap items-start gap-[60px] lg:gap-[40px] xs:gap-[20px] mt-5 mb-[20px]">
                                     <div className="flex w-2/8 items-start gap-[10px] border-l border-[#CDCDCD] first:border-none pl-[10px] first:pl-0">
                                         <div>

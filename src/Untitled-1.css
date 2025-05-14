@@ -321,22 +321,6 @@
     height: auto;
   }
 
-  #second-home-section, #third-home-section, #fourth-home-section, #fifth-home-section, #sixth-home-section, #seventh-home-section {
-    padding: 30px;
-    box-sizing: border-box;
-    flex-direction: column;
-    height: auto;
-
-    h1 {
-      font-size: 50px;
-      text-align: center;
-    }
-
-    p {
-      text-align: justify;
-    }
-    
-  }
 
   #grid-articles {
     width: 100%;

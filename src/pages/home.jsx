@@ -3,6 +3,11 @@ import React, { useState, useRef, useEffect } from "react";
 import SliderEditorial from "../components/SliderEditorial";
 import TopicCircles from "../components/TopicCircles";
 import FlagsHome from "../components/FlagsHome";
+import RoutesComponent from "../components/RoutesComponent";
+
+import ImageSlider3D from "../components/ImageSlider3D";
+
+import HeroSlider from "../components/HeroSlider";
 
 import MovingText from "../components/ComingSoon";
 import { Helmet } from "react-helmet";
@@ -16,6 +21,96 @@ function HomePage() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [statePopUp, setStatePopUp] = useState(false);
   const videoRef = useRef(null);
+  const authors = [
+    {
+      name: "Steve Jobs",
+      image: "assets/SliderImages/6.png",
+      link: "#",
+      description: "Empresario, inventor y fundador de Apple."
+    },{
+      name: "Alexander turing",
+      image: "assets/SliderImages/2.png",
+      link: "#",
+      description: "Metematico, padre de la informatica moderna."
+    },{
+      name: "Sigmund Freud",
+      image: "assets/SliderImages/3.png",
+      link: "#",
+      description: "Neurólogo, padre del psicoanálisis y una de las figuras más influyentes del siglo XX."
+    },{
+      name: "Leonardo da Vinci",
+      image: "assets/SliderImages/4.png",
+      link: "#",
+      description: "Pintor, Científico, Ingeniero, Anatomista."
+    },{
+      name: "Nikola Tesla",
+      image: "assets/SliderImages/5.png",
+      link: "#",
+      description: "Físico, ingeniero, matemático, mecánico e inventor visionario."
+    },{
+      name: "Marie Curie",
+      image: "assets/SliderImages/1.png",
+      link: "#",
+      description: "Científica, pionera, radioactividad, premio nobel en quimica y fisica."
+    }
+  ];
+
+  const flagsImages = [
+    {
+      id: 1, src: "assets/flags/BA-TE-MICHIGAN.webp", category:"Universidad", link: "University of Michigan",title:"",desc:""
+    },{
+      id: 2, src: "assets/flags/BA-TE-BERKLEE.webp", category:"Universidad", link: "Berklee College of Music",title:"",desc:""
+    },{
+      id: 3, src: "assets/flags/BA-TE-PEKING.webp", category:"Universidad", link: "Peking University",title:"",desc:""
+    },{
+      id: 4, src: "assets/flags/BA-TE-COLUMBIA.webp", category:"Universidad", link: "Columbia University",title:"",desc:""
+    },{
+      id: 5, src: "assets/flags/BA-TE-HARVARD.webp", category:"Universidad", link: "Harvard University",title:"",desc:""
+    },{
+      id: 6, src: "assets/flags/BA-TE-YALE.webp", category:"Universidad", link: "Yale University",title:"",desc:""
+    },{
+      id: 7, src:"assets/flags/BA-TE-STANFORD.webp", category:"Universidad", link: "Stanford University",title:"",desc:""
+    },{
+      id: 8, src: "assets/flags/BA-TE-NACIONAL.webp", category:"Universidad", link: "Universidad Nacional de Colombia",title:"",desc:""
+    },{
+      id: 9, src: "assets/flags/BA-TE-ANDES.webp", category:"Universidad", link: "Universidad de los Andes",title:"",desc:""
+    },{
+      id: 10, src:"assets/flags/BA-TE-TORONTO.webp", category:"Universidad", link: "University of Toronto",title:"",desc:""
+    },{
+      id: 11, src:"assets/flags/BA-TE-NEW-MEXICO.webp", category:"Universidad", link: "University of New Mexico",title:"",desc:""
+    },{
+      id: 12, src:"assets/flags/BA-TE-PARSONS.webp", category:"Universidad", link: "Parsons School of Design, The New School",title:"",desc:""
+    },{
+      id: 13, src:"assets/flags/BA-TE-VIRGINIA.webp", category:"Universidad", link: "University of Virginia",title:"",desc:""
+    },{
+      id: 14, src:"assets/flags/BA-TE-ILLINOIS.webp", category:"Universidad", link: "University of Illinois Urbana-Champaign",title:"",desc:""
+    },{
+      id: 15, src:"assets/flags/BA-TE-IRVINE.webp", category:"Universidad", link: "University of California, Irvine",title:"",desc:""
+    },{
+      id: 16, src:"assets/flags/BA-TE-NORTH-CAROLINA.webp", category:"Universidad", link: "The University of North Carolina at Chapel Hill",title:"",desc:""
+    },{
+      id: 17, src:"assets/flags/BA-TE-CHICAGO.webp", category:"Universidad", link: "Chicago University",title:"",desc:""
+    },{
+      id: 18, src:"assets/flags/BA-TE-NORTHWESTERN.webp", category:"Universidad", link: "Northwestern University",title:"",desc:""
+    },{
+      id: 19, src:"assets/flags/BA-TE-COLORADO.webp", category:"Universidad", link: "University of Colorado Boulder",title:"",desc:""
+    },{
+      id: 20, src: "assets/flags/BA-TE-MONTERREY.webp", category:"Universidad", link: "Tecnológico de Monterrey",title:"",desc:""
+    },{
+      id: 21, src: "assets/flags/BA-TE-PUCP.webp", category:"Universidad", link: "Pontificia Universidad Católica del Perú",title:"",desc:""
+    },{
+      id: 22, src: "assets/flags/BA-TE-AUTONOMA-MEXICO.webp", category:"Universidad", link: "HUNAM",title:"",desc:""
+    },{
+      id: 23, src: "assets/flags/BA-TE-ANAHUAC.webp", category:"Universidad", link: "Universidad Anáhuac",title:"",desc:""
+    },{
+      id: 24, src:"assets/flags/BA-TE-SEA.webp", category:"Universidad", link: "SAE Institute México",title:"",desc:""
+    },{
+      id: 25, src:"assets/flags/BA-TE-CATOLICA-CHILE.webp", category:"Universidad", link: "Pontificia Universidad Católica de Chile",title:"",desc:""
+    },{
+      id: 26, src:"assets/flags/BA-TE-AUSTRAL.webp", category:"Universidad", link: "Universidad Austral",title:"",desc:""
+    }
+  ];
+
 
   const handleMouseMove = (e) => {
     const container = e.currentTarget;
@@ -110,8 +205,7 @@ function HomePage() {
       {/**SEO ELEMENTS WITH REACT -HELMET */}
       <Helmet>
         <title>Top Education</title>
-        <meta name="description" content="Conoce Top Education, la plataforma donde aprendes de las mejores universidades de Latinoamérica y el mundo con +13,000 certificaciones.
-" />
+        <meta name="description" content="Conoce Top Education, la plataforma donde aprendes de las mejores universidades de Latinoamérica y el mundo con +13,000 certificaciones." />
         <meta property="og:title" content="Top Education | Aprende con edX, Coursera y MasterClass" />
         <meta name="keywords" content="" />
         <meta name="author" content="Top Education" />
@@ -120,329 +214,66 @@ function HomePage() {
         <meta property="og:type" content="website" />
       </Helmet>
       <FinisherHeaderComponent />
-      
       <div id="second-home-section" className="container dark:bg-black-900 mx-auto px-4 justify-center-safe gap-2 ">
         <div id="upper-section">
-          <h2 className="text-white text-7xl font-normal leading-20">
+          <h2 className="text-white text-7xl font-normal leading-20 relative">
             Explora +13.000 certificaciones{" "}
             <span className="font-bold text-white">y crea tu propia ruta de aprendizaje.</span>
           </h2>
         </div>
-        
         <div className="mx-auto px-4 justify-center-safe gap-2 " >
           <h2>Temas</h2>
           <div className="block-circles">
-          <TopicCircles
-              topic="Aprendizaje de idioma"
-              type="Tema"
-              image="assets/temas/Aprendizaje de idioma.png"
-              tag="Aprendizaje de idioma"
-            />
-            <TopicCircles
-              topic="Arte y humanidades"
-              type="Tema"
-              image="assets/temas/Arte y humanidades.png"
-              tag="Arte y humanidades"
-            />
-            <TopicCircles
-              topic="Ciencias de datos"
-              type="Tema"
-              image="assets/temas/Ciencias de datos.png"
-              tag="Ciencias de datos"
-            />
-            <TopicCircles
-              topic="Ciencias de la computación"
-              type="Tema"
-              image="assets/temas/Ciencias de la computación.png"
-              tag="Ciencias de la computación"
-            />
-            <TopicCircles
-              topic="Ciencias sociales"
-              type="Tema"
-              image="assets/temas/Ciencias sociales.png"
-              tag="Ciencias sociales"
-            />
-            <TopicCircles
-              topic="Ciencía física e ingeniería"
-              type="Tema"
-              image="assets/temas/Ciencía física e Ingeniería.png"
-              tag="Ciencia física e ingeniería"
-            />
-            <TopicCircles
-              topic="Desarrollo personal"
-              type="Tema"
-              image="assets/temas/Desarrollo personal.png"
-              tag="Desarrollo personal"
-            />
-            <TopicCircles
-              topic="Matemáticas y lógica"
-              type="Tema"
-              image="assets/temas/Matemáticas y lógica.png"
-              tag="Matemáticas y lógica"
-            />
-            <TopicCircles
-              topic="Negocios"
-              type="Tema"
-              image="assets/temas/Negocios.png"
-              tag="Negocios"
-            />
-            <TopicCircles
-              topic="Salud"
-              type="Tema"
-              image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/234a2a55-0888-4369-a6ae-64f6a7a99618/TE-ICONO-SALUD.png"
-              tag="Salud"
-            />
-            <TopicCircles
-              topic="Tecnología de información"
-              type="Tema"
-              image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/75995000-8559-48bb-96ed-871fdd7066f9/TE-ICONO-TECNOLOGIA+E+INFORMACION.png"
-              tag="Tecnología de la información"
-            />
-          
-            <TopicCircles
-              topic="Bienestar"
-              type="Habilidad"
-              image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/a77359c8-7df4-47a6-907d-3b3d42618caf/TE-ICONO-BIENESTAR.png"
-              tag="Bienestar"
-            />
-            <TopicCircles
-              topic="Comunicación"
-              type="Habilidad"
-              image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/29500fce-c04f-4260-bc08-70944a061d95/TE-ICONO-COMUNICACION.png"
-              tag="Comunicación"
-            />
-            <TopicCircles
-              topic="Creatividad"
-              type="Habilidad"
-              image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/62c55e44-97c0-4afc-8e3f-1f1873a89052/TE-ICONO-CREATIVIDAD.png"
-              tag="Creatividad"
-            />
-            <TopicCircles
-              topic="Crecimiento personal"
-              type="Habilidad"
-              image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/079bb2bb-84f0-4a1f-9929-1112f978ca24/TE-ICONO-CRECIMIENTO+PERSONAL.png"
-              tag="Crecimiento personal"
-            />
-            <TopicCircles
-              topic="Diversidad, equidad e inclusión"
-              type="Habilidad"
-              image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/e6b3b49a-b7c8-4dff-90ba-824523adbe4e/TE-ICONO-DIVERSIDAD_EQUIDAD+E+INCLUSI%C3%93N.png"
-              tag="Diversidad, equidad e inclusión"
-            />
-            <TopicCircles
-              topic="Estrategia"
-              type="Habilidad"
-              image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/d64dd080-d117-463e-8429-02dfe4fb88fc/TE-ICONO-ESTRATEGIA.png"
-              tag="Estrategia"
-            />
-            <TopicCircles
-              topic="Liderazgo"
-              type="Habilidad"
-              image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/37ffffa5-cda9-412e-bb48-8e802cfdc044/TE-ICONO-LIDERAZGO.png"
-              tag="Liderazgo"
-            />
-            <TopicCircles
-              topic="Personas y cultura"
-              type="Habilidad"
-              image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bb36fc68-859e-4d86-b0b6-97e79d83b644/TE-ICONO-PERSONAS+Y+CULTURA.png"
-              tag="Personas y cultura"
-            />
-            <TopicCircles
-              topic="Productividad"
-              type="Habilidad"
-              image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/91a0e3d3-4578-431c-b09d-08b25497adbc/TE-ICONO-PRODUCTIVIDAD.png"
-              tag="Productividad"
-            />
-            <TopicCircles
-              topic="Trabajo en equipo"
-              type="Habilidad"
-              image="https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/ce129121-32c3-474d-81d6-287097cb2a65/TE-ICONO-TRABAJO+EN+EQUIPO.png"
-              tag="Trabajo en equipo"
-            />
+            <TopicCircles topic="Aprendizaje de idioma" type="Tema" tag="Aprendizaje de idioma" />
+            <TopicCircles topic="Arte y humanidades" type="Tema" tag="Arte y humanidades" />
+            <TopicCircles topic="Ciencias de datos" type="Tema" tag="Ciencias de datos" />
+            <TopicCircles topic="Ciencias de la computación" type="Tema" tag="Ciencias de la computación" />
+            <TopicCircles topic="Ciencias sociales" type="Tema" tag="Ciencias sociales" />
+            <TopicCircles topic="Ciencía física e ingeniería" type="Tema" tag="Ciencia física e ingeniería" />
+            <TopicCircles topic="Desarrollo personal" type="Tema" tag="Desarrollo personal" />
+            <TopicCircles topic="Matemáticas y lógica" type="Tema" tag="Matemáticas y lógica" />
+            <TopicCircles topic="Negocios" type="Tema" tag="Negocios" />
+            <TopicCircles topic="Salud" type="Tema" tag="Salud" />
+            <TopicCircles topic="Tecnología de la información" type="Tema" tag="Tecnología de la información" />
+
+            <TopicCircles topic="Bienestar" type="Habilidad" tag="Bienestar" />
+            <TopicCircles topic="Comunicación" type="Habilidad" tag="Comunicación" />
+            <TopicCircles topic="Creatividad" type="Habilidad" tag="Creatividad" />
+            <TopicCircles topic="Crecimiento personal" type="Habilidad" tag="Crecimiento personal" />
+            <TopicCircles topic="Diversidad, equidad e inclusión" type="Habilidad" tag="Diversidad, equidad e inclusión" />
+            <TopicCircles topic="Estrategia" type="Habilidad" tag="Estrategia" />
+            <TopicCircles topic="Liderazgo" type="Habilidad" tag="Liderazgo"/>
+            <TopicCircles topic="Personas y cultura" type="Habilidad" tag="Personas y cultura"/>
+            <TopicCircles topic="Productividad" type="Habilidad" tag="Productividad"/>
+            <TopicCircles topic="Trabajo en equipo" type="Habilidad" tag="Trabajo en equipo"/>
           </div>
         </div>
       </div>
-      {/*<TrandingSlider />*/}
-      <FlagsHome />
-
-      <div id="fifth-home-section">
-        <img src="/assets/Piezas/ellipse-big.png" id="ellipse-big" alt="" />
-        <img src="/assets/Piezas/ellipse-mini.png" id="ellipse-big" alt="" />
-
-        <svg
-          id="star"
-          xmlns="http://www.w3.org/2000/svg"
-          width="48"
-          height="48"
-          viewBox="0 0 48 48"
-          fill="none"
-        >
-          <g filter="url(#filter0_d_625_542)">
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M12.0175 22.9312C19.6174 23.578 24.3451 19.592 24.9919 11.9921C24.3451 19.592 28.3311 24.3197 35.931 24.9665C28.3311 24.3197 23.6035 28.3057 22.9566 35.9056C23.6035 28.3057 19.6174 23.578 12.0175 22.9312Z"
-              fill="white"
-            />
-          </g>
-          <defs>
-            <filter
-              id="filter0_d_625_542"
-              x="0.0175781"
-              y="-0.0078125"
-              width="47.9136"
-              height="47.9133"
-              filterUnits="userSpaceOnUse"
-              color-interpolation-filters="sRGB"
-            >
-              <feFlood flood-opacity="0" result="BackgroundImageFix" />
-              <feColorMatrix
-                in="SourceAlpha"
-                type="matrix"
-                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                result="hardAlpha"
-              />
-              <feOffset />
-              <feGaussianBlur stdDeviation="6" />
-              <feComposite in2="hardAlpha" operator="out" />
-              <feColorMatrix
-                type="matrix"
-                values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
-              />
-              <feBlend
-                mode="normal"
-                in2="BackgroundImageFix"
-                result="effect1_dropShadow_625_542"
-              />
-              <feBlend
-                mode="normal"
-                in="SourceGraphic"
-                in2="effect1_dropShadow_625_542"
-                result="shape"
-              />
-            </filter>
-          </defs>
-        </svg>
-
-        <svg
-          id="star-1"
-          xmlns="http://www.w3.org/2000/svg"
-          width="48"
-          height="48"
-          viewBox="0 0 48 48"
-          fill="none"
-        >
-          <g filter="url(#filter0_d_625_539)">
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M12.0175 22.9568C19.6174 23.6036 24.3451 19.6176 24.9919 12.0177C24.3451 19.6176 28.3311 24.3452 35.931 24.9921C28.3311 24.3452 23.6035 28.3313 22.9566 35.9312C23.6035 28.3313 19.6174 23.6036 12.0175 22.9568Z"
-              fill="white"
-            />
-          </g>
-          <defs>
-            <filter
-              id="filter0_d_625_539"
-              x="0.0175781"
-              y="0.0175781"
-              width="47.9136"
-              height="47.9136"
-              filterUnits="userSpaceOnUse"
-              color-interpolation-filters="sRGB"
-            >
-              <feFlood flood-opacity="0" result="BackgroundImageFix" />
-              <feColorMatrix
-                in="SourceAlpha"
-                type="matrix"
-                values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                result="hardAlpha"
-              />
-              <feOffset />
-              <feGaussianBlur stdDeviation="6" />
-              <feComposite in2="hardAlpha" operator="out" />
-              <feColorMatrix
-                type="matrix"
-                values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
-              />
-              <feBlend
-                mode="normal"
-                in2="BackgroundImageFix"
-                result="effect1_dropShadow_625_539"
-              />
-              <feBlend
-                mode="normal"
-                in="SourceGraphic"
-                in2="effect1_dropShadow_625_539"
-                result="shape"
-              />
-            </filter>
-          </defs>
-        </svg>
-
-        <h2>Editorial Top Education</h2>
-        <p>
+      <div className="container m-auto pt-40">
+        <h2 className="text-white text-6xl font-normal text-center italic leading-15 z-10 relative">Aprende con las universidades líderes del mundo</h2>
+        <ImageSlider3D images={flagsImages} />
+      </div>
+      {/*<div className="container m-auto py-40">
+        <h2 className="text-white text-6xl font-normal text-center leading-15 z-10 relativee">Editorial Top Education</h2>
+        <p className="text-white text-2xl font-normal text-center leading-10 z-10 relative">
           Descarga gratis nuestros recursos exclusivos. Encuentra la información
           que necesitas para alcanzar tus metas educativas, personales y
           profesionales. Te ofrecemos herramientas poderosas para enriquecer tu
           vida y potenciar tu crecimiento.
         </p>
-
         <SliderEditorial />
-      </div>
-
+      </div>*/}
       <div id="seventh-home-section">
         <img id="ellipse-red" src="/assets/Piezas/ellipse-red.png" alt="" />
-
-        <h2>Explora y aprende</h2>
-
-          <HomeGridBlogs />
-          <Link to="/recursos" >
-    <button id="button-all-articles">Ver más artículos</button>
-</Link>
-        
+        <h2 className="text-black text-7xl font-normal leading-20">Explora y aprende</h2>
+        <HomeGridBlogs />
+        <Link to="/recursos" >
+          <button id="button-all-articles">Ver más artículos</button>
+        </Link>
       </div>
-
-      <div id="sixth-home-section">
-        <div id="wrapper-coming-soon">
-          <MovingText />
-        </div>
-        <div id="wrapper-title-sixth">
-          <div id="sixth-1">
-            <img src="/assets/Piezas/star-title.png" alt="" />
-          </div>
-          <div id="sixth-2">
-            <div id="upper-sixth-2">
-              <h2>¿Qué hubiese aprendido Nikola Tesla en Top Education?</h2>
-            </div>
-
-            <div id="lower-sixth-2">
-              <span>
-                Descubre las rutas del conocimiento con Genios Históricos
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div id="grid-genius">
-          <a>
-            <img src="assets/SliderImages/6.png" />
-          </a>
-          <a>
-            <img src="assets/SliderImages/2.png" />
-          </a>
-          <a>
-            <img src="assets/SliderImages/3.png" />
-          </a>
-          <a>
-            <img src="assets/SliderImages/4.png" />
-          </a>
-          <a>
-            <img src="assets/SliderImages/1.png" />
-          </a>
-          <a>
-            <img src="assets/SliderImages/5.png" />
-          </a>
-        </div>
+      {/*<MovingText />*/}
+      <div className="container m-auto">
+        <HeroSlider authors={authors} />
       </div>
     </>
   );
