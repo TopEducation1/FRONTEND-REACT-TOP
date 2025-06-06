@@ -52,7 +52,7 @@ const MenuTop = () => {
     ],
     Universidades: [
         { img: '/assets/category/TE-University of Michigan.webp', text: 'University of Michigan', type:'Universidad',tag:'University of Michigan' },
-        { img: '/assets/category/TE-Berklee College of Music.webp', text: 'Berklee College of Music', type:'Universidad',tag:'Berklee College of Music' },
+        { img: '/assets/category/TE-Berklee college of music.webp', text: 'Berklee College of Music', type:'Universidad',tag:'Berklee College of Music' },
         { img: '/assets/category/TE-PEKING.webp', text: 'UPeking University', type:'Universidad',tag:'UPeking University' },
         { img: '/assets/category/TE-Columbia University.webp', text: 'Columbia University', type:'Universidad',tag:'Columbia University' },
         { img: '/assets/category/TE-Harvard University.webp', text: 'Harvard University', type:'Universidad',tag:'Harvard University' },

@@ -8,7 +8,7 @@ const ResponsiveMenuCafam = ({ isOpen, onClose }) => {
     const { onTagSelect } = useCafam();
 
     const [isMobile, setIsMobile] = useState(
-        typeof window !== 'undefined' && window.innerWidth < 1025
+        typeof window != 'undefined' && window.innerWidth < 1025
     );
 
     useEffect(() => {

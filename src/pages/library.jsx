@@ -111,15 +111,6 @@ function LibraryPage({ showRoutes = true }) {
   );
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobileView(window.innerWidth <= 1025);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
     if (location.state?.selectedTags) {
       console.log("Incoming selected tags:", location.state.selectedTags);
 
@@ -282,7 +273,7 @@ function LibraryPage({ showRoutes = true }) {
 
       if (updatedTags[category]) {
         const filteredTags = updatedTags[category].filter(
-          (tag) => tag !== tagToRemove
+          (tag) => tag != tagToRemove
         );
 
         if (filteredTags.length === 0) {
@@ -569,8 +560,8 @@ function LibraryPage({ showRoutes = true }) {
     {showRoutes && (
       <section className="wrapper ">
         <div className="container m-auto pt-14 pb-14 xl:pt-7 lg:pt-7 xl:pb-20 lg:pb-10 md:pb-10">
-          <h2>¿Encontraste lo que estabas buscando?</h2>
-          <p>Quizás te interese explorar nuestras Rutas del Conocimiento, donde podrás seguir el camino de grandes figuras históricas y aprender de los mejores en cada campo. ¡Descubre cursos inspirados en Einstein, Da Vinci, Marie Curie y más!</p>
+          <h2 className="text-white text-2xl">¿Encontraste lo que estabas buscando?</h2>
+          <p className="text-white">Quizás te interese explorar nuestras Rutas del Conocimiento, donde podrás seguir el camino de grandes figuras históricas y aprender de los mejores en cada campo. ¡Descubre cursos inspirados en Einstein, Da Vinci, Marie Curie y más!</p>
           <HeroSlider authors={authors} />
         </div>
       </section>

@@ -58,7 +58,7 @@ function ParaEquipos () {
                 <div className="container m-auto !pb-[4.5rem] xl:!pb-24 lg:!pb-24 md:!pb-24">
                     <div className="flex flex-wrap mx-[-15px] xl:mx-[-35px] lg:mx-[-20px] !mt-[-50px] items-center">
                         <div className="xl:w-7/12 lg:w-7/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px] !mt-[50px] max-w-full">
-                            <img className="w-full ml-[-30px] rounded-lg" src="/assets/banners/u-top-education.gif" alt="" />
+                            <img className="w-full lg:ml-[-30px] rounded-lg" src="/assets/banners/u-top-education.gif" alt="" />
                         </div>
                         <div className="xl:w-5/12 lg:w-5/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px] !mt-[50px] max-w-full">
                             <h2 className="text-white text-5xl font-normal font-[Lora] w-full leading-[1.2em]">Crea tu propia universidad corporativa</h2>

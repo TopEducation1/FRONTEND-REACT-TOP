@@ -119,7 +119,7 @@ const CertificationPage = () => {
             <span class="w-2/15 lg:w-2/15 aspect-square bg-gradient-to-tr from-green-500 to-green-900 absolute top-50 lg:right-20 rounded-full skew-y-0 blur-2xl opacity-40 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
                  Main certification information */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-                    <div className="lg:col-start-1 lg:col-span-8 space-y-[35px] pb-8 border-1 border-[#ECECEC] rounded-[15px] z-1">
+                    <div className="lg:col-start-1 lg:col-span-8 space-y-[35px] pb-8 border-1 border-[#ECECEC] rounded-[15px] z-1 order-2 md:order-1">
                         <div className="container-main-info">
                             <div className="cert-int px-8 pt-8">
                                 <h1 className="text-size-32 md:text-4xl mb-2 font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-10 md:leading-10 aos-init aos-animate">{certification.nombre}</h1>
@@ -155,7 +155,7 @@ const CertificationPage = () => {
                                 
                              )}
                              <div className="nav-tab-wrapper px-8 py-5 w-full">
-                                <ul id="tabs-nav" class="flex course-tab mb-8 w-auto">
+                                <ul id="tabs-nav" class="flex course-tab mb-8 w-auto overflow-x-auto">
                                     <li>
                                     <a className={`px-4 py-2 rounded ${activeTab === 'tab1' ? 'bg-blue-500 text-white' : 'bg-gray-300'}`} onClick={() => setActiveTab('tab1')}>
                                     Descripción
@@ -303,7 +303,7 @@ const CertificationPage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="lg:col-start-9 lg:col-span-4 br-15 border-1 border-[#ECECEC] rounded-[15px] z-1" >
+                    <div className="lg:col-start-9 lg:col-span-4 br-15 border-1 border-[#ECECEC] rounded-[15px] z-1 order-1 md:order-2" >
                         <div className="cert-img">
                             <img src={getImageUrl(certification.universidad_certificacion?.univ_img|| certification.empresa_certificacion?.empr_img || certification.imagen_final)} alt="Logo de la certificación" />
                         </div>
@@ -423,8 +423,8 @@ const CertificationPage = () => {
                             </div>
                         </div>*/}
                     </div>
-                    <div className="lg:col-start-1 lg:col-span-12 border-1 border-[#ECECEC] rounded-[15px] bg-[#F6F4EF] p-8 z-1">
-                        <h2 className="text-size-2xl md:text-2xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">Clases recomendadas para ti</h2>
+                    <div className="lg:col-start-1 lg:col-span-12 border-1 border-[#ECECEC] rounded-[15px] bg-[#F6F4EF] p-2 lg:p-8 z-1 order-3 ">
+                        <h2 className="text-size-3xl md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">Clases recomendadas para ti</h2>
                         <div>
                             <CertificationSlider/>
                         </div>

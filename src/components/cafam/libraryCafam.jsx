@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 //import SkillsTags from "../../services/skillsService";
 //import Universities from "../services/universitiesService";
-//import Topics from "../../services/topicService";
 import tagFilterService from "../../services/filterByTagsTesting";
 import CertificationsFetcher from "../../services/certificationsFetcher";
 import CertificationsListCafam from "../../components/cafam/layoutCertificationsCafam";
@@ -170,7 +169,7 @@ function LibraryPageCafam({ showRoutes = true }) {
 
       if (updatedTags[category]) {
         updatedTags[category] = updatedTags[category].filter(
-          (tag) => tag !== tagToRemove
+          (tag) => tag != tagToRemove
         );
 
         if (updatedTags[category].length === 0) {
@@ -333,7 +332,7 @@ function LibraryPageCafam({ showRoutes = true }) {
 
   const toggleSection = (index) => {
     setOpenSections((prev) =>
-      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+      prev.includes(index) ? prev.filter((i) => i != index) : [...prev, index]
     );
   };
 

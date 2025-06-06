@@ -40,7 +40,7 @@ const IndexCategoriesCafam = ({ onTagSelect, selectedTags }) => {
     const toggleSection = (index) => {
         setOpenSections(prev =>
             prev.includes(index)
-                ? prev.filter(i => i !== index)
+                ? prev.filter(i => i != index)
                 : [...prev, index]
         );
     };

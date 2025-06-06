@@ -251,8 +251,8 @@ function HomePage() {
           <TopicSelector/>
         </div>
       </div>
-      <div className="container m-auto pt-40">
-        <h2 className="text-white text-6xl font-normal text-center italic w-[100%] lg:w-[80%] m-auto leading-15 z-10 relative">Aprende con las universidades líderes del mundo</h2>
+      <div className="container m-auto py-30 px-5">
+        <h2 className="text-white text-5xl lg:text-6xl font-normal text-center italic w-[100%] lg:w-[80%] m-auto leading-15 z-10 relative">Aprende con las universidades líderes del mundo</h2>
         <ImageSlider3D images={flagsImages} action="explora" />
       </div>
       {/*<div className="container m-auto py-40">
@@ -275,8 +275,8 @@ function HomePage() {
       </div>
       {/*<MovingText />*/}
       <section className="wrapper ">
-        <div className="container m-auto relative text-center mt-20">
-          <div className="rounded-lg border-1 border-white p-10 bg-[#0F090B]/90">
+        <div className="container m-auto relative text-center">
+          <div className="rounded-lg border-1 border-white px-5 py-10 lg:px-10 bg-[#0F090B]/90">
             <h2 className="text-white text-center text-5xl font-normal leading-[1.2em] mb-5">Forma equipos que <span className="italic">aprenden y crecen</span></h2>
             <p className="text-white text-center text-2xl mb-5">Potencia las habilidades de tu equipo con certificaciones clave y seguimiento en tiempo real. Con Top Education para Equipos, accede a contenido exclusivo de MasterClass, edX y Coursera, y maximiza su productividad y crecimiento.</p>
             <div className="grid grid-cols-3 w-[100%] lg:w-[50%] m-auto gap-4 mb-10 !text-center">
@@ -285,7 +285,7 @@ function HomePage() {
               <div className="flex justify-center"><img className="w-[120px]" src="assets/platforms/icon-masterclass.png" alt="" /></div>
               
             </div>
-            <a className="btn btn-col-3 py-2 px-5 m-auto text-2xl">Conoce <span id="top">top</span><span id="education">.education</span> para equipos</a>
+            <a className="btn btn-col-3 py-3 px-5 m-auto text-[18px] lg:text-2xl">Conoce<span id="top">top</span><span id="education">.education</span> para equipos</a>
           </div>
           
         </div>

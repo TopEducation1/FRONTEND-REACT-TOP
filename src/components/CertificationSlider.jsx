@@ -24,7 +24,7 @@ const CertificationSlider = () => {
       console.log("Datos recibidos:", fetchData);
 
         if (fetchData && Array.isArray(fetchData)) {
-            const filtered = fetchData.filter(cert => cert.slug !== currentSlug);
+            const filtered = fetchData.filter(cert => cert.slug != currentSlug);
             const shuffled = filtered.sort(() => Math.random() - 0.5).slice(0, 9);
             setCertifications(shuffled);
         }
@@ -66,10 +66,11 @@ const CertificationSlider = () => {
         spaceBetween={20}
         slidesPerView={3}
         breakpoints={{
-          640: { slidesPerView: 1 },
+          0: { slidesPerView: 1 },       // 👈 Para móviles
           768: { slidesPerView: 2 },
           1024: { slidesPerView: 3 },
         }}
+
       >
         {certifications.map((cert, index) => (
           <SwiperSlide key={index}>
