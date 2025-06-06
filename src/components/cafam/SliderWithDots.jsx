@@ -1,26 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCafam } from "../../context/cafam/CafamContext";
 
 // University Image Arrays
 const universidadesLatamImagenes = [
-  {img: "assets/cafam/latinoamérica/andes.png", universidad: "Universidad de los Andes"},
-  {img: "assets/cafam/latinoamérica/tec.png", universidad: "Tecnológico de Monterrey"},
-  {img: "assets/Universidades/UNAM.png", universidad: "UNAM"},
-  {img: "assets/Universidades/SAE-México.png", universidad: "SAE-México"},
-  {img: "assets/Universidades/Pontificia-Universidad-Católica-de-Chile.png", universidad: "Pontificia Universidad Catolica de Chile"},
+  {img: "assets/flags/BA-TE-ANDES.webp", universidad: "Universidad de los Andes"},
+  {img: "assets/flags/BA-TE-MONTERREY.webp", universidad: "Tecnológico de Monterrey"},
+  {img: "assets/flags/BA-TE-AUTONOMA-MEXICO.webp", universidad: "UNAM"},
+  {img: "assets/flags/BA-TE-SEA.webp", universidad: "SAE-México"},
+  {img: "assets/flags/BA-TE-CATOLICA-CHILE.webp", universidad: "Pontificia Universidad Catolica de Chile"},
   {img: "assets/Universidades/Universidad-de-Palermo.png", universidad: "Universidad de Palermo"},
   {img: "assets/Universidades/universidad-autónoma-metropolitana.png", universidad: "Universidad Autónoma Metropolitana"},
-  {img: "assets/Universidades/Universidad-nacional-de-colombia.png", universidad: "Universidad Nacional de Colombia"},
+  {img: "assets/flags/BA-TE-NACIONAL.webp", universidad: "Universidad Nacional de Colombia"},
   {img: "assets/Universidades/Pontificia-Universidad-Católica-del-Perú.png", universidad: "Pontificia Universidad Catolica de Peru"},
 ];
 
 const universidadesImagenes = [
-  {img: "assets/cafam/mundo/duke.png", universidad: "Duke University"},
-  {img: "assets/cafam/mundo/yale.png", universidad: "Yale University"},
-  {img: "assets/cafam/mundo/stanford.png", universidad: "Stanford University"},
+  {img: "assets/flags/BA-TE-DUKE.webp", universidad: "Duke University"},
+  {img: "assets/flags/BA-TE-YALE.webp", universidad: "Yale University"},
+  {img: "assets/flags/BA-TE-STANFORD.webp", universidad: "Stanford University"},
+  {img: "assets/flags/BA-TE-VIRGINIA.webp", universidad: "University of Virginia"},
+  {img: "assets/flags/BA-TE-WESLEYAN.webp", universidad: "Wesleyan University"},
   {img: "assets/Universidades/University-of-Maryland-College-Park.png", universidad: "University of Maryland, College Park"},
-  {img: "assets/Universidades/University-of-Virginia.png", universidad: "University of Virginia"},
-  {img: "assets/Universidades/Wesleyan-University.png", universidad: "Wesleyan University"},
+  {img: "assets/Universidades/university-of-minnesota.png", universidad: "University of Minnesota"},
+  {img: "assets/Universidades/University-of-California,-Irvine.png", universidad: "University of California, Irvine"},
+  {img: "assets/edx/Universidad de Washington.png", universidad: "Universidad de Washington"},
   {img: "assets/Universidades/university-of-minnesota.png", universidad: "University of Minnesota"},
   {img: "assets/Universidades/University-of-California,-Irvine.png", universidad: "University of California, Irvine"},
   {img: "assets/edx/Universidad de Washington.png", universidad: "Universidad de Washington"}
@@ -29,16 +33,19 @@ const universidadesImagenes = [
 // Slider Component
 const SliderWithDots = ({ 
   images = [], 
-  itemsPerSection = 3, 
+  itemsPerSection = 4, 
   handleBannerClick,
   showAllDots = false 
 }) => {
+  
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [itemsToShow, setItemsToShow] = useState(3);
+  const [itemsToShow, setItemsToShow] = useState(5);
   const sliderRef = useRef(null);
   const navigate = useNavigate();
+  const { onTagSelect } = useCafam();
 
   const handleLogoClick = (university) => {
+    
     const initialTags = {
       "Universidad": [university]
     };
@@ -57,9 +64,9 @@ const SliderWithDots = ({
       if (width < 640) {
         setItemsToShow(1);
       } else if (width < 1024) {
-        setItemsToShow(2);
-      } else {
         setItemsToShow(3);
+      } else {
+        setItemsToShow(5);
       }
     };
 
@@ -104,26 +111,21 @@ const SliderWithDots = ({
                 flexShrink: 0,
                 padding: '0 10px',
                 boxSizing: 'border-box'
-              }}
+              }}  
             >
               <div 
                 className="slider-card"
                 onClick={(e) => {
                   e.preventDefault();
-                  if (handleBannerClick) {
-                    handleBannerClick(universidad.universidad); // Asegúrate de pasar el nombre correcto
-                  }
+                  
+                    handleLogoClick(universidad.universidad); // Asegúrate de pasar el nombre correcto
+                  
                 }}
               >
                 <div className="card-content">
                   <img 
                     src={universidad.img} 
                     alt={universidad.universidad} 
-                    style={{
-                      maxWidth: '100%',
-                      maxHeight: '100px',
-                      objectFit: 'contain'
-                    }}
                   />
                 </div>
               </div>
@@ -149,40 +151,22 @@ const SliderWithDots = ({
 };
 
 // Universities Section Component
-const UniversitiesSection = ({handleBannerClick}) => {
+const UniversitiesSection = ({handleLogoClick}) => {
   const navigate = useNavigate();
 
-
   return (
-    <div id="universities-cafam-section">
-      <div id="upper-section-universities" className="block-universities">
-        <div className="wrapper-title-cafam-universities">
-          <h1>Aprende de las mejores universidades de Latinoamérica...</h1>
-        </div>
-        <div id="wrapper-upper-universities-cafam">
-          <div id="wrapper-slider-upper-universities">
-            <SliderWithDots 
-              images={universidadesLatamImagenes} 
-              handleBannerClick={(university) => handleBannerClick("Universidad", university)}
-            />
-          </div>
-        </div>
-      </div>
-      <div id="lower-section-universities" className="block-universities">
-        <div id="wrapper-lower-universities-cafam">
-          <div className="wrapper-title-cafam-universities">
-            <h1>y de todo el mundo</h1>
-          </div>
-          
-          <div id="wrapper-slider-lower-universities">
-            <SliderWithDots
-              images={universidadesImagenes}
-              showAllDots={true}
-              handleBannerClick={(university) => handleBannerClick("Universidad", university)}
-            />
-          </div>
-        </div>
-      </div>
+    <div className='w-full'>
+      <h2 className='text-white text-4xl text-center'>Aprende de las mejores universidades de Latinoamérica...</h2>
+      <SliderWithDots 
+        images={universidadesLatamImagenes} 
+        handleLogoClick={(university) => handleLogoClick("Universidad", university)}
+      />
+      <h2 className='text-white text-4xl text-center'>y de todo el mundo</h2>
+      <SliderWithDots
+        images={universidadesImagenes}
+        showAllDots={true}
+        handleLogoClick={(university) => handleLogoClick("Universidad", university)}
+      />
     </div>
   );
 };
