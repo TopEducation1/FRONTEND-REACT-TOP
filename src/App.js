@@ -10,7 +10,7 @@ import {
 
 import CertificationPage from "./pages/certificationPage";
 import LibraryPage from "./pages/library";
-import CertificationPageCafam from "./pages/cafam/certificationPageCafam.js";
+import CertificationPageCafam from "./pages/cafam/certificationPageCafam";
 import HomePage from "./pages/home";
 import HomeCafam from "./pages/cafam/homeCafam.jsx";
 import Blog from "./pages/blog.jsx";
@@ -42,6 +42,7 @@ function App() {
               element={<CertificationPageCafam />}
             />
           </Route>
+          <Route path="/cafam/certificacion/:slug" element={<CertificationPageCafam />} />
           {/* Capturar todas las subrutas de cafam no definidas */}
           <Route path="*" element={<Navigate to="/cafam" replace />} />
         </Route>

@@ -2,11 +2,7 @@ import React, { useState } from 'react';
 import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCallback } from 'react';
-
-
 // Uso de memo => Evita que el componente se renderice si sus props no cambian (Se usa para optimización al momento de cargar las certificaciones)
-
-
 const CertificationsList = memo(({ certifications }) => {
     const navigate = useNavigate();
     const host = window.location.hostname;
@@ -53,18 +49,6 @@ const CertificationsList = memo(({ certifications }) => {
         if (!url) return null;
         return url.startsWith('/') ? url : `/${url}`;
       }, []);
-      
-      const getPlatformImage = useCallback((certification) => {
-        if (certification.url_imagen_plataforma_certificacion) {
-          return getImageUrl(certification.url_imagen_plataforma_certificacion);
-        }
-        const platformImages = {
-          1: '/assets/Plataformas/edx-logo.png',
-          2: '/assets/Plataformas/coursera-logo.png',
-          3: '/assets/Plataformas/masterclass-logo.png'
-        };
-        return platformImages[certification.plataforma_certificacion_id] || '/images/platforms/default-platform.png';
-      }, []);
 
     if (!Array.isArray(certifications)) {
         return <div className="error-message">Error: No se pudieron cargar las certificaciones</div>;
@@ -73,11 +57,8 @@ const CertificationsList = memo(({ certifications }) => {
     return (
         <>
             {error && <div className="error-message">{error}</div>}
-            
             <div className="wrapper-certifications">
                 {certifications.map(certification => {
-                    const platformImage = getPlatformImage(certification);
-
                     // Render a different card for masterclass
                     if (certification.plataforma_certificacion_id === 3) {
                         return (
@@ -88,7 +69,7 @@ const CertificationsList = memo(({ certifications }) => {
                             >
                                 <div className="container-img-card">
                                     <img
-                                        src={getImageUrl(certification.imagen_final)}
+                                        src={getImageUrl(certification.universidad_certificacion?.univ_img || certification.empresa_certificacion?.empr_img || certification.imagen_final)}
                                         alt="imagen-certificacion"
                                         onError={handleImageError}
                                     />
@@ -106,7 +87,7 @@ const CertificationsList = memo(({ certifications }) => {
                                 </div>
                                 <div className="tag-platform">
                                     <img
-                                        src={`https://${host}/${certification.plataforma_certificacion.plat_img}`}
+                                        src={certification.plataforma_certificacion.plat_img}
                                         alt={certification.plataforma_certificacion.nombre}
                                         onError={handleImageError}
                                     />
@@ -124,7 +105,7 @@ const CertificationsList = memo(({ certifications }) => {
                         >
                             <div className="container-img-card">
                                 <img
-                                    src={getImageUrl(certification.imagen_final)}
+                                    src={getImageUrl(certification.universidad_certificacion?.univ_img|| certification.empresa_certificacion?.empr_img || certification.imagen_final)}
                                     alt="imagen-certificacion"
                                     onError={handleImageError}
                                 />
@@ -139,7 +120,7 @@ const CertificationsList = memo(({ certifications }) => {
                             </div>                              
                             <div className="tag-platform">
                                 <img
-                                    src={`https://${host}/${certification.plataforma_certificacion.plat_img}`}
+                                    src={certification.plataforma_certificacion.plat_img}
                                     alt={certification.plataforma_certificacion.nombre}
                                     onError={handleImageError}
                                 />

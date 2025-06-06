@@ -2,15 +2,13 @@ import React, { useState, useRef } from "react";
 import { Link } from 'react-router-dom';
 
 const IndexCategories = ({ onTagSelect, selectedTags }) => {
-    
     const [openSections, setOpenSections] = useState([]);
     const indexRef = useRef(null);
-
 
     const sections = [
         {
             title: "Tema",
-            subsections: ["Aprendizaje de idioma","Arte y humanidades","Ciencias de datos","Ciencias de la computación", "Ciencias sociales","Ciencía física e ingeniería","Desarrollo personal","Matemáticas y lógica","Negocios","Salud","Tecnología de la información"    ]
+            subsections: ["Aprendizaje de idioma","Arte y humanidades","Ciencias de datos","Ciencias de la computación", "Ciencias sociales","Ciencia física e ingeniería","Desarrollo personal","Matemáticas y lógica","Negocios","Salud","Tecnología de la información"    ]
         },
         {
             title : "Habilidad",
@@ -19,7 +17,6 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
         {
             title: "Universidad",
             subsections: [
-                
                 {
                     title: "Latinoamérica",
                     subsections: ["Universidad Nacional de Colombia", "Tecnológico de Monterrey", "Pontificia Universidad Católica del Perú", "UNAM", "Universidad Anáhuac", "SAE Institute México", "Pontificia Universidad Católica de Chile", "Universidad de Palermo", "Universidad de los Andes", "Universidad Austral"]
@@ -41,11 +38,10 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
             title: "Empresa",
             subsections: ["Capitals Coalition", "DeepLearning AI", "Big Interview", "UBITS", "HubSpot Academy", "SV Academy", "Pathstream", "Salesforce", "The Museum of Moder Art", "Banco Interamericano de Desarrollo", "Yad Vashem", "Google", "Microsoft"]
         },{
-            title: "Aliados",
+            title: "Plataforma",
             subsections: ["EdX", "Coursera", "MasterClass"]
         }
     ];
-    
 
     const toggleSection = (index) => {
         setOpenSections(prev =>
@@ -59,8 +55,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
         return subsections.map((subsection, subIndex) => {
             if (typeof subsection === "string") {
                 return (
-                    <div key={subIndex} className="item">
-                        
+                    <div key={subIndex} className="item-category">
                         <Link
                             to="#"
                             onClick={(e) => {
@@ -69,7 +64,6 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                             }}
                             style={{ pointerEvents : isSectionDisabled(category) ? 'none' : 'auto', opacity : isSectionDisabled(category) ? 0.5 : 1}}
                         >
-                            {}
                             <img className="sect-ico" src={(category=="Universidades")?`./assets/category/TE-${subsection }.webp`:`./assets/category/${subsection }.png`} alt="" />
                             {subsection}
                         </Link>
@@ -123,7 +117,6 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
         >
             <div className="category-wrapper">
                 <h2>Biblioteca</h2>
-            
                 {sections.map((section, index) => (
                     <div
                         className={`category-item item-${section.title} ${openSections.includes(index) ? "open" : ""}`}
@@ -151,7 +144,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                                 <path d="M9 6l6 6l-6 6" />
                             </svg>
                             <span>
-                                {section.title}
+                                {section.title==="Plataforma"?"Aliados":section.title}
                             </span>
 
                         </button>

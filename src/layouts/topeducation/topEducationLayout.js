@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import LoadingPage from "../../components/LoadingPage.jsx";
 import Header from "../../components/header.jsx";
+import "../../index.css";
 import Footer from "../../components/Footer.jsx";
 import { Outlet, useLocation } from "react-router-dom";
 

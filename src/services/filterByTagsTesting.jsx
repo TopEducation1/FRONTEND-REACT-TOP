@@ -13,7 +13,7 @@ class TagFilterService {
         this.baseUrl = baseUrl;
     }
 
-    buildQueryString(tags, page = 1, pageSize = 16) {
+    buildQueryString(tags, page = 1, pageSize = 15) {
         const queryParts = [];
         queryParts.push(`page=${page}`);
         queryParts.push(`page_size=${pageSize}`);

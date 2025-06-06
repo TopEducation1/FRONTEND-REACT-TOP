@@ -12,7 +12,7 @@ const RoutesComponent = ({ images,time,classSlider}) => {
         const initialTags = {
             [category]: [tag]
         };
-        navigate('/explora/filter?page=1&page_size=16&', {
+        navigate('/explora/filter?page=1&page_size=15&', {
             state: {selectedTags: initialTags},
             replace: true
         });

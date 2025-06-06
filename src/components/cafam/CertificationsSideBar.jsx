@@ -73,7 +73,7 @@ const CertificationSideBarCafam  = ({ certificationsCafam }) => {
                         >
                             <div className="container-img-card-cafam">
                                 <img
-                                    src={getImageUrl(certification.imagen_final)}
+                                    src={getImageUrl(certification.universidad_certificacion?.univ_img || certification.empresa_certificacion?.empr_img || certification.imagen_final)}
                                     alt="certificacion imagen"
                                     onError={handleImageError}
                                     style={{

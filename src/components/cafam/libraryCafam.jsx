@@ -14,8 +14,6 @@ import IndexCategoriesCafam from "./IndexCategoriesCafam";
 //import IndexCategories from "../IndexCategories";
 //import Flags from "../Flags";
 //import FlagsHome from "../FlagsHome";
-import FlagsCafam from "./FlagsCafam";
-import UniversitiesSection from "./SliderWithDots";
 import { CafamProvider, useCafam } from "../../context/cafam/CafamContext";
 
 /**
@@ -37,21 +35,15 @@ function LibraryPageCafam({ showRoutes = true }) {
   const [debouncedSelectedTags] = useDebounce(selectedTags, 300);
   const [width, setWidth] = useState(window.innerWidth);
   
-
-
   useEffect(() => {
       const handleResize = () => {
         setIsMobileView(window.innerWidth <= 1249);
       };
-
       handleResize();
-  
       window.addEventListener("resize", handleResize);
       return () => window.removeEventListener("resize", handleResize);
     }, []);
   
-
-
   // Estados para la paginación
   const [pagination, setPagination] = useState({
     count: 0,
@@ -82,7 +74,7 @@ function LibraryPageCafam({ showRoutes = true }) {
             page,
             pageSize
           );
-          const queryString = tagFilterService.buildQueryString(selectedTags);
+          queryString = tagFilterService.buildQueryString(selectedTags);
         } else {
           fetchData = await CertificationsFetcher.getAllCertifications(
             page,
@@ -234,7 +226,7 @@ function LibraryPageCafam({ showRoutes = true }) {
         "Salud",
         "Matemáticas y Logica",
         "Desarrollo Personal",
-        "Ciencías, Física e Ingenieria",
+        "Ciencias física e ingenieria",
         "Ciencias Sociales",
         "Aprendizaje de un Idioma",
       ],
@@ -257,25 +249,13 @@ function LibraryPageCafam({ showRoutes = true }) {
         "The Museum of Moder Art",
         "Banco Interamericano de Desarrollo",
         "Yad Vashem",
-        " Google",
+        "Google",
         "Microsoft",
       ],
     },
     {
       title: "Universidad",
       subsections: [
-        {
-          title: "Oceania",
-          subsections: ["Macquarie University"],
-        },
-        {
-          title: "Europa",
-          subsections: [
-            "IE Business School",
-            "Universidad Autónoma de Barcelona",
-            "Universidad Carlos III de Madrid",
-          ],
-        },
         {
           title: "Latinoamérica",
           subsections: [
@@ -315,12 +295,22 @@ function LibraryPageCafam({ showRoutes = true }) {
             "Stanford",
           ],
         },
+        {
+          title: "Oceania",
+          subsections: ["Macquarie University"],
+        },
+        {
+          title: "Europa",
+          subsections: [
+            "IE Business School",
+            "Universidad Autónoma de Barcelona",
+            "Universidad Carlos III de Madrid",
+          ],
+        }
       ],
     },
   ];
 
- 
-  
 
   /**
    * Calcula el margen dinámico de una sección del menú de índice
@@ -398,62 +388,23 @@ function LibraryPageCafam({ showRoutes = true }) {
   };
 
   return (
-
     <>
-
-     
-
-      
-      <UniversitiesSection
-        handleBannerClick={(category, university) =>
-          handleBannerClick(category, university)
-        }
-      />
-
-      <div id="wrapper-title-library-cafam">
-        <div id="title-certifications-cafam">
-          <h1>Explora certificaciones</h1>
-        </div>
-      </div>
-
-      
-
+    <div className="w-full">
+      <h2 className="cl-plataforma text-7xl">Explora certificaciones</h2>
       <div className="container-tags-cafam">
-        {Object.keys(selectedTags).length === 0 ||
-        Object.values(selectedTags).every((tags) => tags.length === 0) ? (
+        {Object.keys(selectedTags).length === 0 || Object.values(selectedTags).every((tags) => tags.length === 0) ? (
           <p>Aún no has seleccionado tags.</p>
-        ) : (
+        ):(
           Object.entries(selectedTags).map(([category, tags], index) =>
             tags.map((tag, tagIndex) => (
               <div key={`${category}-${tagIndex}`} className="tag-cafam">
                 <span>{tag}</span>
-                <button
-                  onClick={() => removeTag(category, tag)}
-                  className="remove-tag-button"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="icon icon-tabler icons-tabler-outline icon-tabler-x"
-                  >
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M18 6l-12 12" />
-                    <path d="M6 6l12 12" />
-                  </svg>
-                </button>
+                <button  onClick={() => removeTag(category, tag)} className="remove-tag-button" >x</button>
               </div>
             ))
           )
         )}
       </div>
-
       <div className="container-buttons-reponsive-index">
         <button id="button-filter-cafam" >
           <svg
@@ -469,84 +420,45 @@ function LibraryPageCafam({ showRoutes = true }) {
           </svg>
           <span>Filtrar</span>
         </button>
-          {isMobileView }
+        {isMobileView }
       </div>
-
-      
-      
       {!isMobileView && <IndexCategoriesCafam onTagSelect={handleTagClick} /> }
-
-      
-
-      <div
-        id="container-logo-platforms-cafam"
-        className={`wrapper-logo-platforms ${
-          isSmallScreen ? "small-screen" : ""
-        }`}
-      >
-        <div id="wrapper-logos">
-          <div
-            className="container-logo"
-            onClick={() => handleBannerClick("Plataforma", "Coursera")}
-          >
-            <img src="assets/Plataformas/Coursera mini logo.png" alt="Logo de Coursera" />
+        <div id="container-logo-platforms-cafam" className={`wrapper-logo-platforms ${isSmallScreen ? "small-screen" : "" }`}>
+          <div id="wrapper-logos">
+            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "Coursera")} >
+                <img src="assets/Plataformas/Coursera mini logo.png" alt="Logo de Coursera" />
+            </div>
+            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "edX")}>
+              <img src="assets/logos/edx-hover.png" alt="Logo de Edx" />
+            </div>
+            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "MasterClass")} >
+              <img src="assets/logos/masterclass-hover.png" alt="Logo de Masterclass"/>
+            </div>
           </div>
-          <div
-            className="container-logo"
-            onClick={() => handleBannerClick("Plataforma", "edX")}
-          >
-            <img src="assets/logos/edx-hover.png" alt="Logo de Edx" />
-          </div>
-          <div
-            className="container-logo"
-            onClick={() => handleBannerClick("Plataforma", "MasterClass")}
-          >
-            <img src="assets/logos/masterclass-hover.png" alt="Logo de Masterclass"/>
+          <div id="wrapper-new-courses">
+            <img src="assets/banners/Botón_Nuevo_en_Top_Education.svg" alt ="Logo de Nuevo en top education" />
           </div>
         </div>
-        <div id="wrapper-new-courses">
-          <img src="assets/banners/Botón_Nuevo_en_Top_Education.svg" alt ="Logo de Nuevo en top education" />
+        <div className="certifications-container-cafam">
+          {loading ? (
+            <span class="loader"></span>
+          ) : (
+            <CertificationsListCafam certifications={certifications} />
+          )}
+          <PaginationControls />
         </div>
-      </div>
-
-      <div className="certifications-container-cafam">
-        {loading ? (
-          <span class="loader"></span>
-        ) : (
-          <CertificationsListCafam certifications={certifications} />
-        )}
-        <PaginationControls />
-      </div>
-
-      {showRoutes && (
-        <div className="container-routes-section">
-          <div className="container-title-search">
-                <h2>¿Encontraste lo que estabas buscando?</h2>
+        {showRoutes && (
+          <div className="container-routes-section">
+            <div className="container-title-search">
+              <h2>¿Encontraste lo que estabas buscando?</h2>
             </div>
             <p>Quizás te interese explorar nuestras Rutas del Conocimiento, donde podrás seguir el camino de grandes figuras históricas y aprender de los mejores en cada campo. ¡Descubre cursos inspirados en Einstein, Da Vinci, Marie Curie y más!</p>
-          <RoutesComponent />
-        </div>
-      )}
-
-      <div id="wrapper-industry-cafam">
-        <div id="wrapper-title-industry-cafam">
-          <h1>Explora clases con los líderes de la industria</h1>
-        </div>
-        <FlagsCafam
-          handleBannerClick={(company) => {
-            console.log("Banner clicked:", company);
-            handleBannerClick("Empresa", company);
-          }}
-        />
+            <RoutesComponent />
+          </div>
+        )}
       </div>
     </>
-
-    
   );
-  
 }
-
-
-
 
 export default LibraryPageCafam;

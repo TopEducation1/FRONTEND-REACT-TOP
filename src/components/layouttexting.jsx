@@ -32,7 +32,7 @@ const CertificationsList = ({ certifications }) => {
                         >
                             <div className="container-img-card">
                                 <img
-                                    src={certification.url_imagen_universidad_certificacion}
+                                    src={certification.universidad_certificacion?.univ_img || certification.empresa_certificacion?.empr_img || certification.imagen_final}
                                     alt="imagen-certificacion"
                                     onError={handleImageError}
                                     style={{

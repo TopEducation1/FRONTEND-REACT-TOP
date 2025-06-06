@@ -10,7 +10,7 @@ const fetchConfig = {
 };
 
 const LatestInTopFetcher = {
-  async getLatestCertifications(page = 1, pageSize = 16) {
+  async getLatestCertifications(page = 1, pageSize = 15) {
     try {
       const baseUrl = endpoints.ultimas_certificaciones;
       const url = `${baseUrl}?page=${page}&page_size=${pageSize}`;

@@ -10,8 +10,15 @@ ReactModal.setAppElement('#root');
 const handleAnimationComplete = () => {
     console.log('Animation completed!');
   };
+
+const generateRandomPosition = () => ({
+    top: `${Math.random() * 80}%`,
+    left: `${Math.random() * 80}%`,
+});
+
 const FinisherHeaderComponent = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [positions, setPositions] = useState([]);
     const openModal = () => {
         setIsOpen(true);
     };
@@ -21,20 +28,27 @@ const FinisherHeaderComponent = () => {
     };
     const [init, setInit] = useState(false);
     
+
     // this should be run only once per application lifetime
     useEffect(() => {
-    initParticlesEngine(async (engine) => {
-        // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
-        // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
-        // starting from v2 you can add only the features you need reducing the bundle size
-        //await loadAll(engine);
-        //await loadFull(engine);
-        await loadSlim(engine);
-        //await loadBasic(engine);
-    }).then(() => {
-        setInit(true);
-    });
+        initParticlesEngine(async (engine) => {
+            // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
+            // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
+            // starting from v2 you can add only the features you need reducing the bundle size
+            //await loadAll(engine);
+            //await loadFull(engine);
+            await loadSlim(engine);
+            //await loadBasic(engine);
+        }).then(() => {
+            setInit(true);
+        });
+        
+        const newPositions = Array(3).fill().map(() => generateRandomPosition());
+        setPositions(newPositions);
+
     }, []);
+
+    const colors = ['blue', 'green', 'red'];
 
     const particlesLoaded = (container) => {
     console.log(container);
@@ -71,10 +85,10 @@ const FinisherHeaderComponent = () => {
         },
         particles: {
         color: {
-            value: "#ddd",
+            value: "#b0b0b0",
         },
         links: {
-            color: "#ddd",
+            color: "#b0b0b0",
             distance: 150,
             enable: true,
             opacity: 0.5,
@@ -94,7 +108,7 @@ const FinisherHeaderComponent = () => {
             density: {
             enable: false,
             },
-            value: 80,
+            value: 50,
         },
         opacity: {
             value: 0.5,
@@ -120,9 +134,22 @@ const FinisherHeaderComponent = () => {
                 particlesLoaded={particlesLoaded}
                 options={options}
             />
-            <span class="w-5/15 lg:w-5/15 aspect-square bg-gradient-to-tr from-[#034694] to-[#034694] absolute top-30 lg:left-180 rounded-full skew-y-0 blur-2xl opacity-50 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
-            <span class="w-5/15 lg:w-5/15 aspect-square bg-gradient-to-tr from-[#5CC781] to-[#5CC781] absolute top-30 lg:left-80 rounded-full skew-y-0 blur-2xl opacity-50 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
-            <span class="w-5/15 lg:w-5/15 aspect-square bg-gradient-to-tr from-[#D33B3E] to-[#D33B3E] absolute top-80 lg:left-130 rounded-full skew-y-0 blur-2xl opacity-50 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
+            
+            {positions.map((pos, index) => (
+                <span
+                    key={index}
+                    className={`blob ${colors[index]}`}
+                    style={{
+                        top: pos.top,
+                        left: pos.left,
+                        animationDelay: `${index * 0.5}s`,
+                    }}
+                />
+            ))}
+
+            {/*<span class="w-2/10 aspect-square bg-gradient-to-tr from-[#034694] to-[#034694] absolute top-30 lg:left-190 rounded-full skew-y-0 blur-2xl opacity-70 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
+            <span class="w-2/10 aspect-square bg-gradient-to-tr from-[#5CC781] to-[#5CC781] absolute top-30 lg:left-120 rounded-full skew-y-0 blur-2xl opacity-70 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
+            <span class="w-2/10 aspect-square bg-gradient-to-tr from-[#D33B3E] to-[#D33B3E] absolute top-80 lg:left-155 rounded-full skew-y-0 blur-2xl opacity-70 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>*/}
             <div className="grid columns-1 justify-items-center content-evenly gap-4 z-10">
                 {/*<h1 className="">Conecta los puntos,<br></br>forma tu historia</h1>*/}
                 <BlurText text="Conecta los puntos, forma tu historia"
@@ -130,10 +157,10 @@ const FinisherHeaderComponent = () => {
                 animateBy="words"
                 direction="top"
                 onAnimationComplete={handleAnimationComplete}
-                className="text-8xl md:w-50 lg:w-48 xl:w-[50vw] text-white text-center leading-30"
+                className="text-8xl w-full  xl:w-[50vw] text-white text-center leading-30"
                 />
                 <p className="text-white text-center font-['Montserrat'] text-2xl">Crea tu ruta de aprendizaje con los mas top del mundo.</p>
-                <button className="btn btn-col-4 py-3 px-5 w-auto" onClick={openModal}>¿Qué es <span id='top'>Top</span><span id='education'>.Education</span>?</button>
+                <button className="btn btn-col-4 py-3 px-5 w-auto" onClick={openModal}>¿Qué es<span id='top'>top</span><span id='education'>.education</span>?</button>
                 
                 <ReactModal
                 isOpen={isOpen}

@@ -142,7 +142,7 @@ const SearchBar = () => {
                     {results.map((resultado) => (
                         <div key={resultado.id} onClick={(e) => handleCertificationClick(resultado, e)} className="certification-card">
                             <div className="container-img-card">
-                                <img src={`https://${host}/${resultado.url_imagen_universidad_certificacion}`} alt={resultado.nombre} />
+                                <img src={resultado.universidad_certificacion?.univ_img || resultado.empresa_certificacion?.empr_img || resultado.imagen_final} alt={resultado.nombre} />
                             </div>
                             <div className="tags-card">
                                 <div className={`tag-category ${resultado.tema_certificacion?.tem_col || 'tag-verde'}`}>
@@ -152,7 +152,7 @@ const SearchBar = () => {
                             <div className="title-certification"><h3>{resultado.nombre}</h3></div>
                             <div className="tag-platform">
                                 <img
-                                    src={`https://${host}/${resultado.plataforma_certificacion.plat_img}`}
+                                    src={resultado.plataforma_certificacion.plat_img}
                                     alt={resultado.plataforma_certificacion.nombre}
                                 />
                             </div>

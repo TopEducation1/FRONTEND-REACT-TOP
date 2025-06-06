@@ -98,7 +98,7 @@ const HomeGridBlogs = () => {
                                 <img src={imageUrl} alt={blog.nombre_blog} />
                             </div>
                             <div id="wrapper-title-card-blog-home">
-                                <h1>{blog.nombre_blog}</h1>
+                                <h2 className='text-white'>{blog.nombre_blog}</h2>
                             </div>
                         </div>
                     );

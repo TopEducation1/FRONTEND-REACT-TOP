@@ -45,7 +45,7 @@ const RotateVideo = ({ onClick }) => {
         }
     };
 
-    const text = "Más sobre top Education Más sobre top Education ";
+    const text = "Más sobre top.education Más sobre top.education ";
     const characters = text.split('');
     const angleStep = 360 / characters.length;
 

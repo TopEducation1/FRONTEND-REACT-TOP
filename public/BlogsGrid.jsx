@@ -79,11 +79,10 @@ const BlogsGrid = () => {
     return (
         <>
             <div id="wrapper-grid-blogs">
-                <div id="grid-all-blogs">
+                <div className='grid grid-cols-3 gap-4'>
                     {blogs.map(blog => {
                         // Usar la URL de miniatura_blog si está disponible, de lo contrario usar una imagen por defecto
                         const imageUrl = blog.miniatura_blog || "/assets/Piezas/demo-blog.png";
-
                         return (
 
                             <div
@@ -96,7 +95,7 @@ const BlogsGrid = () => {
                                     <img src={imageUrl} alt={blog.nombre_blog} />
                                 </div>
                                 <div id="wrapper-title-card-blog">
-                                    <h1>{blog.nombre_blog}</h1>
+                                    <h2 className='text-white'>{blog.nombre_blog}</h2>
                                 </div>
                             </div>
 

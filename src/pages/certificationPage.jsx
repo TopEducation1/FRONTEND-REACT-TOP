@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import getCertificationById from "../services/getCertificationById";
 import RightPop from "../components/RightPop";
 import YouTubePlayer from "../components/YoutubePlayer";
+import CertificationSlider from "../components/CertificationSlider";
 import { Helmet } from 'react-helmet';
 
 const CertificationPage = () => {
@@ -50,8 +51,8 @@ const CertificationPage = () => {
                 setLoading(true);
                 const data = await getCertificationById(slug);
                 setCertification(data);
-                //console.log("INFORMACIÓN ESPECIFICA DE LA CERTIFICACION");
-                //console.log(data);
+                console.log("INFORMACIÓN ESPECIFICA DE LA CERTIFICACION");
+                console.log(data);
             } catch (error) {
                 setError(error.message);
                 //console.error('Error al cargar la certificación:', error);
@@ -101,18 +102,18 @@ const CertificationPage = () => {
 
     return (
         <>
-            {/**SEO ELEMENTS WITH REACT -HELMET */}
-            <Helmet>
-                <title>{certification.nombre}</title>
-                <meta name="description" content={certification.metadescripcion_certificacion}/>
-                <meta property="og:title" content={certification.metadescripcion_certificacion}/>
-                <meta name="keywords" content={certification.palabra_clave_certificacion}/>
-                <meta name="author" content="Top Education"/>
-                <meta name="robots" content="index, follow" />
-                <meta property="og:description" content={certification.metadescripcion_certificacion} />
-                <meta property="og:type" content="website" />
-            </Helmet>
-        <div className="w-full bg-[#F8F7F2]">
+        {/**SEO ELEMENTS WITH REACT -HELMET */}
+        <Helmet>
+            <title>{certification.nombre}</title>
+            <meta name="description" content={certification.metadescripcion_certificacion}/>
+            <meta property="og:title" content={certification.metadescripcion_certificacion}/>
+            <meta name="keywords" content={certification.palabra_clave_certificacion}/>
+            <meta name="author" content="Top Education"/>
+            <meta name="robots" content="index, follow" />
+            <meta property="og:description" content={certification.metadescripcion_certificacion} />
+            <meta property="og:type" content="website" />
+        </Helmet>
+        <div className="w-full bg-[#F6F4EF]">
             <div className="container  mx-auto py-25 md:py-50px lg:py-60px 2xl:py-100px ">
             {/*<span class="w-2/15 lg:w-2/15 aspect-square bg-gradient-to-tr from-red-500 to-red-900 absolute top-20 lg:left-20 rounded-full skew-y-0 blur-2xl opacity-40 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
             <span class="w-2/15 lg:w-2/15 aspect-square bg-gradient-to-tr from-green-500 to-green-900 absolute top-50 lg:right-20 rounded-full skew-y-0 blur-2xl opacity-40 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
@@ -167,7 +168,7 @@ const CertificationPage = () => {
                                     </li>
                                     <li>
                                     <a className={`px-4 py-2 rounded ${activeTab === 'tab3' ? 'bg-blue-500 text-white' : 'bg-gray-300'}`} onClick={() => setActiveTab('tab3')}>
-                                    Contenido
+                                        {(certification.plataforma_certificacion && certification.plataforma_certificacion.nombre == 'MasterClass')?'Lecciones':'Modulos'}
                                     </a>
                                     </li>
                                 </ul>
@@ -179,6 +180,12 @@ const CertificationPage = () => {
                                                     aprendizaje.nombre.startsWith(' ') ? null : (<li key={index}>{aprendizaje.nombre}</li>)
                                                 ))}
                                             </ul>)}
+                                            <h2 className="text-size-32 md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">{certification.contenido_certificacion.cantidad_modulos}</h2>
+                                            <p>
+                                                {certification.contenido_certificacion.contenido_certificacion.join(
+                                                "\n"
+                                                )}
+                                            </p>
                                         </div>
                                     }
                                     {activeTab === 'tab2' && <div id="widgets-learning-masterclass" className="w-full">
@@ -208,7 +215,6 @@ const CertificationPage = () => {
                                         </div>
                                     }
                                     {activeTab === 'tab3' && <div className="grid-main-info-section cert-habi w-full gap-5">
-                                        <h2 className="text-size-32 md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 mb-3 aos-init aos-animate">Contenido</h2>
                                         {(certification.contenido_certificacion && certification.plataforma_certificacion.nombre === 'MasterClass')?(
                                             certification.contenido_certificacion.contenido_certificacion.reduce((modules, content, index) => {
                                                 // Si el contenido está vacío (""), lo ignoramos
@@ -255,15 +261,13 @@ const CertificationPage = () => {
                                                     </div>
                                                 );
                                             })
-                                        ):null}
-                                        <br/>
-                                        {(certification.contenido_certificacion && certification.plataforma_certificacion.nombre != 'MasterClass')?(
+                                        ):(certification.contenido_certificacion && certification.plataforma_certificacion.nombre != 'MasterClass')?(
                                             certification.modulos_certificacion.map((modulo, index) => {
                                                 const isExpanded = expandedIndex === index;
                                                 return (
                                                     <div
                                                         key={index}
-                                                        className={`course-accrodain space-y-6 mb-3 module-card ${isExpanded ? 'expanded' : 'closed'}`} // La clase `expanded` se aplica aquí al contenedor principal de la tarjeta
+                                                        className={`course-accrodain space-y-3 mb-3 module-card ${isExpanded ? 'expanded' : 'closed'}`} // La clase `expanded` se aplica aquí al contenedor principal de la tarjeta
                                                     >
                                                         <div className="first-row">
                                                             <div className="wrapper-info">
@@ -301,7 +305,7 @@ const CertificationPage = () => {
                     </div>
                     <div className="lg:col-start-9 lg:col-span-4 br-15 border-1 border-[#ECECEC] rounded-[15px] z-1" >
                         <div className="cert-img">
-                            <img src={getImageUrl(certification.url_imagen_universidad_certificacion)} alt="Logo de la certificación" />
+                            <img src={getImageUrl(certification.universidad_certificacion?.univ_img|| certification.empresa_certificacion?.empr_img || certification.imagen_final)} alt="Logo de la certificación" />
                         </div>
                         <div className="cert-det p-5">
                             <div className="w-full flex justify-center">
@@ -309,29 +313,25 @@ const CertificationPage = () => {
                             </div>
                             <ul class="list  ">
                                 <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
-                                {(certification.instructores_certificacion && certification.instructores_certificacion.length > 0)?(
-                                <div class="flex-1 space-x-3 flex">
-                                    <img class="w-[30px] h-[30px]" src="/assets/temas/user-te.png" alt=""/>
-                                    <div class=" text-blackflex flex-wrap"><b>Instructor/es:</b>
-                                    <ul className="list-disc">
-                                        {certification.instructores_certificacion.map((instructor, index) => (
-                                            <li key={index}>{instructor.name}</li>
-                                        ))}
-                                    </ul>
-                                    </div>
-                                </div>):null}
-                                <div class="flex-none">
-                                    
-                                </div>
+                                    {(certification.instructores_certificacion && certification.instructores_certificacion.length > 0)?(
+                                    <div class="flex-1 space-x-3 flex">
+                                        <img class="w-[30px] h-[30px]" src="/assets/temas/user-te.png" alt=""/>
+                                        <div class=" text-blackflex flex-wrap"><b>Instructor/es:</b>
+                                        <ul className="list-disc">
+                                            {certification.instructores_certificacion.map((instructor, index) => (
+                                                <li key={index}>{instructor.name}</li>
+                                            ))}
+                                        </ul>
+                                        </div>
+                                    </div>):null}
                                 </li>
-
                                 <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
                                 <div class="flex-1 space-x-3 flex">
                                     <img src="assets/images/icon/file2.svg" alt=""/>
                                     <div class=" text-black font-semibold">Plataforma</div>
                                 </div>
-                                <div class="flex-none">
-                                    <img class="w-[110px]"  src={`https://${host}/${certification.plataforma_certificacion.plat_img}`} alt=""/>
+                                <div class="flex justify-end items-center">
+                                    <img class="w-[110px]"  src={certification.plataforma_certificacion.plat_img} alt=""/>
                                     
                                 </div>
                                 </li>
@@ -377,25 +377,25 @@ const CertificationPage = () => {
                                 </li>
                             </ul>
                         </div>
-                    {visibleContainerPopUp && (
-                        positionPopUp ? (
-                            // Posición dentro del contenedor responsive
-                            <div className="container-pop-up-responsive">
-                                <button onClick={handleClickButtonPopUp} id="close-pop">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-x">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                        <path d="M18 6l-12 12" />
-                                        <path d="M6 6l12 12" />
-                                    </svg>
-                                </button>
+                        {visibleContainerPopUp && (
+                            positionPopUp ? (
+                                // Posición dentro del contenedor responsive
+                                <div className="container-pop-up-responsive !rounded-lg">
+                                    <button onClick={handleClickButtonPopUp} id="close-pop">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-x">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                            <path d="M18 6l-12 12" />
+                                            <path d="M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                    <RightPop />
+                                </div>
+                            ) : (
+                                // Posición original
                                 <RightPop />
-                            </div>
-                        ) : (
-                            // Posición original
-                            <RightPop />
-                        )
-                    )}
-                        <div className="contenedor-promotion">
+                            )
+                        )}
+                        {/*<div className="contenedor-promotion">
                             <div className="promotion-img">
                                 <img src="/assets/banners/promotion-banner.jpg" />
                             </div>
@@ -421,27 +421,17 @@ const CertificationPage = () => {
                                 </div>
 
                             </div>
-                        </div>
+                        </div>*/}
                     </div>
                     <div className="lg:col-start-1 lg:col-span-12 border-1 border-[#ECECEC] rounded-[15px] bg-[#F6F4EF] p-8 z-1">
                         <h2 className="text-size-2xl md:text-2xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">Clases recomendadas para ti</h2>
-                        <div id="wrapper-slider-masterclass">
-
-                            <div className="card-masterclass">
-                                <img src="/assets/MasterClass/masterclass-1.png" alt="masterclass-imagen" />
-                            </div>
-                            <div className="card-masterclass">
-                                <img src="/assets/MasterClass/masterclass-2.png" alt="masterclass-imagen" />
-                            </div>
-                            <div className="card-masterclass">
-                                <img src="/assets/MasterClass/masterclass-3.png" alt="masterclass-imagen" />
-                            </div>
-
+                        <div>
+                            <CertificationSlider/>
                         </div>
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
         </>
     );
 };

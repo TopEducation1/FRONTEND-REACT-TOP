@@ -8,40 +8,23 @@ const HeaderCafam = () => {
 
   return (
     <>
-      <nav id="nav-cafam">
-        {/* Botón hamburguesa */}
-        <div className="container-burguer-button">
-          <svg
-            onClick={() => setIsMenuOpen(true)}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#ffffff"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="icon icon-tabler icons-tabler-outline icon-tabler-menu-2"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M4 6l16 0" />
-            <path d="M4 12l16 0" />
-            <path d="M4 18l16 0" />
-          </svg>
-        </div>
-        
-        <div id="wrapper-logo-cafam">
-          <a href="/cafam">
-            <img src="/assets/cafam/logos/logo-nav.png" alt="Logo cafam nav bar"/>
-          </a>
-        </div>
-        
-        <div id="wrapper-search-cafam">
-          <SearchBarCafam />
+      <nav className="fixed w-full z-10">
+        <div className="nav-plataforma bg-plataforma relative mx-2 w-[80%] mt-2 rounded-[36px] border border-white/80 px-4 py-3 backdrop-blur-md dark:border-white-700/80 dark:backdrop-blur-md md:flex md:items-center md:justify-between md:px-6 md:py-0 lg:px-8 xl:mx-auto">
+          
+          <div className="w-40">
+            <a href="/cafam">
+              <img src="/assets/cafam/logos/logo-nav.png" className="w-[130px]" alt="Logo Cafam"/>
+            </a>
+          </div>
+          
+          <div className="w-[40%]">
+            <SearchBarCafam />
+          </div>
+          <div className="container-burguer-button" onClick={() => { toggleMenu(); }}>
+            <span className="burguer-bar" ></span>
+          </div>
         </div>
       </nav>
-
       <ResponsiveMenuCafam 
         isOpen={isMenuOpen} 
         onClose={() => setIsMenuOpen(false)}

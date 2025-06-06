@@ -141,13 +141,13 @@ const MasterclassCertificationPage = () => {
                 <div className="about-area-masterclass">
 
                     <div id="about-masterclass">
-                        <h1>Acerca de esta clase</h1>
+                        <h2>Acerca de esta clase</h2>
                         <p>{certification.experiencia_certificacion}</p>
                     </div>
                 </div>
                 <div className="about-area-masterclass" >
                     <div id="widgets-learning-masterclass">
-                        <h1>Habilidades que obtendrás</h1>
+                        <h2>Habilidades que obtendrás</h2>
                         <div id="wrapper-widgets-learning">
                             
                         {certification.aprendizaje_certificacion.map((item) => {
@@ -217,7 +217,7 @@ const MasterclassCertificationPage = () => {
             </div>
 
             <div id="container-areas">
-                    <div id="wrapper-title-areas"><h1>Explora áreas del conocimiento</h1></div>
+                    <div id="wrapper-title-areas"><h2>Explora áreas del conocimiento</h2></div>
 
                     <div id="wrapper-show-areas">
 
@@ -235,7 +235,7 @@ const MasterclassCertificationPage = () => {
                 </div>
 
                 <div id="container-classes">
-                    <div id="wrapper-title-classes"><h1>Clases recomendadas para ti</h1></div>
+                    <div id="wrapper-title-classes"><h2>Clases recomendadas para ti</h2></div>
 
                     <div id="wrapper-slider-masterclass">
 
@@ -258,7 +258,7 @@ const MasterclassCertificationPage = () => {
                             <img src="/assets/banners/promotion-banner.jpg" />
                         </div>
                         <div className="div-grid-promotion" id="upper-right-div">
-                            <h2>Con Top Education, ahorras dinero y tienes más contenidos</h2>
+                            <h2>Con Top.education, ahorras dinero y tienes más contenidos</h2>
                             <p>Imagina tener acceso ilimitado al catalogo de edX, Masterclass, y Coursera, todo en una sola plataforma y por menos de la mitad del precio que pagarias por las tres plataformas.</p>
                         </div>
                         <div className="div-grid-promotion" id="bottom-div">

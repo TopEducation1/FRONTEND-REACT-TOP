@@ -79,24 +79,19 @@ const BlogsGrid = () => {
     return (
         <>
             <div id="wrapper-grid-blogs">
-                <div id="grid-all-blogs">
+                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
                     {blogs.map(blog => {
                         // Usar la URL de miniatura_blog si está disponible, de lo contrario usar una imagen por defecto
                         const imageUrl = blog.miniatura_blog || "/assets/Piezas/demo-blog.png";
 
                         return (
 
-                            <div
-                                onClick={() => handleBlogClick(blog)}
-                                key={blog.id}
-                                className='blog-card'
-                            >
-
-                                <div id="wrapper-image-card-blog">
-                                    <img src={imageUrl} alt={blog.nombre_blog} />
+                            <div onClick={() => handleBlogClick(blog)} key={blog.id} className='border-1 border-white rounded-xl rounded-lg'>
+                                <div className='w-full '>
+                                    <img className='rounded-xl w-full' src={imageUrl} alt={blog.nombre_blog} />
                                 </div>
-                                <div id="wrapper-title-card-blog">
-                                    <h1>{blog.nombre_blog}</h1>
+                                <div className='px-3 py-5'>
+                                    <h2 className='text-white text-xl'>{blog.nombre_blog}</h2>
                                 </div>
                             </div>
 
@@ -108,21 +103,9 @@ const BlogsGrid = () => {
 
                 {/*Controles para la paginación de los blogs */}
                 <div id="pagination-controls">
-                    <button
-                     onClick={() => handlePageChange(pagination.current_page -1)}
-                     disabled={pagination.current_page === 1}
-                    >
-                       Anterior
-                    </button>
-                    <span>
-                        Pagina {pagination.current_page} de {pagination.total_pages}
-                    </span>
-                    <button
-                        onClick={() => handlePageChange(pagination.current_page +1)}
-                        disabled={pagination.current_page === pagination.total_pages}
-                    >
-                        Siguiente
-                    </button>
+                    <button className='btn' onClick={() => handlePageChange(pagination.current_page -1)} disabled={pagination.current_page === 1} >Anterior</button>
+                    <span className='text-white'>Página {pagination.current_page} de {pagination.total_pages}</span>
+                    <button className='btn' onClick={() => handlePageChange(pagination.current_page +1)} disabled={pagination.current_page === pagination.total_pages}>Siguiente</button>
                 </div>
             </div>
         </>

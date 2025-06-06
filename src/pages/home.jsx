@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 
 import SliderEditorial from "../components/SliderEditorial";
 import TopicCircles from "../components/TopicCircles";
+import TopicSelector from "../components/TopicSelector";
 import FlagsHome from "../components/FlagsHome";
 import RoutesComponent from "../components/RoutesComponent";
 
@@ -204,7 +205,7 @@ function HomePage() {
     <>
       {/**SEO ELEMENTS WITH REACT -HELMET */}
       <Helmet>
-        <title>Top Education</title>
+        <title>Top.education</title>
         <meta name="description" content="Conoce Top Education, la plataforma donde aprendes de las mejores universidades de Latinoamérica y el mundo con +13,000 certificaciones." />
         <meta property="og:title" content="Top Education | Aprende con edX, Coursera y MasterClass" />
         <meta name="keywords" content="" />
@@ -229,7 +230,7 @@ function HomePage() {
             <TopicCircles topic="Ciencias de datos" type="Tema" tag="Ciencias de datos" />
             <TopicCircles topic="Ciencias de la computación" type="Tema" tag="Ciencias de la computación" />
             <TopicCircles topic="Ciencias sociales" type="Tema" tag="Ciencias sociales" />
-            <TopicCircles topic="Ciencía física e ingeniería" type="Tema" tag="Ciencia física e ingeniería" />
+            <TopicCircles topic="Ciencia física e ingeniería" type="Tema" tag="Ciencia física e ingeniería" />
             <TopicCircles topic="Desarrollo personal" type="Tema" tag="Desarrollo personal" />
             <TopicCircles topic="Matemáticas y lógica" type="Tema" tag="Matemáticas y lógica" />
             <TopicCircles topic="Negocios" type="Tema" tag="Negocios" />
@@ -247,11 +248,12 @@ function HomePage() {
             <TopicCircles topic="Productividad" type="Habilidad" tag="Productividad"/>
             <TopicCircles topic="Trabajo en equipo" type="Habilidad" tag="Trabajo en equipo"/>
           </div>
+          <TopicSelector/>
         </div>
       </div>
       <div className="container m-auto pt-40">
-        <h2 className="text-white text-6xl font-normal text-center italic leading-15 z-10 relative">Aprende con las universidades líderes del mundo</h2>
-        <ImageSlider3D images={flagsImages} />
+        <h2 className="text-white text-6xl font-normal text-center italic w-[100%] lg:w-[80%] m-auto leading-15 z-10 relative">Aprende con las universidades líderes del mundo</h2>
+        <ImageSlider3D images={flagsImages} action="explora" />
       </div>
       {/*<div className="container m-auto py-40">
         <h2 className="text-white text-6xl font-normal text-center leading-15 z-10 relativee">Editorial Top Education</h2>
@@ -272,7 +274,23 @@ function HomePage() {
         </Link>
       </div>
       {/*<MovingText />*/}
-      <div className="container m-auto">
+      <section className="wrapper ">
+        <div className="container m-auto relative text-center mt-20">
+          <div className="rounded-lg border-1 border-white p-10 bg-[#0F090B]/90">
+            <h2 className="text-white text-center text-5xl font-normal leading-[1.2em] mb-5">Forma equipos que <span className="italic">aprenden y crecen</span></h2>
+            <p className="text-white text-center text-2xl mb-5">Potencia las habilidades de tu equipo con certificaciones clave y seguimiento en tiempo real. Con Top Education para Equipos, accede a contenido exclusivo de MasterClass, edX y Coursera, y maximiza su productividad y crecimiento.</p>
+            <div className="grid grid-cols-3 w-[100%] lg:w-[50%] m-auto gap-4 mb-10 !text-center">
+              <div className="flex justify-center"><img className="w-[120px]" src="assets/platforms/icon-coursera.png" alt="" /></div>
+              <div className="flex justify-center"><img className="w-[120px]" src="assets/platforms/icon-edx.png" alt="" /></div>
+              <div className="flex justify-center"><img className="w-[120px]" src="assets/platforms/icon-masterclass.png" alt="" /></div>
+              
+            </div>
+            <a className="btn btn-col-3 py-2 px-5 m-auto text-2xl">Conoce <span id="top">top</span><span id="education">.education</span> para equipos</a>
+          </div>
+          
+        </div>
+      </section>
+      <div className="container m-auto pt-20">
         <HeroSlider authors={authors} />
       </div>
     </>

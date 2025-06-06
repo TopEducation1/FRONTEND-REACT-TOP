@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
-const ImageSlider3D = ({images}) => {
+const ImageSlider3D = ({images,action}) => {
     const navigate = useNavigate();
     const [current, setCurrent] = useState(0);
 
@@ -11,7 +11,7 @@ const ImageSlider3D = ({images}) => {
         const initialTags = {
             [category]: [tag]
         };
-        navigate('/explora/filter?page=1&page_size=16&', {
+        navigate(`/${action}/filter?page=1&page_size=15&`, {
             state: {selectedTags: initialTags},
             replace: true
         });

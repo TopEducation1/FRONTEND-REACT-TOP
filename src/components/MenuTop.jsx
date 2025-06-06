@@ -1,5 +1,6 @@
 import { NavLink, useLocation,useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { FaChevronRight } from "react-icons/fa";
 
 import IndexCategories from "./IndexCategories";
 
@@ -15,7 +16,7 @@ const MenuTop = () => {
     { name: 'Explora', path: '/explora', isDropdown: true,classItem: 'item-explora' },
     { name: 'Recursos', path: '/recursos',classItem: 'item-recursos' },
     { name: 'Para equipos', path: '/para-equipos',classItem: 'item-equipos' },
-    { name: 'Empezar ahora', path: '/empezar',classItem: 'item-empezar' },
+    { name: 'Empieza ahora', path: '/empieza-ahora',classItem: 'item-empezar' },
   ];
 
   const exploraSubmenu = {
@@ -30,7 +31,7 @@ const MenuTop = () => {
       { img: '/assets/category/Ciencias de datos.png', text: 'Ciencias de datos', type:'Tema',tag:'Ciencias de datos' },
       { img: '/assets/category/Ciencias de la computación.png', text: 'Ciencias de la computación', type:'Tema',tag:'Ciencias de la computación' },
       { img: '/assets/category/Ciencias sociales.png', text: 'Ciencias Sociales', type:'Tema',tag:'Ciencias Sociales' },
-      { img: '/assets/category/Ciencía física e ingeniería.png', text: 'Ciencía física e ingeniería', type:'Tema',tag:'Ciencía física e ingeniería' },
+      { img: '/assets/category/Ciencia física e ingeniería.png', text: 'Ciencia física e ingeniería', type:'Tema',tag:'Ciencia física e ingeniería' },
       { img: '/assets/category/Desarrollo personal.png', text: 'Desarrollo personal', type:'Tema',tag:'Desarrollo personal' },
       { img: '/assets/category/Matemáticas y lógica.png', text: 'Matemáticas y lógica', type:'Tema',tag:'Matemáticas y lógica' },
       { img: '/assets/category/Negocios.png', text: 'Negocios', type:'Tema',tag:'Negocios' },
@@ -69,14 +70,14 @@ const MenuTop = () => {
         { img: '/assets/category/TE-SAE Institute México.webp', text: 'SAE Institute México', type:'Universidad',tag:'SAE Institute México' },
         { img: '/assets/category/TE-Universidad de Palermo.webp', text: 'Universidad de Palermo', type:'Universidad',tag:'Universidad de Palermo' },
         { img: '/assets/category/TE-Universidad Austral.webp', text: 'Universidad Austral', type:'Universidad',tag:'Universidad Austral' },
-    ]
+      ]
   };
     const handleItemMenuClick = (category, tag) => {
         console.log(category, tag);
         const initialTags = {
             [category]: [tag]
         };
-        navigate('/explora/filter?page=1&page_size=16&', {
+        navigate('/explora/filter?page=1&page_size=15&', {
             state: {selectedTags: initialTags},
             replace: true
         })
@@ -99,7 +100,7 @@ const MenuTop = () => {
               <div className="submenu">
                 {Object.entries(exploraSubmenu).map(([section, items]) => (
                   <div key={section} className={`submenu-section section-${section}`}>
-                    <h4 className='section-tit'>{section}</h4>
+                    <h4 className='section-tit'>{section==="Plataforma"?"Aliados":section}</h4>
                     <ul className="submenu-items">
                       {items.map((sub, idx) => (
                         <li key={idx} className="submenu-item">
@@ -112,6 +113,7 @@ const MenuTop = () => {
                     </ul>
                   </div>
                 ))}
+                <NavLink className='absolute right-10 bottom-5 flex gap-2 items-center py-1 px-3 rounded-lg btn-col-2' to="/explora">Ver más certificaciones <FaChevronRight /></NavLink>
               </div>
             )}
           </div>

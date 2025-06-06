@@ -1,16 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from 'react-router-dom';
 
-const IndexCategoriesCafam = ({ onTagSelect }) => {
-    const [isSticky, setIsSticky] = useState(false);
+const IndexCategoriesCafam = ({ onTagSelect, selectedTags }) => {
     const [openSections, setOpenSections] = useState([]);
     const indexRef = useRef(null);
-    const certificationsRef = useRef(null);
 
     const sections = [
         {
             title: "Tema",
-            subsections: ["Arte y Humanidades", "Negocios", "Ciencias de la Computación", "Ciencias de Datos", "Tecnología de la información", "Salud", "Matemáticas y Logica", "Desarrollo Personal", "Ciencías, Física e Ingenieria", "Ciencias Sociales", "Aprendizaje de un Idioma"]
+            subsections: ["Arte y Humanidades", "Negocios", "Ciencias de la computación", "Ciencias de Datos", "Tecnología de la información", "Salud", "Matemáticas y Logica", "Desarrollo Personal", "Ciencia física e Ingenieria", "Ciencias Sociales", "Aprendizaje de un Idioma"]
         },
         {
             title: "Empresa",
@@ -39,7 +37,6 @@ const IndexCategoriesCafam = ({ onTagSelect }) => {
         }
     ];
 
-
     const toggleSection = (index) => {
         setOpenSections(prev =>
             prev.includes(index)
@@ -52,7 +49,7 @@ const IndexCategoriesCafam = ({ onTagSelect }) => {
         return subsections.map((subsection, subIndex) => {
             if (typeof subsection === "string") {
                 return (
-                    <div key={subIndex}>
+                    <div key={subIndex} className="item-category">
                         <Link
                             to="#"
                             onClick={(e) => {
@@ -60,15 +57,16 @@ const IndexCategoriesCafam = ({ onTagSelect }) => {
                                 onTagSelect(category, subsection);
                             }}
                         >
+                            <img className="sect-ico" src={(category=="Universidades")?`./assets/category/TE-${subsection }.webp`:`./assets/category/${subsection }.png`} alt="" />
                             {subsection}
                         </Link>
                     </div>
                 );
             } else if (subsection.title && subsection.subsections) {
                 return (
-                    <div key={subIndex}>
+                    <div key={subIndex} className="submenu">
                         <h3>{subsection.title}</h3>
-                        <div className="unfold-list-cafam">
+                        <div className={`unfold-list list-${subsection.title}`} >
                             {subsection.subsections.map((subsubsection, subsubIndex) => (
                                 <div key={subsubIndex}>
                                     <Link
@@ -78,6 +76,7 @@ const IndexCategoriesCafam = ({ onTagSelect }) => {
                                             onTagSelect(category, subsubsection);
                                         }}
                                     >
+                                        <img className="sect-ico" src={`./assets/category/TE-${subsubsection }.webp`} alt="" />
                                         {subsubsection}
                                     </Link>
                                 </div>
@@ -93,7 +92,7 @@ const IndexCategoriesCafam = ({ onTagSelect }) => {
     return (
         <div
             ref={indexRef}
-            className={`index-container-cafam ${isSticky ? 'sticky' : ''}`}
+            className={`index-container-cafam `}
         >
             <div className="category-wrapper">
                 {sections.map((section, index) => (

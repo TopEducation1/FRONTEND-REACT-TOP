@@ -1,24 +1,20 @@
 import React, { useState } from 'react';
+import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useCallback } from 'react';
 
-const CertificationsListCafam = ({ certifications }) => {
+const CertificationsListCafam = memo(({ certifications }) => {
     const navigate = useNavigate();
-    // Estado para manejar la carga
-    const [loading, setLoading] = useState(true);
+    const host = window.location.hostname;
     const [error, setError] = useState(null);
 
-    const getImageUrl = (url) => {
-        if (!url) return null;
-        return url.startsWith('/') ? url : `/${url}`;
-    };
-    
-    const handleImageError = (e) => {
+    const handleImageError = (e) => {        
         console.error('Error loading image:', e.target.src);
-        // Mantener la imagen pero con un estilo que indique error
         e.target.style.opacity = '0.5';
         e.target.style.backgroundColor = '#f0f0f0';
-    };
 
+    };
+    
     const handleCertificationClick = (certification) => {
         try {
             if (!certification) {
@@ -48,22 +44,34 @@ const CertificationsListCafam = ({ certifications }) => {
             setError('Error al navegar a la certificación');
         }
     };
+    
+    const getImageUrl = useCallback((url) => {
+        if (!url) return null;
+        return url.startsWith('/') ? url : `/${url}`;
+    });
+
+    if (!Array.isArray(certifications)) {
+        return <div className="error-message">Error: No se pudieron cargar las certificaciones</div>;
+    }
+    if(certifications.length==0){
+        return <h3 className='text-3xl'>Sin resultados</h3>
+    }
 
     return (
-        <div className="wrapper-certifications-cafam">
+        <>
+        {error && <div className="error-message">{error}</div>}
+        <div className="wrapper-certifications-plataform">
             {certifications.map(certification => {
-                const topicName = certification.tema_certificacion?.nombre || 'Sin categoría';
-
                 return (
                     <div
                         onClick={() => { handleCertificationClick(certification) }}
                         key={certification.id}
-                        className='certification-card-cafam'
+                        className="certification-card"
                         style={{ cursor: 'pointer' }}
                     >
-                        <div className="container-img-card-cafam">
+                        <div className="container-img-card">
                             <img
-                                src={getImageUrl(certification.imagen_final)}
+                                src={getImageUrl(certification.universidad_certificacion?.univ_img || certification.empresa_certificacion?.empr_img || certification.imagen_final)}
                                 alt="imagen-certificacion"
                                 onError={handleImageError}
                                 style={{
@@ -74,33 +82,28 @@ const CertificationsListCafam = ({ certifications }) => {
                                 }}
                             />
                         </div>
-
-                        <div id="container-title-certification-cafam">
-                        <h3>{certification.nombre}</h3>
+                        <div className="tags-card">
+                            <div className={`tag-category ${certification.tema_certificacion?.tem_col || 'tag-verde'}`}>
+                                {certification.tema_certificacion?.nombre || 'Sin categoría'}
+                            </div>
                         </div>
-                        
-                        <div id="container-tags-card-cafam">
-                        
-                        <div className="tag-category-cafam">{certification.tema_certificacion.nombre}</div>
-                        <div className="tag-platform-cafam">
+                        <div className="title-certification">
+                            <h3>{certification.nombre}</h3>
+                        </div>
+                        <div className="tag-platform">
                             <img
-                                src={getImageUrl(certification.url_imagen_plataforma_certificacion)}
-                                alt="platform-logo" 
+                                src={certification.plataforma_certificacion.plat_img}
+                                alt={certification.plataforma_certificacion.nombre}
                                 onError={handleImageError}
-                                style={{
-                                    display: 'block',
-                                    maxWidth: '100%',
-                                    height: 'auto'
-                                }}
                             />
                         </div>
-                        </div>
-                        
                     </div>
                 );
             })}
+            
         </div>
+        </>
     );
-};
+});
 
 export default CertificationsListCafam;

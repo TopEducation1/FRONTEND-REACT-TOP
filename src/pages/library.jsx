@@ -11,10 +11,45 @@ import { useDebounce } from "use-debounce";
 import IndexCategories from "../components/IndexCategories";
 import SlidingMenuIndex from "../components/SlidingMenuIndex";
 import { Helmet } from "react-helmet";
+import HeroSlider from "../components/HeroSlider";
+
 
 /**
  * Pagina de la biblioteca
  *  */
+const authors = [
+    {
+      name: "Steve Jobs",
+      image: "assets/SliderImages/6.png",
+      link: "#",
+      description: "Empresario, inventor y fundador de Apple."
+    },{
+      name: "Alexander turing",
+      image: "assets/SliderImages/2.png",
+      link: "#",
+      description: "Metematico, padre de la informatica moderna."
+    },{
+      name: "Sigmund Freud",
+      image: "assets/SliderImages/3.png",
+      link: "#",
+      description: "Neurólogo, padre del psicoanálisis y una de las figuras más influyentes del siglo XX."
+    },{
+      name: "Leonardo da Vinci",
+      image: "assets/SliderImages/4.png",
+      link: "#",
+      description: "Pintor, Científico, Ingeniero, Anatomista."
+    },{
+      name: "Nikola Tesla",
+      image: "assets/SliderImages/5.png",
+      link: "#",
+      description: "Físico, ingeniero, matemático, mecánico e inventor visionario."
+    },{
+      name: "Marie Curie",
+      image: "assets/SliderImages/1.png",
+      link: "#",
+      description: "Científica, pionera, radioactividad, premio nobel en quimica y fisica."
+    }
+  ];
 
 function LibraryPage({ showRoutes = true }) {
   const { isMenuOpen, closeIndexResponsiveMenu, openIndexResponsiveMenu } =
@@ -31,33 +66,15 @@ function LibraryPage({ showRoutes = true }) {
   const [loading, setLoading] = useState(true); // Tracks loading state
   const [error, setError] = useState(null); // Stores error state
   const [isSmallScreen, SetIsSmallScreen] = useState(false); // Tracks small screen state
+  //const selectedTags = location.state?.selectedTags || {};
   const location = useLocation();
   const [debouncedSelectedTags] = useDebounce(
     selectedTags,
     100
   );
+  //const location = useLocation();
+  
   const certificationsRef = useRef(null);
-  const images = [
-    {
-      id: 1, url: "assets/SliderImages/1.png", category: "recursos", link: "recursos/tipos-de-estrategias-de-aprendizaje-y-como-aplicarlas"
-    },{
-      id: 2, url: "assets/SliderImages/2.png", category: "recursos", link: "#"
-    },{
-      id: 3, url: "assets/SliderImages/3.png", category: "recursos", link: "#"
-    },{
-      id: 4, url: "assets/SliderImages/4.png", category: "recursos", link: "#"
-    },{
-      id: 5, url: "assets/SliderImages/5.png", category: "recursos", link: "#"
-    },{
-      id: 6, url: "assets/SliderImages/6.png", category: "recursos", link: "#"
-    },{
-      id: 7, url:"assets/SliderImages/7.png", category: "recursos", link: "#"
-    }
-  ]
-
-  useEffect(() => {
-    window.scrollTo(0,0);
-  }, []);
 
   const NoResultsMessage = () => (
     <div className="no-results-container">
@@ -108,9 +125,9 @@ function LibraryPage({ showRoutes = true }) {
 
       setSelectedTags(location.state.selectedTags);
 
-      loadCertifications(1, 16, location.state.selectedTags);
+      loadCertifications(1, 15, location.state.selectedTags);
 
-      window.history.replaceState({}, document.title);
+      //window.history.replaceState({}, document.title);
     }
   }, [location]);
 
@@ -123,9 +140,7 @@ function LibraryPage({ showRoutes = true }) {
 
   const updateHistoryState = useCallback((tags) => {
     const queryString = tagFilterService.buildQueryString(tags);
-    window.history.pushState(
-      {},
-      "",
+    window.history.pushState({},"",
       tags && Object.keys(tags).length > 0
         ? `/explora/filter/${queryString}`
         : "/explora"
@@ -133,53 +148,46 @@ function LibraryPage({ showRoutes = true }) {
   }, []);
 
   const loadCertifications = useCallback(
-    async (page = 1, pageSize = 16) => {
-      setLoading(true);
-      setTempCertifications([]);
-      try {
-        let fetchData;
-        if (Object.keys(selectedTags).length > 0) {
-          fetchData = await tagFilterService.filterByTags(
-            debouncedSelectedTags,
-            page,
-            pageSize
-          );
-          const queryString = tagFilterService.buildQueryString(selectedTags);
-        } else {
-          fetchData = await CertificationsFetcher.getAllCertifications(
-            page,
-            pageSize
-          );
-        }
-
-        if (fetchData && Array.isArray(fetchData.results)) {
-          setTempCertifications(
-            fetchData.results.length > 0 ? fetchData.results : []
-          );
-          setPagination({
-            count: fetchData.count || 0,
-            current_page: page,
-            total_pages: Math.ceil(fetchData.count / pageSize) || 1,
-          });
-        } else {
-          setTempCertifications([]);
-        }
-      } catch (error) {
-        setError("Error al cargar las certificaciones");
-        setTempCertifications([]);
-      } finally {
-        setLoading(false);
+  async (page = 1, pageSize = 16, tags = debouncedSelectedTags) => {
+    setLoading(true);
+    setTempCertifications([]);
+    try {
+      let fetchData;
+      if (Object.keys(tags).length > 0) {
+        fetchData = await tagFilterService.filterByTags(tags, page, pageSize);
+      } else {
+        fetchData = await CertificationsFetcher.getAllCertifications(page, pageSize);
       }
-    },
-    [debouncedSelectedTags]
-  );
+
+      if (fetchData && Array.isArray(fetchData.results)) {
+        setTempCertifications(fetchData.results.length > 0 ? fetchData.results : []);
+        setPagination({
+          count: fetchData.count || 0,
+          current_page: page,
+          total_pages: Math.ceil(fetchData.count / pageSize) || 1,
+        });
+      } else {
+        setTempCertifications([]);
+      }
+    } catch (error) {
+      setError("Error al cargar las certificaciones");
+      setTempCertifications([]);
+    } finally {
+      setLoading(false);
+    }
+  },
+  []
+);
+
 
   useEffect(() => {
     updateHistoryState(debouncedSelectedTags);
-    loadCertifications();
-  }, [debouncedSelectedTags, loadCertifications]);
+    loadCertifications(1, 15, debouncedSelectedTags);
+  }, [debouncedSelectedTags]);
+
 
   useEffect(() => {
+    window.scrollTo(0,0);
     if (!loading) {
       setCertifications(tempCertifications);
     }
@@ -312,44 +320,31 @@ function LibraryPage({ showRoutes = true }) {
     </div>
   );
 
-  // Ajustar el tamaño del contenedor del indice despues de un segundo
-  useEffect(() => {
-    const indexContainer = document.querySelector(".index-container");
-
-    if (indexContainer) {
-      setTimeout(() => {
-        indexContainer.classList.add("moved-index-container");
-      }, 1000);
-    }
-  }, []);
-
-
-
   return (
     <>
-      {/**SEO ELEMENTS WITH REACT -HELMET */}
-      <Helmet>
-        <title>Certificaciones | Top Education</title>
-        <meta
-          name="description"
-          content="Explora más de 13,000 certificaciones de las mejores universidades y empresas líderes del mundo.   "
-        />
-        <meta
-          property="og:title"
-          content="Top Education | Aprende con edX, Coursera y MasterClass"
-        />
-        <meta name="author" content="Top Education" />
-        <meta name="robots" content="index, follow" />
-        <meta
-          property="og:description"
-          content="Explora más de 13,000 certificaciones de las mejores universidades y empresas líderes del mundo."
-        />
-        <meta property="og:type" content="website" />
-      </Helmet>
-      <div className="preLoad"></div>
-      <SearchBar />
+    {/**SEO ELEMENTS WITH REACT -HELMET */}
+    <Helmet>
+      <title>Certificaciones | Top Education</title>
+      <meta
+        name="description"
+        content="Explora más de 13,000 certificaciones de las mejores universidades y empresas líderes del mundo.   "
+      />
+      <meta
+        property="og:title"
+        content="Top Education | Aprende con edX, Coursera y MasterClass"
+      />
+      <meta name="author" content="Top Education" />
+      <meta name="robots" content="index, follow" />
+      <meta
+        property="og:description"
+        content="Explora más de 13,000 certificaciones de las mejores universidades y empresas líderes del mundo."
+      />
+      <meta property="og:type" content="website" />
+    </Helmet>
+    <div className="preLoad"></div>
+    <SearchBar />
       
-      <div className="cont-explora">
+    <div className="cont-explora px-0 lg:px-10">
       <div className={`wrapper-logo-platforms ${
           isSmallScreen ? "small-screen" : ""
         }`}
@@ -374,7 +369,7 @@ function LibraryPage({ showRoutes = true }) {
             <img src="assets/Plataformas/masterclass-logo.png" />
           </div>
           <div className="container-logo"
-            onClick={() => handleBannerClick("Plataforma", "Nuevo en Top.Education")}>Nuevo en&nbsp;<span id="top">Top.</span><span id="education">Education</span>
+            onClick={() => handleBannerClick("Plataforma", "Nuevo en Top.education")}>Nuevo en<span id="top">top.</span><span id="education">education</span>
           </div>
         </div>
       </div>
@@ -570,17 +565,16 @@ function LibraryPage({ showRoutes = true }) {
           <PaginationControls />
         </div>
       </div>
-      {showRoutes && (
-        <div className="container-routes-section">
-          <div className="container-title-search">
-                <h2>¿Encontraste lo que estabas buscando?</h2>
-            </div>
-            <p>Quizás te interese explorar nuestras Rutas del Conocimiento, donde podrás seguir el camino de grandes figuras históricas y aprender de los mejores en cada campo. ¡Descubre cursos inspirados en Einstein, Da Vinci, Marie Curie y más!</p>
-
-          <RoutesComponent  images={images} />
+    </div>
+    {showRoutes && (
+      <section className="wrapper ">
+        <div className="container m-auto pt-14 pb-14 xl:pt-7 lg:pt-7 xl:pb-20 lg:pb-10 md:pb-10">
+          <h2>¿Encontraste lo que estabas buscando?</h2>
+          <p>Quizás te interese explorar nuestras Rutas del Conocimiento, donde podrás seguir el camino de grandes figuras históricas y aprender de los mejores en cada campo. ¡Descubre cursos inspirados en Einstein, Da Vinci, Marie Curie y más!</p>
+          <HeroSlider authors={authors} />
         </div>
-      )}
-      </div>
+      </section>
+    )}
     </>
   );
 }
