@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import {
-
   BrowserRouter as Router,
   Routes,
   Route,
@@ -18,8 +17,6 @@ import TopEducationLayout from "./layouts/topeducation/topEducationLayout.js";
 import CafamLayout from "./layouts/cafam/cafamLayout.js";
 import ParaEquipos from "./pages/paraEquipos.jsx";
 import StartNow from "./pages/startNow.jsx";
-import EdxCertificationPage from "./pages/EdxCertificationPage.jsx";
-import MasterClassPage from "./pages/MasterClassPage.jsx";
 import RutasConocimiento from "./pages/RutasConocimiento.jsx";
 import BlogDetailPage from "./pages/BlogDetailPage.jsx";
 
@@ -55,11 +52,11 @@ function App() {
           <Route path="/recursos/:slug" element={<BlogDetailPage />} />
           <Route
             path="/certificacion/masterclass/:slug"
-            element={<MasterClassPage />}
+            element={<CertificationPage />}
           />
           <Route
             path="/certificacion/edx/:slug"
-            element={<EdxCertificationPage />}
+            element={<CertificationPage />}
           />
           <Route
             path="/certificacion/coursera/:slug"

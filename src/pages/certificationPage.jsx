@@ -395,33 +395,7 @@ const CertificationPage = () => {
                                 <RightPop />
                             )
                         )}
-                        {/*<div className="contenedor-promotion">
-                            <div className="promotion-img">
-                                <img src="/assets/banners/promotion-banner.jpg" />
-                            </div>
-                            <div className="promotion-text p-8">
-                                <h2 className="text-size-24 md:text-2xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">Con Top Education, ahorras dinero y tienes más contenidos</h2>
-                                <p className="text-center">Imagina tener acceso ilimitado al catalogo de edX, Masterclass, y Coursera, todo en una sola plataforma y por menos de la mitad del precio que pagarias por las tres plataformas.</p>
-                                <button className="btn btn-col-2 font-bold py-2 px-4 rounded-full">¡Únete ahora!</button>
-                            </div>
-                        </div>
-                        <div className="px-8 pb-8 w-full">
-                            <h2 className="text-size-20 md:text-2xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">Explora áreas del conocimiento</h2>
-                            <div id="wrapper-show-areas">
-
-                                <div className="area-circle-object">
-                                    <img src="/assets/Areas-Conocimiento/area-conocimiento-1.png" alt="Área de Conocimiento 1" />
-                                </div>
-
-                                <div className="area-circle-object">
-                                    <img src="/assets/Areas-Conocimiento/area-conocimiento-2.png" alt="Área de Conocimiento 1" />
-                                </div>
-                                <div className="area-circle-object">
-                                    <img src="/assets/Areas-Conocimiento/area-conocimiento-3.png" alt="Área de Conocimiento 1" />
-                                </div>
-
-                            </div>
-                        </div>*/}
+                        
                     </div>
                     <div className="lg:col-start-1 lg:col-span-12 border-1 border-[#ECECEC] rounded-[15px] bg-[#F6F4EF] p-2 lg:p-8 z-1 order-3 ">
                         <h2 className="text-size-3xl md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">Clases recomendadas para ti</h2>
