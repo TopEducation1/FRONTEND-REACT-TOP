@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import LoadingPage from "../../components/LoadingPage.jsx";
-import SmoothScrollProvider from '../../components/SmoothScrollProvider';
 import Header from "../../components/header.jsx";
 import "../../index.css";
 import Footer from "../../components/Footer.jsx";
@@ -70,7 +69,6 @@ function TopEducationLayout() {
       openIndexResponsiveMenu={openIndexResponsiveMenu}
       isMenuOpen={isMenuOpen}
     />
-    {/*<SmoothScrollProvider />*/}
     <main>
       <Outlet
         context={{
