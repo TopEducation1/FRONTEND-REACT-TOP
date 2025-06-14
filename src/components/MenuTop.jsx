@@ -1,16 +1,16 @@
 import { NavLink, useLocation,useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
+
+import Lenis from '@studio-freight/lenis';
+
 import { FaChevronRight } from "react-icons/fa";
 
-import IndexCategories from "./IndexCategories";
-
-const MenuTop = () => {
+const MenuTop = ({toggleMenu}) => {
   const location = useLocation();
   const [showSubmenu, setShowSubmenu] = useState(false);
   const navigate = useNavigate();
 
   const isActive = (path) => location.pathname === path;
-
   const menuItems = [
     /*{ name: 'Inicio', path: '/',classItem:'item-inicio' },*/
     { name: 'Explora', path: '/explora', isDropdown: true,classItem: 'item-explora' },
@@ -18,25 +18,25 @@ const MenuTop = () => {
     { name: 'Para equipos', path: '/para-equipos',classItem: 'item-equipos' },
     { name: 'Empieza ahora', path: '/empieza-ahora',classItem: 'item-empezar' },
   ];
-
+  
   const exploraSubmenu = {
     Plataforma: [
-      { img: '/assets/category/EdX.png', text:'EdX', type:'Plataforma',tag:'EdX' },
-      { img: '/assets/category/Coursera.png', text:'Coursera', type:'Plataforma',tag:'Coursera'},
-      { img: '/assets/category/Masterclass.png', text:'Masterclass', type:'Plataforma',tag:'MasterClass'},
+      { img: '/assets/platforms/icons/icon-edx.png', text:'EdX', type:'Plataforma',tag:'EdX' },
+      { img: '/assets/platforms/icons/icon-coursera.png', text:'Coursera', type:'Plataforma',tag:'Coursera'},
+      { img: '/assets/platforms/icons/icon-masterclass.png', text:'Masterclass', type:'Plataforma',tag:'MasterClass'},
     ],
     Temas: [
-      { img: '/assets/category/Aprendizaje de idioma.png', text: 'Aprendizaje de idioma', type:'Tema',tag:'Aprendizaje de idioma' },
-      { img: '/assets/category/Arte y humanidades.png', text: 'Arte y humanidades', type:'Tema',tag:'Arte y humanidades' },
-      { img: '/assets/category/Ciencias de datos.png', text: 'Ciencias de datos', type:'Tema',tag:'Ciencias de datos' },
-      { img: '/assets/category/Ciencias de la computación.png', text: 'Ciencias de la computación', type:'Tema',tag:'Ciencias de la computación' },
-      { img: '/assets/category/Ciencias sociales.png', text: 'Ciencias Sociales', type:'Tema',tag:'Ciencias Sociales' },
-      { img: '/assets/category/Ciencia física e ingeniería.png', text: 'Ciencia física e ingeniería', type:'Tema',tag:'Ciencia física e ingeniería' },
-      { img: '/assets/category/Desarrollo personal.png', text: 'Desarrollo personal', type:'Tema',tag:'Desarrollo personal' },
-      { img: '/assets/category/Matemáticas y lógica.png', text: 'Matemáticas y lógica', type:'Tema',tag:'Matemáticas y lógica' },
-      { img: '/assets/category/Negocios.png', text: 'Negocios', type:'Tema',tag:'Negocios' },
-      { img: '/assets/category/Salud.png', text: 'Salud', type:'Tema',tag:'Salud' },
-      { img: '/assets/category/Tecnología de la información.png', text: 'Tecnología de la información', type:'Tema',tag:'Tecnología de la información' }
+      { img: '/assets/category/topic/Aprendizaje-de-idioma.png', text: 'Aprendizaje de idioma', type:'Tema',tag:'Aprendizaje de idioma' },
+      { img: '/assets/category/topic/Arte-y-humanidades.png', text: 'Arte y humanidades', type:'Tema',tag:'Arte y humanidades' },
+      { img: '/assets/category/topic/Ciencias-de-datos.png', text: 'Ciencias de datos', type:'Tema',tag:'Ciencias de datos' },
+      { img: '/assets/category/topic/Ciencias-de-la-computacion.png', text: 'Ciencias de la computación', type:'Tema',tag:'Ciencias de la computación' },
+      { img: '/assets/category/topic/Ciencias-sociales.png', text: 'Ciencias Sociales', type:'Tema',tag:'Ciencias Sociales' },
+      { img: '/assets/category/topic/Ciencia-fisica-e-ingenieria.png', text: 'Ciencia física e ingeniería', type:'Tema',tag:'Ciencia física e ingeniería' },
+      { img: '/assets/category/topic/Desarrollo-personal.png', text: 'Desarrollo personal', type:'Tema',tag:'Desarrollo personal' },
+      { img: '/assets/category/topic/Matematicas-y-logica.png', text: 'Matemáticas y lógica', type:'Tema',tag:'Matemáticas y lógica' },
+      { img: '/assets/category/topic/Negocios.png', text: 'Negocios', type:'Tema',tag:'Negocios' },
+      { img: '/assets/category/topic/Salud.png', text: 'Salud', type:'Tema',tag:'Salud' },
+      { img: '/assets/category/topic/Tecnologia-de-la-informacion.png', text: 'Tecnología de la información', type:'Tema',tag:'Tecnología de la información' }
     ],
     Habilidades: [
       { img: '/assets/category/Bienestar.png', text: 'Bienestar', type:'Habilidad',tag:'Bienestar' },
@@ -63,7 +63,7 @@ const MenuTop = () => {
         { img: '/assets/category/TE-University of Pennsylvania.webp', text: 'University of Pennsylvania', type:'Universidad',tag:'University of Pennsylvania' },
         { img: '/assets/category/TE-Universidad Nacional de Colombia.webp', text: 'Universidad Nacional de Colombia', type:'Universidad',tag:'Universidad Nacional de Colombia' },
         { img: '/assets/category/TE-Tecnológico de Monterrey.webp', text: 'Tecnológico de Monterrey', type:'Universidad',tag:'Tecnológico de Monterrey' },
-        { img: '/assets/category/TE-Universidad de los Andes.webp', text: 'Universidad de los Andes', type:'Universidad',tag:'TUniversidad de los Andes' },
+        { img: '/assets/category/TE-Universidad de los Andes.webp', text: 'Universidad de los Andes', type:'Universidad',tag:'Universidad de los Andes' },
         { img: '/assets/category/TE-Pontificia Universidad Católica del Perú.webp', text: 'Universidad Católica del Perú', type:'Universidad',tag:'Pontificia Universidad Católica del Perú' },
         { img: '/assets/category/TE-Universidad Anáhuac.webp', text: 'Universidad Anáhuac', type:'Universidad',tag:'Universidad Anáhuac' },
         { img: '/assets/category/TE-Pontificia Universidad Católica de Chile.webp', text: 'Universidad Católica de Chile', type:'Universidad',tag:'Pontificia Universidad Católica de Chile' },
@@ -73,14 +73,13 @@ const MenuTop = () => {
       ]
   };
     const handleItemMenuClick = (category, tag) => {
-        console.log(category, tag);
-        const initialTags = {
-            [category]: [tag]
-        };
-        navigate('/explora/filter?page=1&page_size=15&', {
-            state: {selectedTags: initialTags},
-            replace: true
-        })
+      console.log(category, tag);
+
+      const categoryParam = category; // asegura que esté en minúsculas
+      const tagParam = encodeURIComponent(tag); // codifica y pone en minúscula
+
+      const query = `${categoryParam}=${tagParam}&page=1&page_size=15`;
+      navigate(`/explora/filter?${query}`);
     };
 
   return (
@@ -104,7 +103,7 @@ const MenuTop = () => {
                     <ul className="submenu-items">
                       {items.map((sub, idx) => (
                         <li key={idx} className="submenu-item">
-                            <a onClick={() => handleItemMenuClick(sub.type, sub.tag)}>
+                            <a onClick={() => handleItemMenuClick(sub.type, sub.tag)} >
                                 <img className='item-ico' src={sub.img} alt={sub.text || ''} />
                                 {sub.text && <span>{sub.text}</span>}
                             </a>

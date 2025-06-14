@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import LoadingPage from "../../components/LoadingPage.jsx";
+import SmoothScrollProvider from '../../components/SmoothScrollProvider';
 import Header from "../../components/header.jsx";
 import "../../index.css";
 import Footer from "../../components/Footer.jsx";
 import { Outlet, useLocation } from "react-router-dom";
 
 
-
 function TopEducationLayout() {
   const [isLoading, setIsLoading] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+
 
   const toggleMenu = () => {
     //console.log("Toggle Menu llamado, estado actual:", !isMenuOpen); // Debug
@@ -64,22 +65,22 @@ function TopEducationLayout() {
 
   return (
     <>
-        <Header
-          toggleMenu={toggleMenu}
-          openIndexResponsiveMenu={openIndexResponsiveMenu}
-          isMenuOpen={isMenuOpen}
-        />
-        <main>
-          <Outlet
-            context={{
-              isMenuOpen,
-              openIndexResponsiveMenu,
-              closeIndexResponsiveMenu,
-            }}
-          />
-        </main>
-        {shouldRenderFooter && <Footer />}
-        
+    <Header
+      toggleMenu={toggleMenu}
+      openIndexResponsiveMenu={openIndexResponsiveMenu}
+      isMenuOpen={isMenuOpen}
+    />
+    {/*<SmoothScrollProvider />*/}
+    <main>
+      <Outlet
+        context={{
+          isMenuOpen,
+          openIndexResponsiveMenu,
+          closeIndexResponsiveMenu,
+        }}
+      />
+    </main>
+    {shouldRenderFooter && <Footer />}   
     </>
   );
 }

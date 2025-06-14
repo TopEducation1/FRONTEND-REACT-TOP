@@ -1,24 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Link } from 'react-router-dom';
+import { Helmet } from "react-helmet";
 
-import SliderEditorial from "../components/SliderEditorial";
 import TopicCircles from "../components/TopicCircles";
 import TopicSelector from "../components/TopicSelector";
-import FlagsHome from "../components/FlagsHome";
-import RoutesComponent from "../components/RoutesComponent";
-
+import PlatformsSelector from "../components/PlatformsSelector";
 import ImageSlider3D from "../components/ImageSlider3D";
-
 import HeroSlider from "../components/HeroSlider";
-
-import MovingText from "../components/ComingSoon";
-import { Helmet } from "react-helmet";
-import { Link } from 'react-router-dom';
-
-import HomeGridBlogs from "../components/HomeGridBlogs";
+import Flags from "../components/Flags";
 import FinisherHeaderComponent from '../components/FinisherHeaderComponent';
 
 function HomePage() {
-
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [statePopUp, setStatePopUp] = useState(false);
   const videoRef = useRef(null);
@@ -55,137 +47,223 @@ function HomePage() {
       description: "Científica, pionera, radioactividad, premio nobel en quimica y fisica."
     }
   ];
+  const topics = [
+    {
+      name: 'Aprendizaje de idioma',
+      type: 'Tema',
+      img: 'assets/temas/Aprendizaje de idioma',
+      description: 'Aprender un idioma expande tu universo cultural y profesional. Conecta a través del inglés, francés, alemán y más, cultivando habilidades de comunicación global.',
+      universities: [
+        {
+          name: 'University of Michigan',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-University-of-Michigan.webp'
+        },{
+          name: 'Columbia University',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-Columbia-University.webp'
+        },
+        {
+          name: 'Universidad de los Andes',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+        }
+      ]
+    },
+    {
+      name: 'Arte y humanidades',
+      img: 'assets/temas/Arte y humanidades',
+      type: 'Tema',
+      description: 'Explora la historia, la filosofía y el arte para entender el sentido humano. Aprende análisis crítico, historia del arte y pensamiento ético.',
+      universities: [
+        {
+          name: 'Universidad Austral',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-Universidad-Austral.webp'
+        },
+        {
+          name: 'Yad Vashem',
+          type: 'Empresa',
+          img: 'assets/companies/icons/ico-Yad-Vashem.png'
+        },
+        {
+          name: 'Berklee college of music',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-Berklee-College-of-Music.webp'
+        }
+      ]
+    },{
+      name: 'Ciencias de datos',
+      type: 'Tema',
+      img: 'assets/temas/Ciencias de datos',
+      description: 'Descifra patrones y genera valor con la información. Domina herramientas como SQL, Python, Power BI y la lógica detrás de la ciencia de datos.',
+      universities: [
+        {
+          name: 'UNAM',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-UNAM.webp'
+        },
+        {
+          name: 'Google',
+          type: 'Empresa',
+          img: 'assets/companies/icons/ico-Google-Cloud.png'
+        },
+        {
+          name: 'Universidad de los Andes',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+        }
+      ]
+    },
+  ];
+
+  const platforms = [
+    {
+      name: 'EdX',
+      type: 'Plataforma',
+      img: 'assets/platforms/icons/icon-edx.png',
+      description: 'Su objetivo es hacer la educación de calidad accesible para todos.',
+      universities: [
+        {
+          name: 'Harvard University',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-Harvard.webp'
+        },{
+          name: 'Stanford University',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-Stanford-University.webp'
+        },{
+          name: 'Columbia University',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-Columbia-University.webp'
+        },{
+          name: 'IBM',
+          type: 'Empresa',
+          img: 'assets/companies/icons/ico-IBM.png'
+        },{
+          name: 'Microsoft',
+          type: 'Empresa',
+          img: 'assets/companies/icons/ico-Microsoft.png'
+        },{
+          name: 'Google',
+          type: 'Universidad',
+          img: 'assets/companies/icons/ico-Google-Cloud.png'
+        }
+      ]
+    },
+    {
+      name: 'Coursera',
+      img: '/assets/platforms/icons/icon-coursera.png',
+      type: 'Plataforma',
+      description: 'Plataforma en línea que brinda cursos y certificaciones de universidades y empresas líderes a nivel global.',
+      universities: [
+        {
+          name: 'Yale University',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-Yale-University.webp'
+        },
+        {
+          name: 'University of Michigan',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-University-of-Michigan.webp'
+        },
+        {
+          name: 'University of Illinois Urbana Champaign',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-University-of-Illinois-Urbana-Champaign.webp'
+        }
+      ]
+    },{
+      name: 'MasterClass',
+      type: 'Plataforma',
+      img: '/assets/platforms/icons/icon-masterclass.png',
+      description: 'Plataforma en línea que ofrece clases impartidas por expertos y celebridades en diversas áreas como arte, cocina, cine y más.',
+      universities: [
+        {
+          name: 'Bienestar',
+          type: 'Habilidad',
+          img: '/assets/category/ability/Bienestar.png'
+        },
+        {
+          name: 'Estrategia',
+          type: 'Habilidad',
+          img: '/assets/category/ability/Estrategia.png'
+        },
+        {
+          name: 'Liderazgo',
+          type: 'Habilidad',
+          img: '/assets/category/ability/Liderazgo.png'
+        },{
+          name: 'Personas y cultura',
+          type: 'Habilidad',
+          img: '/assets/category/ability/Personas-y-cultura.png'
+        },
+        {
+          name: 'Comunicación',
+          type: 'Habilidad',
+          img: '/assets/category/ability/Comunicacion.png'
+        }
+      ]
+    },
+  ];
 
   const flagsImages = [
     {
-      id: 1, src: "assets/flags/BA-TE-MICHIGAN.webp", category:"Universidad", link: "University of Michigan",title:"",desc:""
+      id: 1, src: "/assets/universities/flags/BA-TE-HARVARD.webp", category:"Universidad", link: "Harvard University",title:"",desc:""
     },{
-      id: 2, src: "assets/flags/BA-TE-BERKLEE.webp", category:"Universidad", link: "Berklee College of Music",title:"",desc:""
+      id: 2, src: "/assets/universities/flags/BA-TE-NACIONAL.webp", category:"Universidad", link: "Universidad Nacional de Colombia",title:"",desc:""
     },{
-      id: 3, src: "assets/flags/BA-TE-PEKING.webp", category:"Universidad", link: "Peking University",title:"",desc:""
+      id: 3, src:"/assets/universities/flags/BA-TE-TORONTO.webp", category:"Universidad", link: "University of Toronto",title:"",desc:""
     },{
-      id: 4, src: "assets/flags/BA-TE-COLUMBIA.webp", category:"Universidad", link: "Columbia University",title:"",desc:""
+      id: 4, src: "/assets/universities/flags/BA-TE-ANDES.webp", category:"Universidad", link: "Universidad de los Andes",title:"",desc:""
     },{
-      id: 5, src: "assets/flags/BA-TE-HARVARD.webp", category:"Universidad", link: "Harvard University",title:"",desc:""
+      id: 5, src: "/assets/universities/flags/BA-TE-YALE.webp", category:"Universidad", link: "Yale University",title:"",desc:""
     },{
-      id: 6, src: "assets/flags/BA-TE-YALE.webp", category:"Universidad", link: "Yale University",title:"",desc:""
+      id: 6, src: "/assets/universities/flags/BA-TE-PUCP.webp", category:"Universidad", link: "Pontificia Universidad Catolica de Peru",title:"",desc:""
     },{
-      id: 7, src:"assets/flags/BA-TE-STANFORD.webp", category:"Universidad", link: "Stanford University",title:"",desc:""
+      id: 7, src:"/assets/universities/flags/BA-TE-STANFORD.webp", category:"Universidad", link: "Stanford University",title:"",desc:""
     },{
-      id: 8, src: "assets/flags/BA-TE-NACIONAL.webp", category:"Universidad", link: "Universidad Nacional de Colombia",title:"",desc:""
+      id: 8, src:"/assets/universities/flags/BA-TE-AUSTRAL.webp", category:"Universidad", link: "Universidad Austral",title:"",desc:""
     },{
-      id: 9, src: "assets/flags/BA-TE-ANDES.webp", category:"Universidad", link: "Universidad de los Andes",title:"",desc:""
+      id: 9, src: "/assets/universities/flags/BA-TE-MICHIGAN.webp", category:"Universidad", link: "University of Michigan",title:"",desc:""
     },{
-      id: 10, src:"assets/flags/BA-TE-TORONTO.webp", category:"Universidad", link: "University of Toronto",title:"",desc:""
+      id: 10, src: "/assets/universities/flags/BA-TE-PEKING.webp", category:"Universidad", link: "Peking University",title:"",desc:""
     },{
-      id: 11, src:"assets/flags/BA-TE-NEW-MEXICO.webp", category:"Universidad", link: "University of New Mexico",title:"",desc:""
+      id: 11, src:"/assets/universities/flags/BA-TE-NEW-MEXICO.webp", category:"Universidad", link: "University of New Mexico",title:"",desc:""
     },{
-      id: 12, src:"assets/flags/BA-TE-PARSONS.webp", category:"Universidad", link: "Parsons School of Design, The New School",title:"",desc:""
+      id: 12, src: "/assets/universities/flags/BA-TE-ANAHUAC.webp", category:"Universidad", link: "Universidad Anáhuac",title:"",desc:""
     },{
-      id: 13, src:"assets/flags/BA-TE-VIRGINIA.webp", category:"Universidad", link: "University of Virginia",title:"",desc:""
+      id: 13, src: "/assets/universities/flags/BA-TE-COLUMBIA.webp", category:"Universidad", link: "Columbia University",title:"",desc:""
     },{
-      id: 14, src:"assets/flags/BA-TE-ILLINOIS.webp", category:"Universidad", link: "University of Illinois Urbana-Champaign",title:"",desc:""
+      id: 14, src:"/assets/universities/flags/BA-TE-CATOLICA-CHILE.webp", category:"Universidad", link: "Pontificia Universidad Catolica de Chile",title:"",desc:""
     },{
-      id: 15, src:"assets/flags/BA-TE-IRVINE.webp", category:"Universidad", link: "University of California, Irvine",title:"",desc:""
+      id: 15, src:"/assets/universities/flags/BA-TE-ILLINOIS.webp", category:"Universidad", link: "University of Illinois Urbana-Champaign",title:"",desc:""
     },{
-      id: 16, src:"assets/flags/BA-TE-NORTH-CAROLINA.webp", category:"Universidad", link: "The University of North Carolina at Chapel Hill",title:"",desc:""
+      id: 16, src: "/assets/universities/flags/BA-TE-MONTERREY.webp", category:"Universidad", link: "Tecnológico de Monterrey",title:"",desc:""
     },{
-      id: 17, src:"assets/flags/BA-TE-CHICAGO.webp", category:"Universidad", link: "Chicago University",title:"",desc:""
+      id: 17, src:"/assets/universities/flags/BA-TE-VIRGINIA.webp", category:"Universidad", link: "University of Virginia",title:"",desc:""
     },{
-      id: 18, src:"assets/flags/BA-TE-NORTHWESTERN.webp", category:"Universidad", link: "Northwestern University",title:"",desc:""
+      id: 18, src: "/assets/universities/flags/BA-TE-AUTONOMA-MEXICO.webp", category:"Universidad", link: "UNAM",title:"",desc:""
     },{
-      id: 19, src:"assets/flags/BA-TE-COLORADO.webp", category:"Universidad", link: "University of Colorado Boulder",title:"",desc:""
+      id: 19, src:"/assets/universities/flags/BA-TE-NORTH-CAROLINA.webp", category:"Universidad", link: "The University of North Carolina at Chapel Hill",title:"",desc:""
     },{
-      id: 20, src: "assets/flags/BA-TE-MONTERREY.webp", category:"Universidad", link: "Tecnológico de Monterrey",title:"",desc:""
+      id: 20, src:"/assets/universities/flags/BA-TE-SEA.webp", category:"Universidad", link: "SAE-México",title:"",desc:""
     },{
-      id: 21, src: "assets/flags/BA-TE-PUCP.webp", category:"Universidad", link: "Pontificia Universidad Católica del Perú",title:"",desc:""
+      id: 21, src:"/assets/universities/flags/BA-TE-CHICAGO.webp", category:"Universidad", link: "The University of Chicago",title:"",desc:""
     },{
-      id: 22, src: "assets/flags/BA-TE-AUTONOMA-MEXICO.webp", category:"Universidad", link: "HUNAM",title:"",desc:""
+      id: 22, src: "/assets/universities/flags/BA-TE-BERKLEE.webp", category:"Universidad", link: "Berklee College of Music",title:"",desc:""
     },{
-      id: 23, src: "assets/flags/BA-TE-ANAHUAC.webp", category:"Universidad", link: "Universidad Anáhuac",title:"",desc:""
+      id: 23, src:"/assets/universities/flags/BA-TE-PARSONS.webp", category:"Universidad", link: "Parsons School of Design, The New School",title:"",desc:""
     },{
-      id: 24, src:"assets/flags/BA-TE-SEA.webp", category:"Universidad", link: "SAE Institute México",title:"",desc:""
+      id: 24, src:"/assets/universities/flags/BA-TE-COLORADO.webp", category:"Universidad", link: "University of Colorado Boulder",title:"",desc:""
     },{
-      id: 25, src:"assets/flags/BA-TE-CATOLICA-CHILE.webp", category:"Universidad", link: "Pontificia Universidad Católica de Chile",title:"",desc:""
+      id: 25, src:"/assets/universities/flags/BA-TE-IRVINE.webp", category:"Universidad", link: "University of California, Irvine",title:"",desc:""
     },{
-      id: 26, src:"assets/flags/BA-TE-AUSTRAL.webp", category:"Universidad", link: "Universidad Austral",title:"",desc:""
+      id: 26, src:"/assets/universities/flags/BA-TE-NORTHWESTERN.webp", category:"Universidad", link: "Northwestern University",title:"",desc:""
     }
   ];
 
-
-  const handleMouseMove = (e) => {
-    const container = e.currentTarget;
-    const rect = container.getBoundingClientRect();
-
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-
-    setMousePosition({ x, y });
-  };
-
-
-  const StarSVG = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="60"
-      height="60"
-      viewBox="0 0 48 48"
-      fill="none"
-    >
-      <g filter="url(#filter0_d_625_539)">
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M12.0175 22.9568C19.6174 23.6036 24.3451 19.6176 24.9919 12.0177C24.3451 19.6176 28.3311 24.3452 35.931 24.9921C28.3311 24.3452 23.6035 28.3313 22.9566 35.9312C23.6035 28.3313 19.6174 23.6036 12.0175 22.9568Z"
-          fill="white"
-        />
-      </g>
-      <defs>
-        <filter
-          id="filter0_d_625_539"
-          x="0.0175781"
-          y="0.0175781"
-          width="47.9136"
-          height="47.9136"
-          filterUnits="userSpaceOnUse"
-          colorInterpolationFilters="sRGB"
-        >
-          <feFlood floodOpacity="0" result="BackgroundImageFix" />
-          <feColorMatrix
-            in="SourceAlpha"
-            type="matrix"
-            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-            result="hardAlpha"
-          />
-          <feOffset />
-          <feGaussianBlur stdDeviation="6" />
-          <feComposite in2="hardAlpha" operator="out" />
-          <feColorMatrix
-            type="matrix"
-            values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
-          />
-          <feBlend
-            mode="normal"
-            in2="BackgroundImageFix"
-            result="effect1_dropShadow_625_539"
-          />
-          <feBlend
-            mode="normal"
-            in="SourceGraphic"
-            in2="effect1_dropShadow_625_539"
-            result="shape"
-          />
-        </filter>
-      </defs>
-    </svg>
-  );
-  
-
-  const toggleVisibility = () => {
-
-    setStatePopUp((prev) => !prev);
-  };
-
+ 
   useEffect(() => {
 
     if (statePopUp && videoRef.current) {
@@ -215,16 +293,13 @@ function HomePage() {
         <meta property="og:type" content="website" />
       </Helmet>
       <FinisherHeaderComponent />
-      <div id="second-home-section" className="container dark:bg-black-900 mx-auto px-4 justify-center-safe gap-2 ">
-        <div id="upper-section">
-          <h2 className="text-white text-7xl font-normal leading-20 relative">
-            Explora +13.000 certificaciones{" "}
-            <span className="font-bold text-white">y crea tu propia ruta de aprendizaje.</span>
+      <div class="bg-gradient-to-t from-neutral-950 relative h-30"></div>
+      <section className="wrapper bg-neutral-950 relative section">
+        <div className="container m-auto px-2 lg:px-4 py-15 justify-center-safe gap-2">
+          <h2 className="index-text text-white text-4xl lg:text-7xl text-center font-normal leading-[1.2em] mb-10">Explora +13.000 certificaciones<br></br>
+            <span className="font-bold text-white text-3xl lg:text-6xl leading-[1.2em]"> y crea tu propia ruta de aprendizaje.</span>
           </h2>
-        </div>
-        <div className="mx-auto px-4 justify-center-safe gap-2 " >
-          <h2>Temas</h2>
-          <div className="block-circles">
+          <div className="grid grid-cols-3 lg:grid-cols-8 md:grid-cols-5 content-start justify-items-center gap-4">
             <TopicCircles topic="Aprendizaje de idioma" type="Tema" tag="Aprendizaje de idioma" />
             <TopicCircles topic="Arte y humanidades" type="Tema" tag="Arte y humanidades" />
             <TopicCircles topic="Ciencias de datos" type="Tema" tag="Ciencias de datos" />
@@ -248,51 +323,43 @@ function HomePage() {
             <TopicCircles topic="Productividad" type="Habilidad" tag="Productividad"/>
             <TopicCircles topic="Trabajo en equipo" type="Habilidad" tag="Trabajo en equipo"/>
           </div>
-          <TopicSelector/>
+          <TopicSelector topics={topics} />
         </div>
-      </div>
-      <div className="container m-auto py-30 px-5">
-        <h2 className="text-white text-5xl lg:text-6xl font-normal text-center italic w-[100%] lg:w-[80%] m-auto leading-15 z-10 relative">Aprende con las universidades líderes del mundo</h2>
-        <ImageSlider3D images={flagsImages} action="explora" />
-      </div>
-      {/*<div className="container m-auto py-40">
-        <h2 className="text-white text-6xl font-normal text-center leading-15 z-10 relativee">Editorial Top Education</h2>
-        <p className="text-white text-2xl font-normal text-center leading-10 z-10 relative">
-          Descarga gratis nuestros recursos exclusivos. Encuentra la información
-          que necesitas para alcanzar tus metas educativas, personales y
-          profesionales. Te ofrecemos herramientas poderosas para enriquecer tu
-          vida y potenciar tu crecimiento.
-        </p>
-        <SliderEditorial />
-      </div>*/}
-      <div id="seventh-home-section">
-        <img id="ellipse-red" src="/assets/Piezas/ellipse-red.png" alt="" />
-        <h2 className="text-black text-7xl font-normal leading-20">Explora y aprende</h2>
-        <HomeGridBlogs />
-        <Link to="/recursos" >
-          <button id="button-all-articles">Ver más artículos</button>
-        </Link>
-      </div>
-      {/*<MovingText />*/}
-      <section className="wrapper ">
-        <div className="container m-auto relative text-center">
+      </section>
+      <section className="wrapper bg-neutral-950 relative section">
+        <div className="container m-auto py-30 px-5">
+          <h2 className="text-white text-4xl lg:text-6xl font-normal text-center italic w-[100%] lg:w-[80%] m-auto leading-[1.2em] relative">Aprende con las universidades líderes del mundo</h2>
+          <ImageSlider3D images={flagsImages} action="explora" />
+        </div>
+      </section>
+      <section className="wrapper relative section">
+        <div className="container m-auto  text-center">
           <div className="rounded-lg border-1 border-white px-5 py-10 lg:px-10 bg-[#0F090B]/90">
             <h2 className="text-white text-center text-5xl font-normal leading-[1.2em] mb-5">Forma equipos que <span className="italic">aprenden y crecen</span></h2>
             <p className="text-white text-center text-2xl mb-5">Potencia las habilidades de tu equipo con certificaciones clave y seguimiento en tiempo real. Con Top Education para Equipos, accede a contenido exclusivo de MasterClass, edX y Coursera, y maximiza su productividad y crecimiento.</p>
-            <div className="grid grid-cols-3 w-[100%] lg:w-[50%] m-auto gap-4 mb-10 !text-center">
-              <div className="flex justify-center"><img className="w-[120px]" src="assets/platforms/icon-coursera.png" alt="" /></div>
-              <div className="flex justify-center"><img className="w-[120px]" src="assets/platforms/icon-edx.png" alt="" /></div>
-              <div className="flex justify-center"><img className="w-[120px]" src="assets/platforms/icon-masterclass.png" alt="" /></div>
-              
+            <div className="w-[100%] lg:w-[50%] m-auto gap-4 mb-10 !text-center">
+              {/*<div className="flex justify-center"><img className="w-[120px]" src="assets/platforms/icons/icon-coursera.png" alt="" /></div>
+              <div className="flex justify-center"><img className="w-[120px]" src="assets/platforms/icons/icon-edx.png" alt="" /></div>
+              <div className="flex justify-center"><img className="w-[120px]" src="assets/platforms/icons/icon-masterclass.png" alt="" /></div>*/}
+              <PlatformsSelector platforms={platforms} />
             </div>
-            <a className="btn btn-col-3 py-3 px-5 m-auto text-[18px] lg:text-2xl">Conoce<span id="top">top</span><span id="education">.education</span> para equipos</a>
+            <Link to="/para-equipos"  className="btn btn-col-3 py-3 px-5 m-auto text-[18px] lg:text-2xl">Conoce<span id="top">top</span><span id="education">.education</span> para equipos</Link>
           </div>
           
         </div>
       </section>
-      <div className="container m-auto pt-20">
-        <HeroSlider authors={authors} />
+      <div className="pt-5 xl:pt-5 lg:pt-5 pb-[4.5rem] xl:pb-5 lg:pb-5 md:pb-10 relative bg-[#0F090B]">
+          <div id="seventh-leader-section">
+              <h2 className="text-white text-center text-4xl leading-[1.2em] lg:text-5xl font-normal font-[Lora] w-full">Trabajamos con líderes de la industria</h2>
+              <Flags direction="left" />  
+              <Flags direction="right" />          
+          </div>
       </div>
+      <section className="wrapper relative section">
+        <div className="container m-auto">
+          <HeroSlider authors={authors} />
+        </div>
+      </section>
     </>
   );
 }

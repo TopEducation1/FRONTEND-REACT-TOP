@@ -5,7 +5,6 @@ import { useCallback } from 'react';
 // Uso de memo => Evita que el componente se renderice si sus props no cambian (Se usa para optimización al momento de cargar las certificaciones)
 const CertificationsList = memo(({ certifications }) => {
     const navigate = useNavigate();
-    const host = window.location.hostname;
     const [error, setError] = useState(null);
 
     const handleImageError = (e) => {        
@@ -21,23 +20,7 @@ const CertificationsList = memo(({ certifications }) => {
                 throw new Error('No certification data provided');
             }
 
-            let path;
-            // Define the path based on the platform ID
-            switch (certification.plataforma_certificacion_id) {
-                case 1:
-                    path = `/certificacion/edx/${certification.slug}`;
-                    break;
-                case 2:
-                    path = `/certificacion/coursera/${certification.slug}`;
-                    break;
-                case 3:
-                    path = `/certificacion/masterclass/${certification.slug}`;
-                    break;
-                default:
-                    // Fallback to generic path if platform ID is not recognized
-                    path = `/certificacion/${certification.slug}`;
-            }
-
+            let path  = `/certificacion/${certification.plataforma_certificacion.nombre.toLowerCase()}/${certification.slug}`;
             navigate(path);
         } catch (err) {
             console.error('Navigation error:', err);

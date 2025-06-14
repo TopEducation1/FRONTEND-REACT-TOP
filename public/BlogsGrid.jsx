@@ -62,7 +62,6 @@ const BlogsGrid = () => {
         }
     };
 
-
     const handlePageChange = (newPage) => {
 
         if (newPage => 1 && newPage <= pagination.total_pages) {
@@ -71,59 +70,35 @@ const BlogsGrid = () => {
     };  
 
     if (!Array.isArray(blogs)) {
-
         return <div className="error-message">Error: No se puedieron cargar los blogs</div>;
-
     }
 
     return (
         <>
-            <div id="wrapper-grid-blogs">
-                <div className='grid grid-cols-3 gap-4'>
-                    {blogs.map(blog => {
-                        // Usar la URL de miniatura_blog si está disponible, de lo contrario usar una imagen por defecto
-                        const imageUrl = blog.miniatura_blog || "/assets/Piezas/demo-blog.png";
-                        return (
-
-                            <div
-                                onClick={() => handleBlogClick(blog)}
-                                key={blog.id}
-                                className='blog-card'
-                            >
-
-                                <div id="wrapper-image-card-blog">
-                                    <img src={imageUrl} alt={blog.nombre_blog} />
-                                </div>
-                                <div id="wrapper-title-card-blog">
-                                    <h2 className='text-white'>{blog.nombre_blog}</h2>
-                                </div>
+        <div id="wrapper-grid-blogs">
+            <div className='grid grid-cols-3 gap-4'>
+                {blogs.map(blog => {
+                    // Usar la URL de miniatura_blog si está disponible, de lo contrario usar una imagen por defecto
+                    const imageUrl = blog.miniatura_blog || "/assets/Piezas/demo-blog.png";
+                    return (
+                        <div onClick={() => handleBlogClick(blog)} key={blog.id} className='blog-card'>
+                            <div id="wrapper-image-card-blog">
+                                <img src={imageUrl} alt={blog.nombre_blog} />
                             </div>
-
-                        );
-                    })}
-
-                </div>
-
-
-                {/*Controles para la paginación de los blogs */}
-                <div id="pagination-controls">
-                    <button
-                     onClick={() => handlePageChange(pagination.current_page -1)}
-                     disabled={pagination.current_page === 1}
-                    >
-                       Anterior
-                    </button>
-                    <span>
-                        Pagina {pagination.current_page} de {pagination.total_pages}
-                    </span>
-                    <button
-                        onClick={() => handlePageChange(pagination.current_page +1)}
-                        disabled={pagination.current_page === pagination.total_pages}
-                    >
-                        Siguiente
-                    </button>
-                </div>
+                            <div id="wrapper-title-card-blog">
+                                <h2 className='text-white'>{blog.nombre_blog}</h2>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
+            {/*Controles para la paginación de los blogs */}
+            <div id="pagination-controls">
+                <button onClick={() => handlePageChange(pagination.current_page -1)} disabled={pagination.current_page === 1}>Anterior</button>
+                <span>Página {pagination.current_page} de {pagination.total_pages} </span>
+                <button onClick={() => handlePageChange(pagination.current_page +1)} disabled={pagination.current_page === pagination.total_pages}>Siguiente</button>
+            </div>
+        </div>
         </>
     );
 };
