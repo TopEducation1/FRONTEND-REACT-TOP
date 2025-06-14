@@ -23,7 +23,6 @@ import MasterClassPage from "./pages/MasterClassPage.jsx";
 import RutasConocimiento from "./pages/RutasConocimiento.jsx";
 import BlogDetailPage from "./pages/BlogDetailPage.jsx";
 
-
 function App() {
   useEffect(() => {
     document.title = "Top Education";
@@ -56,11 +55,11 @@ function App() {
           <Route path="/recursos/:slug" element={<BlogDetailPage />} />
           <Route
             path="/certificacion/masterclass/:slug"
-            element={<CertificationPage />}
+            element={<MasterClassPage />}
           />
           <Route
             path="/certificacion/edx/:slug"
-            element={<CertificationPage />}
+            element={<EdxCertificationPage />}
           />
           <Route
             path="/certificacion/coursera/:slug"

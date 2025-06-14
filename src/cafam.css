@@ -2,7 +2,7 @@
 
 /*VARIABLES DE COLOR Y DIMENSION*/
 :root {
-  --blancoPlatform: #FFFF;
+  --blanco: #FFFF;
   --blancoRGB: 246,244,239;
   --negroPlatform: black;
   --negroRGB: 0,0,0;
@@ -47,7 +47,7 @@
   flex-wrap: wrap;
   justify-content: center;
   align-content: space-between;
-  background: var(--blancoPlatform);
+  background: var(--blanco);
   border-radius: var(--esquinaSm);
   border: 1px solid var(--azulPlataforma);
   cursor: pointer;
@@ -1144,7 +1144,7 @@ body.cafam-layout {
     justify-content: center;
     align-items: center;
     font-size: 15px;
-    color: var(--blancoPlatform);
+    color: var(--blanco);
     background-color: var(--azulPlataforma);
   }
   

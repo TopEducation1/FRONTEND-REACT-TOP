@@ -1,5 +1,6 @@
 import React, {  useEffect } from "react";
 import Flags from "../components/Flags";
+import SliderMasterClass from "../components/SliderMasterClass";
 import ImageSlider3D from "../components/ImageSlider3D";
 import { Helmet } from "react-helmet";
 
@@ -44,7 +45,7 @@ function ParaEquipos () {
                 <meta property="og:description" content="Potencia tu perfil profesional con una suscripción a Top Education. Accede a +13,000 certificaciones y recursos exclusivos para transformar tu futuro." />
                 <meta property="og:type" content="website" />
             </Helmet>
-            <section className="wrapper">
+            <section className="wrapper ">
                 <div className="container m-auto h-screen mx-auto flex justify-center items-center gap-2 sect-h-pequ">
                     <span class="w-5/15 lg:w-5/15 aspect-square bg-gradient-to-tr from-red-500 to-red-900 absolute top-30 lg:left-50 rounded-full skew-y-0 blur-2xl opacity-40 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
                     <div>
@@ -53,7 +54,7 @@ function ParaEquipos () {
                     </div>
                 </div>
             </section>
-            <section className="wrapper">
+            <section className="wrapper ">
                 <div className="container m-auto !pb-[4.5rem] xl:!pb-24 lg:!pb-24 md:!pb-24">
                     <div className="flex flex-wrap mx-[-15px] xl:mx-[-35px] lg:mx-[-20px] !mt-[-50px] items-center">
                         <div className="xl:w-7/12 lg:w-7/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px] !mt-[50px] max-w-full">
@@ -67,7 +68,7 @@ function ParaEquipos () {
                     </div>   
                 </div>
             </section>
-            <section className="wrapper">
+            <section className="wrapper ">
                 <div className="container m-auto pt-14 pb-14 xl:pt-7 lg:pt-7 xl:pb-20 lg:pb-10 md:pb-10">
                     <div className="flex flex-wrap">
                         <div className="lg:w-12/12 xl:w-12/12 xxl:w-12/12 w-full flex-[0_0_auto] !px-[15px] max-w-full !mx-auto !text-center">
@@ -104,7 +105,7 @@ function ParaEquipos () {
                     </div>
                 </div>
             </section>
-            <section className="wrapper">
+            <section className="wrapper ">
                 <div className="container m-auto pb-[4.5rem] xl:pb-28 lg:pb-28 md:pb-28">
                     <div className="flex flex-wrap mx-[-15px] md:mx-[-20px] lg:mx-[-20px] xl:mx-[-35px] !mt-[-50px] items-center">
                         <div className="xl:w-5/12 lg:w-5/12 w-full flex-[0_0_auto] !px-[15px] md:!px-[20px] lg:!px-[20px] xl:!px-[35px] !mt-[50px] max-w-full">
@@ -119,11 +120,15 @@ function ParaEquipos () {
                 </div>
                 <div className="container m-auto pt-14 xl:pt-7 lg:pt-7 pb-[3.5rem] xl:pb-10 lg:pb-10 md:pb-10">
                     <div className="flex flex-wrap">
+                        <div className="lg:w-10/12 xl:w-9/12 xxl:w-8/12 w-full flex-[0_0_auto] !px-[15px] max-w-full !mx-auto !text-center">
+                            
+                        </div>
+                        
                         <ImageSlider3D images={flagsTeams} />
                     </div>
                 </div>
             </section>
-            <section className="wrapper">
+            <section className="wrapper ">
                 <div className="container m-auto pt-14 xl:pt-7 lg:pt-7 pb-[4.5rem] xl:pb-24 lg:pb-24 md:pb-24">
                     <div className="flex flex-wrap">
                         <div className="lg:w-11/12 xl:w-11/12 xxl:w-8/12 w-full flex-[0_0_auto] !px-[15px] max-w-full !mx-auto !text-center">
@@ -135,7 +140,7 @@ function ParaEquipos () {
                     </div>
                 </div>
             </section>
-            <section className="wrapper">
+            <section className="wrapper ">
                 <div className="container m-auto pt-14 xl:pt-7 lg:pt-7 pb-[4.5rem] xl:pb-24 lg:pb-24 md:pb-24 relative">
                     <span class="w-5/15 lg:w-5/15 aspect-square bg-gradient-to-tr from-[#034694] to-[#034694] absolute z-10 top-150 lg:left-0 rounded-full skew-y-0 blur-2xl opacity-60 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
                     <div className="flex flex-wrap mx-[-15px] relative z-15">
@@ -237,7 +242,7 @@ function ParaEquipos () {
             </section>
             <div className="pt-5 xl:pt-5 lg:pt-5 pb-[4.5rem] xl:pb-5 lg:pb-5 md:pb-10">
                 <div id="seventh-leader-section">
-                    <h2 className="text-white text-center text-5xl font-normal leading-[1.2em] font-[Lora] w-full">Trabajamos con líderes de la industria</h2>
+                    <h2 className="text-white text-center text-5xl font-normal font-[Lora] w-full">Trabajamos con líderes de la industria</h2>
                     <Flags direction="left" />  
                     <Flags direction="right" />          
                 </div>
