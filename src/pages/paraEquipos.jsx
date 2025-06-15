@@ -7,25 +7,25 @@ import { Helmet } from "react-helmet";
 function ParaEquipos () {
     const flagsTeams = [
         {
-            id: 1, src: "assets/flags/BA-TE-CAMBRIDGE.webp", category:"Universidad", link: "University of Michigan",title:"",desc:""
+            id: 1, src: "assets/universities/flags/BA-TE-CAMBRIDGE.webp", category:"Universidad", link: "University of Michigan",title:"",desc:""
         },{
-            id: 2, src: "assets/flags/BA-TE-CAPE-TOWN.webp", category:"Universidad", link: "Berklee College of Music",title:"",desc:""
+            id: 2, src: "assets/universities/flags/BA-TE-CAPE-TOWN.webp", category:"Universidad", link: "Berklee College of Music",title:"",desc:""
         },{
-            id: 3, src: "assets/flags/BA-TE-MASSACHUSETTS.webp", category:"Universidad", link: "Peking University",title:"",desc:""
+            id: 3, src: "assets/universities/flags/BA-TE-MASSACHUSETTS.webp", category:"Universidad", link: "Peking University",title:"",desc:""
         },{
-            id: 4, src: "assets/flags/BA-TE-OXFORD.webp", category:"Universidad", link: "Columbia University",title:"",desc:""
+            id: 4, src: "assets/universities/flags/BA-TE-OXFORD.webp", category:"Universidad", link: "Columbia University",title:"",desc:""
         },{
-            id: 5, src: "assets/flags/BA-TE-HARVARD.webp", category:"Universidad", link: "Harvard University",title:"",desc:""
+            id: 5, src: "assets/universities/flags/BA-TE-HARVARD.webp", category:"Universidad", link: "Harvard University",title:"",desc:""
         },{
-            id: 6, src: "assets/flags/BA-TE-CAMBRIDGE.webp", category:"Universidad", link: "University of Michigan",title:"",desc:""
+            id: 6, src: "assets/universities/flags/BA-TE-CAMBRIDGE.webp", category:"Universidad", link: "University of Michigan",title:"",desc:""
         },{
-            id: 7, src: "assets/flags/BA-TE-CAPE-TOWN.webp", category:"Universidad", link: "Berklee College of Music",title:"",desc:""
+            id: 7, src: "assets/universities/flags/BA-TE-CAPE-TOWN.webp", category:"Universidad", link: "Berklee College of Music",title:"",desc:""
         },{
-            id: 8, src: "assets/flags/BA-TE-MASSACHUSETTS.webp", category:"Universidad", link: "Peking University",title:"",desc:""
+            id: 8, src: "assets/universities/flags/BA-TE-MASSACHUSETTS.webp", category:"Universidad", link: "Peking University",title:"",desc:""
         },{
-            id: 9, src: "assets/flags/BA-TE-OXFORD.webp", category:"Universidad", link: "Columbia University",title:"",desc:""
+            id: 9, src: "assets/universities/flags/BA-TE-OXFORD.webp", category:"Universidad", link: "Columbia University",title:"",desc:""
         },{
-            id: 10, src: "assets/flags/BA-TE-HARVARD.webp", category:"Universidad", link: "Harvard University",title:"",desc:""
+            id: 10, src: "assets/universities/flags/BA-TE-HARVARD.webp", category:"Universidad", link: "Harvard University",title:"",desc:""
         }
     ]
     useEffect(() => {
@@ -79,7 +79,7 @@ function ParaEquipos () {
                             <div className="card bg-white rounded-md">
                                 <div className="card-body py-4 pl-1 pr-5">
                                     <div className="grid grid-cols-5 items-center">
-                                        <div><img className="w-full rounded-full invert" src="/assets/iconos/TE-Engranaje.png" alt="" /></div>
+                                        <div><img className="w-full rounded-full invert" src="/assets/content/icons/TE-Engranaje.png" alt="" /></div>
                                         <div className="col-span-4"><p className="text-neutral text-[16px] leading-[1.2em]  font-semibold">Desarrollar habilidades clave para la productividad e innovación.</p></div>
                                     </div>
                                 </div>
@@ -87,7 +87,7 @@ function ParaEquipos () {
                             <div className="card bg-white rounded-md ">
                                 <div className="card-body py-4 pl-1 pr-5">
                                     <div className="grid grid-cols-5 items-center items-center">
-                                        <div><img className="w-full rounded-full invert" src="/assets/iconos/TE-Imán.png" alt="" /></div>
+                                        <div><img className="w-full rounded-full invert" src="/assets/content/icons/TE-Imán.png" alt="" /></div>
                                         <div className="col-span-4"><p className="text-neutral text-[16px] leading-[1.2em] font-semibold">Atraer y retener los mejores talentos con oportunidades de aprendizaje atractivas.</p></div>
                                     </div>
                                 </div>
@@ -95,7 +95,7 @@ function ParaEquipos () {
                             <div className="card bg-white rounded-md">
                                 <div className="card-body py-4 pl-1 pr-5">
                                     <div className="grid grid-cols-5 items-center">
-                                        <div><img className="w-full rounded-full invert" src="/assets/iconos/TE-Cohete.png" alt="" /></div>
+                                        <div><img className="w-full rounded-full invert" src="/assets/content/icons/TE-Cohete.png" alt="" /></div>
                                         <div className="col-span-4"><p className="text-neutral text-[16px] leading-[1.2em] font-semibold">Capacitar a tu equipo sin necesidad de grandes inversiones en infraestructura y logística.</p></div>
                                     </div>
                                 </div>
@@ -110,7 +110,7 @@ function ParaEquipos () {
                     <div className="flex flex-wrap mx-[-15px] md:mx-[-20px] lg:mx-[-20px] xl:mx-[-35px] !mt-[-50px] items-center">
                         <div className="xl:w-5/12 lg:w-5/12 w-full flex-[0_0_auto] !px-[15px] md:!px-[20px] lg:!px-[20px] xl:!px-[35px] !mt-[50px] max-w-full">
                             <h2 className="text-white text-4xl font-normal font-[Lora] w-full"><span className="italic text-5xl">Forma a tu equipo</span> ejecutivo con</h2>
-                            <img className="w-[200px] mt-5" src="/assets/banners/TE-getsmarter-edx.png" alt="" />
+                            <img className="w-[200px] mt-5" src="/assets/content/banners/TE-getsmarter-edx.png" alt="" />
                         </div>
                         <div className="xl:w-7/12 lg:w-7/12 w-full flex-[0_0_auto] !px-[15px] md:!px-[20px] lg:!px-[20px] xl:!px-[35px] !mt-[50px] max-w-full">
                             <p className="text-white text-lg justify">Transforma el futuro de tu empresa con una experiencia de aprendizaje flexible y personalizada, diseñada para maximizar cada minuto de formación. Con el respaldo de instructores expertos, garantizamos resultados tangibles y aplicables a la realidad de tu negocio.
@@ -153,14 +153,14 @@ function ParaEquipos () {
                                 <div>
                                     <img
                                         class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/banners/TE-IMG-G001.png"
+                                        src="/assets/content/banners/TE-IMG-G001.png"
                                         alt="gallery-photo"
                                     />
                                 </div>
                                 <div>
                                     <img
                                         class="h-auto max-w-full rounded-lg object-cover object-center "
-                                        src="/assets/banners/TE-IMG-G002.png"
+                                        src="/assets/content/banners/TE-IMG-G002.png"
                                         alt="gallery-photo"
                                     />
                                 </div>
@@ -169,14 +169,14 @@ function ParaEquipos () {
                                 <div>
                                     <img
                                         class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/banners/TE-IMG-G003.png"
+                                        src="/assets/content/banners/TE-IMG-G003.png"
                                         alt="gallery-photo"
                                     />
                                 </div>
                                 <div>
                                     <img
                                         class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/banners/TE-IMG-G004.png"
+                                        src="/assets/content/banners/TE-IMG-G004.png"
                                         alt="gallery-photo"
                                     />
                                 </div>
@@ -185,21 +185,21 @@ function ParaEquipos () {
                                 <div>
                                     <img
                                         class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/banners/TE-IMG-G005.png"
+                                        src="/assets/content/banners/TE-IMG-G005.png"
                                         alt="gallery-photo"
                                     />
                                 </div>
                                 <div>
                                     <img
                                         class="h-auto max-w-full rounded-lg object-cover object-center "
-                                        src="/assets/banners/TE-IMG-G006.png"
+                                        src="/assets/content/banners/TE-IMG-G006.png"
                                         alt="gallery-photo"
                                     />
                                 </div>
                                 <div>
                                     <img
                                         class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/banners/TE-IMG-G007.png"
+                                        src="/assets/content/banners/TE-IMG-G007.png"
                                         alt="gallery-photo"
                                     />
                                 </div>
@@ -208,14 +208,14 @@ function ParaEquipos () {
                                 <div>
                                     <img
                                         class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/banners/TE-IMG-G008.png"
+                                        src="/assets/content/banners/TE-IMG-G008.png"
                                         alt="gallery-photo"
                                     />
                                 </div>
                                 <div>
                                     <img
                                         class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/banners/TE-IMG-G009.png"
+                                        src="/assets/content/banners/TE-IMG-G009.png"
                                         alt="gallery-photo"
                                     />
                                 </div>
@@ -224,14 +224,14 @@ function ParaEquipos () {
                                 <div>
                                     <img
                                         class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/banners/TE-IMG-G010.png"
+                                        src="/assets/content/banners/TE-IMG-G010.png"
                                         alt="gallery-photo"
                                     />
                                 </div>
                                 <div>
                                     <img
                                         class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/banners/TE-IMG-G011.png"
+                                        src="/assets/content/banners/TE-IMG-G011.png"
                                         alt="gallery-photo"
                                     />
                                 </div>
@@ -242,7 +242,7 @@ function ParaEquipos () {
             </section>
             <div className="pt-5 xl:pt-5 lg:pt-5 pb-[4.5rem] xl:pb-5 lg:pb-5 md:pb-10">
                 <div id="seventh-leader-section">
-                    <h2 className="text-white text-center text-5xl font-normal font-[Lora] w-full">Trabajamos con líderes de la industria</h2>
+                    <h2 className="text-white text-center text-5xl font-normal leading-[1.2em] font-[Lora] w-full">Trabajamos con líderes de la industria</h2>
                     <Flags direction="left" />  
                     <Flags direction="right" />          
                 </div>

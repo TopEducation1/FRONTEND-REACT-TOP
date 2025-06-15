@@ -52,7 +52,7 @@ function App() {
           <Route path="/recursos/:slug" element={<BlogDetailPage />} />
           <Route
             path="/certificacion/masterclass/:slug"
-            element={<CertificationPage />}
+            element={<CertificationPage/>}
           />
           <Route
             path="/certificacion/edx/:slug"

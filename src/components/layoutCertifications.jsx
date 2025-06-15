@@ -20,23 +20,7 @@ const CertificationsList = memo(({ certifications }) => {
             if (!certification) {
                 throw new Error('No certification data provided');
             }
-
-            let path;
-            // Define the path based on the platform ID
-            switch (certification.plataforma_certificacion_id) {
-                case 1:
-                    path = `/certificacion/edx/${certification.slug}`;
-                    break;
-                case 2:
-                    path = `/certificacion/coursera/${certification.slug}`;
-                    break;
-                case 3:
-                    path = `/certificacion/masterclass/${certification.slug}`;
-                    break;
-                default:
-                    // Fallback to generic path if platform ID is not recognized
-                    path = `/certificacion/${certification.slug}`;
-            }
+            let path  = `/certificacion/${certification.plataforma_certificacion.nombre.toLowerCase()}/${certification.slug}`;
 
             navigate(path);
         } catch (err) {

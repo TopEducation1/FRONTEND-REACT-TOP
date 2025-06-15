@@ -7,16 +7,12 @@ const ImageSlider3D = ({images,action}) => {
 
     const handleItemMenuClick = (category, tag) => {
         console.log(category, tag);
-  
-        const initialTags = {
-            [category]: [tag]
-        };
-        navigate(`/${action}/filter?page=1&page_size=15&`, {
-            state: {selectedTags: initialTags},
-            replace: true
-        });
-        // Redirigir a la página con los parámetros correspondientes
-        //navigate(`/explora/filter/?category=${category}&tag=${tag}`);
+
+      const categoryParam = category; // asegura que esté en minúsculas
+      const tagParam = encodeURIComponent(tag); // codifica y pone en minúscula
+
+      const query = `${categoryParam}=${tagParam}&page=1&page_size=15`;
+      navigate(`/${action}/filter?${query}`);
     };
 
     useEffect(() => {

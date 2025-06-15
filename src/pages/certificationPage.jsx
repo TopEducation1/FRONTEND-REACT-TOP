@@ -5,6 +5,8 @@ import RightPop from "../components/RightPop";
 import YouTubePlayer from "../components/YoutubePlayer";
 import CertificationSlider from "../components/CertificationSlider";
 import { Helmet } from 'react-helmet';
+import { useNavigate } from 'react-router-dom';
+import { FaAnglesLeft } from "react-icons/fa6";
 
 const CertificationPage = () => {
     // Estados de la pagina de certificacion
@@ -20,7 +22,7 @@ const CertificationPage = () => {
     // Estado para maneajr la visibilidad del contenedor del pop up responsive
     const [visibleContainerPopUp, setVisibleContainerPopUp] = useState(true);
     const host = window.location.hostname;
-
+    const navigate = useNavigate();
     useEffect(() => {
 
         const handleRezise = () => {
@@ -99,6 +101,9 @@ const CertificationPage = () => {
             </div>
         );
     }
+    const handleAtras = () => {
+        navigate(-1); // -1 significa ir una página atrás en el historial
+    };
 
     return (
         <>
@@ -113,11 +118,9 @@ const CertificationPage = () => {
             <meta property="og:description" content={certification.metadescripcion_certificacion} />
             <meta property="og:type" content="website" />
         </Helmet>
-        <div className="w-full bg-[#F6F4EF]">
+        <div className="w-full bg-[#F6F4EF] relative">
+            <button className="fixed top-[83px] left-[5%] flex items-center gap-2 btn-col-2 rounded-xl py-2 px-3 z-10" onClick={handleAtras}><FaAnglesLeft />Volver Atrás</button>
             <div className="container  mx-auto py-25 md:py-50px lg:py-60px 2xl:py-100px ">
-            {/*<span class="w-2/15 lg:w-2/15 aspect-square bg-gradient-to-tr from-red-500 to-red-900 absolute top-20 lg:left-20 rounded-full skew-y-0 blur-2xl opacity-40 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
-            <span class="w-2/15 lg:w-2/15 aspect-square bg-gradient-to-tr from-green-500 to-green-900 absolute top-50 lg:right-20 rounded-full skew-y-0 blur-2xl opacity-40 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
-                 Main certification information */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                     <div className="lg:col-start-1 lg:col-span-8 space-y-[35px] pb-8 border-1 border-[#ECECEC] rounded-[15px] z-1 order-2 md:order-1">
                         <div className="container-main-info">
@@ -149,7 +152,7 @@ const CertificationPage = () => {
                                 
                             </div>
                             {(certification.plataforma_certificacion.nombre != 'MasterClass')?null:(
-                                <div id="wrapper-video-masterclass" className="px-8 py-1">
+                                <div className="px-8 py-1 w-full cert-video rounded-xl overflow-hidden">
                                     <YouTubePlayer url={certification.video_certificacion.url} />
                                 </div>
                                 
@@ -326,54 +329,33 @@ const CertificationPage = () => {
                                     </div>):null}
                                 </li>
                                 <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
-                                <div class="flex-1 space-x-3 flex">
-                                    <img src="assets/images/icon/file2.svg" alt=""/>
-                                    <div class=" text-black font-semibold">Plataforma</div>
-                                </div>
-                                <div class="flex justify-end items-center">
-                                    <img class="w-[110px]"  src={certification.plataforma_certificacion.plat_img} alt=""/>
-                                    
-                                </div>
+                                    <div class="flex-1 space-x-3 flex">
+                                        <img src="assets/images/icon/file2.svg" alt=""/>
+                                        <div class=" text-black font-semibold">Plataforma</div>
+                                    </div>
+                                    <div class="flex justify-end items-center">
+                                        <img class="w-[110px]"  src={certification.plataforma_certificacion.plat_img} alt=""/>
+                                        
+                                    </div>
                                 </li>
 
                                 <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
-                                <div class="flex-1 space-x-3 flex">
-                                    <img src="assets/images/icon/clock.svg" alt=""/>
-                                    <div class=" text-black font-semibold">{(certification.plataforma_certificacion.nombre != 'MasterClass')?"Tema:":"Habilidad:"}</div>
-                                </div>
-                                <div class="flex-none">
-                                    <div className={`tag-category ${certification.tema_certificacion?.tem_col || 'tag-verde'} mt-[15px]`}>{certification.tema_certificacion.nombre}</div>
-                                </div>
+                                    <div class="flex-1 space-x-3 flex">
+                                        <img src="assets/images/icon/clock.svg" alt=""/>
+                                        <div class=" text-black font-semibold">{(certification.plataforma_certificacion.nombre != 'MasterClass')?"Tema:":"Habilidad:"}</div>
+                                    </div>
+                                    <div class="flex-none">
+                                        <div className={`tag-category ${certification.tema_certificacion?.tem_col || 'tag-verde'} mt-[15px]`}>{certification.tema_certificacion.nombre}</div>
+                                    </div>
                                 </li>
-
-                                {/*<li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
-                                <div class="flex-1 space-x-3 flex">
-                                    <img src="assets/images/icon/star.svg" alt=""/>
-                                    <div class=" text-black font-semibold">Enrolled</div>
-                                </div>
-                                <div class="flex-none">
-                                    2k Students
-                                </div>
-                                </li>
-
                                 <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
-                                <div class="flex-1 space-x-3 flex">
-                                    <img src="assets/images/icon/target.svg" alt=""/>
-                                    <div class=" text-black font-semibold">Nivel</div>
-                                </div>
-                                <div class="flex-none">
-                                    {certification.nivel_certificacion}
-                                </div>
-                                </li>*/}
-
-                                <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
-                                <div class="flex-1 space-x-3 flex">
-                                    <img src="assets/images/icon/web.svg" alt=""/>
-                                    <div class=" text-black font-semibold">Idioma:</div>
-                                </div>
-                                <div class="flex-none">
-                                    {(certification.lenguaje_certificacion ==='NONE')?'Ingles (subtitulado)':certification.lenguaje_certificacion}
-                                </div>
+                                    <div class="flex-1 space-x-3 flex">
+                                        <img src="assets/images/icon/web.svg" alt=""/>
+                                        <div class=" text-black font-semibold">Idioma:</div>
+                                    </div>
+                                    <div class="flex-none">
+                                        {(certification.lenguaje_certificacion ==='NONE')?'Ingles (subtitulado)':certification.lenguaje_certificacion}
+                                    </div>
                                 </li>
                             </ul>
                         </div>

@@ -91,7 +91,7 @@ const FinisherHeaderComponent = () => {
             color: "#b0b0b0",
             distance: 150,
             enable: true,
-            opacity: 0.5,
+            opacity: 0.3,
             width: 1,
         },
         move: {
@@ -128,7 +128,7 @@ const FinisherHeaderComponent = () => {
 
     return (
         
-        <div id="finisher-header" style={{ width: '100%', height: '100vh', position: 'relative' }} className="header finisher-header mx-auto px-4 justify-center-safe gap-2" >
+        <div  className="header finisher-header sticky w[100%] h-[100vh] top-0 mx-auto px-4 justify-center-safe gap-2" >
             <Particles
                 id="tsparticles"
                 particlesLoaded={particlesLoaded}
@@ -176,7 +176,6 @@ const FinisherHeaderComponent = () => {
                         
                     </div>
                 </ReactModal>
-                <div id="root"></div>
             </div>
         </div>
     );

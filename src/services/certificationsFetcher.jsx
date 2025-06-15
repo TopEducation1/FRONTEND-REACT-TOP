@@ -10,7 +10,7 @@ const fetchConfig = {
 };
 
 const CertificationsFetcher = {
-  async getAllCertifications(page = 1, pageSize = 15) {
+  async getAllCertifications(page = 1, pageSize = 16) {
     try {
       const baseUrl = endpoints.certificaciones;
       const url = `${baseUrl}?page=${page}&page_size=${pageSize}`;

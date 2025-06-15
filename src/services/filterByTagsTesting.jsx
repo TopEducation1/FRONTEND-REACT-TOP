@@ -1,19 +1,12 @@
 import { endpoints } from "../config/api";
 
-const TAG_CATEGORIES =  {
-    TEMAS: 'Temas',
-    HABILIDADES: 'Habilidades',
-    EMPRESAS: 'Empresas',
-    UNIVERSIDADES: 'Universidades',
-    PLATAFORMAS: 'Plataformas'
-};
 
 class TagFilterService {
     constructor(baseUrl = endpoints.certificaciones_tags) {
         this.baseUrl = baseUrl;
     }
 
-    buildQueryString(tags, page = 1, pageSize = 15) {
+    buildQueryString(tags, page = 1, pageSize = 16) {
         const queryParts = [];
         queryParts.push(`page=${page}`);
         queryParts.push(`page_size=${pageSize}`);
@@ -43,12 +36,9 @@ class TagFilterService {
         try {
             const queryString = this.buildQueryString(selectedTags, page, pageSize);
             const url = `${this.baseUrl}${queryString}`;
-
             const response = await fetch(url, {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
+                headers: { 'Content-Type': 'application/json' }
             });
 
             if (!response.ok) {
