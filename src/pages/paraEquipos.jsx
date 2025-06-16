@@ -1,6 +1,5 @@
 import React, {  useEffect } from "react";
 import Flags from "../components/Flags";
-import SliderMasterClass from "../components/SliderMasterClass";
 import ImageSlider3D from "../components/ImageSlider3D";
 import { Helmet } from "react-helmet";
 
@@ -27,7 +26,58 @@ function ParaEquipos () {
         },{
             id: 10, src: "assets/universities/flags/BA-TE-HARVARD.webp", category:"Universidad", link: "Harvard University",title:"",desc:""
         }
-    ]
+    ];
+    const logos = [
+    {
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/844d70cd-c9d8-4ac1-b4dd-1ba134386729/1.png",
+      type: "Empresa",
+      company: "Big Interview",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/c2b7f9fc-a1bd-4baa-9a96-d6528bd8cee5/2.png",
+      type: "Empresa",
+      company: "UBITS",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/a0e3e552-3a13-4bf0-992e-45fa19a3d3bd/3.png",
+      type: "Empresa",
+      company: "HubSpot Academy",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/795bf7a7-52b5-42f2-b615-5b6acc23d6b3/4.png",
+      type: "Empresa",
+      company: "Microsoft",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/74c6368f-1eb2-45e8-9103-12372e9e6608/5.png",
+      type: "Empresa",
+      company: "SV Academy",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/5a4b93b0-c2cf-4f31-8b94-b37a4b04d82a/6.png",
+      type: "Empresa",
+      company: "Pathstream",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/7601eb5d-9ac1-41c4-82c7-a20488dced2c/7.png",
+      type: "Empresa",
+      company: "Salesforce",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/d81692e0-100b-4072-ab2f-d9d651c63743/8.png",
+      type: "Empresa",
+      company: "Google",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/6172a009-b534-4e63-8411-0225e403248c/9.png",
+      type: "Empresa",
+      company: "MoMA",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bbfbb000-c051-4fda-9893-3e962c23616d/10.png",
+      type: "Empresa",
+      company: "Yad Vashem",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/995e0524-aecc-4840-bbc3-8dbb3046a0be/11.png",
+      type: "Empresa",
+      company: "Banco Interamericano de Desarrollo",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/4ed2514f-f8f1-41b1-bbe3-410b55eecd05/12.png",
+      type: "Empresa",
+      company: "Pathstream",
+    },
+  ];
     useEffect(() => {
         window.scrollTo(0,0);
         
@@ -58,7 +108,7 @@ function ParaEquipos () {
                 <div className="container m-auto !pb-[4.5rem] xl:!pb-24 lg:!pb-24 md:!pb-24">
                     <div className="flex flex-wrap mx-[-15px] xl:mx-[-35px] lg:mx-[-20px] !mt-[-50px] items-center">
                         <div className="xl:w-7/12 lg:w-7/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px] !mt-[50px] max-w-full">
-                            <img className="w-full lg:ml-[-30px] rounded-lg" src="/assets/banners/u-top-education.gif" alt="" />
+                            <img className="w-full lg:ml-[-30px] rounded-lg" src="/assets/content/banners/u-top-education.gif" alt="" />
                         </div>
                         <div className="xl:w-5/12 lg:w-5/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px] !mt-[50px] max-w-full">
                             <h2 className="text-white text-5xl font-normal font-[Lora] w-full leading-[1.2em]">Crea tu propia universidad corporativa</h2>
@@ -120,10 +170,6 @@ function ParaEquipos () {
                 </div>
                 <div className="container m-auto pt-14 xl:pt-7 lg:pt-7 pb-[3.5rem] xl:pb-10 lg:pb-10 md:pb-10">
                     <div className="flex flex-wrap">
-                        <div className="lg:w-10/12 xl:w-9/12 xxl:w-8/12 w-full flex-[0_0_auto] !px-[15px] max-w-full !mx-auto !text-center">
-                            
-                        </div>
-                        
                         <ImageSlider3D images={flagsTeams} />
                     </div>
                 </div>
@@ -243,8 +289,8 @@ function ParaEquipos () {
             <div className="pt-5 xl:pt-5 lg:pt-5 pb-[4.5rem] xl:pb-5 lg:pb-5 md:pb-10">
                 <div id="seventh-leader-section">
                     <h2 className="text-white text-center text-5xl font-normal leading-[1.2em] font-[Lora] w-full">Trabajamos con líderes de la industria</h2>
-                    <Flags direction="left" />  
-                    <Flags direction="right" />          
+                    <Flags direction="left" logos={logos} />  
+                    <Flags direction="right" logos={logos} />          
                 </div>
             </div>
             

@@ -1,12 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-
-
-
 
 const PlatformsSelector = ({platforms}) => {
     const [selectedPlatform, setSelectedPlatform] = useState(null);
+    const [selectedTags, setSelectedTags] = useState({});
+
     const [zoomOrigin, setZoomOrigin] = useState(null);
     const [isZooming, setIsZooming] = useState(false);
     const navigate = useNavigate();
@@ -23,23 +21,36 @@ const PlatformsSelector = ({platforms}) => {
     };
 
 
-    const handleItemMenuClick = (category, tag) => {
-        const initialTags = {
-            [category]: [tag]
-        };
+    const handleItemMenuClick = (tagsObject) => {
+  setSelectedTags((prevTags) => {
+    const updatedTags = { ...prevTags };
 
-        const queryParams = new URLSearchParams({
-            page: 1,
-            page_size: 15,
-            [category]: tag
-        }).toString();
+    // Agrega todos los tags pasados en esta llamada
+    for (const [category, tag] of Object.entries(tagsObject)) {
+      if (!updatedTags[category]) {
+        updatedTags[category] = [tag];
+      } else if (!updatedTags[category].includes(tag)) {
+        updatedTags[category].push(tag);
+      }
+    }
 
-        navigate(`/explora/filter?${queryParams}`, {
-            replace: true,
-            state: { selectedTags: initialTags },
-            
-        });
-        };
+    const queryParams = new URLSearchParams();
+
+    // Construye la URL con todos los filtros
+    for (const [cat, tags] of Object.entries(updatedTags)) {
+      tags.forEach((tag) => queryParams.append(cat, tag));
+    }
+
+    navigate(`/explora/filter?${queryParams.toString()}`, {
+      replace: true,
+      state: { selectedTags: updatedTags }
+    });
+
+    return updatedTags;
+  });
+};
+
+
 
 
   return (
@@ -77,7 +88,10 @@ const PlatformsSelector = ({platforms}) => {
             <div className="university-buttons">
               <div className="university-buttons">
                 {selectedPlatform.universities.map((uni, i) => (
-                    <button key={i} onClick={() => handleItemMenuClick(uni.type, uni.name)}
+                    <button key={i} onClick={() => handleItemMenuClick({
+                      [uni.type]: uni.name,
+                      [selectedPlatform.type]: selectedPlatform.name
+                    })}
                     className="uni-card"
                     >
                         <img src={`${uni.img}`} alt={uni.name} className="uni-img" />

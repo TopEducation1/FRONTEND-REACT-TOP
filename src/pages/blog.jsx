@@ -69,14 +69,13 @@ function BlogPage() {
                 <div className="container m-auto">
                     <h2 className="text-white text-7xl font-normal font-[Lora] italic text-left leading-16 z-10 relative">Explora y aprende</h2>
                     <p className="text-white mt-5 text-2xl text-left mb-8 z-10 relative">Amplía tus conocimientos con contenido de calidad seleccionado por expertos. Descubre nuevas habilidades, profundiza en temas de tu interés y accede a recursos educativos que te acercan a tus objetivos.</p>
-                    <BlogSearchBar/>
                     <BlogsGrid/>
                 </div>
             </section>
             <section className="wrapper">
                 <div className="container m-auto pb-[4.5rem] xl:pb-28 lg:pb-28 md:pb-28 relative">
                     <span class="w-5/15 lg:w-5/15 aspect-square bg-gradient-to-tr from-green-500 to-green-900 absolute top-10 lg:left-0 rounded-full skew-y-0 blur-2xl opacity-40 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
-                    <div className="flex flex-wrap mx-[-15px] md:mx-[-20px] lg:mx-[-20px] xl:mx-[-35px] !mt-[-50px] items-center">
+                    <div className="flex flex-wrap items-center">
                         <div className="xl:w-6/12 lg:w-6/12 w-full flex-[0_0_auto] !px-[15px] md:!px-[20px] lg:!px-[20px] xl:!px-[35px] !mt-[50px] max-w-full">
                             <h2 className="text-white text-5xl font-normal font-[Lora] w-full italic relative">Entérate de todas las novedades</h2>
                             <p className="text-white mt-5 mb-5 text-2xl text-left z-10 relative">¡Únete a nuestra comunidad suscribiéndote a nuestro boletín informativo!</p>

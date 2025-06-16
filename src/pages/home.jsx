@@ -536,24 +536,24 @@ function HomePage() {
         {
           name: 'Bienestar',
           type: 'Habilidad',
-          img: '/assets/category/ability/Bienestar.png'
+          img: '/assets/category/ability/ico-Bienestar.png'
         },{
           name: 'Estrategia',
           type: 'Habilidad',
-          img: '/assets/category/ability/Estrategia.png'
+          img: '/assets/category/ability/ico-Estrategia.png'
         },
         {
           name: 'Liderazgo',
           type: 'Habilidad',
-          img: '/assets/category/ability/Liderazgo.png'
+          img: '/assets/category/ability/ico-Liderazgo.png'
         },{
           name: 'Personas y cultura',
           type: 'Habilidad',
-          img: '/assets/category/ability/Personas-y-cultura.png'
+          img: '/assets/category/ability/ico-Personas-y-cultura.png'
         },{
           name: 'Comunicación',
           type: 'Habilidad',
-          img: '/assets/category/ability/Comunicacion.png'
+          img: '/assets/category/ability/ico-Comunicacion.png'
         }
       ]
     },
@@ -613,6 +613,58 @@ function HomePage() {
     },{
       id: 26, src:"/assets/universities/flags/BA-TE-NORTHWESTERN.webp", category:"Universidad", link: "Northwestern University",title:"",desc:""
     }
+  ];
+
+  const logos = [
+    {
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/844d70cd-c9d8-4ac1-b4dd-1ba134386729/1.png",
+      type: "Empresa",
+      company: "Big Interview",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/c2b7f9fc-a1bd-4baa-9a96-d6528bd8cee5/2.png",
+      type: "Empresa",
+      company: "UBITS",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/a0e3e552-3a13-4bf0-992e-45fa19a3d3bd/3.png",
+      type: "Empresa",
+      company: "HubSpot Academy",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/795bf7a7-52b5-42f2-b615-5b6acc23d6b3/4.png",
+      type: "Empresa",
+      company: "Microsoft",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/74c6368f-1eb2-45e8-9103-12372e9e6608/5.png",
+      type: "Empresa",
+      company: "SV Academy",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/5a4b93b0-c2cf-4f31-8b94-b37a4b04d82a/6.png",
+      type: "Empresa",
+      company: "Pathstream",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/7601eb5d-9ac1-41c4-82c7-a20488dced2c/7.png",
+      type: "Empresa",
+      company: "Salesforce",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/d81692e0-100b-4072-ab2f-d9d651c63743/8.png",
+      type: "Empresa",
+      company: "Google",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/6172a009-b534-4e63-8411-0225e403248c/9.png",
+      type: "Empresa",
+      company: "MoMA",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/bbfbb000-c051-4fda-9893-3e962c23616d/10.png",
+      type: "Empresa",
+      company: "Yad Vashem",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/995e0524-aecc-4840-bbc3-8dbb3046a0be/11.png",
+      type: "Empresa",
+      company: "Banco Interamericano de Desarrollo",
+    },{
+      img: "https://images.squarespace-cdn.com/content/654306c68517a21d500a928b/4ed2514f-f8f1-41b1-bbe3-410b55eecd05/12.png",
+      type: "Empresa",
+      company: "Pathstream",
+    },
   ];
 
   useEffect(() => {
@@ -675,8 +727,8 @@ function HomePage() {
       <div className="pt-5 xl:pt-5 lg:pt-5 pb-[4.5rem] xl:pb-5 lg:pb-5 md:pb-10 relative bg-[#0F090B]">
           <div id="seventh-leader-section">
               <h2 className="text-white text-center text-4xl leading-[1.2em] lg:text-5xl font-normal font-[Lora] w-full">Trabajamos con líderes de la industria</h2>
-              <Flags direction="left" />  
-              <Flags direction="right" />          
+              <Flags direction="left" logos={logos} />  
+              <Flags direction="right" logos={logos} />          
           </div>
       </div>
       <section className="wrapper relative section">

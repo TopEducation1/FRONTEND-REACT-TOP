@@ -3,112 +3,152 @@ import { useNavigate } from 'react-router-dom';
 import BlogsFetcher from '../services/BlogsFetcher';
 
 const BlogsGrid = () => {
-
     const navigate = useNavigate();
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
     const [blogs, setBlogs] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
 
-    // Estados para la paginación
     const [pagination, setPagination] = useState({
         count: 0,
         current_page: 1,
         total_pages: 1,
     });
 
-    const loadBlogs = useCallback(async (page = 1, pageSize = 16) => {
+    const loadBlogs = useCallback(async (page = 1, pageSize = 16, query = '') => {
         setLoading(true);
-
         try {
-            let fetchData;
-            fetchData = await BlogsFetcher.getAllBlogs(page, pageSize);
+            const data = await BlogsFetcher.getAllBlogs(page, pageSize, query);
 
-            console.log(fetchData.results);
-
-            if (fetchData && Array.isArray(fetchData.results)) {
-                setBlogs(fetchData.results);
-
-                setPagination({
-                    count: fetchData.count || 0,
-                    current_page: page,
-                    total_pages: Math.ceil(fetchData.count / pageSize) || 1,
-                });
-            } else {
-                setBlogs([]);
-            }
+            setBlogs(data.results);
+            setPagination({
+                count: data.count || 0,
+                current_page: page,
+                total_pages: Math.ceil(data.count / pageSize) || 1,
+            });
         } catch (error) {
-            console.error('Error loading certifications:', error);
-            setError('Error loading certifications');
+            console.error('Error loading blogs:', error);
+            setError('Error al cargar los blogs');
             setBlogs([]);
         } finally {
             setLoading(false);
         }
     }, []);
 
+    // Efecto para cargar blogs al cambiar página o búsqueda
     useEffect(() => {
-        loadBlogs(pagination.current_page);
-    }, [pagination.current_page, loadBlogs]);
+        const delay = setTimeout(() => {
+            loadBlogs(pagination.current_page, 16, searchQuery);
+        }, 300);
+        return () => clearTimeout(delay);
+    }, [pagination.current_page, searchQuery, loadBlogs]);
 
-    const handleBlogClick = (blog) => {
-        try {
-            if (!blog) {
-                throw new Error("No blog data provided");
-            }
-
-            const path = `/recursos/${blog.slug}`;
-            navigate(path);
-        } catch (error) {
-            setError('Error al navegar hacia el blog');
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= pagination.total_pages) {
+            setPagination((prev) => ({ ...prev, current_page: newPage }));
         }
     };
 
+    const handleBlogClick = (blog) => {
+        if (!blog) return;
+        navigate(`/recursos/${blog.slug}`);
+    };
 
-    const handlePageChange = (newPage) => {
+    const renderPageButtons = () => {
+        const { current_page, total_pages } = pagination;
+        const delta = 2;
+        const buttons = [];
 
-        if (newPage => 1 && newPage <= pagination.total_pages) {
-            setPagination((prev) =>({...prev, current_page: newPage}));
+        const range = [];
+        for (let i = Math.max(2, current_page - delta); i <= Math.min(total_pages - 1, current_page + delta); i++) {
+            range.push(i);
         }
-    };  
 
-    if (!Array.isArray(blogs)) {
+        if (current_page - delta > 2) range.unshift('...');
+        if (current_page + delta < total_pages - 1) range.push('...');
 
-        return <div className="error-message">Error: No se puedieron cargar los blogs</div>;
+        range.unshift(1);
+        if (total_pages > 1) range.push(total_pages);
 
-    }
+        const uniquePages = [...new Set(range)];
+
+        return uniquePages.map((page, index) => {
+            if (page === '...') {
+                return <span key={`ellipsis-${index}`} className="text-white px-2">...</span>;
+            }
+            return (
+                <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`px-3 py-1 rounded-[25px] ${page === current_page ? 'bg-neutral-700 text-white' : 'bg-neutral-200'}`}
+                >
+                    {page}
+                </button>
+            );
+        });
+    };
 
     return (
-        <>
-            <div id="wrapper-grid-blogs">
-                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-                    {blogs.map(blog => {
-                        // Usar la URL de miniatura_blog si está disponible, de lo contrario usar una imagen por defecto
+        <section className="wrapper px-4">
+            <div className="mb-6 flex justify-center">
+                <input
+                    type="text"
+                    placeholder="Buscar blogs por título..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setPagination((prev) => ({ ...prev, current_page: 1 }));
+                    }}
+                    className="px-4 py-2 w-full max-w-md border rounded"
+                />
+            </div>
+
+            {error && <div className="text-red-500 text-center">{error}</div>}
+            {loading ? (
+                <div className="text-white text-center">Cargando blogs...</div>
+            ) : (
+                <div className="container m-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {blogs.map((blog) => {
                         const imageUrl = blog.miniatura_blog || "/assets/Piezas/demo-blog.png";
-
                         return (
-
-                            <div onClick={() => handleBlogClick(blog)} key={blog.id} className='border-1 border-white rounded-xl rounded-lg'>
-                                <div className='w-full '>
-                                    <img className='rounded-xl w-full' src={imageUrl} alt={blog.nombre_blog} />
-                                </div>
-                                <div className='px-3 py-5'>
-                                    <h2 className='text-white text-xl'>{blog.nombre_blog}</h2>
+                            <div
+                                key={blog.id}
+                                onClick={() => handleBlogClick(blog)}
+                                className="blog-card cursor-pointer border border-white rounded-xl hover:scale-[1.02] transition"
+                            >
+                                <img src={imageUrl} alt={blog.nombre_blog} className="w-full rounded-t-xl" />
+                                <div className="px-3 py-4">
+                                    <h3 className="text-white text-center text-lg font-bold">{blog.nombre_blog}</h3>
                                 </div>
                             </div>
-
                         );
                     })}
-
                 </div>
+            )}
 
+            {/* Paginación */}
+            <div className="flex justify-center py-6">
+                <div className="flex gap-2 flex-wrap items-center">
+                    <button
+                        className="px-3 py-1 bg-neutral-200 rounded-[25px]"
+                        onClick={() => handlePageChange(pagination.current_page - 1)}
+                        disabled={pagination.current_page === 1}
+                    >
+                        Anterior
+                    </button>
 
-                {/*Controles para la paginación de los blogs */}
-                <div id="pagination-controls">
-                    <button className='btn' onClick={() => handlePageChange(pagination.current_page -1)} disabled={pagination.current_page === 1} >Anterior</button>
-                    <span className='text-white'>Página {pagination.current_page} de {pagination.total_pages}</span>
-                    <button className='btn' onClick={() => handlePageChange(pagination.current_page +1)} disabled={pagination.current_page === pagination.total_pages}>Siguiente</button>
+                    {renderPageButtons()}
+
+                    <button
+                        className="px-3 py-1 bg-neutral-200 rounded-[25px]"
+                        onClick={() => handlePageChange(pagination.current_page + 1)}
+                        disabled={pagination.current_page === pagination.total_pages}
+                    >
+                        Siguiente
+                    </button>
                 </div>
             </div>
-        </>
+        </section>
     );
 };
 
