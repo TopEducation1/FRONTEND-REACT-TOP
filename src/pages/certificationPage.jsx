@@ -318,7 +318,7 @@ const CertificationPage = () => {
                                 <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
                                     {(certification.instructores_certificacion && certification.instructores_certificacion.length > 0)?(
                                     <div class="flex-1 space-x-3 flex">
-                                        <img class="w-[30px] h-[30px]" src="/assets/temas/user-te.png" alt=""/>
+                                        <img class="w-[30px] h-[30px]" src="/assets/content/icons/user-te.png" alt=""/>
                                         <div class=" text-blackflex flex-wrap"><b>Instructor/es:</b>
                                         <ul className="list-disc">
                                             {certification.instructores_certificacion.map((instructor, index) => (
