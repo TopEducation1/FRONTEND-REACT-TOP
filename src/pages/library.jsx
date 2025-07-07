@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useOutletContext, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import tagFilterService from "../services/filterByTagsTesting";
 import CertificationsList from "../components/layoutCertifications";
 import SearchBar from "../components/searchBar";
@@ -87,7 +87,7 @@ function LibraryPage({ showRoutes = true }) {
     
     try {
     setLoading(true); // ✅ Activa el estado de carga
-      const response = await axios.get('https://backend-django-top-production.up.railway.app/api/latest-certifications/');
+      const response = await axios.get('https://app.top.education/api/latest-certifications/');
       console.log('Certificaciones recibidas:', response.data); // depuración
       setCertifications(response.data);
     } catch (error) {
@@ -311,7 +311,7 @@ function LibraryPage({ showRoutes = true }) {
   const NoResultsMessage = () => (
     <div className="no-results-container text-center py-10">
       <h3 className="text-lg font-semibold text-white mb-0 ">No se encontraron certificaciones en la búsqueda</h3>
-      <p className="text-neutral-100 mt-[-20px]"> No hay resultados que coincidan con los filtros seleccionados.</p>
+      <p className="text-neutral-100 mt-[-10px]"> No hay resultados que coincidan con los filtros seleccionados.</p>
       <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
         class="icon icon-tabler icons-tabler-outline icon-tabler-face-id-error w-full" >
         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -360,21 +360,19 @@ function LibraryPage({ showRoutes = true }) {
           </div>
         </div>
       </div>
-      {!isMobileView && (
-        <IndexCategories 
-          onTagSelect={(category, tag) => {
-            setSelectedTags((prev) => {
-              const updated = { ...prev };
-              if (!updated[category]) updated[category] = [];
-              if (!updated[category].includes(tag)) {
-                updated[category].push(tag);
-              }
-              return updated;
-            });
-          }}
-          selectedTags={selectedTags}
-        />
-      )}
+      <IndexCategories 
+        onTagSelect={(category, tag) => {
+          setSelectedTags((prev) => {
+            const updated = { ...prev };
+            if (!updated[category]) updated[category] = [];
+            if (!updated[category].includes(tag)) {
+              updated[category].push(tag);
+            }
+            return updated;
+          });
+        }}
+        selectedTags={selectedTags}
+      />
       <div className="cont-filter">
         <div className="container-tags">
           {Object.keys(selectedTags).length === 0 || Object.values(selectedTags).every((tags) => tags.length === 0) ? (
@@ -392,7 +390,7 @@ function LibraryPage({ showRoutes = true }) {
         </div>
         <div ref={certificationsRef} className="certifications-container">
           {loading ? (
-            <div class="grid grid-cols-4 gap-4 p-5">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 p-5">
             <div class="mx-auto w-full rounded-md border border-gray-300 p-4">
               <div class="flex animate-pulse space-x-4">
                 <div class="size-10 rounded-full bg-gray-200"></div>
@@ -522,7 +520,7 @@ function LibraryPage({ showRoutes = true }) {
         <PaginationControls />
       </div>
     </div>
-      {showRoutes && (
+      {/*showRoutes && (
         <section className="wrapper w-full">
           <div className="container m-auto pt-14 pb-2 xl:pt-7 lg:pt-7">
             <h2 className="text-white text-center text-5xl mb-1">¿Encontraste lo que estabas buscando?</h2>
@@ -530,7 +528,13 @@ function LibraryPage({ showRoutes = true }) {
             <HeroSlider authors={authors} />
           </div>
         </section>
-      )}
+        
+      )*/}
+      <section className="wrapper w-full">
+        <div className="container m-auto">
+          <iframe width="100%" height="700" src="https://lookerstudio.google.com/embed/reporting/34a9037d-151f-4d49-9aca-117e32dc8fd9/page/HlAIF" frameborder="0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+        </div>
+      </section>
     </div>
     </>
   );

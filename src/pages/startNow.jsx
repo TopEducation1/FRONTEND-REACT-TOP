@@ -50,15 +50,15 @@ function StartNow() {
                                                 </div>
                                                 <ul class="!pl-0 pt-5 list-none flex items-center bullet-bg bullet-soft-primary">
                                                     <li class="relative">
-                                                        <img src="/assets/platforms/icon-coursera.png" className="w-30" alt="" />
+                                                        <img src="/assets/platforms/icons/icon-coursera.png" className="w-30" alt="" />
                                                     </li>
                                                     <li class="relative px-2"><span className="text-white text-3xl text-center">+</span></li>
                                                     <li class="relative">
-                                                        <img src="/assets/platforms/icon-edx.png" className="w-30" alt="" />
+                                                        <img src="/assets/platforms/icons/icon-edx.png" className="w-30" alt="" />
                                                     </li>
                                                     <li class="relative px-2"><span className="text-white text-3xl text-center">+</span></li>
                                                     <li class="relative">
-                                                        <img src="/assets/platforms/icon-masterclass.png" className="w-30" alt="" />
+                                                        <img src="/assets/platforms/icons/icon-masterclass.png" className="w-30" alt="" />
                                                     </li>
                                                 </ul>
                                             </div>

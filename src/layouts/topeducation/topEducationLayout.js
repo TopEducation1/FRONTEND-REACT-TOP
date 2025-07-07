@@ -3,8 +3,7 @@ import Header from "../../components/header.jsx";
 import "../../index.css";
 import Footer from "../../components/Footer.jsx";
 import { Outlet, useLocation } from "react-router-dom";
-
-
+import Lenis from "@studio-freight/lenis";
 
 function TopEducationLayout() {
   const [isLoading, setIsLoading] = useState(true);
@@ -12,28 +11,24 @@ function TopEducationLayout() {
   const location = useLocation();
 
   const toggleMenu = () => {
-    //console.log("Toggle Menu llamado, estado actual:", !isMenuOpen); // Debug
     setIsMenuOpen(!isMenuOpen);
   };
 
   const openIndexResponsiveMenu = () => {
-    //console.log("Abriendo menú, estado actual:", isMenuOpen);
     setIsMenuOpen(true);
-    //console.log("Nuevo estado:", true);
   };
 
   const closeIndexResponsiveMenu = () => {
-    //console.log("Cerrando menú"); // Debug
     setIsMenuOpen(false);
   };
 
+  // Script externo
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "//js.hs-scripts.com/45381980.js";
     script.async = true;
     script.id = "hs-script-loader";
     document.body.appendChild(script);
-
 
     return () => {
       const existingScript = document.getElementById("hs-script-loader");
@@ -42,43 +37,62 @@ function TopEducationLayout() {
       }
     };
   }, []);
-
   useEffect(() => {
+  window.scrollTo(0, 0);
+}, [location.pathname]); // Solo cuando cambia de ruta
+  
+  // Simulación de carga
+  useEffect(() => {
+    window.scrollTo(0,0);
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
-
     return () => clearTimeout(timer);
   }, []);
 
-  // Debug del estado
+  // 🚀 Scroll suave con Lenis
   useEffect(() => {
-    //console.log("Estado del menú:", isMenuOpen);
-  }, [isMenuOpen]);
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // easeOutExpo
+      smooth: true,
+      smoothTouch: true,
+    });
 
-  const excludedRoutes = ["/explora", "/certificacion"]
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
 
-  const shouldRenderFooter = !excludedRoutes.some(route => location.pathname.startsWith(route));
+    requestAnimationFrame(raf);
 
+    return () => {
+      lenis.destroy(); // Limpieza al desmontar
+    };
+  }, []);
+
+  const excludedRoutes = ["/explora", "/certificacion"];
+  const shouldRenderFooter = !excludedRoutes.some(route =>
+    location.pathname.startsWith(route)
+  );
 
   return (
     <>
-    <Header
-      toggleMenu={toggleMenu}
-      openIndexResponsiveMenu={openIndexResponsiveMenu}
-      isMenuOpen={isMenuOpen}
-    />
-    {/*<SmoothScrollProvider />*/}
-    <main>
-      <Outlet
-        context={{
-          isMenuOpen,
-          openIndexResponsiveMenu,
-          closeIndexResponsiveMenu,
-        }}
+      <Header
+        toggleMenu={toggleMenu}
+        openIndexResponsiveMenu={openIndexResponsiveMenu}
+        isMenuOpen={isMenuOpen}
       />
-    </main>
-    {shouldRenderFooter && <Footer />} 
+      <main>
+        <Outlet
+          context={{
+            isMenuOpen,
+            openIndexResponsiveMenu,
+            closeIndexResponsiveMenu,
+          }}
+        />
+      </main>
+      {shouldRenderFooter && <Footer />}
     </>
   );
 }

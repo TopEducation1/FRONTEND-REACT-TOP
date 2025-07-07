@@ -21,13 +21,18 @@ class TagFilterService {
         };
 
         Object.entries(tags).forEach(([category, tagList]) => {
-            if (tagList?.length) {
-                const categoryParam = categoryMap[category];
-                if (categoryParam) {
-                    queryParts.push(`${categoryParam}=${encodeURIComponent(tagList.join(','))}`);
+            if (Array.isArray(tagList) && tagList.length) {
+                tagList = tagList.filter(tag => tag != null && tag.trim() !== '');
+                const validTags = tagList.filter(tag => typeof tag === 'string' && tag.trim().length > 0);
+                if (validTags.length) {
+                    const categoryParam = categoryMap[category];
+                    if (categoryParam) {
+                        queryParts.push(`${categoryParam}=${encodeURIComponent(validTags.join(','))}`);
+                    }
                 }
             }
         });
+
 
         return queryParts.length > 0 ? `?${queryParts.join('&')}` : '';
     }

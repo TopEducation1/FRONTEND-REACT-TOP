@@ -16,6 +16,9 @@ import Blog from "./pages/blog.jsx";
 import TopEducationLayout from "./layouts/topeducation/topEducationLayout.js";
 import CafamLayout from "./layouts/cafam/cafamLayout.js";
 import ParaEquipos from "./pages/paraEquipos.jsx";
+import TopOriginals from "./pages/TopOriginals.jsx";
+
+import LoMasTop from "./pages/loMasTop.jsx";
 import StartNow from "./pages/startNow.jsx";
 import RutasConocimiento from "./pages/RutasConocimiento.jsx";
 import BlogDetailPage from "./pages/BlogDetailPage.jsx";
@@ -66,6 +69,8 @@ function App() {
           <Route path="/recursos" element={<Blog />} />
           <Route path="/para-equipos" element={<ParaEquipos />} />
           <Route path="/empieza-ahora" element={<StartNow />} />
+          <Route path="/lo-mas-top" element={<LoMasTop />} />
+          <Route path="/originals/:slug" element={<TopOriginals />} />
           <Route
             path="/rutas-del-conocimiento"
             element={<RutasConocimiento />}

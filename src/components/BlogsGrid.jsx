@@ -57,7 +57,6 @@ const BlogsGrid = () => {
     const renderPageButtons = () => {
         const { current_page, total_pages } = pagination;
         const delta = 2;
-        const buttons = [];
 
         const range = [];
         for (let i = Math.max(2, current_page - delta); i <= Math.min(total_pages - 1, current_page + delta); i++) {
@@ -99,7 +98,7 @@ const BlogsGrid = () => {
                         setSearchQuery(e.target.value);
                         setPagination((prev) => ({ ...prev, current_page: 1 }));
                     }}
-                    className="px-4 py-2 w-full max-w-md border rounded"
+                    className="px-4 py-2 w-full max-w-md border rounded-[25px]"
                 />
             </div>
 

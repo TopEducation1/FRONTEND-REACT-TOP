@@ -54,7 +54,7 @@ const PlatformsSelector = ({platforms}) => {
 
 
   return (
-    <div className="grid grid-cols-3 lg:grid-cols-3 gap-4 w-full">
+    <div className="grid grid-cols-3 lg:grid-cols-3 gap-4 w-full platform-circles">
       {platforms.map((platform, index) => (
         <div
           key={index}
@@ -95,7 +95,7 @@ const PlatformsSelector = ({platforms}) => {
                     className="uni-card"
                     >
                         <img src={`${uni.img}`} alt={uni.name} className="uni-img" />
-                        <span className='text-neutral-950'>{uni.name}</span>
+                        <span className='!text-neutral-950'>{uni.name}</span>
                     </button>
                 ))}
                 </div>

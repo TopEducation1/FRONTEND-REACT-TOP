@@ -1,71 +1,56 @@
 import { useNavigate } from "react-router-dom";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
+import LogoItem from "./LogoItem";
 
-const Flags = ({ direction, logos , onFlagSelect }) => {
+const Flags = ({ logos = [] }) => {
   const navigate = useNavigate();
+  const sectionRef = useRef(null);
 
-  const handleItemMenuClick = (category, tag) => {
-        console.log(category, tag);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
 
-      const categoryParam = category; // asegura que esté en minúsculas
-      const tagParam = encodeURIComponent(tag); // codifica y pone en minúscula
+  const x = useTransform(scrollYProgress, [0, 1], [0, -220]);
 
-      const query = `${categoryParam}=${tagParam}&page=1&page_size=15`;
-      navigate(`/explora/filter?${query}`);
-    };
+  const handleClick = (category, tag) => {
+    const query = `${category}=${encodeURIComponent(tag)}&page=1&page_size=16`;
+    navigate(`/explora/filter?${query}`);
+  };
 
-  const repeatLogos = Array(3).fill(logos).flat();
-
-  <div className="carousel-container">
-    <div className={`carousel-track ${direction}`}>
-      {repeatLogos.map((logo, index) => (
-        <a
-          key={index}
-          className="logo-item"
-          href={logo.url}
-          onClick={(e) => {
-            e.preventDefault();
-            handleItemMenuClick(logo.type,logo.company);
-          }}
-        >
-          <img src={logo.img} alt={logo.alt} />
-        </a>
-      ))}
-    </div>
-  </div>;
+  const visibleLogos = logos.slice(0, 50);
 
   return (
-    <div className="carousel-container">
-      <div className={`carousel-track ${direction}`}>
-        {logos.map((logo, index) => (
-          <a
-            key={`set1-${index}`}
-            className="logo-item"
-            href={logo.url}
-            onClick={(e) => {
-              e.preventDefault();
-                handleItemMenuClick(logo.type,logo.company);
-            }}
-          >
-            <img src={logo.img} alt={logo.alt} />
-          </a>
-        ))}
-
-        {/* Segunda copia */}
-        {logos.map((logo, index) => (
-          <a
-            key={`set2-${index}`}
-            className="logo-item"
-            href={logo.url}
-            onClick={(e) => {
-              e.preventDefault();
-              handleItemMenuClick(logo.type,logo.company);
-            }}
-          >
-            <img src={logo.img} alt={logo.alt} />
-          </a>
-        ))}
+    <section
+      ref={sectionRef}
+      className="pt-5  xl:pt-5 lg:pt-5 pb-[4.5rem] xl:pb-5 lg:pb-5 md:pb-10 relative"
+    >
+      <div>
+        <h2 className="text-[#F6F4EF] text-center text-4xl leading-[1.2em] lg:text-5xl font-normal font-[Lora] w-full mb-10">
+          Trabajamos con líderes de la industria
+        </h2>
       </div>
-    </div>
+
+      <div className="overflow-x-auto px-12 py-10">
+        <motion.div
+          style={{ x }}
+          className="grid grid-flow-col grid-rows-2 auto-cols-[150px] gap-4 px-20 min-w-max"
+        >
+          {visibleLogos.map((logo, index) => {
+            //if (index % 3 === 0) return <div className="border-[#F6F4EF] rounded-2xl border-1 " key={index} />;
+            return (
+              <LogoItem
+                key={index}
+                logo={logo}
+                index={index}
+                onClick={() => handleClick("Empresa", logo.nombre)}
+              />
+            );
+          })}
+        </motion.div>
+      </div>
+    </section>
   );
 };
 

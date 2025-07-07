@@ -9,23 +9,24 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
     const [plataformas, setPlataformas] = useState([]);
     const [universidadesPorRegion, setUniversidadesPorRegion] = useState({});
     const indexRef = useRef(null);
-useEffect(() => {
-        fetch("https://backend-django-top-production.up.railway.app/api/topics/")
+    
+    useEffect(() => {
+        fetch("https://app.top.education/api/topics/")
             .then(res => res.json())
             .then(data => {
                 setTemas(data.filter(t => t.tem_type === "Tema"));
                 setHabilidades(data.filter(h => h.tem_type === "Habilidad"));
             });
 
-        fetch("https://backend-django-top-production.up.railway.app/api/companies/")
+        fetch("https://app.top.education/api/companies/")
             .then(res => res.json())
             .then(data => setEmpresas(data.filter(t => t.empr_est === "enabled")));
 
-        fetch("https://backend-django-top-production.up.railway.app/api/platforms/")
+        fetch("https://app.top.education/api/platforms/")
             .then(res => res.json())
             .then(data => setPlataformas(data));
 
-        fetch("https://backend-django-top-production.up.railway.app/api/universities-by-region/")
+        fetch("https://app.top.education/api/universities-by-region/")
             .then(res => res.json())
             .then(data => setUniversidadesPorRegion(data));
     }, []);

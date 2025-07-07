@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect, useRef } from 'react'
 import BlogSearchBar from "../components/BlogSearchBar";
 import BlogsGrid from "../components/BlogsGrid";
 import { Helmet } from "react-helmet";
@@ -7,6 +7,29 @@ function BlogPage() {
     useEffect(() => {
         window.scrollTo(0,0);
     }, []);
+
+
+    const formRef = useRef(null);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "//js.hsforms.net/forms/embed/v2.js";
+    script.charset = "utf-8";
+    script.type = "text/javascript";
+
+    script.onload = () => {
+      if (window.hbspt) {
+        window.hbspt.forms.create({
+          region: "na1",
+          portalId: "45381980",
+          formId: "b871a26b-3d92-4b34-91bc-6dbe5a47b2e3",
+          target: `#hubspotForm`,
+        });
+      }
+    };
+
+    document.body.appendChild(script);
+  }, []);
     return (
         <>
             {/**SEO ELEMENTS WITH REACT -HELMET */}
@@ -82,21 +105,8 @@ function BlogPage() {
                         </div>
                         <div className="xl:w-6/12 lg:w-6/12 w-full flex-[0_0_auto] !px-[15px] md:!px-[20px] lg:!px-[20px] xl:!px-[35px] !mt-[50px] max-w-full">
                             <h3>¡Suscríbete ahora!</h3>
-                            <div class="newsletter-form-block" id="wrapper-form">
-                                <form>
-                                    <label for="name">Nombre</label>
-                                    <input type="name" required="true"></input>
-                                    
-                                    <label for="email">Correo</label>
-                                    <input type="email" required="true"></input>
-                                </form>
-                            </div>
-                            <div class="newsletter-form-block" id="wrapper-button">
-                                <button>Subscribirme</button>
-                            </div>
-                            <div class="newsletter-form-block" id="wrapper-terms">
-                                <p><em>*Haciendo clic en “Suscríbete” aceptas la política de privacidad de Top Education y consientes que trate tus datos de contacto con el objetivo de gestionar la newsletter.</em></p>
-                            </div>
+                            <script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/embed/v2.js"></script>
+                            <div id="hubspotForm" ref={formRef} className="my-10" />
                         </div>
                     </div>
                 </div>

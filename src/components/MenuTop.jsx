@@ -9,9 +9,21 @@ const MenuTop = ({toggleMenu}) => {
 
   const isActive = (path) => location.pathname === path;
 
+  function navigateWithTransition(path) {
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        navigate(path);
+      });
+    } else {
+      navigate(path);
+    }
+  }
+
   const menuItems = [
     /*{ name: 'Inicio', path: '/',classItem:'item-inicio' },*/
     { name: 'Explora', path: '/explora', isDropdown: true,classItem: 'item-explora' },
+    //{ name: 'Originals', path: '/top-originals',classItem: 'item-orginals' },
+    //{ name: 'Lo más Top', path: '/lo-mas-top',classItem: 'item-mastop' },
     { name: 'Recursos', path: '/recursos',classItem: 'item-recursos' },
     { name: 'Para equipos', path: '/para-equipos',classItem: 'item-equipos' },
     { name: 'Empieza ahora', path: '/empieza-ahora',classItem: 'item-empezar' },
@@ -77,7 +89,7 @@ const MenuTop = ({toggleMenu}) => {
       const tagParam = encodeURIComponent(tag); // codifica y pone en minúscula
 
       const query = `${categoryParam}=${tagParam}&page=1&page_size=15`;
-      navigate(`/explora/filter?${query}`);
+      navigateWithTransition(`/explora/filter?${query}`);
     };
 
   return (
@@ -110,19 +122,24 @@ const MenuTop = ({toggleMenu}) => {
                     </ul>
                   </div>
                 ))}
-                <NavLink className='absolute right-10 bottom-5 flex gap-2 items-center py-1 px-3 rounded-lg btn-col-2' to="/explora">Ver más certificaciones <FaChevronRight /></NavLink>
+                <button
+                  onClick={() => navigateWithTransition("/explora", navigate)}
+                  className='absolute right-10 bottom-5 flex gap-2 items-center py-1 px-3 rounded-lg btn-col-2'
+                >
+                  Ver más certificaciones <FaChevronRight />
+                </button>
+
               </div>
             )}
           </div>
         ) : (
-          <NavLink
+          <button
             key={item.name}
-            to={item.path}
             className={`menu-item ${item.classItem} ${isActive(item.path) ? 'active' : ''}`}
-            onClick={(e) => isActive(item.path) && e.preventDefault()}
+            onClick={() => !isActive(item.path) && navigateWithTransition(item.path)}
           >
             {item.name}
-          </NavLink>
+          </button>
         )
       )}
     </div>

@@ -3,9 +3,9 @@
 /*VARIABLES DE COLOR Y DIMENSION*/
 :root {
   --blancoPlatform: #FFFF;
-  --blancoRGB: 246,244,239;
+  --blancoPlatformRGB: 246,244,239;
   --negroPlatform: black;
-  --negroRGB: 0,0,0;
+  --negroPlatformRGB: 0,0,0;
   --rojo: #D33B3E;
   --azulPlataforma: #0E4194;
   --esquinaSm: 15px;

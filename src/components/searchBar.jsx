@@ -3,8 +3,9 @@ import React from 'react';
 import { useState, useEffect } from "react";
 import FilterBySearch from "../services/filterBySearch";
 import { useDebounce } from "use-debounce";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { X } from 'lucide-react';
+
 
 const SearchBar = () => {
     const [error, setError] = useState(null);
@@ -16,6 +17,7 @@ const SearchBar = () => {
     const [debouncedText] = useDebounce(text, 300);
     const navigate = useNavigate();
     const host = window.location.hostname;
+    const location = useLocation();
 
     const handleWriting = event => {
         const newText = event.target.value;
@@ -77,28 +79,24 @@ const SearchBar = () => {
         };
     }, [resultsVisible]);
 
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const searchQuery = params.get("search");
+
+        if (searchQuery) {
+            // Decodifica por si viene con caracteres codificados (como %20, etc.)
+            const decodedSearch = decodeURIComponent(searchQuery);
+            setText(decodedSearch);
+        }
+    }, [location.search]);
+
     const handleCertificationClick = (certification) => {
         try {
             if (!certification) {
                 throw new Error('No certification data provided');
             }
 
-            let path;
-            // Define the path based on the platform ID
-            switch (certification.plataforma_certificacion_id) {
-                case 1:
-                    path = `/certificacion/edx/${certification.slug}`;
-                    break;
-                case 2:
-                    path = `/certificacion/coursera/${certification.slug}`;
-                    break;
-                case 3:
-                    path = `/certificacion/masterclass/${certification.slug}`;
-                    break;
-                default:
-                    // Fallback to generic path if platform ID is not recognized
-                    path = `/certificacion/${certification.slug}`;
-            }
+            let path = `/certificacion/${certification.plataforma_certificacion.nombre.toLowerCase()}/${certification.slug}`;
 
             navigate(path);
         } catch (err) {

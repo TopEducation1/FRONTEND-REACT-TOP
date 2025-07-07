@@ -5,6 +5,15 @@ const ImageSlider3D = ({images,action}) => {
     const navigate = useNavigate();
     const [current, setCurrent] = useState(0);
 
+    function navigateWithTransition(path) {
+      if (document.startViewTransition) {
+        document.startViewTransition(() => {
+          navigate(path);
+        });
+      } else {
+        navigate(path);
+      }
+    }
     const handleItemMenuClick = (category, tag) => {
         console.log(category, tag);
 
@@ -12,7 +21,7 @@ const ImageSlider3D = ({images,action}) => {
       const tagParam = encodeURIComponent(tag); // codifica y pone en minúscula
 
       const query = `${categoryParam}=${tagParam}&page=1&page_size=15`;
-      navigate(`/${action}/filter?${query}`);
+      navigateWithTransition(`/${action}/filter?${query}`);
     };
 
     useEffect(() => {
