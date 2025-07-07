@@ -7,6 +7,16 @@ const Flags = ({ logos = [] }) => {
   const navigate = useNavigate();
   const sectionRef = useRef(null);
 
+  function navigateWithTransition(path) {
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        navigate(path);
+      });
+    } else {
+      navigate(path);
+    }
+  }
+
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
@@ -16,7 +26,7 @@ const Flags = ({ logos = [] }) => {
 
   const handleClick = (category, tag) => {
     const query = `${category}=${encodeURIComponent(tag)}&page=1&page_size=16`;
-    navigate(`/explora/filter?${query}`);
+    navigateWithTransition(`/explora/filter?${query}`);
   };
 
   const visibleLogos = logos.slice(0, 50);
