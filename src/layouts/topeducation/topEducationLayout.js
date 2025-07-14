@@ -71,7 +71,7 @@ function TopEducationLayout() {
     };
   }, []);
 
-  const excludedRoutes = ["/explora", "/certificacion"];
+  const excludedRoutes = [ "/certificacion"];
   const shouldRenderFooter = !excludedRoutes.some(route =>
     location.pathname.startsWith(route)
   );

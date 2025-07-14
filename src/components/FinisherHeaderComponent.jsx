@@ -1,66 +1,50 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import BlurText from "./BlurText";
+import BlobsCircle from "./BlobsCircle";
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import ReactModal from 'react-modal';
 import { loadSlim } from "@tsparticles/slim";
-import { motion, useAnimation, useScroll, useTransform } from "framer-motion";
+import { motion, useAnimation, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from "framer-motion";
+
 
 ReactModal.setAppElement('#root');
 
 const FinisherHeaderComponent = () => {
-  const ref = useRef();
-  const videoRef = useRef(null);
+
   const contentRef = useRef(null);
-  const controls = useAnimation();
 
-  const [isOpen, setIsOpen] = useState(false);
   const [init, setInit] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
 
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
-
-  // 🎬 Fade out al hacer scroll
   const { scrollYProgress } = useScroll({
     target: contentRef,
-    offset: ["start start", "end start"],
+    offset: ["start end", "end start"],
   });
 
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  // 🧠 Clamp scroll para evitar cambio antes de 0.2
+  const clampedProgress = useTransform(scrollYProgress, (val) =>
+    val < 0.2 ? 0 : (val - 0.2) / (1 - 0.2)
+  );
 
-  useEffect(() => {
-    if (isOpen && videoRef.current) {
-      videoRef.current.play();
-    } else if (!isOpen && videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
-  }, [isOpen]);
+  // 🎯 Transiciones después de scroll > 0.2
+  const opacity = useTransform(clampedProgress, [0.3, 1], [1, 0.2]);
+  const scale = useTransform(clampedProgress, [0, 1], [1, 0.5]);
+  const y = useTransform(clampedProgress, [0, 1], [0, 50]);
+  
+  const [isOpen, setIsOpen] = useState(false);
+  const buttonRef = useRef(null);
+  const videoRef = useRef(null);
+  const [buttonRect, setButtonRect] = useState(null);
 
-  // Animación de introducción del título
-  useEffect(() => {
-    async function runIntroAnimation() {
-      await controls.start({
-        scale: 1,
-        opacity: 1,
-        transition: { duration: 2.5, ease: "easeOut" },
-      });
-      setShowIntro(false);
-      await controls.start({
-        opacity: 0,
-        transition: { duration: 1.2, ease: "easeInOut", delay: 0.8 },
-      });
-    }
-    controls.set({ scale: 6, opacity: 1 });
-    runIntroAnimation();
-  }, [controls]);
+  const openModal = () => {
+    const rect = buttonRef.current.getBoundingClientRect();
+    setButtonRect(rect);
+    setIsOpen(true);
+  };
 
-  const positions = [
-    { top: "65%", left: "15%" },
-    { top: "40%", left: "45%" },
-    { top: "65%", left: "75%" },
-  ];
-  const colors = ["blue", "green", "red"];
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
 
   useEffect(() => {
     initParticlesEngine(async (engine) => {
@@ -98,7 +82,7 @@ const FinisherHeaderComponent = () => {
           enable: true,
           outModes: { default: "bounce" },
           random: false,
-          speed: 2,
+          speed: 1,
           straight: false,
         },
         number: { density: { enable: false }, value: 50 },
@@ -110,101 +94,79 @@ const FinisherHeaderComponent = () => {
     }),
     []
   );
+  const handleAnimationComplete = () => {
+  console.log('Animation completed!');
+};
 
   return (
     <>
-      {/* Overlay de introducción */}
-      {showIntro && (
-        <motion.div
-          initial={{ scale: 6, opacity: 1 }}
-          animate={controls}
-          style={{
-            position: "fixed",
-            zIndex: 9999,
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "#0F090B",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            lineHeight: "8em",
-          }}
-        >
-          <h1
-            style={{
-              color: "#F6F4EF",
-              fontSize: "6rem",
-              textAlign: "center",
-              marginBottom: "100px",
-              userSelect: "none",
-            }}
-          >
-            Conecta los puntos,<br /> forma tu historia
-          </h1>
-        </motion.div>
-      )}
-
-      <div className="header finisher-header w-full h-[100vh] top-0 mx-auto px-4 justify-center-safe bg-[#0F090B] relative gap-2">
+      
+      <div className="header finisher-header w-full h-[100vh] top-0 mx-auto px-4 justify-center-safe relative gap-2">
         <Particles id="tsparticles" options={options} />
-
-        {positions.map((pos, index) => (
-          <motion.span
-            key={index}
-            className={`blob ${colors[index % colors.length]}`}
-            style={{
-              position: "absolute",
-              top: pos.top,
-              left: pos.left,
-            }}
-            animate={{
-              y: [0, -window.innerHeight * 0.8, 0],
-              x: [0, (Math.random() - 0.5) * 200, 0],
-            }}
-            transition={{
-              duration: 8 + index * 2,
-              repeat: Infinity,
-              repeatType: "loop",
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-
+        <BlobsCircle/>
         {/* ⬇ Sección que se desvanece al hacer scroll */}
         <motion.div
           ref={contentRef}
-          style={{ opacity }}
+          style={{ opacity, scale, y }}
           className="grid columns-1 justify-items-center content-evenly gap-4 z-10"
         >
-          {!showIntro && (
-            <>
-              <h1 className="text-8xl w-full xl:w-[45vw] text-[#F6F4EF] text-center leading-30">
-                Conecta los puntos,<br /> forma tu historia
-              </h1>
-              <p className="text-[#F6F4EF] text-center font-['Montserrat'] text-2xl">
-                Crea tu ruta de aprendizaje con los más top del mundo.
-              </p>
-            </>
-          )}
-          <button className="btn btn-col-4 py-3 px-5 w-auto" onClick={openModal}>
+          <BlurText
+            text="Conecta los puntos, forma tu historia"
+            delay={150}
+            animateBy="words"
+            direction="top"
+            onAnimationComplete={handleAnimationComplete}
+            className="text-[4.75rem] w-full lg:w-[50vw] xl:w-[35vw] text-[#F6F4EF] text-center leading-[1.2em]"
+          />
+          <p className="text-[1.125rem] text-[#a8a8a8] text-center mt-[-15px] font-['Montserrat']">
+            Crea tu ruta de aprendizaje con los más top del mundo.
+          </p> 
+          
+          <button className="btn btn-col-4 py-2 px-5 w-auto" ref={buttonRef} onClick={openModal}>
             ¿Qué es<span id="top">top</span>
             <span id="education">.education</span>?
           </button>
 
           <ReactModal
-            isOpen={isOpen}
-            onRequestClose={closeModal}
-            contentLabel="Video Pop-up"
-            className="modal"
-            overlayClassName="overlay"
-            closeTimeoutMS={400}
-          >
-            <button onClick={closeModal} className="btn btn-close">x</button>
-            <div className="video-container">
-              <video ref={videoRef} src="/assets/video/main-video.mp4" controls></video>
-            </div>
-          </ReactModal>
+        isOpen={isOpen}
+        onRequestClose={closeModal}
+        className="modal"
+        overlayClassName="overlay"
+        closeTimeoutMS={400}
+        ariaHideApp={false}
+      >
+        <AnimatePresence>
+          {isOpen && buttonRect && (
+            <motion.div
+              initial={{
+                opacity: 0,
+                scale: 0.2,
+                x: buttonRect.left + buttonRect.width / 2 - window.innerWidth / 2,
+                y: buttonRect.top + buttonRect.height / 2 - window.innerHeight / 2,
+              }}
+              animate={{
+                opacity: 1,
+                scale: 1,
+                x: 0,
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+                scale: 0.2,
+                x: buttonRect.left + buttonRect.width / 2 - window.innerWidth / 2,
+                y: buttonRect.top + buttonRect.height / 2 - window.innerHeight / 2,
+              }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+              className="modal-inner-content"
+            >
+              <button onClick={closeModal} className="btn btn-close">x</button>
+              <div className="video-container">
+                <video ref={videoRef} src="/assets/video/main-video.mp4" controls />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </ReactModal>
         </motion.div>
       </div>
     </>

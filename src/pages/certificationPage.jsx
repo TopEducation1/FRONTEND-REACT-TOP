@@ -23,6 +23,16 @@ const CertificationPage = () => {
     const [visibleContainerPopUp, setVisibleContainerPopUp] = useState(true);
     const host = window.location.hostname;
     const navigate = useNavigate();
+
+    function navigateWithTransition(path) {
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        navigate(path);
+      });
+    } else {
+      navigate(path);
+    }
+  }
     useEffect(() => {
 
         const handleRezise = () => {
@@ -102,7 +112,7 @@ const CertificationPage = () => {
         );
     }
     const handleAtras = () => {
-        navigate(-1); // -1 significa ir una página atrás en el historial
+        navigateWithTransition(-1); // -1 significa ir una página atrás en el historial
     };
 
     return (
@@ -119,7 +129,7 @@ const CertificationPage = () => {
             <meta property="og:type" content="website" />
         </Helmet>
         <div className="w-full bg-[#F6F4EF] relative">
-            <button className="fixed top-[83px] left-[5%] flex items-center gap-2 btn-col-2 rounded-xl py-2 px-3 z-10" onClick={handleAtras}><FaAnglesLeft />Volver Atrás</button>
+            <button className="fixed top-[15px] left-[20%] flex items-center gap-2 bg-[#1c1c1c] text-[#F6F4EF] rounded-[25px_0px_0px_25px] pt-[16px] pb-[17px] pl-4 pr-6 z-[1000]" onClick={handleAtras} title="Volver atrás"><FaAnglesLeft className="text-[23px]" /></button>
             <div className="container  mx-auto py-25 md:py-50px lg:py-60px 2xl:py-100px ">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                     <div className="lg:col-start-1 lg:col-span-8 space-y-[35px] pb-8 border-1 border-[#ECECEC] rounded-[15px] z-1 order-2 md:order-1">

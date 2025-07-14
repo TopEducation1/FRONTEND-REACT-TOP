@@ -143,7 +143,7 @@ console.log("Slug actual:", slug);
     window.addEventListener('scroll', onScroll)
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
-  if (loading || !original) return <div className="text-white text-center mt-80 p-10">Cargando...</div>;
+  if (loading || !original) return <div className="text-[#F6F4EF] text-center mt-80 p-10">Cargando...</div>;
 
 return (
   <>
@@ -157,9 +157,9 @@ return (
         <meta property="og:description" content="Descubre ebooks y blogs exclusivos de Top Education. Accede a contenido valioso para potenciar tu conocimiento y alcanzar tus metas personales y profesionales." />
         <meta property="og:type" content="website" />
     </Helmet>
-  <div className="text-white font-sans">
+  <div className="text-[#F6F4EF] font-sans">
     {loading ? (
-      <p className="text-white text-center py-10">Cargando...</p>
+      <p className="text-[#F6F4EF] text-center py-10">Cargando...</p>
     ) : original ? (
         <section className="relative h-[90vh] w-full pt-80 pb-50 overflow-hidden">
           <img
@@ -173,26 +173,24 @@ return (
           />
           
           <div className="absolute bg-linear-to-b from-transparent to-[#0F090B] inset-0 flex flex-col justify-end items-center text-center px-6 md:px-20 ">
-            <h1 className="text-4xl md:text-7xl font-semibold leading-snug text-white">
+            <h1 className="text-[3.75rem] font-semibold leading-snug text-[#F6F4EF]">
               ¿Qué habría aprendido<br/> 
-              <span className="italic text-[#5CC781]">{original.name}</span> en
-              <span className="text-[#5CC781]"><span id='top'>top</span><span id='education'>.education</span></span>?
+              <span className="top-italic text-[#a8a8a8]">{original.name}</span> en 
+              <span><span id='top'>top</span><span id='education'>.education</span></span>?
             </h1>
           </div>
         </section>
       ) : (
-  <p className="text-red-500 text-center py-10">No se encontró el autor.</p>
-)}
-
-
+        <p className="text-red-500 text-center py-10">No se encontró el autor.</p>
+      )}
 
       {/* Texto introductorio */}
        <section className="wrapper">
-        <div className='m-auto container px-6 md:px-20 py-10 md:py-16 text-gray-200'>
+        <div className='m-auto container px-6 md:px-20 py-10 md:py-16'>
             <p
-    className="mb-6 text-1xl lg:text-2xl mt-[-30px] lg:mt-[-50px] leading-[1.2em] text-center"
-    dangerouslySetInnerHTML={{ __html: original.biog }}
-  />
+              className="mb-6 text-[1.125rem] text-[#a8a8a8] mt-[-30px] lg:mt-[-50px] leading-[1.2em] text-center"
+              dangerouslySetInnerHTML={{ __html: original.biog }}
+            />
         </div>
       </section>
 
@@ -203,23 +201,28 @@ return (
                 <div className={`flex h-full lg:pr-[90px] px-30 py-10 box-border w-[${(NUM_SLIDES - 1) * 100}vw]  lg:w-[${(NUM_SLIDES - 1) * 45}vw] ` }>
                   {original?.certifications?.map((item, index) => (
                     <div key={index} className={`w-screen px-10 py-20 flex flex-col md:flex-row  justify-center  bg-no-repeat ${index % 2 !== 0 ? "bg-[url(/assets/content/originals/top-education-line-medium.svg)] bg-size-[50%] bg-right items-end":"bg-[url(/assets/content/originals/top-education-line-large.svg)] bg-size-[50%] items-start bg-right"}`}>
-                      <div className='w-full lg:w-[45vw] flex flex-wrap  '>
+                      <div className='w-full lg:w-[45vw] flex flex-wrap relative '>
                           <div className='w-full lg:w-[60%] pr-0 lg:pr-30'>
-                            <h2 className='block w-full text-[2em] lg:text-[2.5em] leading-[1.2em] text-[#F6F4EF]'>{item.title}</h2>
-                            <p className='text-1xl text-[#F6F4EF] mt-3'>{item.hist}</p>
+                            <h2 className='block w-full text-[2.75rem]  top-italic leading-[1.1em] text-[#F6F4EF]'>{item.title}</h2>
+                            <p className='text-[1.12rem] leading-[1.1em] text-[#a8a8a8] mt-3'>{item.hist}</p>
                           </div>
-                          <Link to={`/certificacion/${item.certification_slug}`} className="w-full mt-10 lg:mt-0 lg:w-[40%] hover:scale-115 duration-300">
-                            <div className='h-auto bg-[#F6F4EF] w-[80%] lg:w-full p-3 rounded-xl'>
+                          <Link to={`/certificacion/${item.certification_detail.plataforma_certificacion.nombre.toLowerCase()}/${item.certification_slug}`} className="w-full mt-10 lg:mt-0 lg:w-[40%] hover:scale-115 duration-300">
+                            <div className='h-auto bg-[#F6F4EF] w-[80%] lg:w-full  rounded-xl'>
                               <img
                                 src={item.certification_image_url}
                                 alt={item.certification_title}
                                 className="rounded-xl"
                               />
-                              <div className="w-full">
-                                <h3 className="text-[24px] text-center text-[#0F090B] leading-[1.1em] font-semibold mt-3 mb-3"> {item.certification_title}</h3>
+                              <div className="w-full py-1 px-3">
+                                <h3 className="text-[1.2rem] text-center text-[#0F090B] leading-[1.1em] font-semibold mb-1"> {item.certification_title}</h3>
+                                <div className='tag-platform'>
+                                  <img src={item.certification_detail.plataforma_certificacion.plat_img} alt="" />
+                                </div>
                               </div>
                             </div>
-                            
+                          </Link>
+                          <Link to={`/explora/filter?${item.certification_detail.tema_certificacion.tem_type}=${item.certification_detail.tema_certificacion.nombre}&page=1&page_size=16`} className={`w-[100px] absolute cursor-pointer right-[-3%] ${index % 2 !== 0 ? "top-[-50%]":"bottom-[-50%]"}`}>
+                            <img src={item.certification_detail.tema_certificacion.tem_img} alt="" />
                           </Link>
                         </div>
                     </div>

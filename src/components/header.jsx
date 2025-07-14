@@ -16,7 +16,7 @@ const Header = ({ toggleMenu,onTagSelect, openIndexResponsiveMenu, isMenuOpen })
   };
   return (
     <header>
-      <nav className="nav-main relative mx-2 w-full rounded-[36px] border border-white/80 bg-[#0F090B] px-4 py-3 backdrop-blur-md dark:border-white-700/80 dark:bg-[#0F090B]/80 dark:backdrop-blur-md md:flex md:items-center md:justify-between md:px-6 md:py-0 lg:px-8 xl:mx-auto">
+      <nav className="nav-main relative m-auto w-[90vw] lg:w-[55vw] rounded-[36px]  bg-[#1c1c1c] px-4 py-2 backdrop-blur-md md:flex md:items-center md:justify-between md:px-6 md:py-0 lg:px-8 xl:mx-auto">
         <div className="wrapper-logo-nav">
           <button onClick={() => navigateWithTransition('/inicio')}>
             <img src="/assets/logos/TOPEDUCATIONLOGONAV.png" alt="Logo Top.education" className="logo-nav"></img>

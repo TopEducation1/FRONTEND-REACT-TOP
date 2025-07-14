@@ -29,26 +29,23 @@ const Flags = ({ logos = [] }) => {
     navigateWithTransition(`/explora/filter?${query}`);
   };
 
-  const visibleLogos = logos.slice(0, 50);
+  const visibleLogos = logos.slice(0,36);
 
   return (
     <section
       ref={sectionRef}
       className="pt-5  xl:pt-5 lg:pt-5 pb-[4.5rem] xl:pb-5 lg:pb-5 md:pb-10 relative"
     >
-      <div>
-        <h2 className="text-[#F6F4EF] text-center text-4xl leading-[1.2em] lg:text-5xl font-normal font-[Lora] w-full mb-10">
-          Trabajamos con líderes de la industria
-        </h2>
-      </div>
-
-      <div className="overflow-x-auto px-12 py-10">
+      <h2 className="text-[#F6F4EF] text-center text-4xl leading-[1.2em] lg:text-5xl font-normal font-[Lora] w-full">
+        Trabajamos con líderes de la industria
+      </h2>
+      <div className="overflow-x-auto px-12 py-5">
         <motion.div
           style={{ x }}
-          className="grid grid-flow-col grid-rows-2 auto-cols-[150px] gap-4 px-20 min-w-max"
+          className="grid grid-flow-col grid-rows-3 auto-cols-[120px] gap-3 px-20 min-w-max"
         >
           {visibleLogos.map((logo, index) => {
-            //if (index % 3 === 0) return <div className="border-[#F6F4EF] rounded-2xl border-1 " key={index} />;
+            //if (index % 5 === 0) return <div className="border-[#F6F4EF] rounded-2xl border-1 " key={index} />;
             return (
               <LogoItem
                 key={index}

@@ -61,7 +61,7 @@ const TopicSelector = ({ topics }) => {
     <div className="cloud-container relative" ref={ref}>
 
       <div className="center-text-banner">
-        <h2 className="index-text text-white text-4xl lg:text-[3.5rem] text-center font-normal leading-[1.2em] mb-0">
+        <h2 className="index-text text-[#F6F4EF] text-3xl lg:text-[3rem] text-center font-normal leading-[1.2em] mb-0">
           +13.000 certificaciones
         </h2>
       </div>

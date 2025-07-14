@@ -73,13 +73,13 @@ const BlogsGrid = () => {
 
         return uniquePages.map((page, index) => {
             if (page === '...') {
-                return <span key={`ellipsis-${index}`} className="text-white px-2">...</span>;
+                return <span key={`ellipsis-${index}`} className="text-[#F6F4EF] px-2">...</span>;
             }
             return (
                 <button
                     key={page}
                     onClick={() => handlePageChange(page)}
-                    className={`px-3 py-1 rounded-[25px] ${page === current_page ? 'bg-neutral-700 text-white' : 'bg-neutral-200'}`}
+                    className={`px-3 py-1 rounded-[25px] ${page === current_page ? 'bg-neutral-700 text-[#F6F4EF]' : 'bg-neutral-200'}`}
                 >
                     {page}
                 </button>
@@ -104,7 +104,7 @@ const BlogsGrid = () => {
 
             {error && <div className="text-red-500 text-center">{error}</div>}
             {loading ? (
-                <div className="text-white text-center">Cargando blogs...</div>
+                <div className="text-[#F6F4EF] text-center">Cargando blogs...</div>
             ) : (
                 <div className="container m-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {blogs.map((blog) => {
@@ -113,11 +113,11 @@ const BlogsGrid = () => {
                             <div
                                 key={blog.id}
                                 onClick={() => handleBlogClick(blog)}
-                                className="blog-card cursor-pointer border border-white rounded-xl hover:scale-[1.02] transition"
+                                className="blog-card cursor-pointer border border-[#F6F4EF] rounded-xl hover:scale-[1.02] transition"
                             >
                                 <img src={imageUrl} alt={blog.nombre_blog} className="w-full rounded-t-xl" />
                                 <div className="px-3 py-4">
-                                    <h3 className="text-white text-center text-lg font-bold">{blog.nombre_blog}</h3>
+                                    <h3 className="text-[#F6F4EF] text-[1.2rem] leading-[1.2em] text-center text-lg font-bold">{blog.nombre_blog}</h3>
                                 </div>
                             </div>
                         );

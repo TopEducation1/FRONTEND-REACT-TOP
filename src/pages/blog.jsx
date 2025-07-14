@@ -7,29 +7,28 @@ function BlogPage() {
     useEffect(() => {
         window.scrollTo(0,0);
     }, []);
-
-
     const formRef = useRef(null);
 
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "//js.hsforms.net/forms/embed/v2.js";
-    script.charset = "utf-8";
-    script.type = "text/javascript";
+    useEffect(() => {
+        const script = document.createElement("script");
+        script.src = "//js.hsforms.net/forms/embed/v2.js";
+        script.charset = "utf-8";
+        script.type = "text/javascript";
 
-    script.onload = () => {
-      if (window.hbspt) {
-        window.hbspt.forms.create({
-          region: "na1",
-          portalId: "45381980",
-          formId: "b871a26b-3d92-4b34-91bc-6dbe5a47b2e3",
-          target: `#hubspotForm`,
-        });
-      }
-    };
+        script.onload = () => {
+        if (window.hbspt) {
+            window.hbspt.forms.create({
+            region: "na1",
+            portalId: "45381980",
+            formId: "b871a26b-3d92-4b34-91bc-6dbe5a47b2e3",
+            target: `#hubspotForm`,
+            });
+        }
+        };
 
-    document.body.appendChild(script);
-  }, []);
+        document.body.appendChild(script);
+    }, []);
+    
     return (
         <>
             {/**SEO ELEMENTS WITH REACT -HELMET */}
@@ -44,9 +43,9 @@ function BlogPage() {
             </Helmet>
             <section className="wrapper h-[90vh] w-full flex justify-center items-center bg-gradient-to-t from-neutral-800 to-transparent">
                 <div className="container m-auto mx-auto gap-2  sect-h-pequ">
-                    <div>
-                        <h1 className="text-white text-7xl font-normal font-[Lora] text-left leading-[1em] z-10 relative sm:text-7xl md:text-7xl lg:text-7xl xl:text-9xl">Editorial<br></br> <span id="top" className="italic">top</span><span id="education" className="italic">.education</span></h1>
-                        <p className="text-white mt-5 text-2xl text-left z-10 relative">Descarga gratis nuestros recursos exclusivos. Encuentra la información que necesitas para alcanzar tus metas educativas, personales y profesionales. Te ofrecemos herramientas poderosas para enriquecer tu vida y potenciar tu crecimiento.</p>
+                    <div className='m-auto max-w-[50vw]'>
+                        <h1 className="text-[#F6F4EF] text-7xl font-normal font-[Lora] text-center leading-[1em] z-10 relative sm:text-6xl md:text-6xl lg:text-6xl xl:text-8xl"><span className='top-italic'>Editorial</span><br></br> <span id="top">top</span><span id="education" >.education</span></h1>
+                        <p className="mt-5 text-[1.125rem] text-[#a8a8a8] text-center z-10 relative">Descarga gratis nuestros recursos exclusivos. Encuentra la información que necesitas para alcanzar tus metas educativas, personales y profesionales. Te ofrecemos herramientas poderosas para enriquecer tu vida y potenciar tu crecimiento.</p>
                     </div>
                 </div>
             </section>
@@ -90,8 +89,8 @@ function BlogPage() {
             </section>
             <section className="wrapper">
                 <div className="container m-auto">
-                    <h2 className="text-white text-7xl font-normal font-[Lora] italic text-left leading-16 z-10 relative">Explora y aprende</h2>
-                    <p className="text-white mt-5 text-2xl text-left mb-8 z-10 relative">Amplía tus conocimientos con contenido de calidad seleccionado por expertos. Descubre nuevas habilidades, profundiza en temas de tu interés y accede a recursos educativos que te acercan a tus objetivos.</p>
+                    <h2 className="text-[#F6F4EF] text-7xl top-italic font-normal font-[Lora] text-center leading-[1.2em] z-10 relative">Explora y aprende</h2>
+                    <p className="text-[1.125rem] text-[#a8a8a8] mt-5 text-center mb-8 z-10 relative">Amplía tus conocimientos con contenido de calidad seleccionado por expertos. Descubre nuevas habilidades, profundiza en temas de tu interés y accede a recursos educativos que te acercan a tus objetivos.</p>
                     <BlogsGrid/>
                 </div>
             </section>
@@ -100,8 +99,8 @@ function BlogPage() {
                     <span class="w-5/15 lg:w-5/15 aspect-square bg-gradient-to-tr from-green-500 to-green-900 absolute top-10 lg:left-0 rounded-full skew-y-0 blur-2xl opacity-40 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
                     <div className="flex flex-wrap items-center">
                         <div className="xl:w-6/12 lg:w-6/12 w-full flex-[0_0_auto] !px-[15px] md:!px-[20px] lg:!px-[20px] xl:!px-[35px] !mt-[50px] max-w-full">
-                            <h2 className="text-white text-5xl font-normal font-[Lora] w-full italic relative">Entérate de todas las novedades</h2>
-                            <p className="text-white mt-5 mb-5 text-2xl text-left z-10 relative">¡Únete a nuestra comunidad suscribiéndote a nuestro boletín informativo!</p>
+                            <h2 className="text-[#F6F4EF] text-[4rem] leading-[1em] font-normal font-[Lora] w-full top-italic relative"><span className='text-[6rem]'>Entérate</span><br></br> de todas las novedades</h2>
+                            <p className="mt-5 mb-5 text-[1.125rem] text-[#a8a8a8] text-left z-10 relative">¡Únete a nuestra comunidad suscribiéndote a nuestro boletín informativo!</p>
                         </div>
                         <div className="xl:w-6/12 lg:w-6/12 w-full flex-[0_0_auto] !px-[15px] md:!px-[20px] lg:!px-[20px] xl:!px-[35px] !mt-[50px] max-w-full">
                             <h3>¡Suscríbete ahora!</h3>

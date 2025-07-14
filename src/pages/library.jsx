@@ -14,41 +14,6 @@ import axios from 'axios';
 /**
  * Pagina de la biblioteca
  *  */
-const authors = [
-    {
-      name: "Steve Jobs",
-      image: "assets/content/sliders/slider-Steve-Jobs.png",
-      link: "#",
-      description: "Empresario, inventor y fundador de Apple."
-    },{
-      name: "Alexander turing",
-      image: "assets/content/sliders/slider-Alexander-turing.png",
-      link: "#",
-      description: "Metematico, padre de la informatica moderna."
-    },{
-      name: "Sigmund Freud",
-      image: "assets/content/sliders/slider-Sigmund-Freud.png",
-      link: "#",
-      description: "Neurólogo, padre del psicoanálisis y una de las figuras más influyentes del siglo XX."
-    },{
-      name: "Leonardo da Vinci",
-      image: "assets/content/sliders/slider-Leonardo-da-Vinci.png",
-      link: "#",
-      description: "Pintor, Científico, Ingeniero, Anatomista."
-    },{
-      name: "Nikola Tesla",
-      image: "assets/content/sliders/slider-Nikola-Tesla.png",
-      link: "#",
-      description: "Físico, ingeniero, matemático, mecánico e inventor visionario."
-    },{
-      name: "Marie Curie",
-      image: "assets/content/sliders/slider-Marie-Curie.png",
-      link: "#",
-      description: "Científica, pionera, radioactividad, premio nobel en quimica y fisica."
-    }
-  ];
-
-
 
 function LibraryPage({ showRoutes = true }) {  
 
@@ -87,7 +52,7 @@ function LibraryPage({ showRoutes = true }) {
     
     try {
     setLoading(true); // ✅ Activa el estado de carga
-      const response = await axios.get('https://app.top.education/api/latest-certifications/');
+      const response = await axios.get('http://127.0.0.1:8000/api/latest-certifications/');
       console.log('Certificaciones recibidas:', response.data); // depuración
       setCertifications(response.data);
     } catch (error) {
@@ -342,24 +307,27 @@ function LibraryPage({ showRoutes = true }) {
       />
       <meta property="og:title" content="Top Education | Aprende con edX, Coursera y MasterClass" />
     </Helmet>
-    <SearchBar />
-    <div className="cont-explora px-0 lg:px-10">
-      <div className="wrapper-logo-platforms">
-        <div className="wrapper-logos">
-          <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "Coursera")} >
-            <img src="/assets/platforms/coursera-logo.png" />
-          </div>
-          <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "EdX")} > 
-            <img src="/assets/platforms/edx-logo.png" />
-          </div>
-          <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "MasterClass")} >
-            <img src="/assets/platforms/masterclass-logo.png" />
+    <div className="wrapper-logo-platforms ">
+        <div className="wrapper-logos flex justify-between">
+          <div className="flex gap-3">
+            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "Coursera")} >
+              <img src="/assets/platforms/coursera-logo.png" />
+            </div>
+            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "EdX")} > 
+              <img src="/assets/platforms/edx-logo.png" />
+            </div>
+            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "MasterClass")} >
+              <img src="/assets/platforms/masterclass-logo.png" />
+            </div>
           </div>
           <div className="container-logo" onClick={() => handleBannerClick('Plataforma', 'Nuevo en Top.education')}>
             Nuevo en<span id="top">top.</span><span id="education">education</span>
           </div>
         </div>
       </div>
+    
+    <div className="cont-explora px-0 lg:px-10">
+      
       <IndexCategories 
         onTagSelect={(category, tag) => {
           setSelectedTags((prev) => {
@@ -374,19 +342,22 @@ function LibraryPage({ showRoutes = true }) {
         selectedTags={selectedTags}
       />
       <div className="cont-filter">
-        <div className="container-tags">
-          {Object.keys(selectedTags).length === 0 || Object.values(selectedTags).every((tags) => tags.length === 0) ? (
-            <p>Aún no has seleccionado tags</p>
-          ) : (
-            Object.entries(selectedTags).map(([category, tags], index) =>
-              tags.map((tag, tagIndex) => (
-                <div key={`${category}-${tagIndex}`} className="tag">
-                  <span>{tag}</span>
-                  <button onClick={() => removeTag(category, tag)} className="remove-tag-button" >x</button>
-                </div>
-              ))
-            )
-          )}
+        <div className="flex">
+          <div className="container-tags">
+            {Object.keys(selectedTags).length === 0 || Object.values(selectedTags).every((tags) => tags.length === 0) ? (
+              <p>Aún no has seleccionado tags</p>
+            ) : (
+              Object.entries(selectedTags).map(([category, tags], index) =>
+                tags.map((tag, tagIndex) => (
+                  <div key={`${category}-${tagIndex}`} className="tag">
+                    <span>{tag}</span>
+                    <button onClick={() => removeTag(category, tag)} className="remove-tag-button" >x</button>
+                  </div>
+                ))
+              )
+            )}
+          </div>
+          <SearchBar />
         </div>
         <div ref={certificationsRef} className="certifications-container">
           {loading ? (
@@ -529,12 +500,12 @@ function LibraryPage({ showRoutes = true }) {
           </div>
         </section>
         
-      )*/}
+      )
       <section className="wrapper w-full">
         <div className="container m-auto">
           <iframe width="100%" height="700" src="https://lookerstudio.google.com/embed/reporting/34a9037d-151f-4d49-9aca-117e32dc8fd9/page/HlAIF" frameborder="0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
         </div>
-      </section>
+      </section>*/}
     </div>
     </>
   );

@@ -1,4 +1,4 @@
-import { NavLink, useLocation,useNavigate } from 'react-router-dom';
+import { useLocation,useNavigate } from 'react-router-dom';
 import { useState,useEffect } from 'react';
 import { FaChevronRight } from "react-icons/fa";
 
@@ -105,18 +105,17 @@ const MenuTop = ({toggleMenu}) => {
             onMouseLeave={() => setShowSubmenu(false)}
           >
             <span>{item.name}</span>
-            {showSubmenu && (
-              <div className="submenu">
+              <div className={`submenu ${showSubmenu ? 'visible' : ''}`}>
                 {Object.entries(exploraSubmenu).map(([section, items]) => (
                   <div key={section} className={`submenu-section section-${section}`}>
-                    <h4 className='section-tit'>{section==="Plataforma"?"Aliados":section}</h4>
+                    <h4 className='section-tit text-[#F6F4EF]'>{section === "Plataforma" ? "Aliados" : section}</h4>
                     <ul className="submenu-items">
                       {items.map((sub, idx) => (
                         <li key={idx} className="submenu-item">
-                            <a onClick={() => handleItemMenuClick(sub.type, sub.tag)} >
-                                <img className='item-ico' src={sub.img} alt={sub.text || ''} />
-                                {sub.text && <span>{sub.text}</span>}
-                            </a>
+                          <a onClick={() => handleItemMenuClick(sub.type, sub.tag)}>
+                            <img className='item-ico' src={sub.img} alt={sub.text || ''} />
+                            {sub.text && <span className='leading-[1.1em]'>{sub.text}</span>}
+                          </a>
                         </li>
                       ))}
                     </ul>
@@ -124,18 +123,16 @@ const MenuTop = ({toggleMenu}) => {
                 ))}
                 <button
                   onClick={() => navigateWithTransition("/explora", navigate)}
-                  className='absolute right-10 bottom-5 flex gap-2 items-center py-1 px-3 rounded-lg btn-col-2'
+                  className='absolute right-5 bottom-5 flex gap-2 items-center py-1 px-3 bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full'
                 >
                   Ver más certificaciones <FaChevronRight />
                 </button>
-
               </div>
-            )}
           </div>
         ) : (
           <button
             key={item.name}
-            className={`menu-item ${item.classItem} ${isActive(item.path) ? 'active' : ''}`}
+            className={`menu-item transition duration-300  hover:text-shadow-[0_35px_35px_rgb(255_255_255_/_0.25)] ${item.classItem} ${item.classItem === 'item-empezar'?'shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full ':''} ${isActive(item.path) ? 'active' : ''}`}
             onClick={() => !isActive(item.path) && navigateWithTransition(item.path)}
           >
             {item.name}

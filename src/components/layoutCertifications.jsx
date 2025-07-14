@@ -5,6 +5,16 @@ import { useCallback } from 'react';
 // Uso de memo => Evita que el componente se renderice si sus props no cambian (Se usa para optimización al momento de cargar las certificaciones)
 const CertificationsList = memo(({ certifications }) => {
     const navigate = useNavigate();
+    
+    function navigateWithTransition(path) {
+        if (document.startViewTransition) {
+            document.startViewTransition(() => {
+            navigate(path);
+            });
+        } else {
+            navigate(path);
+        }
+    }
     const host = window.location.hostname;
     const [error, setError] = useState(null);
 
@@ -22,7 +32,7 @@ const CertificationsList = memo(({ certifications }) => {
             }
             let path  = `/certificacion/${certification.plataforma_certificacion.nombre.toLowerCase()}/${certification.slug}`;
 
-            navigate(path);
+            navigateWithTransition(path);
         } catch (err) {
             console.error('Navigation error:', err);
             setError('Error al navegar a la certificación');
