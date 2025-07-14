@@ -839,7 +839,7 @@ function HomePage() {
   ];
 const [logos, setLogos] = useState([]);
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/companies/")
+    fetch("https://app.top.education/api/companies/")
       .then(res => res.json())
       .then(data => setLogos(data.filter(t => t.empr_est === "enabled")));
   }, []);
