@@ -1,18 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from 'react-router-dom';
-import { Helmet } from "react-helmet";
-import TopicSelector from "../components/TopicSelector";
-import PlatformsSelector from "../components/PlatformsSelector";
-import Flags from "../components/Flags";
-import ImageSlider3D from "../components/ImageSlider3D";
-import HeroSlider from "../components/HeroSlider";
-import FinisherHeaderComponent from '../components/FinisherHeaderComponent';
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import AnimatedSection from '../components/AnimatedSection'
+import FinisherHeaderComponent from '../components/FinisherHeaderComponent'
+import TopicSelector from '../components/TopicSelector'
+import ImageSlider3D from '../components/ImageSlider3D'
+import PlatformsSelector from '../components/PlatformsSelector'
+import Flags from '../components/Flags'
+import HeroSlider from '../components/HeroSlider'
+import { Link } from 'react-router-dom'
 
 import endpoints from '../config/api';
 
-function HomePage() {
-  const authors = [
+export default function HomePage() {
+    const [logos, setLogos] = useState([]);
+      useEffect(() => {
+        fetch(endpoints.empresas)
+          .then(res => res.json())
+          .then(data => setLogos(data.filter(t => t.empr_est === "enabled")));
+      }, []); // ← ✅ se ejecuta solo una vez
+
+    const authors = [
     {
       name: "Leonardo da Vinci",
       image: "assets/content/sliders/slider-Leonardo-da-Vinci.png",
@@ -70,7 +76,7 @@ function HomePage() {
     {
       name: 'Aprendizaje de idioma',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'40', y:'7',x:'44'},{pos: 'topicImg', size: '32', y:'83',x:'51'},{pos: 'topicBlur', size: '38', y:'33',x:'20'}],
+      position: [{pos: 'topicText', size:'62', y:'7',x:'44'},{pos: 'topicImg', size: '32', y:'83',x:'51'}],
       img: 'assets/category/topic/ico-Aprendizaje-de-un-idioma',
       description: 'Expande tu universo cultural y profesional. Conecta a través del inglés, francés, alemán y más, cultivando habilidades de comunicación global.',
       universities: [
@@ -93,7 +99,7 @@ function HomePage() {
       name: 'Arte y humanidades',
       img: 'assets/category/topic/ico-Artes-y-humanidades',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'48', y:'4',x:'28'},{pos: 'topicImg', size: '34', y:'76',x:'65'},{pos: 'topicBlur', size: '29', y:'20',x:'20'}],
+      position: [{pos: 'topicText', size:'58', y:'4',x:'28'},{pos: 'topicImg', size: '34', y:'76',x:'65'}],
       description: 'Explora las ideas, historias y expresiones que definen quiénes somos. Conoce el legado cultural que moldea nuestra visión del mundo.',
       universities: [
         {
@@ -113,7 +119,7 @@ function HomePage() {
     },{
       name: 'Ciencias de datos',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'48', y:'30',x:'30'},{pos: 'topicImg', size: '25', y:'29',x:'3'},{pos: 'topicBlur', size: '39', y:'32',x:'72'}],
+      position: [{pos: 'topicText', size:'58', y:'30',x:'30'},{pos: 'topicImg', size: '25', y:'29',x:'3'}],
       img: 'assets/category/topic/ico-Ciencia-de-datos',
       description: 'Convierte datos en decisiones inteligentes. Aprende a analizar, visualizar y comprender grandes volúmenes de información con impacto real.',
       universities: [
@@ -129,24 +135,12 @@ function HomePage() {
           name: 'IBM',
           type: 'Empresa',
           img: '/assets/companies/icons/ico-IBM.png'
-        },{
-          name: 'Columbia University',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-Columbia-University.webp'
-        },{
-          name: 'University of Michigan',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-University-of-Michigan.webp'
-        },{
-          name: 'Duke University',
-          type: 'Empresa',
-          img: 'assets/universities/icons/ico-Duke-University.webp'
         }
       ]
     },{
       name: 'Ciencias de la computación',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'26', y:'1',x:'36'},{pos: 'topicImg', size: '30', y:'18',x:'9'},{pos: 'topicBlur', size: '30', y:'35',x:'47'}],
+      position: [{pos: 'topicText', size:'36', y:'1',x:'36'},{pos: 'topicImg', size: '30', y:'18',x:'9'}],
       img: 'assets/category/topic/ico-Ciencias-de-la-computacion',
       description: 'Domina los lenguajes que impulsan la tecnología. Desde algoritmos hasta desarrollo de software, convierte ideas en soluciones digitales.',
       universities: [
@@ -167,7 +161,7 @@ function HomePage() {
     },{
       name: 'Ciencias sociales',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'46', y:'92',x:'28'},{pos: 'topicImg', size: '40', y:'70',x:'85'},{pos: 'topicBlur', size: '50', y:'83',x:'62'}],
+      position: [{pos: 'topicText', size:'56', y:'92',x:'28'},{pos: 'topicImg', size: '40', y:'70',x:'85'}],
       img: 'assets/category/topic/ico-Ciencias-sociales',
       description: 'Comprende cómo pensamos, actuamos y evolucionamos como sociedad. Estudia economía, política y cultura para interpretar el mundo con criterio.',
       universities: [
@@ -188,7 +182,7 @@ function HomePage() {
     },{
       name: 'Ciencia física e ingeniería',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'43', y:'90',x:'48'},{pos: 'topicImg', size: '42', y:'60',x:'40'},{pos: 'topicBlur', size: '40', y:'39',x:'10'}],
+      position: [{pos: 'topicText', size:'53', y:'90',x:'48'},{pos: 'topicImg', size: '42', y:'60',x:'40'}],
       img: 'assets/category/topic/ico-Ciencias-fisicas-e-ingenieria',
       description: 'Aprende a diseñar, modelar y resolver problemas reales. Desde los fundamentos físicos hasta la ingeniería de vanguardia.',
       universities: [
@@ -209,7 +203,7 @@ function HomePage() {
     },{
       name: 'Desarrollo personal',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'48', y:'35',x:'69'},{pos: 'topicImg', size: '35', y:'12',x:'62'},{pos: 'topicBlur', size: '35', y:'12',x:'62'}],
+      position: [{pos: 'topicText', size:'58', y:'35',x:'69'},{pos: 'topicImg', size: '35', y:'12',x:'62'},{pos: 'topicBlur', size: '35', y:'12',x:'62'}],
       img: 'assets/category/topic/ico-Desarrollo-personal',
       description: 'Construye una versión más fuerte y consciente de ti. Aprende a tomar decisiones, comunicarte mejor y crecer en cada etapa de tu vida.',
       universities: [
@@ -230,7 +224,7 @@ function HomePage() {
     },{
       name: 'Matemáticas y lógica',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'36', y:'78',x:'10'},{pos: 'topicImg', size: '33', y:'24',x:'48'},{pos: 'topicBlur', size: '33', y:'13',x:'45'}],
+      position: [{pos: 'topicText', size:'46', y:'78',x:'10'},{pos: 'topicImg', size: '33', y:'24',x:'48'},{pos: 'topicBlur', size: '33', y:'24',x:'48'}],
       img: 'assets/category/topic/ico-Matematicas-y-logica',
       description: 'Activa tu pensamiento crítico. Aprende a resolver problemas complejos con lógica, estructura y claridad matemática.',
       universities: [
@@ -251,7 +245,7 @@ function HomePage() {
     },{
       name: 'Negocios',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'38', y:'13',x:'72'},{pos: 'topicImg', size: '34', y:'35',x:'33'},{pos: 'topicBlur', size: '34', y:'65',x:'32'}],
+      position: [{pos: 'topicText', size:'48', y:'13',x:'72'},{pos: 'topicImg', size: '34', y:'35',x:'33'}],
       img: 'assets/category/topic/ico-Negocios',
       description: 'Comprende cómo se construyen, escalan y lideran organizaciones en la era digital. Desde marketing hasta modelos de negocio.',
       universities: [
@@ -272,7 +266,7 @@ function HomePage() {
     },{
       name: 'Salud',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'75', y:'22',x:'30'},{pos: 'topicImg', size: '30', y:'71',x:'16'},{pos: 'topicBlur', size: '50', y:'71',x:'75'}],
+      position: [{pos: 'topicText', size:'85', y:'22',x:'30'},{pos: 'topicImg', size: '30', y:'71',x:'16'}],
       img: 'assets/category/topic/ico-Salud',
       description: 'Conoce tu cuerpo, promueve hábitos sanos y comprende cómo prevenir enfermedades desde la ciencia y la práctica.',
       universities: [
@@ -293,7 +287,7 @@ function HomePage() {
     },{
       name: 'Tecnología de información',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'38', y:'77',x:'37'},{pos: 'topicImg', size: '32', y:'13',x:'36'},{pos: 'topicBlur', size: '24', y:'89',x:'22'}],
+      position: [{pos: 'topicText', size:'48', y:'77',x:'37'},{pos: 'topicImg', size: '32', y:'13',x:'36'}],
       img: 'assets/category/topic/ico-Tecnologia-de-la-informacion',
       description: 'Gestiona el backend del mundo digital. Aprende redes, sistemas y servicios en la nube que mueven al planeta.',
       universities: [
@@ -314,7 +308,7 @@ function HomePage() {
     },{
       name: 'Bienestar',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'48', y:'19',x:'43'},{pos: 'topicImg', size: '58', y:'85',x:'77'},{pos: 'topicBlur', size: '40', y:'74',x:'43'}],
+      position: [{pos: 'topicText', size:'58', y:'19',x:'43'},{pos: 'topicImg', size: '25', y:'85',x:'77'}],
       img: 'assets/category/ability/ico-Bienestar',
       description: 'Equilibra cuerpo, mente y entorno. Aprende a manejar el estrés, mejorar tu alimentación y cultivar salud mental.',
       universities: [
@@ -335,7 +329,7 @@ function HomePage() {
     },{
       name: 'Comunicación',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'38', y:'22',x:'56'},{pos: 'topicImg', size: '36', y:'60',x:'3'},{pos: 'topicBlur', size: '45', y:'86',x:'39'}],
+      position: [{pos: 'topicText', size:'48', y:'22',x:'56'},{pos: 'topicImg', size: '36', y:'60',x:'3'}],
       img: 'assets/category/ability/ico-Comunicacion',
       description: 'Domina el arte de transmitir ideas con claridad y propósito. Aprende a persuadir, inspirar y conectar a través del lenguaje.',
       universities: [
@@ -356,7 +350,7 @@ function HomePage() {
     },{
       name: 'Creatividad',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'70', y:'70',x:'24'},{pos: 'topicImg', size: '28', y:'64',x:'68'},{pos: 'topicBlur', size: '48', y:'60',x:'80'}],
+      position: [{pos: 'topicText', size:'80', y:'70',x:'24'},{pos: 'topicImg', size: '28', y:'64',x:'68'}],
       img: 'assets/category/ability/ico-Creatividad',
       description: 'Despierta tu imaginación y transforma la forma en que ves el mundo. Aprende a innovar con pensamiento original y sensibilidad artística.',
       universities: [
@@ -377,7 +371,7 @@ function HomePage() {
     },{
       name: 'Crecimiento personal',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'40', y:'13',x:'14'},{pos: 'topicImg', size: '25', y:'64',x:'56'},{pos: 'topicBlur', size: '25', y:'94',x:'59'}],
+      position: [{pos: 'topicText', size:'50', y:'13',x:'14'},{pos: 'topicImg', size: '25', y:'64',x:'56'}],
       img: 'assets/category/ability/ico-Crecimiento-personal',
       description: 'Impulsa tu desarrollo emocional, físico y mental con el ejemplo de quienes superaron límites.',
       universities: [
@@ -398,7 +392,7 @@ function HomePage() {
     },{
       name: 'Diversidad e inclusión',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'48', y:'36',x:'1'},{pos: 'topicImg', size: '24', y:'24',x:'83'},{pos: 'topicBlur', size: '38', y:'27',x:'28'}],
+      position: [{pos: 'topicText', size:'58', y:'36',x:'1'},{pos: 'topicImg', size: '24', y:'24',x:'83'}],
       img: 'assets/category/ability/ico-Diversidad-equidad-e-inclusion',
       description: 'Comprende la riqueza de lo diverso y aprende a construir espacios más equitativos, empáticos y humanos.',
       universities: [
@@ -419,7 +413,7 @@ function HomePage() {
     },{
       name: 'Estrategia',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'70', y:'86',x:'60'},{pos: 'topicImg', size: '30', y:'7',x:'22'},{pos: 'topicBlur', size: '36', y:'8',x:'32'}],
+      position: [{pos: 'topicText', size:'80', y:'86',x:'60'},{pos: 'topicImg', size: '30', y:'7',x:'22'}],
       img: 'assets/category/ability/ico-Estrategia',
       description: 'Piensa en grande y actúa con visión. Aprende a planear, analizar y tomar decisiones que generan impacto.',
       universities: [
@@ -440,7 +434,7 @@ function HomePage() {
     },{
       name: 'Liderazgo',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'62', y:'80',x:'77'},{pos: 'topicImg', size: '55', y:'32',x:'63'},{pos: 'topicBlur', size: '25', y:'75',x:'27'}],
+      position: [{pos: 'topicText', size:'72', y:'80',x:'77'},{pos: 'topicImg', size: '25', y:'32',x:'63'}],
       img: 'assets/category/ability/ico-Liderazgo',
       description: 'Desarrolla tu capacidad de guiar, inspirar y transformar equipos. Aprende de grandes líderes y sus decisiones clave.',
       universities: [
@@ -461,7 +455,7 @@ function HomePage() {
     },{
       name: 'Personas y cultura',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'55', y:'59',x:'55'},{pos: 'topicImg', size: '25', y:'63',x:'21'},{pos: 'topicBlur', size: '43', y:'39',x:'78'}],
+      position: [{pos: 'topicText', size:'65', y:'59',x:'55'},{pos: 'topicImg', size: '25', y:'63',x:'21'}],
       img: 'assets/category/ability/ico-Personas-y-cultura',
       description: 'Descubre cómo se crean las narrativas que nos unen. Desde sociología hasta cultura pop, entiende lo que mueve a las personas.',
       universities: [
@@ -482,7 +476,7 @@ function HomePage() {
     },{
       name: 'Productividad',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'68', y:'37',x:'45'},{pos: 'topicImg', size: '30', y:'79',x:'30'},{pos: 'topicBlur', size: '40', y:'73',x:'7'}],
+      position: [{pos: 'topicText', size:'78', y:'37',x:'45'},{pos: 'topicImg', size: '30', y:'79',x:'30'}],
       img: 'assets/category/ability/ico-Productividad',
       description: 'Gestiona tu tiempo, energía y enfoque con inteligencia. Aprende técnicas para hacer más con propósito y menos desgaste.',
       universities: [
@@ -503,7 +497,7 @@ function HomePage() {
     },{
       name: 'Trabajo en equipo',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'52', y:'85',x:'17'},{pos: 'topicImg', size: '32', y:'59',x:'89'},{pos: 'topicBlur', size: '32', y:'82',x:'18'}],
+      position: [{pos: 'topicText', size:'62', y:'85',x:'17'},{pos: 'topicImg', size: '32', y:'59',x:'89'}],
       img: 'assets/category/ability/ico-Trabajo-en-equipo',
       description: 'Colabora, conecta y construye en conjunto. Aprende a liderar desde lo colectivo con inteligencia emocional.',
       universities: [
@@ -524,7 +518,7 @@ function HomePage() {
     },{
       name: 'Inteligencia Artificial',
       type: 'search',
-      position: [{pos: 'topicText', size:'49', y:'26',x:'58'}],
+      position: [{pos: 'topicText', size:'59', y:'26',x:'58'}],
       img: '',
       description: 'Descubre cómo las máquinas pueden aprender, adaptarse y tomar decisiones. Desde modelos predictivos hasta ética de la IA, prepárate para liderar la revolución tecnológica.',
       universities: [
@@ -545,7 +539,7 @@ function HomePage() {
     },{
       name: 'Ciberseguridad',
       type: 'search',
-      position: [{pos: 'topicText', size:'52', y:'65',x:'76'}],
+      position: [{pos: 'topicText', size:'62', y:'65',x:'76'}],
       img: '',
       description: 'Protege lo más valioso del entorno digital. Aprende a detectar vulnerabilidades, gestionar riesgos y diseñar sistemas más seguros para un mundo interconectado.',
       universities: [
@@ -566,7 +560,7 @@ function HomePage() {
     },{
       name: 'Programación',
       type: 'search',
-      position: [{pos: 'topicText', size:'49', y:'70',x:'50'}],
+      position: [{pos: 'topicText', size:'59', y:'70',x:'50'}],
       img: '',
       description: 'Habla el lenguaje que construye el futuro. Aprende a desarrollar software, automatizar tareas y resolver problemas con código.',
       universities: [
@@ -583,7 +577,7 @@ function HomePage() {
     },{
       name: 'Diseño',
       type: 'search',
-      position: [{pos: 'topicText', size:'69', y:'80',x:'38'}],
+      position: [{pos: 'topicText', size:'79', y:'80',x:'38'}],
       img: '',
       description: 'Crea experiencias visuales con propósito. Desde diseño gráfico hasta UX/UI, aprende a comunicar ideas que conectan, impactan y transforman.',
       universities: [
@@ -604,7 +598,7 @@ function HomePage() {
     },{
       name: 'Marketing digital',
       type: 'search',
-      position: [{pos: 'topicText', size:'43', y:'25',x:'6'}],
+      position: [{pos: 'topicText', size:'53', y:'25',x:'6'}],
       img: '',
       description: 'Entiende cómo funcionan las marcas en la era digital. Aprende a atraer, convertir y fidelizar audiencias con herramientas y estrategias actualizadas.',
       universities: [
@@ -625,7 +619,7 @@ function HomePage() {
     },{
       name: 'Neurociencia',
       type: 'search',
-      position: [{pos: 'topicText', size:'44', y:'20',x:'72'}],
+      position: [{pos: 'topicText', size:'54', y:'20',x:'72'}],
       img: '',
       description: 'Explora el cerebro humano desde la ciencia. Comprende cómo pensamos, sentimos y aprendemos, y aplica este conocimiento en salud, educación y tecnología.',
       universities: [
@@ -646,7 +640,7 @@ function HomePage() {
     },{
       name: 'Psicología',
       type: 'search',
-      position: [{pos: 'topicText', size:'50', y:'68',x:'4'}],
+      position: [{pos: 'topicText', size:'60', y:'68',x:'4'}],
       img: '',
       description: 'Conoce el comportamiento humano en profundidad. Aprende teorías, métodos y herramientas para comprender, acompañar y transformar realidades personales y sociales.',
       universities: [
@@ -667,7 +661,7 @@ function HomePage() {
     },{
       name: 'Videojuegos',
       type: 'search',
-      position: [{pos: 'topicText', size:'44', y:'59',x:'20'}],
+      position: [{pos: 'topicText', size:'54', y:'59',x:'20'}],
       img: '',
       description: 'Descubre el poder narrativo y técnico del gaming. Aprende diseño, desarrollo y lógica interactiva en una industria creativa y en constante evolución.',
       universities: [
@@ -688,7 +682,7 @@ function HomePage() {
     },{
       name: 'Educación',
       type: 'search',
-      position: [{pos: 'topicText', size:'42', y:'95',x:'43'}],
+      position: [{pos: 'topicText', size:'52', y:'95',x:'43'}],
       img: '',
       description: 'Diseña nuevas formas de enseñar y aprender. Explora metodologías, tecnologías y enfoques que hacen de la educación una experiencia transformadora.',
       universities: [
@@ -851,125 +845,88 @@ function HomePage() {
       id: 26, src:"/assets/universities/flags/BA-TE-NORTHWESTERN.webp", category:"Universidad", link: "Northwestern University",title:"",desc:""
     }
   ];
-  const [logos, setLogos] = useState([]);
-  
-  useEffect(() => {
-    fetch(endpoints.empresas)
-      .then(res => res.json())
-      .then(data => setLogos(data.filter(t => t.empr_est === "enabled")))
-      .catch((err) => console.error("Error:", err));
-  }, []);
-
-  const [viewportWidth, setViewportWidth] = useState(window.innerWidth);
-  useEffect(() => {
-    const handleResize = () => setViewportWidth(window.innerWidth);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Zoom scroll effect para sect-2
-  const zoomRef = useRef(null);
-  const { scrollYProgress: zoomScrollY } = useScroll({
-    target: zoomRef,
-    offset: ["start end", "end start"],
-  });
-  const scale = useTransform(zoomScrollY, [0, 0.5, 1], [0.5, 1.2, 0.4]);
-  const springScale = useSpring(scale, { stiffness: 100, damping: 20 });
-
-  // Scroll horizontal secciones 3-5
-  const scrollContainerRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: scrollContainerRef,
-    offset: ["start start", "end end"],
-  });
-  const x = useTransform(scrollYProgress, [0, 1], [0, -viewportWidth * 1]);
-
-  const background = useTransform(
-    scrollYProgress,
-    [0, 0.5, 1],
-    ["#0F090B", "#F6F4EF", "#0F090B"]
-  );
-
-
-  // Video autoplay handling
-  const [statePopUp, setStatePopUp] = useState(false);
-  const videoRef = useRef(null);
-  useEffect(() => {
-    if (statePopUp && videoRef.current) {
-      videoRef.current.play().catch(() => {
-        videoRef.current.muted = true;
-        videoRef.current.play();
-      });
-    } else if (!statePopUp && videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
-  }, [statePopUp]);
-
-
+    
   return (
-    <>
-      <Helmet>
-        <title>Top.education</title>
-        <meta name="description" content="Conoce Top Education..." />
-        <meta property="og:title" content="Top Education | Aprende con edX, Coursera y MasterClass" />
-        <meta name="author" content="Top Education" />
-        <meta name="robots" content="index, follow" />
-      </Helmet>
+    <div className="scroll-container snap-y snap-mandatory overflow-y-scroll h-screen">
 
-      {/* Sección 1 */}
-      <FinisherHeaderComponent className="sect-1" />
-
-      {/* Sección 2: Zoom Scroll */}
-      <motion.section
-        ref={zoomRef}
-        style={{ scale: springScale }}
-        className="wrapper bg-[#0F090B] relative section sect-2"
+      {/* Sección 1: Fade arriba */}
+      <AnimatedSection
+        className="sect-1 bg-[#0F090B]"
+        animationIn={{ opacity: 1, y: 0 }}
+        animationOut={{ opacity: 0, y: 100 }}
       >
-        <div className="container m-auto px-2 lg:px-4 py-15 justify-center-safe gap-2">
-          <TopicSelector topics={topics} />
+        <FinisherHeaderComponent />
+      </AnimatedSection>
+
+      {/* Sección 2: Zoom */}
+    <AnimatedSection
+        className="sect-2 wrapper bg-[#0F090B]"
+        animationIn={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+        animationOut={{ opacity: 0, scale: 0.8, filter: "blur(6px)" }}
+        >
+        <div className="container m-auto px-2 lg:px-4 py-15 justify-center-safe gap-2 transition-all duration-1000 ease-out">
+            <TopicSelector topics={topics} />
         </div>
-      </motion.section>
-      {/* Sección 3 */}
-      <section className="wrapper w-screen h-full bg-[#0F090B] relative flex-shrink-0 flex items-center justify-center">
-        <div className="container m-auto py-30 max-w-[90vw] text-center">
-          <h2 className="text-white text-4xl lg:text-6xl font-normal top-italic leading-[1.2em] mb-5">
-            Aprende con las universidades <br></br>líderes del mundo
+    </AnimatedSection>
+
+
+      {/* Sección 3: Slide desde izquierda */}
+      <AnimatedSection
+        className="sect-3 wrapper bg-[#0F090B]"
+        animationIn={{ opacity: 1, x: 0 }}
+        animationOut={{ opacity: 0, x: -200 }}
+      >
+        <div className="container m-auto py-30 px-5">
+          <h2 className="text-white text-4xl lg:text-6xl font-normal text-center italic w-[100%] lg:w-[80%] m-auto leading-[1.2em] index-text relative">
+            Aprende con las universidades líderes del mundo
           </h2>
           <ImageSlider3D images={flagsImages} action="explora" />
         </div>
-      </section>
+      </AnimatedSection>
 
-      {/* Secciones 3-5: Scroll Horizontal */}
-      <section
-        ref={scrollContainerRef}
-        className="relative bg-[#0F090B]"
-        style={{ height: `${2 * 100}vh` }} // 3 secciones × 100vh = 300vh de scroll vertical
+      {/* Sección 4: Fade + rotación ligera */}
+      <AnimatedSection
+        className="sect-4 wrapper bg-[#0F090B]"
+        animationIn={{ opacity: 1, rotateX: 0 }}
+        animationOut={{ opacity: 0, rotateX: 60 }}
       >
-        <motion.div 
-        className="sticky top-0 h-screen w-screen overflow-hidden"
-        >
-          <motion.div style={{ x }} className="flex flex-row w-[100vw]  h-full" >
-            {/* Sección 4 */}
-            <section className="w-screen h-full flex-shrink-0 flex items-center justify-center px-10">
-              <div className="container m-auto">
-                <PlatformsSelector platforms={platforms} />
-              </div>
-            </section>
-            {/* Sección 5 */}
-            <Flags logos={logos} />
-            {/* Sección 6 */}
-            
-          </motion.div>
-        </motion.div>
-      </section>
-      <section className="w-screen h-full flex-shrink-0 flex items-center justify-center px-10 section sect-6">
+        <div className="container m-auto text-center">
+          <div className="rounded-lg border-1 border-white px-5 py-10 lg:px-10 bg-[#0F090B]/90">
+            <h2 className="text-white text-5xl font-normal leading-[1.2em] mb-5">
+              Forma equipos que <span className="italic">aprenden y crecen</span>
+            </h2>
+            <p className="text-white text-2xl mb-5">
+              Potencia las habilidades de tu equipo con certificaciones clave y seguimiento en tiempo real...
+            </p>
+            <div className="w-[100%] lg:w-[50%] m-auto gap-4 mb-10 !text-center">
+              <PlatformsSelector platforms={platforms} />
+            </div>
+            <Link to="/para-equipos" className="btn btn-col-3 py-3 px-5 m-auto text-[18px] lg:text-2xl">
+              Conoce<span id="top">top</span><span id="education">.education</span> para equipos
+            </Link>
+          </div>
+        </div>
+      </AnimatedSection>
+
+      {/* Sección 5: Slide desde la derecha */}
+      <AnimatedSection
+        className="sect-5"
+        animationIn={{ opacity: 1, x: 0 }}
+        animationOut={{ opacity: 0, x: 200 }}
+      >
+        <Flags direction="left" logos={logos} />
+      </AnimatedSection>
+
+      {/* Sección 6: Fade up */}
+      <AnimatedSection
+        className="sect-6 wrapper relative"
+        animationIn={{ opacity: 1, y: 0 }}
+        animationOut={{ opacity: 0, y: 100 }}
+      >
         <div className="container m-auto">
           <HeroSlider authors={authors} />
         </div>
-      </section>
-    </>
-  );
-};
-
-export default HomePage;
+      </AnimatedSection>
+    </div>
+  )
+}

@@ -22,6 +22,7 @@ import LoMasTop from "./pages/loMasTop.jsx";
 import StartNow from "./pages/startNow.jsx";
 import RutasConocimiento from "./pages/RutasConocimiento.jsx";
 import BlogDetailPage from "./pages/BlogDetailPage.jsx";
+import TopList from "./pages/topList.jsx";
 
 function App() {
   useEffect(() => {
@@ -75,6 +76,7 @@ function App() {
             path="/rutas-del-conocimiento"
             element={<RutasConocimiento />}
           />
+          <Route path="/lo-mas-top/:tipo" element={<TopList />} />
         </Route>
 
         {/* Ruta por defecto */}

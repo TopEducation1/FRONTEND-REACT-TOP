@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BlogsFetcher from '../services/BlogsFetcher';
 
-const BlogsGrid = () => {
+const BlogsGrid = ({category = ""}) => {
     const navigate = useNavigate();
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -18,7 +18,8 @@ const BlogsGrid = () => {
     const loadBlogs = useCallback(async (page = 1, pageSize = 16, query = '') => {
         setLoading(true);
         try {
-            const data = await BlogsFetcher.getAllBlogs(page, pageSize, query);
+            const data = await BlogsFetcher.getAllBlogs(page, pageSize, query,category);
+
 
             setBlogs(data.results);
             setPagination({
@@ -92,7 +93,7 @@ const BlogsGrid = () => {
             <div className="mb-6 flex justify-center">
                 <input
                     type="text"
-                    placeholder="Buscar blogs por título..."
+                    placeholder="Que estas buscando..."
                     value={searchQuery}
                     onChange={(e) => {
                         setSearchQuery(e.target.value);
@@ -104,9 +105,31 @@ const BlogsGrid = () => {
 
             {error && <div className="text-red-500 text-center">{error}</div>}
             {loading ? (
-                <div className="text-[#F6F4EF] text-center">Cargando blogs...</div>
+                <div className="flex justify-center items-center w-full py-4">
+                    <svg
+                        className="animate-spin h-6 w-6 text-neutral-700"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        ></circle>
+                        <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"
+                        ></path>
+                    </svg>
+                    <span className="ml-2 text-neutral-700">Cargando...</span>
+                </div>
             ) : (
-                <div className="container m-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className={`container m-auto grid grid-cols-1 sm:grid-cols-2 ${category!=="Lo más Top"?"lg:grid-cols-4":"lg:grid-cols-3"}  gap-6`}>
                     {blogs.map((blog) => {
                         const imageUrl = blog.miniatura_blog || "/assets/Piezas/demo-blog.png";
                         return (
@@ -115,10 +138,13 @@ const BlogsGrid = () => {
                                 onClick={() => handleBlogClick(blog)}
                                 className="blog-card cursor-pointer border border-[#F6F4EF] rounded-xl hover:scale-[1.02] transition"
                             >
-                                <img src={imageUrl} alt={blog.nombre_blog} className="w-full rounded-t-xl" />
-                                <div className="px-3 py-4">
-                                    <h3 className="text-[#F6F4EF] text-[1.2rem] leading-[1.2em] text-center text-lg font-bold">{blog.nombre_blog}</h3>
-                                </div>
+                                <img src={imageUrl} alt={blog.nombre_blog} className="w-full rounded-xl" />
+                                {category !== "Lo más Top" && (
+                                    <div className="px-3 py-4">
+                                        <h3 className="text-[#F6F4EF] text-[1rem] leading-[1.2em] text-center">{blog.nombre_blog}</h3>
+                                    </div>
+                                )}
+                                
                             </div>
                         );
                     })}

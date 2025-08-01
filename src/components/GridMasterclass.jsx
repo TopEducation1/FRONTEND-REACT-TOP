@@ -84,13 +84,13 @@ const GridMasterclass = () => {
                                 key={certification.id}
                                 className="card">
                                     <img className='rounded-lg' src={certification.universidad_certificacion?.univ_img || certification.empresa_certificacion?.empr_img || certification.imagen_final} alt={certification.nombre} />
-                                    <h2 className='text-white text-2xl'>{certification.nombre}</h2>
+                                    <h2 className='text-white my-1 leading-[1.2em] text-[1.3rem] !font-[Lora]'>{certification.nombre}</h2>
                                 </div>
                             )
 
                         })}
                     </div>
-                    <a href="/explora" className='btn py-2 px-8 rounded-full btn-col-2 text-lg font-semibold'>Ver más certificaciones</a> 
+                    <a href="/explora" className='shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] block w-[350px] text-center m-auto mt-10 !text-[#1c1c1c] text-[1.3rem] z-[11] !py-2 !px-5 !rounded-full'>Ver más certificaciones</a> 
                 </div>  
             </div>
         </>

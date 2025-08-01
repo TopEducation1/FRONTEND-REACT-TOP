@@ -3,6 +3,8 @@ import Flags from "../components/Flags";
 import ImageSlider3D from "../components/ImageSlider3D";
 import { Helmet } from "react-helmet";
 
+import endpoints from '../config/api';
+
 function ParaEquipos () {
     const flagsTeams = [
         {
@@ -29,11 +31,12 @@ function ParaEquipos () {
     ];
     
     const [logos, setLogos] = useState([]);
-      useEffect(() => {
-      fetch("https://app.top.education/api/companies/")
-        .then(res => res.json())
-        .then(data => setLogos(data.filter(t => t.empr_est === "enabled")));
-    }, []); // ← ✅ se ejecuta solo una vez
+    useEffect(() => {
+        fetch(endpoints.empresas)
+          .then(res => res.json())
+          .then(data => setLogos(data.filter(t => t.empr_est === "enabled")))
+          .catch((err) => console.error("Error:", err));
+      }, []);
 
     useEffect(() => {
         window.scrollTo(0,0); 
@@ -54,7 +57,7 @@ function ParaEquipos () {
             <section className="wrapper ">
                 <div className="container m-auto h-screen mx-auto flex justify-center items-center gap-2 sect-h-pequ">
                     <span class="w-5/15 lg:w-5/15 aspect-square bg-gradient-to-tr from-red-500 to-red-900 absolute top-30 lg:left-50 rounded-full skew-y-0 blur-2xl opacity-40 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
-                    <div className='m-auto max-w-[50vw]'>
+                    <div className='m-auto max-w-[100vw] lg:max-w-[50vw]'>
                         <h1 className="text-[#F6F4EF] text-7xl font-normal font-[Lora] text-center leading-[1em] z-10 relative sm:text-6xl md:text-6xl lg:text-6xl xl:text-8xl">Capacita a tu equipo<br></br> <span className="top-italic">sin</span> grandes inversiones</h1>
                         <p className="mt-5 text-[1.125rem] text-[#a8a8a8] text-center z-10 relative">Numerosas compañías invierten sumas significativas en la formación de sus empleados sin obtener mejoras tangibles. <span id="top">top</span><span id="education">.education</span> optimiza los procesos de capacitación, reduciendo costos y aumentando la eficiencia.</p>
                     </div>

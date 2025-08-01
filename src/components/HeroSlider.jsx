@@ -56,7 +56,7 @@ const HeroSlider = ({ authors }) => {
               <img
                 src={`/${author.image}`}
                 alt={author.name}
-                className={`slide ${position}`}
+                className={`slide hover:shadow-[0px_0px_20px_5px_#F6F4EF] ${position}`}
               />
               
             </div>

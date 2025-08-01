@@ -5,6 +5,8 @@ import { Helmet } from "react-helmet";
 
 import HeroSlider from "../components/HeroSlider";
 
+import endpoints from '../config/api';
+
 const authors = [
     {
       name: "Leonardo da Vinci",
@@ -93,7 +95,7 @@ console.log("Slug actual:", slug);
   const fetchOriginal = async () => {
     try {
       //console.log("Obteniendo slug:", slug);
-      const res = await axios.get(`https://app.top.education/originals/${slug}/`);
+      const res = await axios.get(endpoints.original_detail(slug));
       //console.log("Respuesta del backend:", res.data);
       setOriginal(res.data);
     } catch (error) {
@@ -143,7 +145,31 @@ console.log("Slug actual:", slug);
     window.addEventListener('scroll', onScroll)
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
-  if (loading || !original) return <div className="text-[#F6F4EF] text-center mt-80 p-10">Cargando...</div>;
+  if (loading || !original) return (
+    <div className="flex justify-center items-center w-full h-screen py-4">
+      <svg
+        className="animate-spin h-6 w-6 text-neutral-700"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        ></circle>
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v8H4z"
+        ></path>
+      </svg>
+      <span className="ml-2 text-neutral-700">Cargando...</span>
+    </div>
+  );
 
 return (
   <>
@@ -202,11 +228,12 @@ return (
                   {original?.certifications?.map((item, index) => (
                     <div key={index} className={`w-screen px-10 py-20 flex flex-col md:flex-row  justify-center  bg-no-repeat ${index % 2 !== 0 ? "bg-[url(/assets/content/originals/top-education-line-medium.svg)] bg-size-[50%] bg-right items-end":"bg-[url(/assets/content/originals/top-education-line-large.svg)] bg-size-[50%] items-start bg-right"}`}>
                       <div className='w-full lg:w-[45vw] flex flex-wrap relative '>
+                        <img src={item.image} className='absolute z-[-5] opacity-10' alt="" />
                           <div className='w-full lg:w-[60%] pr-0 lg:pr-30'>
                             <h2 className='block w-full text-[2.75rem]  top-italic leading-[1.1em] text-[#F6F4EF]'>{item.title}</h2>
                             <p className='text-[1.12rem] leading-[1.1em] text-[#a8a8a8] mt-3'>{item.hist}</p>
                           </div>
-                          <Link to={`/certificacion/${item.certification_detail.plataforma_certificacion.nombre.toLowerCase()}/${item.certification_slug}`} className="w-full mt-10 lg:mt-0 lg:w-[40%] hover:scale-115 duration-300">
+                          <Link to={`/certificacion/${item.certification_detail.plataforma_certificacion.nombre.toLowerCase()}/${item.certification_slug}`} className="w-full mt-10 lg:mt-0 lg:w-[40%] hover:scale-110 duration-200">
                             <div className='h-auto bg-[#F6F4EF] w-[80%] lg:w-full  rounded-xl'>
                               <img
                                 src={item.certification_image_url}
@@ -221,7 +248,7 @@ return (
                               </div>
                             </div>
                           </Link>
-                          <Link to={`/explora/filter?${item.certification_detail.tema_certificacion.tem_type}=${item.certification_detail.tema_certificacion.nombre}&page=1&page_size=16`} className={`w-[100px] absolute cursor-pointer right-[-3%] ${index % 2 !== 0 ? "top-[-50%]":"bottom-[-50%]"}`}>
+                          <Link to={`/explora/filter?${item.certification_detail.tema_certificacion.tem_type}=${item.certification_detail.tema_certificacion.nombre}&page=1&page_size=16`} className={`w-[70px] absolute hover:scale-110 duration-300 cursor-pointer right-[7%] ${index % 2 !== 0 ? "top-[-25%]":"bottom-[-25%]"}`}>
                             <img src={item.certification_detail.tema_certificacion.tem_img} alt="" />
                           </Link>
                         </div>

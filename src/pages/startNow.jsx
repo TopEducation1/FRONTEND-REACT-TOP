@@ -22,7 +22,7 @@ function StartNow() {
             <section className="wrapper ">
                 <div className="container m-auto h-screen mx-auto px-4 flex justify-center items-center gap-2 sect-h-pequ">
                     <span class="w-5/15 lg:w-5/15 aspect-square bg-gradient-to-tr from-green-500 to-green-900 absolute top-30 lg:left-50 rounded-full skew-y-0 blur-2xl opacity-40 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
-                    <div className='m-auto max-w-[50vw]'>
+                    <div className='m-auto max-w-[100vw] lg:max-w-[50vw]'>
                         <h1 className="text-[#F6F4EF] text-6xl font-normal font-[Lora] text-center leading-[1.5em] z-10 relative sm:text-5xl md:text-5xl lg:text-5xl xl:text-6xl">Desarrolla todo tu <br></br><span className="text-[120px] top-italic sm:text-[120px]">potencial</span></h1>
                         <p className="mt-5 text-[1.125rem] text-[#a8a8a8] text-center z-10 relative">En un mundo laboral altamente competitivo, <span id="top">top</span><span id="education">.education</span> te ofrece acceso a contenido de alto nivel para que desarrolles nuevas habilidades y avances en tu trayectoria profesional. Aprende con expertos de talla mundial y obtén certificaciones reconocidas internacionalmente.</p>
                     </div>
@@ -106,7 +106,7 @@ function StartNow() {
                 </div>
             </section>
             
-            <section className="wrapper !bg-[#034694]">
+            <section className="wrapper !bg-[#1c1c1c]">
                 <div className="container m-auto py-[4.5rem] xl:!py-24 lg:!py-24 md:!py-24">
                     <div className="pricing-wrapper !relative !mt-[-15rem] xl:!mt-[-20rem] lg:!mt-[-20rem] md:!mt-[-20rem]">
                         <div className="flex flex-wrap justify-center mx-[-15px] !mt-3 xl:!mt-5 lg:!mt-5 md:!mt-5">
@@ -117,7 +117,7 @@ function StartNow() {
                                         <div class="prices !text-[#343f52] flex w-full justify-center">
                                             <div class="price price-hide price-hidden flex items-stretch">
                                                 <span class="price-currency self-start">USD $</span>
-                                                <span class="price-value text-5xl self-end">399</span>
+                                                <span class="price-value text-5xl self-end">599</span>
                                                 <span class="price-duration self-end">/Año</span></div>
                                         </div>
                                         <ul class="pl-0 list-none bullet-bg bullet-soft-primary !mt-7 !mb-8 text-left">
@@ -147,7 +147,7 @@ function StartNow() {
                                             </li>
                                         </ul>
                                         <div className="w-full text-center pb-5">
-                                            <span class="tag-currency text-2xl">Ahorra $309 USD</span>
+                                            <span class="tag-currency text-2xl">Ahorra $329 USD</span>
                                         </div>                                        
                                         <a href="#" class="btn btn py-2 px-8 rounded-full btn-col-1 text-lg font-semibold !text-[#F6F4EF] hover:text-[#F6F4EF] hover:bg-[#3f78e0] hover:!border-[#3f78e0]  active:text-[#F6F4EF] active:bg-[#3f78e0] active:border-[#3f78e0] disabled:text-[#F6F4EF] disabled:bg-[#3f78e0] disabled:border-[#3f78e0] hover:translate-y-[-0.15rem] hover:shadow-[0_0.25rem_0.75rem_rgba(30,34,40,0.15)]">Empezar ahora</a>
                                     </div>

@@ -7,9 +7,10 @@ import CertificationsFetcher from "../services/certificationsFetcher";
 import { useDebounce } from "use-debounce";
 import IndexCategories from "../components/IndexCategories";
 import { Helmet } from "react-helmet";
-import HeroSlider from "../components/HeroSlider";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import axios from 'axios';
+
+import endpoints from '../config/api';
 
 /**
  * Pagina de la biblioteca
@@ -52,7 +53,7 @@ function LibraryPage({ showRoutes = true }) {
     
     try {
     setLoading(true); // ✅ Activa el estado de carga
-      const response = await axios.get('http://127.0.0.1:8000/api/latest-certifications/');
+      const response = await axios.get(endpoints.latest_certifications);
       console.log('Certificaciones recibidas:', response.data); // depuración
       setCertifications(response.data);
     } catch (error) {
@@ -342,7 +343,7 @@ function LibraryPage({ showRoutes = true }) {
         selectedTags={selectedTags}
       />
       <div className="cont-filter">
-        <div className="flex">
+        <div className="flex flex-wrap">
           <div className="container-tags">
             {Object.keys(selectedTags).length === 0 || Object.values(selectedTags).every((tags) => tags.length === 0) ? (
               <p>Aún no has seleccionado tags</p>

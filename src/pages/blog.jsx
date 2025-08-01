@@ -1,32 +1,11 @@
 import { useEffect, useRef } from 'react'
-import BlogSearchBar from "../components/BlogSearchBar";
 import BlogsGrid from "../components/BlogsGrid";
 import { Helmet } from "react-helmet";
+import HubspotForm from "../components/HubspotForm";
 
 function BlogPage() {
     useEffect(() => {
         window.scrollTo(0,0);
-    }, []);
-    const formRef = useRef(null);
-
-    useEffect(() => {
-        const script = document.createElement("script");
-        script.src = "//js.hsforms.net/forms/embed/v2.js";
-        script.charset = "utf-8";
-        script.type = "text/javascript";
-
-        script.onload = () => {
-        if (window.hbspt) {
-            window.hbspt.forms.create({
-            region: "na1",
-            portalId: "45381980",
-            formId: "b871a26b-3d92-4b34-91bc-6dbe5a47b2e3",
-            target: `#hubspotForm`,
-            });
-        }
-        };
-
-        document.body.appendChild(script);
     }, []);
     
     return (
@@ -41,9 +20,9 @@ function BlogPage() {
                 <meta property="og:description" content="Descubre ebooks y blogs exclusivos de Top Education. Accede a contenido valioso para potenciar tu conocimiento y alcanzar tus metas personales y profesionales." />
                 <meta property="og:type" content="website" />
             </Helmet>
-            <section className="wrapper h-[90vh] w-full flex justify-center items-center bg-gradient-to-t from-neutral-800 to-transparent">
+            <section className="wrapper h-[90vh] w-full flex justify-center items-center bg-gradient-to-t from-transparent to-neutral-800">
                 <div className="container m-auto mx-auto gap-2  sect-h-pequ">
-                    <div className='m-auto max-w-[50vw]'>
+                    <div className='m-auto max-w-[100vw] lg:max-w-[50vw]'>
                         <h1 className="text-[#F6F4EF] text-7xl font-normal font-[Lora] text-center leading-[1em] z-10 relative sm:text-6xl md:text-6xl lg:text-6xl xl:text-8xl"><span className='top-italic'>Editorial</span><br></br> <span id="top">top</span><span id="education" >.education</span></h1>
                         <p className="mt-5 text-[1.125rem] text-[#a8a8a8] text-center z-10 relative">Descarga gratis nuestros recursos exclusivos. Encuentra la información que necesitas para alcanzar tus metas educativas, personales y profesionales. Te ofrecemos herramientas poderosas para enriquecer tu vida y potenciar tu crecimiento.</p>
                     </div>
@@ -104,8 +83,7 @@ function BlogPage() {
                         </div>
                         <div className="xl:w-6/12 lg:w-6/12 w-full flex-[0_0_auto] !px-[15px] md:!px-[20px] lg:!px-[20px] xl:!px-[35px] !mt-[50px] max-w-full">
                             <h3>¡Suscríbete ahora!</h3>
-                            <script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/embed/v2.js"></script>
-                            <div id="hubspotForm" ref={formRef} className="my-10" />
+                            <HubspotForm />
                         </div>
                     </div>
                 </div>

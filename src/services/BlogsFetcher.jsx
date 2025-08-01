@@ -17,17 +17,25 @@ const BlogsFetcher = {
      * @param {number} pageSize - Tamaño de página
      * @param {string} searchQuery - Texto para buscar por nombre_blog
      */
-    async getAllBlogs(page = 1, pageSize = 9, searchQuery = '') {
+    async getAllBlogs(page = 1, pageSize = 9, searchQuery = '', categoria = '') {
         try {
             const baseUrl = endpoints.blogs;
-            const url = `${baseUrl}?page=${page}&page_size=${pageSize}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`;
+            let url = `${baseUrl}?page=${page}&page_size=${pageSize}`;
+
+            if (searchQuery) {
+                url += `&search=${encodeURIComponent(searchQuery)}`;
+            }
+
+            if (categoria) {
+                url += `&categoria_blog=${encodeURIComponent(categoria)}`;
+            }
 
             console.log("Fetching blogs from:", url); // LOG IMPORTANTE
 
             const response = await fetch(url, fetchConfig);
 
             if (!response.ok) {
-                const errText = await response.text();  // Esto ayuda mucho a ver errores del backend
+                const errText = await response.text();
                 console.error("Backend error response:", errText);
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -40,6 +48,7 @@ const BlogsFetcher = {
             throw error;
         }
     }
+
 
 };
 

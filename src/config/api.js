@@ -1,4 +1,4 @@
-const API_URL = "https://backend-django-top-production.up.railway.app";
+const API_URL = "https://app.top.education/";
 //const API_URL = "http://127.0.0.1:8000";
 
 // LOCAL HOST API URL FOR TESTING http://127.0.0.1:8000
@@ -21,6 +21,13 @@ export const endpoints = {
     blogs : `${BASE_URL}/blogs/`,
     blog_detail: (slug) => `${BASE_URL}/blog/${slug}/`,
     masterclassGrid: `${BASE_URL}/masterclass-certificaciones-grid/`,
+    empresas: `${BASE_URL}/api/companies/`,
+    topics: `${BASE_URL}/api/topics/`,
+    platforms: `${BASE_URL}/api/platforms/`,
+    universities_region: `${BASE_URL}/api/universities-by-region/`,
+    universities: `${BASE_URL}/api/universities/`,
+    latest_certifications: `${BASE_URL}/api/latest-certifications/`,
+    original_detail: (slug) => `${BASE_URL}/originals/${slug}/`,
   };
 
 

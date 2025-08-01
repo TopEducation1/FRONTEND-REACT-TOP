@@ -1,11 +1,11 @@
-import { useNavigate } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import LogoItem from "./LogoItem";
+import { useEffect, useRef } from "react";
+import { useNavigate } from 'react-router-dom';
+import TagCanvas from "tag-canvas";
 
 const Flags = ({ logos = [] }) => {
+  const canvasRef = useRef(null);
+  const containerRef = useRef(null);
   const navigate = useNavigate();
-  const sectionRef = useRef(null);
 
   function navigateWithTransition(path) {
     if (document.startViewTransition) {
@@ -17,45 +17,105 @@ const Flags = ({ logos = [] }) => {
     }
   }
 
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"],
-  });
+  const handleItemMenuClick = (category, tag) => {
+    const initialTags = { [category]: [tag] };
+    const queryParams = new URLSearchParams({
+      page: 1,
+      page_size: 15,
+      [category]: tag,
+    }).toString();
 
-  const x = useTransform(scrollYProgress, [0, 1], [0, -220]);
-
-  const handleClick = (category, tag) => {
-    const query = `${category}=${encodeURIComponent(tag)}&page=1&page_size=16`;
-    navigateWithTransition(`/explora/filter?${query}`);
+    navigateWithTransition(`/explora/filter?${queryParams}`, {
+      replace: true,
+      state: { selectedTags: initialTags },
+    });
   };
 
-  const visibleLogos = logos.slice(0,36);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+
+    try {
+      TagCanvas.Start("flagsCanvas", "flagsTags", {
+        textColour: null,
+        outlineColour: "#ffffff",
+        reverse: true,
+        depth: 0.8,
+        activeCursor: "pointer" ,
+        maxSpeed: 0.05,
+        imageScale: 1,
+        imageMode: "image",
+        fadeIn: 300,
+        outlineColour: "#ffff99",
+        shuffleTags: true,
+        wheelZoom: false,
+        pinchZoom: true,
+        freezeActive: true,
+        dragControl: true,
+        clickToFront: null,
+      });
+
+      const handleCanvasClick = () => {
+        const tagCanvas = TagCanvas.tc["flagsCanvas"];
+        const active = tagCanvas?.active;
+
+        if (active && logos[active.index]) {
+          const logo = logos[active.index];
+          handleItemMenuClick("Empresa", logo.nombre);
+        }
+      };
+
+      canvas.addEventListener("click", handleCanvasClick);
+
+      return () => {
+        canvas.removeEventListener("click", handleCanvasClick);
+      };
+    } catch (e) {
+      console.error("TagCanvas error:", e);
+    }
+  }, [logos]);
 
   return (
-    <section
-      ref={sectionRef}
-      className="pt-5  xl:pt-5 lg:pt-5 pb-[4.5rem] xl:pb-5 lg:pb-5 md:pb-10 relative"
-    >
-      <h2 className="text-[#F6F4EF] text-center text-4xl leading-[1.2em] lg:text-5xl font-normal font-[Lora] w-full">
-        Trabajamos con líderes de la industria
-      </h2>
-      <div className="overflow-x-auto px-12 py-5">
-        <motion.div
-          style={{ x }}
-          className="grid grid-flow-col grid-rows-3 auto-cols-[120px] gap-3 px-20 min-w-max"
-        >
-          {visibleLogos.map((logo, index) => {
-            //if (index % 5 === 0) return <div className="border-[#F6F4EF] rounded-2xl border-1 " key={index} />;
-            return (
-              <LogoItem
-                key={index}
-                logo={logo}
-                index={index}
-                onClick={() => handleClick("Empresa", logo.nombre)}
-              />
-            );
-          })}
-        </motion.div>
+    <section className="relative w-full h-full flex flex-col items-center justify-center">
+      <div className="flex flex-col lg:flex-row items-center justify-between">
+        <div className="w-full lg:w-1/2 pr-15">
+          <h2 className="text-[#F6F4EF] text-[4rem] leading-[1.2em] font-[Lora] text-left">
+            Certifícate con los líderes <br />
+            <span className="text-[3.8rem] flex mt-[-3px] top-italic leading-[1em] text-[#a8a8a8]">
+              de la industria a nivel mundial!
+            </span>
+          </h2>
+        </div>
+
+        <div className="w-full lg:w-1/2 relative">
+          <canvas
+            ref={canvasRef}
+            width="600"
+            height="600"
+            id="flagsCanvas"
+            className="block rounded-full bg-[#F6F4EF] shadow-[0px_0px_50px_25px_#F6F4EF] cursor-pointer"
+          ></canvas>
+
+          {/* Contenedor oculto con las imágenes para TagCanvas */}
+          <div className="hidden">
+            <div id="flagsTags">
+              {logos.map((logo, i) => (
+                <a key={i} href="#" onClick={() =>handleItemMenuClick("Empresa", logo.nombre)}>
+                  <img
+                    src={logo.empr_img}
+                    alt={logo.nombre}
+                    width={125}
+                    height={64}
+                    style={{
+                      borderRadius: "50%",
+                      objectFit: "contain",
+                      padding: 3,
+                    }}
+                  />
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -6,7 +6,6 @@ import YouTubePlayer from "../components/YoutubePlayer";
 import CertificationSlider from "../components/CertificationSlider";
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
-import { FaAnglesLeft } from "react-icons/fa6";
 
 const CertificationPage = () => {
     // Estados de la pagina de certificacion
@@ -24,15 +23,23 @@ const CertificationPage = () => {
     const host = window.location.hostname;
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (window.lenis) {
+            window.lenis.scrollTo(0, { immediate: true });
+        } else {
+            window.scrollTo(0, 0); // fallback
+        }
+    }, [slug]);
+
     function navigateWithTransition(path) {
-    if (document.startViewTransition) {
-      document.startViewTransition(() => {
+        if (document.startViewTransition) {
+        document.startViewTransition(() => {
+            navigate(path);
+        });
+        } else {
         navigate(path);
-      });
-    } else {
-      navigate(path);
+        }
     }
-  }
     useEffect(() => {
 
         const handleRezise = () => {
@@ -91,7 +98,31 @@ const CertificationPage = () => {
     };
 
     if (loading) {
-        return <span className="loader-search"></span>;
+        return (
+            <div className="flex justify-center items-center w-full h-screen py-4">
+                <svg
+                    className="animate-spin h-6 w-6 text-neutral-700"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                >
+                    <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    ></circle>
+                    <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                    ></path>
+                </svg>
+                <span className="ml-2 text-neutral-700">Cargando...</span>
+            </div>
+        );
     }
 
     if (error) {
@@ -111,9 +142,6 @@ const CertificationPage = () => {
             </div>
         );
     }
-    const handleAtras = () => {
-        navigateWithTransition(-1); // -1 significa ir una página atrás en el historial
-    };
 
     return (
         <>
@@ -129,7 +157,6 @@ const CertificationPage = () => {
             <meta property="og:type" content="website" />
         </Helmet>
         <div className="w-full bg-[#F6F4EF] relative">
-            <button className="fixed top-[15px] left-[20%] flex items-center gap-2 bg-[#1c1c1c] text-[#F6F4EF] rounded-[25px_0px_0px_25px] pt-[16px] pb-[17px] pl-4 pr-6 z-[1000]" onClick={handleAtras} title="Volver atrás"><FaAnglesLeft className="text-[23px]" /></button>
             <div className="container  mx-auto py-25 md:py-50px lg:py-60px 2xl:py-100px ">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                     <div className="lg:col-start-1 lg:col-span-8 space-y-[35px] pb-8 border-1 border-[#ECECEC] rounded-[15px] z-1 order-2 md:order-1">

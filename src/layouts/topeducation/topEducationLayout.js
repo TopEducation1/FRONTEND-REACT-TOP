@@ -58,6 +58,7 @@ function TopEducationLayout() {
       smooth: true,
       smoothTouch: true,
     });
+    window.lenis = lenis; // ✅ accesible globalmente
 
     function raf(time) {
       lenis.raf(time);
@@ -75,14 +76,17 @@ function TopEducationLayout() {
   const shouldRenderFooter = !excludedRoutes.some(route =>
     location.pathname.startsWith(route)
   );
+  const pathSegments = location.pathname.split("/").filter(Boolean); // elimina los vacíos
+  const pageKey = pathSegments[0] || "home"; // fallback si es la raíz "/"
 
   return (
-    <>
-      <Header
+    <div className={`page page-${pageKey}`}>
+      <Header 
         toggleMenu={toggleMenu}
         openIndexResponsiveMenu={openIndexResponsiveMenu}
         isMenuOpen={isMenuOpen}
       />
+      
       <main>
         <Outlet
           context={{
@@ -93,7 +97,7 @@ function TopEducationLayout() {
         />
       </main>
       {shouldRenderFooter && <Footer />}
-    </>
+    </div>
   );
 }
 

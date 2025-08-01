@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link } from 'react-router-dom';
 
+import endpoints from '../config/api';
+
 const IndexCategories = ({ onTagSelect, selectedTags }) => {
     const [openSections, setOpenSections] = useState([]);
     const [temas, setTemas] = useState([]);
@@ -11,22 +13,22 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
     const indexRef = useRef(null);
     
     useEffect(() => {
-        fetch("https://app.top.education/api/topics/")
+        fetch(endpoints.topics)
             .then(res => res.json())
             .then(data => {
                 setTemas(data.filter(t => t.tem_type === "Tema"));
                 setHabilidades(data.filter(h => h.tem_type === "Habilidad"));
             });
 
-        fetch("https://app.top.education/api/companies/")
+        fetch(endpoints.empresas)
             .then(res => res.json())
             .then(data => setEmpresas(data.filter(t => t.empr_est === "enabled")));
 
-        fetch("https://app.top.education/api/platforms/")
+        fetch(endpoints.platforms)
             .then(res => res.json())
             .then(data => setPlataformas(data));
 
-        fetch("https://app.top.education/api/universities-by-region/")
+        fetch(endpoints.universities_region)
             .then(res => res.json())
             .then(data => setUniversidadesPorRegion(data));
     }, []);
@@ -157,7 +159,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                             </svg>
                             <span>{section.title === "Plataforma" ? "Aliados" : section.title}</span>
                         </button>
-                        <div className="unfold-list subprimery">
+                        <div className="unfold-list subprimery " data-lenis-prevent>
                             {section.renderContent()}
                         </div>
                     </div>

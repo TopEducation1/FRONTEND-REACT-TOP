@@ -108,6 +108,7 @@ const SearchBar = () => {
     return (
         <>
             <div className="wrapper-search-bar">
+                <span className='absolute top-[-15px] text-[0.7rem] w-[100%] text-white'>Busca por tema, habilidad, universidad o institución</span>
                 <input
                     type="text"
                     placeholder="¿Qué quieres aprender?"

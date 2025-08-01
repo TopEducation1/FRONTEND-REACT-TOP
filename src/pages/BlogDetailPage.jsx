@@ -7,6 +7,7 @@ import GridMasterclass from "../components/GridMasterclass";
 import ShareButtons from '../components/ShareButtons';
 import RightPop from "../components/RightPop";
 
+
 const BlogDetailPage = () => {
   const { slug } = useParams();
   const [blog, setBlog] = useState(null);
@@ -14,8 +15,17 @@ const BlogDetailPage = () => {
   const [error, setError] = useState(null);
   const [showToolTip, setShowTooltip] = useState(false);
   const [visibleContainerPopUp, setVisibleContainerPopUp] = useState(true);
-   const [positionPopUp, SetPositionPopUp] = useState(false);
+  const [positionPopUp, SetPositionPopUp] = useState(false);
   const urlActual = window.location.href;
+  
+
+  useEffect(() => {
+  if (window.lenis) {
+    window.lenis.scrollTo(0, { immediate: true });
+  } else {
+    window.scrollTo(0, 0); // fallback
+  }
+}, [slug]);
 
   useEffect(() => {
     const loadBlog = async () => {
@@ -37,6 +47,7 @@ const BlogDetailPage = () => {
     }
   }, [slug]);
 
+
   const renderBlogContent = (content) => {
     console.log("Content to render:", content); // Debug log
 
@@ -45,10 +56,7 @@ const BlogDetailPage = () => {
     }
 
     // Verifica si el contenido ya está en el campo contenido_blog o solo contenido
-    const htmlContent = content.contenido_blog || content;
-
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = htmlContent;
+    
 
 
     const links = tempDiv.querySelectorAll("a");
@@ -102,7 +110,29 @@ const BlogDetailPage = () => {
               <div className="blog single">
                 <div className="card"></div>
               </div>
-              {loading && <p>Cargando contenido...</p>}
+              {loading && <div className="flex justify-center items-center w-full h-screen py-4">
+                <svg
+                  className="animate-spin h-6 w-6 text-neutral-700"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                  ></path>
+                </svg>
+                <span className="ml-2 text-neutral-700">Cargando...</span>
+              </div>}
               {error && (
                 <div className="error-message">
                   Error al cargar el blog: {error}
@@ -110,9 +140,10 @@ const BlogDetailPage = () => {
               )}
 
               {blog && (
-                  <div className="card-body flex-[1_1_auto] p-[40px] xl:!p-[2.8rem_3rem_2.8rem] lg:!p-[2.8rem_3rem_2.8rem] md:!p-[2.8rem_3rem_2.8rem]">
-                    <span className="text-2xl font-normal text-[#D33B3E] font-[Lora] w-full italic !mb-3" >{blog.categoria_blog_id}</span>
-                    <h1 className="text-5xl font-normal font-[Lora] w-full">{blog.nombre_blog}</h1>
+                  <div className="card-body flex-[1_1_auto] p-[40px] xl:!p-[0rem_3rem_2.8rem] lg:!p-[0rem_3rem_2.8rem] md:!p-[0rem_3rem_2.8rem]">
+                    <img src={blog.miniatura_blog} alt="Miniatura" className="w-full rounded-lg" />
+                    <span className="text-[1.3rem] font-normal block !w-auto max-w-[30%] bg-[#F6F4EF] rounded-full ml-2 mt-[-45px] text-[#D33B3E] relative top-italic w-full py-1 px-4" >{blog.categoria_blog_id}</span>
+                    <h1 className="text-[2rem] leading-[1.1em] mt-3 font-normal !font-[Lora] w-full">{blog.nombre_blog}</h1>
                     <p>{blog.metadescripcion_blog}</p>
                     <div className="author-info xl:!flex lg:!flex md:!flex items-center !mb-3 mt-2 pb-2 border-b-2 border-[#D33B3E]">
                       <div className="flex items-center">
@@ -128,7 +159,7 @@ const BlogDetailPage = () => {
                           <ShareButtons url={urlActual} title={blog.titulo} />
                       </div>
                     </div>
-
+                  
                   <div className="blog-meta">
                     {blog.fecha_blog_redaccion && (
                       <time className="blog-date">
@@ -138,21 +169,21 @@ const BlogDetailPage = () => {
                     )}
                   </div>
                   <div className="post !mb-8">
-                    {renderBlogContent(blog.contenido_blog || blog.contenido)}
+                    <div dangerouslySetInnerHTML={{ __html: blog.contenido }} />
                   </div>                  
                 </div>
               )}
             </div>
-            <aside className="xl:w-4/12 lg:w-4/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px] max-w-full sidebar !mt-8 xl:!mt-6 lg:!mt-6">
-              <div className="widget !mt-[40px]">
+            <aside className="xl:w-4/12 lg:w-4/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px] max-w-full sidebar">
+              <div className="widget">
                 <div className="video-container">
                   <video className="w-full" src="/assets/video/main-video.mp4" controls="true"></video> 
                 </div>
               </div>
               <div className="widget !mt-[40px]">
-                <h2 className="text-4xl font-normal font-[Lora] w-full italic !mb-3">Te puede interesar</h2>
+                <h2 className="text-4xl font-normal font-[Lora] w-full top-italic !mb-3">Te puede interesar</h2>
                 < LatestBlogsGrid/>
-                <a href="/explora" className="btn py-2 px-5 rounded-full btn-col-1 text-lg font-semibold">Explora más de 13000 certificaciones</a>
+                <a href="/explora" className="btn py-2 px-5 rounded-full btn-col-1 text-lg font-semibold">Explora más de 13.000 certificaciones</a>
               </div>
               {visibleContainerPopUp && (
                   positionPopUp ? (
@@ -169,7 +200,7 @@ const BlogDetailPage = () => {
                       </div>
                   ) : (
                       // Posición original
-                      <div className="sticky top-30 lg:col-start-9 lg:col-span-4 br-15 mt-10 border-1 border-[#ECECEC] overflow-hidden rounded-[15px] z-1">
+                      <div className="sticky top-25 lg:col-start-9 lg:col-span-4 br-15 mt-10 border-1 border-[#ECECEC] overflow-hidden rounded-[15px] z-1">
                         <RightPop />
                       </div>
                       

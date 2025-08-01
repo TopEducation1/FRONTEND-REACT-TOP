@@ -6,8 +6,17 @@ const MenuTop = ({toggleMenu}) => {
   const location = useLocation();
   const [showSubmenu, setShowSubmenu] = useState(false);
   const navigate = useNavigate();
+  useEffect(() => {
+    console.log('toggleMenu prop recibido:', toggleMenu);
+  }, [toggleMenu]);
 
   const isActive = (path) => location.pathname === path;
+
+  const closeMenuIfMobile = () => {
+    if (window.innerWidth < 768 && typeof toggleMenu === 'function') {
+      toggleMenu();
+    }
+  };
 
   function navigateWithTransition(path) {
     if (document.startViewTransition) {
@@ -23,7 +32,7 @@ const MenuTop = ({toggleMenu}) => {
     /*{ name: 'Inicio', path: '/',classItem:'item-inicio' },*/
     { name: 'Explora', path: '/explora', isDropdown: true,classItem: 'item-explora' },
     //{ name: 'Originals', path: '/top-originals',classItem: 'item-orginals' },
-    //{ name: 'Lo más Top', path: '/lo-mas-top',classItem: 'item-mastop' },
+    { name: 'Lo más Top', path: '/lo-mas-top',classItem: 'item-mastop' },
     { name: 'Recursos', path: '/recursos',classItem: 'item-recursos' },
     { name: 'Para equipos', path: '/para-equipos',classItem: 'item-equipos' },
     { name: 'Empieza ahora', path: '/empieza-ahora',classItem: 'item-empezar' },
@@ -90,6 +99,7 @@ const MenuTop = ({toggleMenu}) => {
 
       const query = `${categoryParam}=${tagParam}&page=1&page_size=15`;
       navigateWithTransition(`/explora/filter?${query}`);
+      closeMenuIfMobile();
     };
 
   return (
@@ -100,7 +110,13 @@ const MenuTop = ({toggleMenu}) => {
             key={item.name}
             to={item.path}
             className={`menu-item dropdown ${item.classItem} ${isActive(item.path) ? 'active' : ''}`}
-            onClick={(e) => isActive(item.path) && e.preventDefault()}
+            onClick={() => {
+              if (!isActive(item.path)) {
+                 // 👈 aquí se cierra si es mobile
+                navigateWithTransition(item.path);
+                closeMenuIfMobile();
+              }
+            }}
             onMouseEnter={() => setShowSubmenu(true)}
             onMouseLeave={() => setShowSubmenu(false)}
           >
@@ -122,7 +138,7 @@ const MenuTop = ({toggleMenu}) => {
                   </div>
                 ))}
                 <button
-                  onClick={() => navigateWithTransition("/explora", navigate)}
+                  onClick={() => {navigateWithTransition("/explora", navigate);closeMenuIfMobile();}}
                   className='absolute right-5 bottom-5 flex gap-2 items-center py-1 px-3 bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full'
                 >
                   Ver más certificaciones <FaChevronRight />
@@ -132,8 +148,14 @@ const MenuTop = ({toggleMenu}) => {
         ) : (
           <button
             key={item.name}
-            className={`menu-item transition duration-300  hover:text-shadow-[0_35px_35px_rgb(255_255_255_/_0.25)] ${item.classItem} ${item.classItem === 'item-empezar'?'shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full ':''} ${isActive(item.path) ? 'active' : ''}`}
-            onClick={() => !isActive(item.path) && navigateWithTransition(item.path)}
+            className={`menu-item transition duration-300  hover:text-shadow-[0_35px_35px_rgb(255_255_255_/_0.25)] ${item.classItem} ${item.classItem === 'item-empezar'?' ml-4 shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full ':''} ${isActive(item.path) ? 'active' : ''}`}
+            onClick={() => {
+              if (!isActive(item.path)) {
+                 // 👈 aquí se cierra si es mobile
+                navigateWithTransition(item.path);
+                closeMenuIfMobile();
+              }
+            }}
           >
             {item.name}
           </button>
