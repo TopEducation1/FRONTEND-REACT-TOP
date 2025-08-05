@@ -70,7 +70,8 @@ function BlogPage() {
                 <div className="container m-auto">
                     <h2 className="text-[#F6F4EF] text-7xl top-italic font-normal font-[Lora] text-center leading-[1.2em] z-10 relative">Explora y aprende</h2>
                     <p className="text-[1.125rem] text-[#a8a8a8] mt-5 text-center mb-8 z-10 relative">Amplía tus conocimientos con contenido de calidad seleccionado por expertos. Descubre nuevas habilidades, profundiza en temas de tu interés y accede a recursos educativos que te acercan a tus objetivos.</p>
-                    <BlogsGrid/>
+                    <BlogsGrid category="Desarrollo personal, Desarrollo profesional, Top education originals" />
+
                 </div>
             </section>
             <section className="wrapper">
@@ -83,7 +84,7 @@ function BlogPage() {
                         </div>
                         <div className="xl:w-6/12 lg:w-6/12 w-full flex-[0_0_auto] !px-[15px] md:!px-[20px] lg:!px-[20px] xl:!px-[35px] !mt-[50px] max-w-full">
                             <h3>¡Suscríbete ahora!</h3>
-                            <HubspotForm />
+                            {/*<HubspotForm />*/}
                         </div>
                     </div>
                 </div>
