@@ -198,7 +198,7 @@ export default function LoMasTop() {
           </div>
           {/* Rankings Section */}
           <div className='w-[100vw] px-10'>
-            <div className='m-auto max-w-[100vw] flex flex-wrap justify-center pt-90 lg:pt-100'>
+            <div className='m-auto max-w-[100vw] flex flex-wrap justify-center pt-90 lg:pt-70'>
               <div>
                 <h3 className="text-[3rem] md:text-[4rem] text-[#F6F4EF] text-center leading-[1.2em] mb-[-10px]"><span className='text-[4rem] md:text-[5rem]'>Rankings</span><br></br> de lo más <span className='top-italic'>Top!</span></h3>
                 <p className="my-4 text-[1.125rem] text-[#a8a8a8] max-w-[80%] m-auto text-center z-10 relative">
