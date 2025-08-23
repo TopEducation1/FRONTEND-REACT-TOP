@@ -69,18 +69,18 @@ const PlatformsSelector = ({ platforms }) => {
   ];
 
   return (
-    <section ref={sectionRef} className="w-full py-32 bg-transparent">
-      <div className="max-w-6xl mx-auto px-4 flex flex-col lg:flex-row items-center justify-between gap-8 relative">
+    <section ref={sectionRef} className="w-full py-32 lg:py-0 bg-transparent">
+      <div className="max-w-6xl mx-auto px-4 flex flex-col lg:flex-row items-center justify-between gap-5">
         
         {/* CONTENIDO A LA IZQUIERDA */}
         <div className="w-full lg:w-1/2">
-          <h2 className="text-[#F6F4EF] text-[2.5rem] font-normal leading-[1.2em] mb-5">
-            Forma equipos que <span className="top-italic text-[4.5rem] leading-[1.2em]">aprenden y crecen</span>
+          <h2 className="text-[#F6F4EF] text-[2rem] md:text-[2.5rem] font-normal leading-[1.2em] mb-5">
+            Forma equipos que <span className="top-italic text-[3.2rem] mt-2 block lg:text-[4.5rem] !leading-[1em]">aprenden y crecen</span>
           </h2>
-          <p className="text-[1.125rem] pr-15 text-[#a8a8a8] mb-8">
+          <p className="text-[1.125rem] lg:pr-15 text-[#a8a8a8] mb-8">
             Potencia las habilidades de tu equipo con certificaciones clave y seguimiento en tiempo real...
           </p>
-          <Link to="/para-equipos" className="shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] !text-[#1c1c1c] text-[1.3rem] z-[11] !py-2 !px-5 !rounded-full">
+          <Link to="/para-equipos" className="shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] !text-[#1c1c1c] text-[1rem] lg:text-[1.3rem] z-[11] !py-2 !px-5 !rounded-full">
             Conoce<span id="top">top</span><span id="education">.education</span> para equipos
           </Link>
         </div>
@@ -97,7 +97,7 @@ const PlatformsSelector = ({ platforms }) => {
               onClick={(e) => handleClick(platform, e)}
             >
               <img
-                className="max-w-[180px] w-full h-auto object-contain"
+                className="max-w-[100px] lg:max-w-[180px] w-full h-auto object-contain"
                 src={platform.img}
                 alt={platform.name}
               />

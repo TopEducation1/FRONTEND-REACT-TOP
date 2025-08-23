@@ -74,9 +74,9 @@ const GridMasterclass = () => {
     return (
         <>
             <div className='wrapwrapper'>
-                <div className='container m-auto py-[4.5rem] xl:!py-24 lg:!py-24 md:!py-24'>
-                    <h2 className='text-white text-4xl'>Sigue explorando</h2>
-                    <div className='grid grid-cols-3 gap-4 mt-5'>
+                <div className='container m-auto px-[15px] py-[3rem] xl:!py-24 lg:!py-24 md:!py-24'>
+                    <h2 className='text-[#F6F4EF] text-[2.5rem] top-italic'>Sigue explorando</h2>
+                    <div className='grid grid-cols-2 lg:grid-cols-3 gap-3 mt-5'>
                         {shuffledCertifications.map(certification => {
                             return (
                                 <div
@@ -84,13 +84,13 @@ const GridMasterclass = () => {
                                 key={certification.id}
                                 className="card">
                                     <img className='rounded-lg' src={certification.universidad_certificacion?.univ_img || certification.empresa_certificacion?.empr_img || certification.imagen_final} alt={certification.nombre} />
-                                    <h2 className='text-white my-1 leading-[1.2em] text-[1.3rem] !font-[Lora]'>{certification.nombre}</h2>
+                                    <h3 className='text-white my-1 leading-[1.2em] text-[1rem]'>{certification.nombre}</h3>
                                 </div>
                             )
 
                         })}
                     </div>
-                    <a href="/explora" className='shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] block w-[350px] text-center m-auto mt-10 !text-[#1c1c1c] text-[1.3rem] z-[11] !py-2 !px-5 !rounded-full'>Ver más certificaciones</a> 
+                    <a href="/explora" className='shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] block w-[350px] text-center m-auto mt-10 !text-[#1c1c1c] text-[1.2rem] z-[11] !py-2 !px-5 !rounded-full'>Ver más certificaciones</a> 
                 </div>  
             </div>
         </>

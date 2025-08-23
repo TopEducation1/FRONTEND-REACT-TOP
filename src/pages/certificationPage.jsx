@@ -155,31 +155,56 @@ const CertificationPage = () => {
             <meta name="robots" content="index, follow" />
             <meta property="og:description" content={certification.metadescripcion_certificacion} />
             <meta property="og:type" content="website" />
+
+
+            <title>{certification.nombre} | top.education</title>
+            <meta name="description" content={certification.metadescripcion_certificacion} />
+            <meta name="keywords" content={certification.palabra_clave_certificacion} />
+            <meta name="author" content="Top Education" />
+            <meta name="robots" content="index, follow" />
+
+            {/* Open Graph para redes sociales */}
+            <meta property="og:title" content={certification.nombre} />
+            <meta property="og:description" content={certification.metadescripcion_certificacion} />
+            <meta property="og:type" content="course" />
+            <meta property="og:url" content={`https://top.education/certificacion/${certification.plataforma_certificacion.nombre.toLowerCase()}/${certification.slug}`} />
+            <meta property="og:site_name" content="Top Education" />
+            <meta property="og:image" content={certification.imagen_destacada} />
+
+            {/* Twitter Cards */}
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:title" content={certification.nombre} />
+            <meta name="twitter:description" content={certification.metadescripcion_certificacion} />
+            <meta name="twitter:image" content={certification.imagen_destacada} />
+            <meta name="twitter:site" content="@TopEducation" />
+
+            {/* Canonical */}
+            <link rel="canonical" href={`https://top.education/certificacion/${certification.plataforma_certificacion.nombre.toLowerCase()}/${certification.slug}`} />
         </Helmet>
         <div className="w-full bg-[#F6F4EF] relative">
             <div className="container  mx-auto py-25 md:py-50px lg:py-60px 2xl:py-100px ">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                     <div className="lg:col-start-1 lg:col-span-8 space-y-[35px] pb-8 border-1 border-[#ECECEC] rounded-[15px] z-1 order-2 md:order-1">
                         <div className="container-main-info">
-                            <div className="cert-int px-8 pt-8">
-                                <h1 className="text-size-32 md:text-4xl mb-2 font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-10 md:leading-10 aos-init aos-animate">{certification.nombre}</h1>
+                            <div className="cert-int px-3 lg:px-7 pt-3 lg:pt-8">
+                                <h1 className="text-[2rem] md:text-4xl mb-2 font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-10 md:leading-10 aos-init aos-animate">{certification.nombre}</h1>
                                 <p className="text-sm md:text-lg text-contentColor dark:contentColor-dark mb-25px !leading-[1.2em] aos-init aos-animate">{certification.metadescripcion_certificacion}</p>
-                                <div className="border-b border-[#E5E5E5] pb-[25px] flex xs:flex-wrap items-start gap-[60px] lg:gap-[40px] xs:gap-[20px] mt-5 mb-[20px]">
-                                    <div className="flex w-2/8 items-start gap-[10px] border-l border-[#CDCDCD] first:border-none pl-[10px] first:pl-0">
+                                <div className="border-b border-[#E5E5E5] pb-[25px] flex flex-wrap lg:flex-nowrap items-start gap-[10px] lg:gap-[40px] xs:gap-[20px] mt-5 mb-[20px]">
+                                    <div className="flex w-1/1 lg:w-2/8 items-start gap-[10px] border-l border-[#CDCDCD] first:border-none pl-[10px] first:pl-0">
                                         <div>
                                             <h6 className="font-bold text-edblue leading-[1.2]">Idioma:</h6>
                                             <p class="text-[14px] text-edgray leading-[1.1em]">{(certification.lenguaje_certificacion ==='NONE')?'Ingles (subtitulado: Español)':certification.lenguaje_certificacion}</p>
                                         </div>
                                     </div>
                                     {(certification.nivel_certificacion ==='NONE')? null :(
-                                        <div className="flex w-3/8 items-start gap-[10px] border-l border-[#CDCDCD] first:border-none pl-[10px] first:pl-0">
+                                        <div className="flex w-1/1 lg:w-3/8 items-start gap-[10px] border-l border-[#CDCDCD] first:border-none pl-[10px] first:pl-0">
                                         <div>
                                             <h6 className="font-bold text-edblue leading-[1.2]">Nivel:</h6>
                                             <p class="text-[14px] text-edgray leading-[1.1em]">{(certification.nivel_certificacion ==='NONE')?'No aplica':certification.nivel_certificacion}</p>
                                         </div>
                                     </div>
                                     )}
-                                    <div className="flex w-3/8 items-center gap-[10px] border-l border-[#CDCDCD] first:border-none pl-[10px] first:pl-0">
+                                    <div className="flex w-1/1 lg:w-3/8 items-center gap-[10px] border-l border-[#CDCDCD] first:border-none pl-[10px] first:pl-0">
                                         <div>
                                             <h6 className="font-bold text-edblue leading-[1.2]">Cronograma:</h6>
                                             <p class="text-[14px] text-edgray leading-[1.1em] ">{certification.tiempo_certificacion}</p>
@@ -194,34 +219,35 @@ const CertificationPage = () => {
                                 </div>
                                 
                              )}
-                             <div className="nav-tab-wrapper px-8 py-5 w-full">
-                                <ul id="tabs-nav" class="flex course-tab mb-8 w-auto overflow-x-auto">
+                             <div className="nav-tab-wrapper px-3 lg:px-7 py-5 w-full">
+                                <ul id="tabs-nav" class="flex flex-wrap course-tab mb-8 w-auto overflow-x-auto">
                                     <li>
-                                    <a className={`px-4 py-2 rounded ${activeTab === 'tab1' ? 'bg-blue-500 text-white' : 'bg-gray-300'}`} onClick={() => setActiveTab('tab1')}>
+                                    <a className={`flex text-[1.1rem] px-2 lg:px-4 py-1 lg:py-2 rounded ${activeTab === 'tab1' ? 'bg-blue-500 text-white' : 'bg-gray-300'}`} onClick={() => setActiveTab('tab1')}>
                                     Descripción
                                     </a>
                                     </li>
                                     <li>
-                                    <a className={`px-4 py-2 rounded ${activeTab === 'tab2' ? 'bg-blue-500 text-white' : 'bg-gray-300'}`} onClick={() => setActiveTab('tab2')}>
+                                    <a className={`flex text-[1.1rem] px-2 lg:px-4 py-1 lg:py-2 rounded ${activeTab === 'tab2' ? 'bg-blue-500 text-white' : 'bg-gray-300'}`} onClick={() => setActiveTab('tab2')}>
                                     Habilidades
                                     </a>
                                     </li>
                                     <li>
-                                    <a className={`px-4 py-2 rounded ${activeTab === 'tab3' ? 'bg-blue-500 text-white' : 'bg-gray-300'}`} onClick={() => setActiveTab('tab3')}>
+                                    <a className={`flex text-[1.1rem] px-2 lg:px-4 py-1 lg:py-2 rounded ${activeTab === 'tab3' ? 'bg-blue-500 text-white' : 'bg-gray-300'}`} onClick={() => setActiveTab('tab3')}>
                                         {(certification.plataforma_certificacion && certification.plataforma_certificacion.nombre == 'MasterClass')?'Lecciones':'Modulos'}
                                     </a>
                                     </li>
                                 </ul>
                                 <div className="w-full">
                                     {activeTab === 'tab1' && <div className="cert-cont w-full">
-                                            <h2 className="text-size-32 md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">¿Qué aprenderás?</h2>
+                                            <h2 className="text-[1.7rem] md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">¿Qué aprenderás?</h2>
+                                            <div className="mt-2" dangerouslySetInnerHTML={{ __html: certification.contenido_certificacion.cantidad_modulos}}/>
                                             {certification.aprendizaje_certificacion && certification.aprendizaje_certificacion.some(aprendizaje => aprendizaje.nombre.startsWith('x')) ? null : (<ul className="ml-10 mt-5 list-disc">
                                                 {certification.aprendizaje_certificacion?.map((aprendizaje, index) => (
                                                     aprendizaje.nombre.startsWith(' ') ? null : (<li key={index}>{aprendizaje.nombre}</li>)
                                                 ))}
                                             </ul>)}
-                                            <h2 className="text-size-32 md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">{certification.contenido_certificacion.cantidad_modulos}</h2>
-                                            <p>
+                                            
+                                            <p className="text-sm">
                                                 {certification.contenido_certificacion.contenido_certificacion.join(
                                                 "\n"
                                                 )}
@@ -229,7 +255,7 @@ const CertificationPage = () => {
                                         </div>
                                     }
                                     {activeTab === 'tab2' && <div id="widgets-learning-masterclass" className="w-full">
-                                        <h2 className="text-size-32 md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate my-5">Habilidades que obtendrás</h2>
+                                        <h2 className="text-[1.7rem] md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate my-5">Habilidades que obtendrás</h2>
                                             {(certification.plataforma_certificacion && certification.plataforma_certificacion.nombre == 'MasterClass')?( 
                                                 <div id="wrapper-widgets-learning">
                                                     {certification.aprendizaje_certificacion.map((item) => {
@@ -311,7 +337,7 @@ const CertificationPage = () => {
                                                     >
                                                         <div className="first-row">
                                                             <div className="wrapper-info">
-                                                                <h2 className="text-size-32 md:text-2xl font-bold">{modulo.titulo}</h2>
+                                                                <h2 className="text-[1.7rem] md:text-2xl font-bold">{modulo.titulo}</h2>
                                                                 <span>{modulo.duracion}</span>
                                                                 <span><b>Incluye:</b> {modulo.incluye.join(" + ")}</span>
                                                             </div>
@@ -416,8 +442,8 @@ const CertificationPage = () => {
                         )}
                         
                     </div>
-                    <div className="lg:col-start-1 lg:col-span-12 border-1 border-[#ECECEC] rounded-[15px] bg-[#F6F4EF] p-2 lg:p-8 z-1 order-3 ">
-                        <h2 className="text-size-3xl md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">Clases recomendadas para ti</h2>
+                    <div className="lg:col-start-1 lg:col-span-12 border-1 border-[#ECECEC] rounded-[15px] bg-[#F6F4EF] px-3 py-5 lg:p-8 z-1 order-3 ">
+                        <h2 className="text-[1.7rem] md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">Clases recomendadas para ti</h2>
                         <div>
                             <CertificationSlider/>
                         </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import BlurText from "../components/BlurText";
 
 import endpoints from '../config/api';
 
@@ -72,9 +73,12 @@ const TopList = () => {
     });
   };
 
+  const handleAnimationComplete = () => {
+  console.log('Animation completed!');
+};
   const getTitulo = () => {
-    if (tipo === "universidades") return "Lo más top de Universidades";
-    if (tipo === "empresas") return "Lo más top de Empresas";
+    if (tipo === "universidades") return "Universidades";
+    if (tipo === "empresas") return "Empresas";
     return "Top Entidades";
   };
 
@@ -86,11 +90,20 @@ const TopList = () => {
   return (
     <section className="wrapper">
       <div className="container m-auto pt-30">
-        <h1 className="text-5xl font-bold text-center text-[#F6F4EF] mb-6">{getTitulo()}</h1>
+        <h1 className="text-5xl text-center text-[#F6F4EF] mb-6">Lo más <span className="top-italic">top</span> de<br></br>
+        <BlurText
+            text={getTitulo()}
+            delay={150}
+            animateBy="words"
+            direction="top"
+            onAnimationComplete={handleAnimationComplete}
+            className="text-[5rem]"
+          />
+        </h1>
 
         {/* 🔹 Sección destacada */}
         {destacados.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {destacados.map((ent) => (
               <div
                 key={ent.id}
@@ -99,11 +112,11 @@ const TopList = () => {
                     [tipoSingularCapitalizado]: ent.nombre,
                   })
                 }
-                className="rounded-xl px-5 py-4 flex flex-col items-center text-center shadow-[0px_0px_5px_3px_#F6F4EF] bg-[#F6F4EF] hover:shadow-md transition cursor-pointer hover:scale-105 duration-200"
+                className="rounded-xl px-5 py-4 flex flex-col items-center text-center md:bg-gradient-to-t from-[#F6F4EF]/30 to-[#F6F4EF] hover:shadow-md hover:bg-[#F6F4EF] hover:shadow-[0px_0px_5px_3px_#F6F4EF] transition cursor-pointer hover:scale-105 duration-200"
               >
                 <img src={ent.univ_img || ent.empr_img} className="w-[80%] object-contain" alt="" />
                 {/*<h2 className="text-lg font-bold leading-[1em]">{ent.nombre}</h2>*/}
-                <span className="mt-2 inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset">
+                <span className="mt-2 inline-flex items-center rounded-full bg-[#F6F4EF]/80 px-4 py-[2px] mt-[-5px] text-[0.8rem] md:text-[1.5rem] text-[#0F090B] font-medium ">
                   {ent.total_certificaciones} Certificaciones
                 </span>
               </div>
@@ -112,7 +125,7 @@ const TopList = () => {
         )}
 
         {/* 🔹 Resto de entidades */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-3 md:grid-cols-2 gap-1 lg:gap-3">
           {resto.map((ent) => (
             <div
               key={ent.id}
@@ -121,7 +134,7 @@ const TopList = () => {
                   [tipoSingularCapitalizado]: ent.nombre,
                 })
               }
-              className="border rounded-xl px-5 py-2 flex items-center gap-2 shadow hover:shadow-md transition cursor-pointer"
+              className="rounded-xl px-2 md:px-5 py-2 flex items-center gap-1 lg:gap-2 shadow hover:shadow-md transition cursor-pointer hover:bg-[#1c1c1c]/80"
             >
               <div className="w-[20%]">
                 <img src={ent.univ_ico || ent.empr_ico} className="w-full" alt="" />
@@ -129,7 +142,7 @@ const TopList = () => {
               <div className="w-[80%]">
                 <h2 className="text-[1.2rem] font-semibold text-white leading-[1.2rem]">{ent.nombre}</h2>
                 <div className="mt-1">
-                  <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-green-600/20 ring-inset">
+                  <span className="inline-flex items-center rounded-full bg-[#F6F4EF] px-2 py-[2px] text-[.8rem] font-medium text-[#0F090B] ">
                     {ent.total_certificaciones} Certificaciones
                   </span>
                 </div>

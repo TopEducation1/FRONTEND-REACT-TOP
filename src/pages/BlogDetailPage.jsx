@@ -92,16 +92,42 @@ const BlogDetailPage = () => {
       {/**SEO ELEMENTS WITH REACT -HELMET */}
       {blog && (
         <Helmet>
-          <title>{blog.nombre_blog}</title>
-          <meta name="description" content={blog.metadescripcion_blog}/>
-          <meta property="og:title" content={blog.metadescripcion_blog}/>
-          <meta name="keywords" content={blog.palabra_clave_blog} />
+          <title>{blog.nombre_blog} | Top Education</title>
+          <meta name="description" content={blog.metadescripcion_blog || ''} />
+          <meta name="keywords" content={blog.palabra_clave_blog || ''} />
           <meta name="author" content="Top Education" />
           <meta name="robots" content="index, follow" />
-          <meta property="og:description" content={blog.metadescripcion_blog} />
-          <meta property="og:type" content="website" />
+
+          {/* Open Graph */}
+          <meta property="og:title" content={blog.nombre_blog} />
+          <meta property="og:description" content={blog.metadescripcion_blog || ''} />
+          <meta property="og:type" content="article" />
+          <meta property="og:url" content={`https://top.education/recursos/${blog.slug}`} />
+          <meta property="og:site_name" content="Top Education" />
+          <meta property="og:image" content={blog.miniatura_blog} />
+          <meta property="og:image:secure_url" content={blog.miniatura_blog} />
+          {/* Opcional si conoces dimensiones */}
+          {/* <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" /> */}
+          <meta property="og:image:alt" content={blog.nombre_blog} />
+
+          {/* Article (opcionalmente enriquecer) */}
+          {blog.fecha_redaccion_blog && (
+            <meta property="article:published_time" content={new Date(blog.fecha_redaccion_blog).toISOString()} />
+          )}
+
+          {/* Twitter Cards */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={blog.nombre_blog} />
+          <meta name="twitter:description" content={blog.metadescripcion_blog || ''} />
+          <meta name="twitter:image" content={blog.miniatura_blog} />
+          <meta name="twitter:site" content="@TopEducation" />
+
+          {/* Canonical (corregido con h) */}
+          <link rel="canonical" href={`https://top.education/recursos/${blog.slug}`} />
         </Helmet>
       )}
+
     
       <section className="wrapper bg-[#F6F4EF]">
         <div className="container m-auto py-[4.5rem] xl:!py-24 lg:!py-24 md:!py-24">
@@ -140,10 +166,10 @@ const BlogDetailPage = () => {
               )}
 
               {blog && (
-                  <div className="card-body flex-[1_1_auto] p-[40px] xl:!p-[0rem_3rem_2.8rem] lg:!p-[0rem_3rem_2.8rem] md:!p-[0rem_3rem_2.8rem]">
+                  <div className="card-body flex-[1_1_auto] p-[10px] xl:!p-[0rem_3rem_2.8rem] lg:!p-[0rem_3rem_2.8rem] md:!p-[0rem_3rem_2.8rem]">
                     <img src={blog.miniatura_blog} alt="Miniatura" className="w-full rounded-lg" />
-                    <span className="text-[1.3rem] font-normal block !w-auto max-w-[30%] bg-[#F6F4EF] rounded-full ml-2 mt-[-45px] text-[#D33B3E] relative top-italic w-full py-1 px-4" >{blog.categoria_blog_id}</span>
-                    <h1 className="text-[2rem] leading-[1.1em] mt-3 font-normal !font-[Lora] w-full">{blog.nombre_blog}</h1>
+                    <span className="text-[1.3rem] font-normal block !w-auto max-w-[50%] lg:max-w-[30%] bg-[#F6F4EF] rounded-full ml-2 mt-[-45px] text-[#D33B3E] relative top-italic w-full py-1 px-4" >{blog.categoria_blog_id}</span>
+                    <h1 className="text-[1.8rem] lg:text-[2.5rem] leading-[1.1em] mt-3 mb-2 font-normal !font-[Lora] w-full">{blog.nombre_blog}</h1>
                     <p>{blog.metadescripcion_blog}</p>
                     <div className="author-info xl:!flex lg:!flex md:!flex items-center !mb-3 mt-2 pb-2 border-b-2 border-[#D33B3E]">
                       <div className="flex items-center">
@@ -156,7 +182,7 @@ const BlogDetailPage = () => {
                         </div>
                       </div>
                       <div className="!mt-3 xl:!mt-0 lg:!mt-0 md:!mt-0 !ml-auto">
-                          <ShareButtons url={urlActual} title={blog.titulo} />
+                          <ShareButtons url={`https://top.education/recursos/${blog.slug}`} title={blog.nombre_blog} />
                       </div>
                     </div>
                   

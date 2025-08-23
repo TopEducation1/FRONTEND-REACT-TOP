@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Helmet } from "react-helmet";
 import TopicSelector from "../components/TopicSelector";
 import PlatformsSelector from "../components/PlatformsSelector";
+import HorizontalScroll from "../components/HorizontalScroll";
 import Flags from "../components/Flags";
 import ImageSlider3D from "../components/ImageSlider3D";
 import HeroSlider from "../components/HeroSlider";
@@ -12,65 +13,12 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import endpoints from '../config/api';
 
 function HomePage() {
-  const authors = [
-    {
-      name: "Leonardo da Vinci",
-      image: "assets/content/sliders/slider-Leonardo-da-Vinci.png",
-      link: "/originals/leonardo-da-vinci",
-      description: "Pintor, científico, ingeniero y anatomista renacentista."
-    },{
-      name: "Marie Curie",
-      image: "assets/content/sliders/slider-Marie-Curie.png",
-      link: "/originals/marie-curie",
-      description: "Científica, pionera de la radiactividad, Nobel en física y química."
-    },{
-      name: "Malala Yousafzai",
-      image: "assets/content/sliders/slider-Malala.png",
-      link: "/originals/malala-yousafzai",
-      description: "Activista por la educación y los derechos de las niñas, Nobel de la Paz."
-    },{
-      name: "Walt Disney",
-      image: "assets/content/sliders/slider-Walt.png",
-      link: "/originals/walt-disney",
-      description: "Productor, animador y empresario, creador de un imperio del entretenimiento."
-    },{
-      name: "Ada Lovelace",
-      image: "assets/content/sliders/slider-Ada-lovelace.png",
-      link: "/originals/ada-lovelace",
-      description: "Matemática y visionaria, considerada la primera programadora de la historia."
-    },{
-      name: "Hedy Lamarr",
-      image: "assets/content/sliders/slider-Hedy.png",
-      link: "/originals/hedy-lamarr",
-      description: "Inventora y actriz, precursora de la tecnología inalámbrica moderna."
-    },{
-      name: "Jane Goodall",
-      image: "assets/content/sliders/slider-Jane.png",
-      link: "/originals/jane-goodall",
-      description: "Primatóloga y conservacionista, referente mundial en el estudio de los chimpancés."
-    },{
-      name: "Benjamin Franklin",
-      image: "assets/content/sliders/slider-Benjamin.png",
-      link: "/originals/benjamin-franklin",
-      description: "Político, inventor y diplomático, clave en la independencia de EE. UU."
-    },{
-      name: "Mark Cuban",
-      image: "assets/content/sliders/slider-Mark.png",
-      link: "/originals/mark-cuban",
-      description: "Empresario, inversionista y figura del emprendimiento y la innovación digital."
-    },{
-      name: "Steve Jobs",
-      image: "assets/content/sliders/slider-Steve-Jobs.png",
-      link: "/originals/steve-jobs",
-      description: "Empresario, inventor y fundador de Apple."
-    }
-  ];
 
    const topics = [
     {
       name: 'Aprendizaje de idioma',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'40', y:'7',x:'44'},{pos: 'topicImg', size: '32', y:'83',x:'51'},{pos: 'topicBlur', size: '38', y:'33',x:'20'}],
+      position: [{pos: 'topicText', size:'40', y:'9',x:'44'},{pos: 'topicImg', size: '60', y:'84',x:'48'},{pos: 'topicBlur', size: '30', y:'33',x:'15'}],
       img: 'assets/category/topic/ico-Aprendizaje-de-un-idioma',
       description: 'Expande tu universo cultural y profesional. Conecta a través del inglés, francés, alemán y más, cultivando habilidades de comunicación global.',
       universities: [
@@ -93,54 +41,60 @@ function HomePage() {
       name: 'Arte y humanidades',
       img: 'assets/category/topic/ico-Artes-y-humanidades',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'48', y:'4',x:'28'},{pos: 'topicImg', size: '34', y:'76',x:'65'},{pos: 'topicBlur', size: '29', y:'20',x:'20'}],
+      position: [{pos: 'topicText', size:'48', y:'4',x:'35'},{pos: 'topicImg', size: '100', y:'76',x:'67'},{pos: 'topicBlur', size: '22', y:'22',x:'17'}],
       description: 'Explora las ideas, historias y expresiones que definen quiénes somos. Conoce el legado cultural que moldea nuestra visión del mundo.',
       universities: [
         {
-          name: 'Berklee college of music',
+          name: 'Parsons School of Design, The New School',
           type: 'Universidad',
-          img: 'assets/universities/icons/ico-Berklee-College-of-Music.webp'
+          img: '/assets/universities/icons/ico-Parsons-School-of-Design-The-New-School.webp'
         },{
-          name: 'UNAM',
+          name: 'Museum of Modern Art',
           type: 'Universidad',
-          img: 'assets/universities/icons/ico-UNAM.webp'
+          img: '/assets/universities/icons/ico-Museum-of-Modern-Art.png'
         },{
-          name: 'Duke University',
+          name: 'Smithsonian',
           type: 'Empresa',
-          img: 'assets/universities/icons/ico-Duke-University.webp'
+          img: '/assets/companies/icons/ico-Smithsonian.png'
+        },{
+          name: 'Transforma Ideas en Arte - Es Devlin',
+          link: '/certificacion/masterclass/transforma-ideas-en-arte-es-devlin',
+          type: 'Certificacion',
+          img: '/assets/universities/banners/masterclass/EsDevlin.jpg'
+        },{
+          name: 'Arte y Creatividad - Jeff Koons',
+          link: '/certificacion/masterclass/arte-y-creatividad-jeff-koons',
+          type: 'Certificacion',
+          img: '/assets/universities/banners/masterclass/JeffKoons.jpg'
         }
       ]
     },{
       name: 'Ciencias de datos',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'48', y:'30',x:'30'},{pos: 'topicImg', size: '25', y:'29',x:'3'},{pos: 'topicBlur', size: '39', y:'32',x:'72'}],
+      position: [{pos: 'topicText', size:'48', y:'30',x:'30'},{pos: 'topicImg', size: '34', y:'31',x:'3'},{pos: 'topicBlur', size: '39', y:'30',x:'69'}],
       img: 'assets/category/topic/ico-Ciencia-de-datos',
       description: 'Convierte datos en decisiones inteligentes. Aprende a analizar, visualizar y comprender grandes volúmenes de información con impacto real.',
       universities: [
         {
-          name: 'Harvard University',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-Harvard.webp'
-        },{
-          name: 'Google Cloud',
-          type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
+          name: '',
+          type: '',
+          img: ''
         },{
           name: 'IBM',
           type: 'Empresa',
           img: '/assets/companies/icons/ico-IBM.png'
         },{
-          name: 'Columbia University',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-Columbia-University.webp'
-        },{
-          name: 'University of Michigan',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-University-of-Michigan.webp'
-        },{
-          name: 'Duke University',
+          name: 'HP',
           type: 'Empresa',
-          img: 'assets/universities/icons/ico-Duke-University.webp'
+          img: 'assets/companies/icons/ico-HP.png'
+        },{
+          name: 'DeepLearning.AI',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-DeepLearning-AI.png'
+        },{
+          name: 'Massachusetts Institute of Technology',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Massachusetts-Institute.webp'
         }
       ]
     },{
@@ -151,44 +105,49 @@ function HomePage() {
       description: 'Domina los lenguajes que impulsan la tecnología. Desde algoritmos hasta desarrollo de software, convierte ideas en soluciones digitales.',
       universities: [
         {
+          name: 'Massachusetts Institute of Technology',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Massachusetts-Institute.webp'
+        },{
+          name: 'Harvard University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Harvard.webp'
+        },{
           name: 'IBM',
           type: 'Empresa',
           img: '/assets/companies/icons/ico-IBM.png'
         },{
-          name: 'Google',
+          name: 'DeepLearning.AI',
           type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
-        },{
-          name: 'University of Michigan',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-University-of-Michigan.webp'
+          img: '/assets/companies/icons/ico-DeepLearning-AI.png'
         }
       ]
     },{
       name: 'Ciencias sociales',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'46', y:'92',x:'28'},{pos: 'topicImg', size: '40', y:'70',x:'85'},{pos: 'topicBlur', size: '50', y:'83',x:'62'}],
+      position: [{pos: 'topicText', size:'44', y:'92',x:'28'},{pos: 'topicImg', size: '170', y:'72',x:'87'},{pos: 'topicBlur', size: '30', y:'96',x:'37'}],
       img: 'assets/category/topic/ico-Ciencias-sociales',
       description: 'Comprende cómo pensamos, actuamos y evolucionamos como sociedad. Estudia economía, política y cultura para interpretar el mundo con criterio.',
       universities: [
         {
-          name: 'UNAM',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-UNAM.webp'
-        },{
-          name: 'Google',
-          type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
+          name: 'Paul Krugman - Enseña Economía y Sociedad',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/paul-krugman-ensena-economia-y-sociedad',
+          img: '/assets/universities/banners/masterclass/PaulKrugman.jpg'
         },{
           name: 'Universidad de los Andes',
           type: 'Universidad',
-          img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+          img: '/assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+        },{
+          name: 'UNAM',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-UNAM.webp'
         }
       ]
     },{
       name: 'Ciencia física e ingeniería',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'43', y:'90',x:'48'},{pos: 'topicImg', size: '42', y:'60',x:'40'},{pos: 'topicBlur', size: '40', y:'39',x:'10'}],
+      position: [{pos: 'topicText', size:'43', y:'90',x:'48'},{pos: 'topicImg', size: '59', y:'58',x:'36'},{pos: 'topicBlur', size: '30', y:'55',x:'15'}],
       img: 'assets/category/topic/ico-Ciencias-fisicas-e-ingenieria',
       description: 'Aprende a diseñar, modelar y resolver problemas reales. Desde los fundamentos físicos hasta la ingeniería de vanguardia.',
       universities: [
@@ -209,7 +168,7 @@ function HomePage() {
     },{
       name: 'Desarrollo personal',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'48', y:'35',x:'69'},{pos: 'topicImg', size: '35', y:'12',x:'62'},{pos: 'topicBlur', size: '35', y:'12',x:'62'}],
+      position: [{pos: 'topicText', size:'46', y:'34',x:'69'},{pos: 'topicImg', size: '60', y:'18',x:'64'},{pos: 'topicBlur', size: '35', y:'12',x:'52'}],
       img: 'assets/category/topic/ico-Desarrollo-personal',
       description: 'Construye una versión más fuerte y consciente de ti. Aprende a tomar decisiones, comunicarte mejor y crecer en cada etapa de tu vida.',
       universities: [
@@ -230,91 +189,126 @@ function HomePage() {
     },{
       name: 'Matemáticas y lógica',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'36', y:'78',x:'10'},{pos: 'topicImg', size: '33', y:'24',x:'48'},{pos: 'topicBlur', size: '33', y:'13',x:'45'}],
+      position: [{pos: 'topicText', size:'36', y:'78',x:'10'},{pos: 'topicImg', size: '45', y:'25',x:'48'},{pos: 'topicBlur', size: '25', y:'16',x:'43'}],
       img: 'assets/category/topic/ico-Matematicas-y-logica',
       description: 'Activa tu pensamiento crítico. Aprende a resolver problemas complejos con lógica, estructura y claridad matemática.',
       universities: [
         {
-          name: 'UNAM',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-UNAM.webp'
-        },{
-          name: 'Google',
-          type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
+          name: 'Pensamiento Matemático - Terence Tao',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/pensamiento-matematico-terence-tao',
+          img: '/assets/universities/banners/masterclass/TerenceTao.jpeg'
         },{
           name: 'Universidad de los Andes',
           type: 'Universidad',
-          img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+          img: '/assets/universities/icons/ico-Universidad-de-los-Andes.webp'
         }
       ]
     },{
       name: 'Negocios',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'38', y:'13',x:'72'},{pos: 'topicImg', size: '34', y:'35',x:'33'},{pos: 'topicBlur', size: '34', y:'65',x:'32'}],
+      position: [{pos: 'topicText', size:'38', y:'13',x:'72'},{pos: 'topicImg', size: '50', y:'36',x:'35'},{pos: 'topicBlur', size: '34', y:'66',x:'34'}],
       img: 'assets/category/topic/ico-Negocios',
       description: 'Comprende cómo se construyen, escalan y lideran organizaciones en la era digital. Desde marketing hasta modelos de negocio.',
       universities: [
         {
-          name: 'Tecnológico de Monterrey',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-Tecnologico-de-Monterrey.webp'
+          name: 'Richard Branson - Enseña Emprendimiento Disruptivo',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/richard-branson-ensena-emprendimiento-disruptivo',
+          img: '/assets/universities/banners/masterclass/RichardBranson.jpg'
         },{
-          name: 'Google',
+          name: 'Alexis Ohanian - Enseña a construir tu startup',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/alexis-ohanian-ensena-a-construir-tu-startup',
+          img: '/assets/universities/banners/masterclass/AlexisOhanian.jpg'
+        },{
+          name: 'Mark Cuban - Gane a lo grande en los negocios',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/mark-cuban-gane-a-lo-grande-en-los-negocios',
+          img: '/assets/universities/banners/masterclass/MarkCuban.jpg'
+        },{
+          name: 'Chris Voss - Enseña el arte de la negociación',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/chris-voss-ensena-el-arte-de-la-negociacion',
+          img: '/assets/universities/banners/masterclass/ChrisVoss.jpg'
+        },{
+          name: 'Rosalind Brewer - Enseña Innovación Empresarial',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/rosalind-brewer-ensena-innovacion-empresarial',
+          img: '/assets/universities/banners/masterclass/RosalindBrewer.jpg'
+        },{
+          name: 'HubSpot Academy',
           type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
+          img: '/assets/companies/icons/ico-hubspot-academy.png'
         },{
-          name: 'University of Michigan',
+          name: 'Universidad Anáhuac',
           type: 'Universidad',
-          img: 'assets/universities/icons/ico-University-of-Michigan.webp'
+          img: '/assets/universities/icons/ico-Universidades-Anahuac.webp'
         }
+        
       ]
     },{
       name: 'Salud',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'75', y:'22',x:'30'},{pos: 'topicImg', size: '30', y:'71',x:'16'},{pos: 'topicBlur', size: '50', y:'71',x:'75'}],
+      position: [{pos: 'topicText', size:'74', y:'24',x:'32'},{pos: 'topicImg', size: '32', y:'72',x:'7'},{pos: 'topicBlur', size: '45', y:'61',x:'71'}],
       img: 'assets/category/topic/ico-Salud',
       description: 'Conoce tu cuerpo, promueve hábitos sanos y comprende cómo prevenir enfermedades desde la ciencia y la práctica.',
       universities: [
         {
-          name: 'Universidad de Palermo',
+          name: 'Harvard University',
           type: 'Universidad',
-          img: 'assets/universities/icons/ico-Universidad-de-Palermo.webp'
+          img: '/assets/universities/icons/ico-Harvard.webp'
         },{
-          name: 'Google',
-          type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
+          name: 'Pontificia Universidad Catolica de Chile',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Pontificia-Universidad-Catolica-de-Chile.webp'
+        },{
+          name: 'University of Pennsylvania',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-University-of-Pennsylvania.webp'
+        },{
+          name: 'Yale University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Yale-University.webp'
+        },{
+          name: 'The University of Chicago',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-The-University-of-Chicago.webp'
         },{
           name: 'Stanford University',
           type: 'Universidad',
-          img: 'assets/universities/icons/ico-Stanford-University.webp'
+          img: '/assets/universities/icons/ico-Stanford-University.webp'
         }
       ]
     },{
       name: 'Tecnología de información',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'38', y:'77',x:'37'},{pos: 'topicImg', size: '32', y:'13',x:'36'},{pos: 'topicBlur', size: '24', y:'89',x:'22'}],
+      position: [{pos: 'topicText', size:'48',y:'55',x:'48'},{pos: 'topicImg', size: '47', y:'18',x:'32'},{pos: 'topicBlur', size: '24', y:'90',x:'22'}],
       img: 'assets/category/topic/ico-Tecnologia-de-la-informacion',
       description: 'Gestiona el backend del mundo digital. Aprende redes, sistemas y servicios en la nube que mueven al planeta.',
       universities: [
         {
-          name: 'Google Cloud',
+          name: 'Rochester Institute of Technology',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Rochester.webp'
+        },{
+          name: 'IBM',
           type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
+          img: '/assets/companies/icons/ico-IBM.png'
         },{
-          name: 'Universidad de los Andes',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+          name: 'AWS',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-AWS.png'
         },{
-          name: 'Universidad Austral',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-Universidad-Austral.webp'
+          name: 'Microsoft',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-Microsoft.png'
         }
       ]
     },{
       name: 'Bienestar',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'48', y:'19',x:'43'},{pos: 'topicImg', size: '58', y:'85',x:'77'},{pos: 'topicBlur', size: '40', y:'74',x:'43'}],
+      position: [{pos: 'topicText', size:'48', y:'19',x:'43'},{pos: 'topicImg', size: '120', y:'68',x:'75'},{pos: 'topicBlur', size: '40', y:'74',x:'48'}],
       img: 'assets/category/ability/ico-Bienestar',
       description: 'Equilibra cuerpo, mente y entorno. Aprende a manejar el estrés, mejorar tu alimentación y cultivar salud mental.',
       universities: [
@@ -335,49 +329,82 @@ function HomePage() {
     },{
       name: 'Comunicación',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'38', y:'22',x:'56'},{pos: 'topicImg', size: '36', y:'60',x:'3'},{pos: 'topicBlur', size: '45', y:'86',x:'39'}],
+      position: [{pos: 'topicText', size:'42', y:'75',x:'76'},{pos: 'topicImg', size: '38', y:'57',x:'1'},{pos: 'topicBlur', size: '35', y:'60',x:'48'}],
       img: 'assets/category/ability/ico-Comunicacion',
       description: 'Domina el arte de transmitir ideas con claridad y propósito. Aprende a persuadir, inspirar y conectar a través del lenguaje.',
       universities: [
         {
-          name: 'UNAM',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-UNAM.webp'
+          name: '',
+          type: '',
+          img: ''
         },{
-          name: 'Google',
-          type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
-        },{
-          name: 'Universidad de los Andes',
+          name: 'Northwestern University',
           type: 'Universidad',
-          img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+          img: '/assets/universities/icons/ico-Northwestern-University.webp'
+        },{
+          name: 'Deja Tu Huella con Humor - Kevin Hart',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/deja-tu-huella-con-humor-kevin-hart',
+          img: '/assets/universities/banners/masterclass/KevinHart.jpg'
+        },{
+          name: 'George Stephanopoulos - Enseña la comunicación con propósito',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/george-stephanopoulos-ensena-la-comunicacion-con-proposito',
+          img: '/assets/universities/banners/masterclass/GeorgeStephanopoulos.jpg'
+        },{
+          name: 'Original Series - Michael Lewis',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/original-series-michael-lewis',
+          img: '/assets/universities/banners/masterclass/MichaelLewis.jpg'
+        },{
+          name: 'La Comedia - Steve Martin',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/la-comedia-steve-martin',
+          img: '/assets/universities/banners/masterclass/stevemartin.jpg'
         }
       ]
     },{
       name: 'Creatividad',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'70', y:'70',x:'24'},{pos: 'topicImg', size: '28', y:'64',x:'68'},{pos: 'topicBlur', size: '48', y:'60',x:'80'}],
+      position: [{pos: 'topicText', size:'70', y:'70',x:'20'},{pos: 'topicImg', size: '62', y:'96',x:'53'},{pos: 'topicBlur', size: '40', y:'65',x:'85'}],
       img: 'assets/category/ability/ico-Creatividad',
       description: 'Despierta tu imaginación y transforma la forma en que ves el mundo. Aprende a innovar con pensamiento original y sensibilidad artística.',
       universities: [
         {
-          name: 'UNAM',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-UNAM.webp'
+          name: 'Diseños de Moda Innovadores y Galardonados - Marc Jacobs',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/disenos-de-moda-innovadores-y-galardonados-marc-jacobs',
+          img: '/assets/universities/banners/masterclass/MarcJacobs.jpg'
         },{
-          name: 'Google',
-          type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
-        },{
-          name: 'Universidad de los Andes',
+          name: 'Berklee College of Music',
           type: 'Universidad',
-          img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+          img: '/assets/universities/icons/ico-Berklee-College-of-Music.webp'
+        },{
+          name: 'Metallica - Enseña a ser una banda',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/metallica-ensena-a-ser-una-banda',
+          img: '/assets/universities/banners/masterclass/Metallica.jpg'
+        },{
+          name: 'Mariah Carey - Enseña la voz como instrumento',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/mariah-carey-ensena-la-voz-como-instrumento',
+          img: '/assets/universities/banners/masterclass/MariahCarey.png'
+        },{
+          name: 'Alicia Keys - Enseña composición y producción de canciones',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/alicia-keys-ensena-composicion-y-produccion-de-canciones',
+          img: '/assets/universities/banners/masterclass/AliciaKeys.jpeg'
+        },{
+          name: 'Ringo Starr - Enseña batería y colaboración creativa',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/ringo-starr-ensena-bateria-y-colaboracion-creativa',
+          img: '/assets/universities/banners/masterclass/RingoStarr.jpg'
         }
       ]
     },{
       name: 'Crecimiento personal',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'40', y:'13',x:'14'},{pos: 'topicImg', size: '25', y:'64',x:'56'},{pos: 'topicBlur', size: '25', y:'94',x:'59'}],
+      position: [{pos: 'topicText', size:'40', y:'13',x:'14'},{pos: 'topicImg', size: '70', y:'63',x:'63'},{pos: 'topicBlur', size: '25', y:'94',x:'61'}],
       img: 'assets/category/ability/ico-Crecimiento-personal',
       description: 'Impulsa tu desarrollo emocional, físico y mental con el ejemplo de quienes superaron límites.',
       universities: [
@@ -398,18 +425,18 @@ function HomePage() {
     },{
       name: 'Diversidad e inclusión',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'48', y:'36',x:'1'},{pos: 'topicImg', size: '24', y:'24',x:'83'},{pos: 'topicBlur', size: '38', y:'27',x:'28'}],
+      position: [{pos: 'topicText', size:'48', y:'37',x:'1'},{pos: 'topicImg', size: '60', y:'4',x:'60'},{pos: 'topicBlur', size: '22', y:'23',x:'56'}],
       img: 'assets/category/ability/ico-Diversidad-equidad-e-inclusion',
       description: 'Comprende la riqueza de lo diverso y aprende a construir espacios más equitativos, empáticos y humanos.',
       universities: [
         {
-          name: 'UNAM',
+          name: 'University of California Irvine',
           type: 'Universidad',
-          img: 'assets/universities/icons/ico-UNAM.webp'
+          img: '/assets/universities/icons/ico-University-of-California-Irvine.webp'
         },{
-          name: 'Google',
-          type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
+          name: 'University of Illinois Urbana-Champaign',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-University-of-Illinois-Urbana-Champaign.webp'
         },{
           name: 'Universidad de los Andes',
           type: 'Universidad',
@@ -419,7 +446,7 @@ function HomePage() {
     },{
       name: 'Estrategia',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'70', y:'86',x:'60'},{pos: 'topicImg', size: '30', y:'7',x:'22'},{pos: 'topicBlur', size: '36', y:'8',x:'32'}],
+      position: [{pos: 'topicText', size:'70', y:'83',x:'59'},{pos: 'topicImg', size: '30', y:'7',x:'22'},{pos: 'topicBlur', size: '36', y:'8',x:'32'}],
       img: 'assets/category/ability/ico-Estrategia',
       description: 'Piensa en grande y actúa con visión. Aprende a planear, analizar y tomar decisiones que generan impacto.',
       universities: [
@@ -440,7 +467,7 @@ function HomePage() {
     },{
       name: 'Liderazgo',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'62', y:'80',x:'77'},{pos: 'topicImg', size: '55', y:'32',x:'63'},{pos: 'topicBlur', size: '25', y:'75',x:'27'}],
+      position: [{pos: 'topicText', size:'48', y:'79',x:'77'},{pos: 'topicImg', size: '65', y:'31',x:'60'},{pos: 'topicBlur', size: '25', y:'75',x:'27'}],
       img: 'assets/category/ability/ico-Liderazgo',
       description: 'Desarrolla tu capacidad de guiar, inspirar y transformar equipos. Aprende de grandes líderes y sus decisiones clave.',
       universities: [
@@ -461,7 +488,7 @@ function HomePage() {
     },{
       name: 'Personas y cultura',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'55', y:'59',x:'55'},{pos: 'topicImg', size: '25', y:'63',x:'21'},{pos: 'topicBlur', size: '43', y:'39',x:'78'}],
+      position: [{pos: 'topicText', size:'48', y:'77',x:'37'},{pos: 'topicImg', size: '42', y:'65',x:'22'},{pos: 'topicBlur', size: '43', y:'38',x:'78'}],
       img: 'assets/category/ability/ico-Personas-y-cultura',
       description: 'Descubre cómo se crean las narrativas que nos unen. Desde sociología hasta cultura pop, entiende lo que mueve a las personas.',
       universities: [
@@ -482,7 +509,7 @@ function HomePage() {
     },{
       name: 'Productividad',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'68', y:'37',x:'45'},{pos: 'topicImg', size: '30', y:'79',x:'30'},{pos: 'topicBlur', size: '40', y:'73',x:'7'}],
+      position: [{pos: 'topicText', size:'68', y:'37',x:'45'},{pos: 'topicImg', size: '280', y:'28',x:'88'},{pos: 'topicBlur', size: '40', y:'16',x:'73'}],
       img: 'assets/category/ability/ico-Productividad',
       description: 'Gestiona tu tiempo, energía y enfoque con inteligencia. Aprende técnicas para hacer más con propósito y menos desgaste.',
       universities: [
@@ -503,28 +530,20 @@ function HomePage() {
     },{
       name: 'Trabajo en equipo',
       type: 'Habilidad',
-      position: [{pos: 'topicText', size:'52', y:'85',x:'17'},{pos: 'topicImg', size: '32', y:'59',x:'89'},{pos: 'topicBlur', size: '32', y:'82',x:'18'}],
+      position: [{pos: 'topicText', size:'52', y:'85',x:'17'},{pos: 'topicImg', size: '300', y:'56',x:'90'},{pos: 'topicBlur', size: '32', y:'82',x:'18'}],
       img: 'assets/category/ability/ico-Trabajo-en-equipo',
       description: 'Colabora, conecta y construye en conjunto. Aprende a liderar desde lo colectivo con inteligencia emocional.',
       universities: [
         {
-          name: 'UNAM',
+          name: 'University of Michigan',
           type: 'Universidad',
-          img: 'assets/universities/icons/ico-UNAM.webp'
-        },{
-          name: 'Google',
-          type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
-        },{
-          name: 'Universidad de los Andes',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+          img: '/assets/universities/icons/ico-University-of-Michigan.webp'
         }
       ]
     },{
       name: 'Inteligencia Artificial',
       type: 'search',
-      position: [{pos: 'topicText', size:'49', y:'26',x:'58'}],
+      position: [{pos: 'topicText', size:'44', y:'25',x:'58'}],
       img: '',
       description: 'Descubre cómo las máquinas pueden aprender, adaptarse y tomar decisiones. Desde modelos predictivos hasta ética de la IA, prepárate para liderar la revolución tecnológica.',
       universities: [
@@ -545,7 +564,7 @@ function HomePage() {
     },{
       name: 'Ciberseguridad',
       type: 'search',
-      position: [{pos: 'topicText', size:'52', y:'65',x:'76'}],
+      position: [{pos: 'topicText', size:'44', y:'61',x:'79'}],
       img: '',
       description: 'Protege lo más valioso del entorno digital. Aprende a detectar vulnerabilidades, gestionar riesgos y diseñar sistemas más seguros para un mundo interconectado.',
       universities: [
@@ -583,7 +602,7 @@ function HomePage() {
     },{
       name: 'Diseño',
       type: 'search',
-      position: [{pos: 'topicText', size:'69', y:'80',x:'38'}],
+      position: [{pos: 'topicText', size:'50', y:'17',x:'18'}],
       img: '',
       description: 'Crea experiencias visuales con propósito. Desde diseño gráfico hasta UX/UI, aprende a comunicar ideas que conectan, impactan y transforman.',
       universities: [
@@ -646,41 +665,30 @@ function HomePage() {
     },{
       name: 'Psicología',
       type: 'search',
-      position: [{pos: 'topicText', size:'50', y:'68',x:'4'}],
+      position: [{pos: 'topicText', size:'50', y:'65',x:'4'}],
       img: '',
       description: 'Conoce el comportamiento humano en profundidad. Aprende teorías, métodos y herramientas para comprender, acompañar y transformar realidades personales y sociales.',
       universities: [
         {
-          name: 'UNAM',
-          type: 'search',
-          img: ''
-        },{
-          name: 'Google',
-          type: 'search',
-          img: ''
-        },{
-          name: 'Universidad de los Andes',
-          type: 'search',
-          img: ''
+          name: 'Robin Arzón - Enseña fuerza mental',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/robin-arzon-ensena-fuerza-mental',
+          img: '/assets/universities/banners/masterclass/RobinArzon.jpg'
         }
       ]
     },{
       name: 'Videojuegos',
       type: 'search',
-      position: [{pos: 'topicText', size:'44', y:'59',x:'20'}],
+      position: [{pos: 'topicText', size:'47', y:'59',x:'14'}],
       img: '',
       description: 'Descubre el poder narrativo y técnico del gaming. Aprende diseño, desarrollo y lógica interactiva en una industria creativa y en constante evolución.',
       universities: [
         {
-          name: 'UNAM',
-          type: 'search',
+          name: 'California Institute of Arts',
+          type: 'Universidad',
           img: ''
         },{
-          name: 'Google',
-          type: 'search',
-          img: ''
-        },{
-          name: 'Universidad de los Andes',
+          name: 'Epic Games',
           type: 'search',
           img: ''
         }
@@ -688,22 +696,27 @@ function HomePage() {
     },{
       name: 'Educación',
       type: 'search',
-      position: [{pos: 'topicText', size:'42', y:'95',x:'43'}],
+      position: [{pos: 'topicText', size:'42', y:'64',x:'47'}],
       img: '',
       description: 'Diseña nuevas formas de enseñar y aprender. Explora metodologías, tecnologías y enfoques que hacen de la educación una experiencia transformadora.',
       universities: [
         {
-          name: 'Educación ambiental',
-          type: 'search',
-          img: ''
+          name: 'Stanford University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Stanford-University.webp'
         },{
-          name: 'Innovación educativa',
-          type: 'search',
-          img: ''
+          name: 'Harvard University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Harvard.webp'
         },{
-          name: 'Capacidad de aprendizaje',
-          type: 'search',
-          img: ''
+          name: 'Columbia University',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/malala-yousafzai-ensena-a-crear-cambios',
+          img: '/assets/universities/banners/masterclass/MalalaYousafzai.jpg'
+        },{
+          name: 'ArmEducation',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-ArmEducation.png'
         }
       ]
     }
@@ -921,13 +934,16 @@ function HomePage() {
       <FinisherHeaderComponent className="sect-1" />
 
       {/* Sección 2: Zoom Scroll */}
+      <section className="h-[20vh] bg-gradient-to-t from-[#0F090B] to-transparent relative"></section>
       <motion.section
         ref={zoomRef}
         style={{ scale: springScale }}
-        className="wrapper bg-[#0F090B] relative section sect-2"
+        className="wrapper bg-[#0F090B] relative section z-10"
       >
-        <div className="container m-auto px-2 lg:px-4 py-15 justify-center-safe gap-2">
-          <TopicSelector topics={topics} />
+        <div
+          className="container m-auto lg:px-4 justify-center-safe gap-2 "
+        >
+          <TopicSelector topics={topics}/>
         </div>
       </motion.section>
       {/* Sección 3 */}
@@ -941,31 +957,20 @@ function HomePage() {
       </section>
 
       {/* Secciones 3-5: Scroll Horizontal */}
-      <section
-        ref={scrollContainerRef}
-        className="relative bg-[#0F090B]"
-        style={{ height: `${2 * 100}vh` }} // 3 secciones × 100vh = 300vh de scroll vertical
-      >
-        <motion.div 
-        className="sticky top-0 h-screen w-screen overflow-hidden"
-        >
-          <motion.div style={{ x }} className="flex flex-row w-[100vw]  h-full" >
-            {/* Sección 4 */}
-            <section className="w-screen h-full flex-shrink-0 flex items-center justify-center px-10">
-              <div className="container m-auto">
-                <PlatformsSelector platforms={platforms} />
-              </div>
-            </section>
-            {/* Sección 5 */}
-            <Flags logos={logos} />
-            {/* Sección 6 */}
-            
-          </motion.div>
-        </motion.div>
+      <section className="w-screen h-full flex-shrink-0">
+        <HorizontalScroll>
+          <section className="w-screen h-full bg-[#0F090B] flex-shrink-0 flex items-center justify-center px-5">
+            <div className="container m-auto">
+              <PlatformsSelector platforms={platforms} />
+            </div>
+          </section>
+          <Flags logos={logos} />
+        </HorizontalScroll>
       </section>
-      <section className="w-screen h-full flex-shrink-0 flex items-center justify-center px-10 section sect-6">
+      
+      <section className="w-screen bg-[#0F090B] relative h-full flex-shrink-0 flex items-center justify-center section sect-6">
         <div className="container m-auto">
-          <HeroSlider authors={authors} />
+          <HeroSlider/>
         </div>
       </section>
     </>

@@ -17,10 +17,10 @@ import TopEducationLayout from "./layouts/topeducation/topEducationLayout.js";
 import CafamLayout from "./layouts/cafam/cafamLayout.js";
 import ParaEquipos from "./pages/paraEquipos.jsx";
 import TopOriginals from "./pages/TopOriginals.jsx";
+import Ranking from "./pages/rankings.jsx";
 
 import LoMasTop from "./pages/loMasTop.jsx";
 import StartNow from "./pages/startNow.jsx";
-import RutasConocimiento from "./pages/RutasConocimiento.jsx";
 import BlogDetailPage from "./pages/BlogDetailPage.jsx";
 import TopList from "./pages/topList.jsx";
 
@@ -71,11 +71,8 @@ function App() {
           <Route path="/para-equipos" element={<ParaEquipos />} />
           <Route path="/empieza-ahora" element={<StartNow />} />
           <Route path="/lo-mas-top" element={<LoMasTop />} />
+          <Route path="/lo-mas-top/ranking/:slug" element={<Ranking />} />
           <Route path="/originals/:slug" element={<TopOriginals />} />
-          <Route
-            path="/rutas-del-conocimiento"
-            element={<RutasConocimiento />}
-          />
           <Route path="/lo-mas-top/:tipo" element={<TopList />} />
         </Route>
 

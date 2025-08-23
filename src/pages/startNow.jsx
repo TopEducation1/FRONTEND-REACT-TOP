@@ -23,7 +23,7 @@ function StartNow() {
                 <div className="container m-auto h-screen mx-auto px-4 flex justify-center items-center gap-2 sect-h-pequ">
                     <span class="w-5/15 lg:w-5/15 aspect-square bg-gradient-to-tr from-green-500 to-green-900 absolute top-30 lg:left-50 rounded-full skew-y-0 blur-2xl opacity-40 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
                     <div className='m-auto max-w-[100vw] lg:max-w-[50vw]'>
-                        <h1 className="text-[#F6F4EF] text-6xl font-normal font-[Lora] text-center leading-[1.5em] z-10 relative sm:text-5xl md:text-5xl lg:text-5xl xl:text-6xl">Desarrolla todo tu <br></br><span className="text-[120px] top-italic sm:text-[120px]">potencial</span></h1>
+                        <h1 className="text-[#F6F4EF] text-[3.3rem] font-normal font-[Lora] text-center leading-[1.5em] z-10 relative sm:text-5xl md:text-5xl lg:text-5xl xl:text-6xl">Desarrolla todo tu <br></br><span className="text-[5rem] top-italic sm:text-[120px]">potencial</span></h1>
                         <p className="mt-5 text-[1.125rem] text-[#a8a8a8] text-center z-10 relative">En un mundo laboral altamente competitivo, <span id="top">top</span><span id="education">.education</span> te ofrece acceso a contenido de alto nivel para que desarrolles nuevas habilidades y avances en tu trayectoria profesional. Aprende con expertos de talla mundial y obtén certificaciones reconocidas internacionalmente.</p>
                     </div>
                 </div>
@@ -106,7 +106,7 @@ function StartNow() {
                 </div>
             </section>
             
-            <section className="wrapper !bg-[#1c1c1c]">
+            <section className="wrapper bg-gradient-to-t from-transparent to-neutral-800">
                 <div className="container m-auto py-[4.5rem] xl:!py-24 lg:!py-24 md:!py-24">
                     <div className="pricing-wrapper !relative !mt-[-15rem] xl:!mt-[-20rem] lg:!mt-[-20rem] md:!mt-[-20rem]">
                         <div className="flex flex-wrap justify-center mx-[-15px] !mt-3 xl:!mt-5 lg:!mt-5 md:!mt-5">

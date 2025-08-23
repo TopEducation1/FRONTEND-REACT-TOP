@@ -2,6 +2,16 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 import TagCanvas from "tag-canvas";
 
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
+// Importaciones necesarias
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+
+// Importa Navigation desde el path correcto
+import { Navigation } from "swiper/modules";
+
 const Flags = ({ logos = [] }) => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
@@ -37,17 +47,16 @@ const Flags = ({ logos = [] }) => {
     try {
       TagCanvas.Start("flagsCanvas", "flagsTags", {
         textColour: null,
-        outlineColour: "#ffffff",
-        reverse: true,
-        depth: 0.8,
+        reverse: false,
         activeCursor: "pointer" ,
         maxSpeed: 0.05,
-        imageScale: 1,
+        imageScale: 0.7,
         imageMode: "image",
         fadeIn: 300,
-        outlineColour: "#ffff99",
+        outlineColour: "#0F090B",
         shuffleTags: true,
         wheelZoom: false,
+        bgRadius: 0,
         pinchZoom: true,
         freezeActive: true,
         dragControl: true,
@@ -75,28 +84,79 @@ const Flags = ({ logos = [] }) => {
   }, [logos]);
 
   return (
-    <section className="relative w-full h-full flex flex-col items-center justify-center">
-      <div className="flex flex-col lg:flex-row items-center justify-between">
-        <div className="w-full lg:w-1/2 pr-15">
-          <h2 className="text-[#F6F4EF] text-[4rem] leading-[1.2em] font-[Lora] text-left">
-            Certifícate con los líderes <br />
-            <span className="text-[3.8rem] flex mt-[-3px] top-italic leading-[1em] text-[#a8a8a8]">
-              de la industria a nivel mundial!
-            </span>
+    <section className="relative w-screen h-[100vh] bg-[#0F090B] lg:bg-transparent flex flex-col items-center  justify-center px-5" >
+      <div className="flex flex-col lg:flex-row items-center container m-auto justify-between">
+        <div className="w-full lg:w-1/2 pr-0 lg:pr-25">
+          <h2 className="text-[2.2rem] leading-[1.2em] font-[Lora] text-left text-[#a8a8a8]">
+            <span className="text-[5rem] lg:text-[8rem] top-italic text-[#F6F4EF] block mb-[20px] lg:mb-[40px]">Certifícate</span> <span className="text-[1.6rem] ">con líderes de la industria</span> 
+            <span className="text-[3.5rem] lg:text-[6rem] flex top-italic leading-[1em] text-[#F6F4EF] ">a nivel mundial!</span>
           </h2>
         </div>
 
         <div className="w-full lg:w-1/2 relative">
+          <div className="block md:hidden">
+            <Swiper
+              modules={[Navigation]}
+              navigation={{
+                nextEl: '.boton-next',
+                prevEl: '.boton-prev',
+              }}
+              autoplay={{
+                delay: 2500,
+                disableOnInteraction: false,
+              }}
+              pagination={{
+                clickable: true,
+              }}
+              spaceBetween={10}
+              slidesPerView={1} // solo un slide a la vez
+              grabCursor={true}
+              className="py-2"
+            >
+              {Array.from({ length: Math.ceil(logos.length / 4) }, (_, index) => {
+                const chunk = logos.slice(index * 4, index * 4 + 4); // grupos de 4
+                return (
+                  <SwiperSlide key={index}>
+                    <div className="grid grid-cols-2 gap-2">
+                      {chunk.map((logo, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center justify-center gap-2 rounded-xl bg-[#F6F4EF] p-2"
+                          onClick={() => handleItemMenuClick("Empresa", logo.nombre)}
+                        >
+                          <img
+                            src={logo.empr_img}
+                            alt={logo.nombre}
+                            width={125}
+                            height={64}
+                            style={{
+                              objectFit: "contain",
+                              padding: 2,
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </SwiperSlide>
+                );
+              })}
+            </Swiper>
+            {/* Botones fuera del slider */}
+            <div className="flex justify-between mt-4 mx-3">
+              <button className="boton-prev bg-[#F6F4EF] hover:bg-[#F6F4EF]/70 text-[#0F090B] text-[1.8rem] lg:text-[2rem] px-4 py-1 lg:py-2 rounded-full"><FaChevronLeft /></button>
+              <button className="boton-next bg-[#F6F4EF] hover:bg-[#F6F4EF]/70 text-[#0F090B] text-[1.8rem] lg:text-[2rem] px-4 py-1 lg:py-2 rounded-full"><FaChevronRight /></button>
+            </div>
+          </div>
           <canvas
             ref={canvasRef}
-            width="600"
-            height="600"
+            width="550"
+            height="550"
             id="flagsCanvas"
-            className="block rounded-full bg-[#F6F4EF] shadow-[0px_0px_50px_25px_#F6F4EF] cursor-pointer"
+            className="hidden md:block border border-[#F6F4EF]/75 rounded-full bg-[#F6F4EF]/85 shadow-[0px_0px_10px_15px_#F6F4EF]/85 cursor-pointer"
           ></canvas>
 
           {/* Contenedor oculto con las imágenes para TagCanvas */}
-          <div className="hidden">
+          <div className="hidden ">
             <div id="flagsTags">
               {logos.map((logo, i) => (
                 <a key={i} href="#" onClick={() =>handleItemMenuClick("Empresa", logo.nombre)}>
@@ -115,6 +175,7 @@ const Flags = ({ logos = [] }) => {
               ))}
             </div>
           </div>
+          
         </div>
       </div>
     </section>

@@ -70,7 +70,7 @@ const BlurText = ({
   );
 
   return (
-    <h1 ref={ref} className={`blur-text ${className}`}>
+    <span ref={ref} className={`blur-text ${className}`}>
       {springs.map((props, index) => (
         <animated.span
           key={index}
@@ -84,7 +84,7 @@ const BlurText = ({
           {animateBy === 'words' && index < elements.length - 1 && '\u00A0'}
         </animated.span>
       ))}
-    </h1>
+    </span>
   );
 };
 

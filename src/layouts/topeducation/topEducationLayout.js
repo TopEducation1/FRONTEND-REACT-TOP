@@ -4,6 +4,7 @@ import "../../index.css";
 import Footer from "../../components/Footer.jsx";
 import { Outlet, useLocation } from "react-router-dom";
 import Lenis from "@studio-freight/lenis";
+import { ReactLenis } from '@studio-freight/react-lenis';
 
 function TopEducationLayout() {
   const [isLoading, setIsLoading] = useState(true);
@@ -50,27 +51,7 @@ function TopEducationLayout() {
     return () => clearTimeout(timer);
   }, []);
 
-  // 🚀 Scroll suave con Lenis
-  useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // easeOutExpo
-      smooth: true,
-      smoothTouch: true,
-    });
-    window.lenis = lenis; // ✅ accesible globalmente
-
-    function raf(time) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
-    return () => {
-      lenis.destroy(); // Limpieza al desmontar
-    };
-  }, []);
+  
 
   const excludedRoutes = [ "/certificacion"];
   const shouldRenderFooter = !excludedRoutes.some(route =>
@@ -80,6 +61,7 @@ function TopEducationLayout() {
   const pageKey = pathSegments[0] || "home"; // fallback si es la raíz "/"
 
   return (
+    <ReactLenis root options={{ lerp: 0.12, smoothWheel: true }}>
     <div className={`page page-${pageKey}`}>
       <Header 
         toggleMenu={toggleMenu}
@@ -98,6 +80,7 @@ function TopEducationLayout() {
       </main>
       {shouldRenderFooter && <Footer />}
     </div>
+    </ReactLenis>
   );
 }
 

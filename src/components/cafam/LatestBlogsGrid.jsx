@@ -76,7 +76,7 @@ const LatestBlogsGrid = () => {
                     const imageUrl = blog.miniatura_blog || "/assets/Piezas/demo-blog.png";
                     return (
                         <li onClick={() => handleBlogClick(blog)} key={blog.id} className="cursor-pointer clear-both block overflow-hidden mb-2 hover:opacity-75">
-                            <figure className="!rounded-[.4rem] float-left w-16 mt-1 !h-[3rem]">
+                            <figure className="!rounded-[.4rem] float-left w-16 mt-1 h-[3rem] md:h-[4rem] lg:h-[3rem]">
                                 <img className="!rounded-[.4rem] border-neutral border-2" src={imageUrl} alt={blog.nombre_blog} />
                             </figure>
                             <div className='!relative !ml-[4.5rem] !mb-0'>

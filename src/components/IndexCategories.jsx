@@ -16,8 +16,8 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
         fetch(endpoints.topics)
             .then(res => res.json())
             .then(data => {
-                setTemas(data.filter(t => t.tem_type === "Tema"));
-                setHabilidades(data.filter(h => h.tem_type === "Habilidad"));
+                setTemas(data.filter(t => t.tem_type === "Tema" && t.tem_est === "enabled"));
+                setHabilidades(data.filter(h => h.tem_type === "Habilidad" && h.tem_est === "enabled"));
             });
 
         fetch(endpoints.empresas)

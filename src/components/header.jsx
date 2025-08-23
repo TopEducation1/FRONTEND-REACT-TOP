@@ -22,7 +22,7 @@ const Header = ({ toggleMenu,onTagSelect, openIndexResponsiveMenu, isMenuOpen })
     <header>
       <nav className="nav-main relative m-auto w-[90vw] lg:w-[55vw] rounded-[36px]  bg-[#1c1c1c] px-4 py-2 backdrop-blur-md md:flex md:items-center md:justify-between md:px-6 md:py-0 lg:px-8 xl:mx-auto">
         <div className="wrapper-logo-nav">
-          <button className="btn-atras flex items-center text-[#F6F4EF] ml-[-1rem] pr-2 z-50" onClick={handleAtras} title="Volver atrás"><FaAnglesLeft className=" text-[2.3rem]" /></button>
+          <button className="!hidden !lg:flex btn-atras items-center text-[#F6F4EF] ml-[-1rem] pr-2 z-50" onClick={handleAtras} title="Volver atrás"><FaAnglesLeft className=" text-[2.3rem]" /></button>
           <button onClick={() => navigateWithTransition('/inicio')}>
             <img src="/assets/logos/TOPEDUCATIONLOGONAV.png" alt="Logo Top.education" className="logo-nav"></img>
           </button>

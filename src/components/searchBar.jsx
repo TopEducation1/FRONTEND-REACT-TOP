@@ -14,6 +14,7 @@ const SearchBar = () => {
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(false);
     const [resultsVisible, setResultsVisible] = useState(false);
+    const [isFixed, setIsFixed] = useState(false); 
     const [debouncedText] = useDebounce(text, 300);
     const navigate = useNavigate();
     const host = window.location.hostname;
@@ -22,12 +23,14 @@ const SearchBar = () => {
     const handleWriting = event => {
         const newText = event.target.value;
         setText(newText);
+        setIsFixed(newText.trim() !== "");
     };
 
     const handleClear = () => {
         setText('');
         setResults([]);
         setTempResults([]);
+        setIsFixed(false); 
     };
 
     useEffect(() => {
@@ -85,8 +88,9 @@ const SearchBar = () => {
 
         if (searchQuery) {
             // Decodifica por si viene con caracteres codificados (como %20, etc.)
-            const decodedSearch = decodeURIComponent(searchQuery);
-            setText(decodedSearch);
+            setText(decodeURIComponent(searchQuery));
+            setIsFixed(true);
+            
         }
     }, [location.search]);
 
@@ -107,7 +111,13 @@ const SearchBar = () => {
 
     return (
         <>
-            <div className="wrapper-search-bar">
+            <div 
+                className={`wrapper-search-bar transition-all duration-300 ${
+                isFixed
+                    ? "!fixed top-[83px] left-[25%]  !w-[50%] z-50"
+                    : "relative "
+                }`}
+            >
                 <span className='absolute top-[-15px] text-[0.7rem] w-[100%] text-white'>Busca por tema, habilidad, universidad o institución</span>
                 <input
                     type="text"
@@ -135,9 +145,9 @@ const SearchBar = () => {
                 </div>
                 {loading && <span className="loader-search"></span>}
             </div>
-
+                
             {debouncedText.trim() && results.length > 0 && (
-                <div className="container-results">
+                <div className="container-results" data-lenis-prevent>
                     {results.map((resultado) => (
                         <div key={resultado.id} onClick={(e) => handleCertificationClick(resultado, e)} className="certification-card">
                             <div className="container-img-card">

@@ -148,7 +148,7 @@ const MenuTop = ({toggleMenu}) => {
         ) : (
           <button
             key={item.name}
-            className={`menu-item transition duration-300  hover:text-shadow-[0_35px_35px_rgb(255_255_255_/_0.25)] ${item.classItem} ${item.classItem === 'item-empezar'?' ml-4 shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full ':''} ${isActive(item.path) ? 'active' : ''}`}
+            className={`menu-item transition duration-300  hover:text-shadow-[0_35px_35px_rgb(255_255_255_/_0.25)] ${item.classItem} ${item.classItem === 'item-empezar'?' ml-0 mt-3 lg:mt-0 lg:ml-4 shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full ':''} ${isActive(item.path) ? 'active' : ''}`}
             onClick={() => {
               if (!isActive(item.path)) {
                  // 👈 aquí se cierra si es mobile

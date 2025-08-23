@@ -110,14 +110,16 @@ const FinisherHeaderComponent = () => {
           style={{ opacity, scale, y }}
           className="grid columns-1 justify-items-center content-evenly gap-4 z-10"
         >
-          <BlurText
-            text="Conecta los puntos, forma tu historia"
-            delay={150}
-            animateBy="words"
-            direction="top"
-            onAnimationComplete={handleAnimationComplete}
-            className="text-[4.75rem] w-full lg:w-[50vw] xl:w-[35vw] text-[#F6F4EF] text-center leading-[1.2em]"
-          />
+          <h1 className='m-auto w-full text-[4.75rem] max-w-[100%] md:max-w-[80%] lg:max-w-[55%] text-center leading-[1.2em]'>
+            <BlurText
+              text="Conecta los puntos, forma tu historia"
+              delay={150}
+              animateBy="words"
+              direction="top"
+              onAnimationComplete={handleAnimationComplete}
+              className=" w-full  text-[#F6F4EF] "
+            />
+          </h1>
           <p className="text-[1.125rem] text-[#a8a8a8] text-center mt-[-15px] font-['Montserrat']">
             Crea tu ruta de aprendizaje con los más top del mundo.
           </p> 

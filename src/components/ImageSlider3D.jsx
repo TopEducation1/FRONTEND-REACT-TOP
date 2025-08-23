@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
 const ImageSlider3D = ({images,action}) => {
     const navigate = useNavigate();
     const [current, setCurrent] = useState(0);
@@ -55,7 +57,7 @@ const ImageSlider3D = ({images,action}) => {
 
   return (
     <div className="slider-container">
-        <button className="nav-button left-button" onClick={handlePrev}> ‹</button>
+        <button className="nav-button left-button bg-[#F6F4EF] hover:bg-[#F6F4EF]/70 text-[#0F090B] text-[1.8rem] lg:text-[2rem] px-4 py-1 lg:py-2 rounded-full" onClick={handlePrev}><FaChevronLeft /></button>
       {images.map((image) => (
         <img
           key={image?.id}
@@ -65,7 +67,7 @@ const ImageSlider3D = ({images,action}) => {
           onClick={() => handleItemMenuClick(image?.category, image?.link)}
         />
       ))}
-      <button className="nav-button right-button" onClick={handleNext}>›</button>
+      <button className="nav-button right-button bg-[#F6F4EF] hover:bg-[#F6F4EF]/70 text-[#0F090B] text-[1.8rem] lg:text-[2rem] px-4 py-1 lg:py-2 rounded-full" onClick={handleNext}><FaChevronRight /></button>
     </div>
   );
 };

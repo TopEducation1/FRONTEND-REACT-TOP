@@ -23,12 +23,11 @@ const AnimatedCounter = ({ end = 100, title, duration = 2000 }) => {
   }, [isInView, end, duration]);
 
   return (
-    <h4
+    <span
       ref={ref}
-      className="text-[2rem] font-semibold mb-3 text-[#F6F4EF]"
     >
       +{count} {title}
-    </h4>
+    </span>
   );
 };
 

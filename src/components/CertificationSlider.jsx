@@ -8,6 +8,8 @@ import 'swiper/css/navigation';
 import { Navigation } from 'swiper/modules';
 import masterclassGridFetcher from '../services/MasterclassGridFetcher';
 
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
 const CertificationSlider = () => {
     const { slug: currentSlug } = useParams(); 
   const navigate = useNavigate();
@@ -86,7 +88,10 @@ const CertificationSlider = () => {
     <div className="certification-slider">
       <Swiper
         modules={[Navigation]}
-        navigation
+        navigation={{
+                nextEl: '.boton-next',
+                prevEl: '.boton-prev',
+              }}
         spaceBetween={20}
         slidesPerView={3}
         breakpoints={{
@@ -104,6 +109,10 @@ const CertificationSlider = () => {
             </div>
           </SwiperSlide>
         ))}
+        <div className="flex justify-between mt-4 mx-3">
+          <button className="boton-prev bg-[#F6F4EF] hover:bg-[#F6F4EF]/70 text-[#0F090B] text-[1.8rem] lg:text-[2rem] px-4 py-1 lg:py-2 rounded-full"><FaChevronLeft /></button>
+          <button className="boton-next bg-[#F6F4EF] hover:bg-[#F6F4EF]/70 text-[#0F090B] text-[1.8rem] lg:text-[2rem] px-4 py-1 lg:py-2 rounded-full"><FaChevronRight /></button>
+        </div>
       </Swiper>
     </div>
   );
