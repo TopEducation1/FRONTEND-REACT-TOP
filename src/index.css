@@ -1198,7 +1198,7 @@ header {
 }
 /*Slider de certificaciones recomendadas*/
 .certification-slider {
-  padding: 20px;
+  padding: 20px 0px;
 }
 
 .cert-card {

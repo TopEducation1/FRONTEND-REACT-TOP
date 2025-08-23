@@ -85,7 +85,7 @@ const CertificationSlider = () => {
   );
 
   return (
-    <div className="certification-slider">
+    <div className="certification-slider relative">
       <Swiper
         modules={[Navigation]}
         navigation={{
@@ -110,8 +110,8 @@ const CertificationSlider = () => {
           </SwiperSlide>
         ))}
         <div className="flex justify-between mt-4 mx-3">
-          <button className="boton-prev bg-[#F6F4EF] hover:bg-[#F6F4EF]/70 text-[#0F090B] text-[1.8rem] lg:text-[2rem] px-4 py-1 lg:py-2 rounded-full"><FaChevronLeft /></button>
-          <button className="boton-next bg-[#F6F4EF] hover:bg-[#F6F4EF]/70 text-[#0F090B] text-[1.8rem] lg:text-[2rem] px-4 py-1 lg:py-2 rounded-full"><FaChevronRight /></button>
+          <button className="boton-prev bg-[#F6F4EF] hover:bg-[#F6F4EF]/70 text-[#0F090B] mt-0 lg:absolute lg:top-[42%] lg:left-[-15px] z-20 text-[1.8rem] lg:text-[2rem] px-4 py-1 lg:py-2 rounded-full"><FaChevronLeft /></button>
+          <button className="boton-next bg-[#F6F4EF] hover:bg-[#F6F4EF]/70 text-[#0F090B] mt-0 lg:absolute lg:top-[42%] lg:right-[-15px] z-20 text-[1.8rem] lg:text-[2rem] px-4 py-1 lg:py-2 rounded-full"><FaChevronRight /></button>
         </div>
       </Swiper>
     </div>
