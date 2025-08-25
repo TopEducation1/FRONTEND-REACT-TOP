@@ -100,11 +100,9 @@ const FinisherHeaderComponent = () => {
 
   return (
     <>
-      
       <div className="header finisher-header w-full h-[100vh] top-0 mx-auto px-4 justify-center-safe relative gap-2">
-        {/*<Particles id="tsparticles" options={options} />
         
-         ⬇ Sección que se desvanece al hacer scroll */}
+        <Particles id="tsparticles" options={options} />
         <BlobsCircle/>
         <motion.div
           ref={contentRef}

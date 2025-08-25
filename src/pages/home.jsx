@@ -935,17 +935,18 @@ function HomePage() {
 
       {/* Sección 2: Zoom Scroll */}
       <section className="h-[20vh] bg-gradient-to-t from-[#0F090B] to-transparent relative"></section>
-      <motion.section
-        ref={zoomRef}
-        style={{ scale: springScale }}
+      <section
+        
         className="wrapper bg-[#0F090B] relative section z-10"
       >
-        <div
+        <motion.div
+          ref={zoomRef}
+          style={{ scale: springScale }}
           className="container m-auto lg:px-4 justify-center-safe gap-2 "
         >
           <TopicSelector topics={topics}/>
-        </div>
-      </motion.section>
+        </motion.div>
+      </section>
       {/* Sección 3 */}
       <section className="wrapper w-screen h-full bg-[#0F090B] relative flex-shrink-0 flex items-center justify-center">
         <div className="container m-auto py-30 max-w-[90vw] text-center">

@@ -73,12 +73,19 @@
 }
 /*DISEÑO GLOBAL*/
 
-html.lenis, html.lenis body {
-  height: auto;
+/* Lenis: baseline necesario para no romper scroll */
+html.lenis {
+  height: auto;                 /* evita locks por height fijo */
 }
-
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
+}
+.lenis-stopped {
+  overflow: hidden;             /* solo cuando Lenis decide parar */
+}
+/* útil para overlays que no deben “tirar” del scroll */
+[data-lenis-prevent] {
+  overscroll-behavior: contain;
 }
 
 body {
