@@ -119,7 +119,7 @@ const FinisherHeaderComponent = () => {
               className=" w-full  text-[#F6F4EF] "
             />
           </h1>
-          <p className="text-[1.125rem] text-[#a8a8a8] text-center mt-[-15px] font-['Montserrat']">
+          <p className="text-[1.125rem] text-[#a8a8a8] max-w-[80%] text-center mt-[-15px] font-['Montserrat']">
             Crea tu ruta de aprendizaje con los más top del mundo.
           </p> 
           

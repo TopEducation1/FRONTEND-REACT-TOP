@@ -111,14 +111,14 @@ export default function RankingPage() {
           {ranking.entradas.map((entry) => (
             <li className="p-4 flex flex-wrap items-center justify-center lg:justify-start bg-[#1B1B1B] rounded-xl mb-4 relative" key={entry.id}>
               <div className=" w-full lg:w-[10%]">
-                <img src={entry.universidad?.univ_ico || entry.empresa?.empr_ico} className="w-[120px] h-[120px] mx-auto mb-5 lg:mb-0 lg:w-[80px] lg:h-[80px] lg:ml-[25px] object-contain rounded-xl relative z-10" alt=""
+                <img src={entry.universidad?.univ_ico || entry.empresa?.empr_ico} className="w-[120px] h-[120px] mx-auto mb-5 lg:mb-0 lg:w-[80px] lg:h-[80px] lg:ml-[35px] object-contain rounded-xl relative z-10" alt=""
                   onClick={() =>
                     handleItemMenuClick({
                     [ranking.tipo ? ranking.tipo.charAt(0).toUpperCase() + ranking.tipo.slice(1) : '']: entry.universidad?.nombre || entry.empresa?.nombre,
                     })
                   } 
                 />
-                <strong className="bg-[#F6F4EF] text-black flex items-center rounded-[25px] lg:rounded-[25px_0px_0px_25px] w-auto !py-[3px] px-3 sm:pr-5 !lg:w-[60px] !lg:h-[60px] absolute top-[125px] lg:top-[30%] left-[50%] transform -translate-x-1/2 lg:translate-x-0 lg:left-2 z-11 lg:z-0 text-[0.9rem] lg:text-[1.5rem]"><span className="block text-[0.9rem] mr-2 lg:hidden">Rank</span>{entry.posicion}</strong>
+                <strong className="bg-[#F6F4EF] text-black flex items-center rounded-[25px] lg:rounded-[25px_0px_0px_25px] w-auto !py-[3px] px-3 sm:pr-7 !lg:w-[60px] !lg:h-[60px] absolute top-[125px] lg:top-[30%] left-[50%] transform -translate-x-1/2 lg:translate-x-0 lg:left-2 z-11 lg:z-0 text-[0.9rem] lg:text-[1.5rem]"><span className="block text-[0.9rem] mr-2 lg:hidden">Rank</span>{entry.posicion}</strong>
               </div>
               <div className="flex flex-wrap items-center justify-center lg:justify-start w-[100%] lg:w-[35%]" 
                 onClick={() =>

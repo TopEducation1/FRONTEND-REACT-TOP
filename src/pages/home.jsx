@@ -41,7 +41,7 @@ function HomePage() {
       name: 'Arte y humanidades',
       img: 'assets/category/topic/ico-Artes-y-humanidades',
       type: 'Tema',
-      position: [{pos: 'topicText', size:'48', y:'4',x:'35'},{pos: 'topicImg', size: '100', y:'76',x:'67'},{pos: 'topicBlur', size: '22', y:'22',x:'17'}],
+      position: [{pos: 'topicText', size:'48', y:'4',x:'30'},{pos: 'topicImg', size: '100', y:'76',x:'67'},{pos: 'topicBlur', size: '22', y:'22',x:'17'}],
       description: 'Explora las ideas, historias y expresiones que definen quiénes somos. Conoce el legado cultural que moldea nuestra visión del mundo.',
       universities: [
         {
@@ -152,17 +152,15 @@ function HomePage() {
       description: 'Aprende a diseñar, modelar y resolver problemas reales. Desde los fundamentos físicos hasta la ingeniería de vanguardia.',
       universities: [
         {
-          name: 'UNAM',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-UNAM.webp'
+          name: 'Ciencia y Resolución de Problemas - Bill Nye',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/ciencia-y-resolucion-de-problemas-bill-nye',
+          img: '/assets/universities/banners/masterclass/BillNye.jpg'
         },{
-          name: 'Google',
-          type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
-        },{
-          name: 'Universidad de los Andes',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+          name: 'La Exploración Espacial y lo que depara el futuro - Chris Hadfield',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/la-exploracion-espacial-y-lo-que-depara-el-futuro-chris-hadfield',
+          img: '/assets/universities/banners/masterclass/ChrisHadfield.jpg'
         }
       ]
     },{
@@ -451,17 +449,20 @@ function HomePage() {
       description: 'Piensa en grande y actúa con visión. Aprende a planear, analizar y tomar decisiones que generan impacto.',
       universities: [
         {
-          name: 'UNAM',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-UNAM.webp'
+          name: 'Garry Kasparov - Enseña Ajedrez',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/garry-kasparov-ensena-ajedrez',
+          img: '/assets/universities/banners/masterclass/GarryKasparov.jpg'
         },{
-          name: 'Google',
-          type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
+          name: 'Phil Ivey - Enseña estrategia de póker',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/phil-ivey-ensena-estrategia-de-poker',
+          img: '/assets/universities/banners/masterclass/PhilIvey.jpg'
         },{
-          name: 'Universidad de los Andes',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+          name: 'Daniel Negreanu - Enseña póquer',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/daniel-negreanu-ensena-poquer',
+          img: '/assets/universities/banners/masterclass/DanielNegreanu.jpg'
         }
       ]
     },{
@@ -472,17 +473,33 @@ function HomePage() {
       description: 'Desarrolla tu capacidad de guiar, inspirar y transformar equipos. Aprende de grandes líderes y sus decisiones clave.',
       universities: [
         {
-          name: 'UNAM',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-UNAM.webp'
+          name: 'Howard Schultz - Liderazgo Empresarial',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/howard-schultz-liderazgo-empresarial',
+          img: '/assets/universities/banners/masterclass/HowardSchultz.jpg'
         },{
-          name: 'Google',
-          type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
-        },{
-          name: 'Universidad de los Andes',
+          name: 'Harvard University',
           type: 'Universidad',
-          img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+          img: '/assets/universities/icons/ico-Harvard.webp'
+        },{
+          name: 'Stanford University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Stanford-University.webp'
+        },{
+          name: 'Indra Nooyi - Enseña a liderar con propósito',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/indra-nooyi-ensena-a-liderar-con-proposito',
+          img: '/assets/universities/banners/masterclass/IndraNooyi.jpg'
+        },{
+          name: 'Serena Williams - Enseña tenis',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/serena-williams-ensena-tenis',
+          img: '/assets/universities/banners/masterclass/SerenaWilliams.jpeg'
+        },{
+          name: 'Stephen Curry - Enseña tiro, manejo de la pelota y anotación',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/stephen-curry-ensena-tiro-manejo-de-la-pelota-y-anotacion',
+          img: '/assets/universities/banners/masterclass/StephenCurry.jpg'
         }
       ]
     },{
@@ -514,17 +531,18 @@ function HomePage() {
       description: 'Gestiona tu tiempo, energía y enfoque con inteligencia. Aprende técnicas para hacer más con propósito y menos desgaste.',
       universities: [
         {
-          name: 'UNAM',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-UNAM.webp'
+          name: '',
+          type: '',
+          img: ''
         },{
-          name: 'Google',
+          name: 'IBM',
           type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
+          img: '/assets/companies/icons/ico-IBM.png'
         },{
-          name: 'Universidad de los Andes',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+          name: 'James Clear - Pequeños hábitos que tienen un gran impacto en tu vida',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/james-clear-pequenos-habitos-que-tienen-un-gran-impacto-en-tu-vida',
+          img: '/assets/universities/banners/masterclass/JamesClear.jpg'
         }
       ]
     },{

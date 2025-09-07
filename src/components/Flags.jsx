@@ -48,17 +48,24 @@ const Flags = ({ logos = [] }) => {
       TagCanvas.Start("flagsCanvas", "flagsTags", {
         textColour: null,
         reverse: false,
-        activeCursor: "pointer" ,
-        maxSpeed: 0.05,
+        activeCursor: "pointer",
+        maxSpeed: 0.01,
+        minSpeed: 0.01,      // ← no se detiene
+        decel: 1,            // ← sin desaceleración
+        initial: [0.2, -0.1],// ← arranque (relativo a maxSpeed)
+        // noMouse: true,    // ← descomenta si no quieres interacción
+        // lock: "xy",       // ← alternativa a noMouse (requiere initial)
         imageScale: 0.7,
         imageMode: "image",
         fadeIn: 300,
         outlineColour: "#0F090B",
         shuffleTags: true,
         wheelZoom: false,
+        tooltipDelay: 300,
         bgRadius: 0,
         pinchZoom: true,
         freezeActive: true,
+        freezeDecel: true, 
         dragControl: true,
         clickToFront: null,
       });

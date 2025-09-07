@@ -209,7 +209,7 @@ const BlogDetailPage = () => {
               <div className="widget !mt-[40px]">
                 <h2 className="text-4xl font-normal font-[Lora] w-full top-italic !mb-3">Te puede interesar</h2>
                 < LatestBlogsGrid/>
-                <a href="/explora" className="btn py-2 px-5 rounded-full btn-col-1 text-lg font-semibold">Explora más de 13.000 certificaciones</a>
+                <a href="/explora" className="btn py-2 px-5 rounded-full btn-col-1 text-lg font-semibold">Explora más de 14.500 certificaciones</a>
               </div>
               {visibleContainerPopUp && (
                   positionPopUp ? (

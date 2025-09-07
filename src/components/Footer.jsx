@@ -7,7 +7,7 @@ const Footer = () => {
                     <p className="text-[14px] text-[#ddd]">Todos los derechos reservados |<span id="top">top</span><span id="education">.education </span> 2025</p>
                 </div>
                 <div className="footer-section section-logo">
-                    <img src="/assets/logos/logo-top-education.png" alt="Logo Top.Education" />
+                    <img src="/assets/logos/logo-top-education.png" className="!max-w-[270px]" alt="Logo Top.Education" />
                 </div>
                 <div className="footer-section section-social">
                     <h3>Síguenos en redes sociales:</h3>

@@ -1254,7 +1254,7 @@ header {
 }
 
 .hero-slider {
-  flex: 2;
+  flex: 1;
   position: relative;
   perspective: 1000px;
   display: flex;
@@ -1786,7 +1786,6 @@ header {
   top: 50%;
   width: 100%;
   transform: translateY(-50%);
-  background-color: var(--negro);
   color: var(--blanco);
   font-size: 40px;
   font-weight: 800;
@@ -2280,6 +2279,10 @@ header {
   box-sizing: border-box;
 }
 
+.container-burguer-button{
+  display: none;
+}
+
 /*RESPONSIVE INTEGRACIÓN BYCODE*/
 
 @media(max-width: 1920px) {
@@ -2369,7 +2372,7 @@ header {
     padding: 0 10px;
   }
   .container-burguer-button {
-    display: flex;
+    display: none;
     padding: 5px;
     height: 50px;
     align-items: center;
@@ -2552,6 +2555,7 @@ header {
     font-size: 14px;
   }
   .container-burguer-button {
+    display: flex;
     height: 60px;
   }
   .nav-main{
