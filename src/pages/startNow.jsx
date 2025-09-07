@@ -31,14 +31,14 @@ function StartNow() {
             <section className="wrapper ">
                 <div className="container m-auto py-[1rem] xl:!py-10 lg:!py-6 md:!py-3">
                     <div className="flex flex-wrap mx-[-15px] xl:mx-[-35px] lg:mx-[-20px] !mt-[-30px] !mb-[4.5rem] items-center">
-                        <div className="xl:w-5/12 lg:w-5/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px] !mt-[25px] max-w-full">
-                            <h2 className="text-[#F6F4EF] text-[2rem] leading-[1.2em] font-normal font-[Lora] w-full">¿Por que <span id="top">top</span><span id="education">.education</span> es la mejor opción de educación en linea?</h2>
-                            <p className="text-[1.125rem] text-[#a8a8a8] mt-5 mb-5 text-left z-10 relative">Top Education te ofrece uno de los catálogos de formación online mas grandes en el mercado: más de 13,000 certificaciones en diversas disciplinas, junto con acceso exclusivo a los contenidos de Masterclass, Coursera y edX, todo por un precio que supera significativamente el valor de cada plataforma por separado.</p>
+                        <div className="xl:w-7/12 lg:w-7/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px] !mt-[25px] max-w-full">
+                            <h2 className="text-[#F6F4EF] text-[2.5rem] leading-[1.2em] font-normal font-[Lora] w-full">¿Por que <span id="top">top</span><span id="education">.education</span> es la mejor opción de educación en linea?</h2>
+                            <p className="text-[1.125rem] text-[#a8a8a8] mt-5 mb-5 text-left z-10 relative">Top Education te ofrece uno de los catálogos de formación online mas grandes en el mercado: más de 14,500 certificaciones en diversas disciplinas, junto con acceso exclusivo a los contenidos de Masterclass, Coursera y edX, todo por un precio que supera significativamente el valor de cada plataforma por separado.</p>
                         </div>
-                        <div className="xl:w-7/12 lg:w-7/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px]  max-w-full !relative">
+                        <div className="xl:w-5/12 lg:w-5/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px]  max-w-full !relative">
                             <div className="pricing-wrapper !relative">
                                 <div className="flex flex-wrap justify-center mx-[-15px] !mt-3 xl:!mt-5 lg:!mt-5 md:!mt-5">
-                                    <div className="sm:w-6/12 lg:w-6/12 xl:w-7/12 w-full p-[15px] flex-[0_0_auto] !px-[15px] max-w-full">
+                                    {/*<div className="sm:w-6/12 lg:w-6/12 xl:w-7/12 w-full p-[15px] flex-[0_0_auto] !px-[15px] max-w-full">
                                         <div className="pricing card !text-center rounded-lg bg-neutral-900  p-[15px] !shadow-[0_0.25rem_1.75rem_rgba(30,34,40,0.07)]">
                                             <div className="card-body flex-[1_1_auto]  pb-4 xl:!p-[1rem_1.5rem_1.5rem] lg:!p-[1rem_1.5rem_1.5rem] md:!p-[1rem_1.5rem_1.25rem]">
                                                 <img src="/assets/logos/logo-top-education.png" className="w-90" alt="" />
@@ -63,28 +63,28 @@ function StartNow() {
                                                 </ul>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="sm:w-6/12 lg:w-6/12 xl:w-5/12 w-full p-[15px] flex-[0_0_auto] !px-[15px] max-w-full">
+                                    </div>*/}
+                                    <div className="sm:w-10/12 lg:w-10/12 xl:w-10/12 w-full p-[15px] flex-[0_0_auto] !px-[15px] max-w-full">
                                         <div className="pricing card !text-left rounded-lg bg-neutral-900 p-[15px] !shadow-[0_0.25rem_1.75rem_rgba(30,34,40,0.07)]">
                                             <div className="card-body flex-[1_1_auto]  xl:!p-[1rem_1.5rem_1.5rem] lg:!p-[1rem_1.5rem_1.5rem] md:!p-[1rem_1.5rem_1.25rem]">
                                                 <h3 className="card-title text-[#F6F4EF] text-5xl md:text-5xl lg:text-4xl">Plataformas</h3>
                                                 <h3 className="card-title text-[#F6F4EF] text-4xl md:text-3xl lg:text-2xl">por separado</h3>
                                                 <ul class="pl-0 list-none bullet-bg bullet-soft-primary mt-4 text-left text-[#F6F4EF]">
-                                                    <li class="relative text-justify">
-                                                        <span className="text-justify flex w-full">MasterClass ........ USD 180</span>
+                                                    <li class="relative flex justify-between text-justify">
+                                                        <span className="text-justify flex items-center gap-2 w-full"><span>MasterClass</span> <span className=" flex w-full border-b-2 border-dashed" ></span> <span className="block w-[135px] text-right">USD 180</span></span>
                                                     </li>
-                                                    <li class="relative text-justify">
-                                                        <span className="text-justify flex w-full">Coursera Plus...... USD 399</span>
+                                                    <li class="relative flex justify-between text-justify">
+                                                        <span className="text-justify flex items-center gap-2 w-full"><span className="w-[245px]">Coursera Plus</span> <span className=" flex w-full border-b-2 border-dashed" ></span> <span className="block text-right !w-[150px]">USD 399</span></span>
                                                     </li>
-                                                    <li class="relative text-justify">
-                                                        <span className="text-justify flex w-full">edX.......................... USD 394</span>
+                                                    <li class="relative flex justify-between text-justify">
+                                                        <span className="text-justify flex items-center gap-2 w-full"><span>EdX</span> <span className=" flex w-full border-b-2 border-dashed" ></span> <span className="block !w-[100px] text-right">USD 394</span></span>
                                                     </li>
                                                 </ul>
                                                 <div class="prices !text-[#D33B3E] flex w-full justify-center">
                                                     <div class="price price-hide price-hidden flex items-stretch mt-1">
-                                                        <span class="price-currency self-start text-[1rem]">PAGO TOTAL $</span>
-                                                        <span class="price-value text-3xl self-end">928</span>
-                                                        <span class="price-duration self-end ml-1 text-[.7rem]"> USD /Anual</span></div>
+                                                        <span class="price-currency self-start text-[1.5rem]">PAGO TOTAL $</span>
+                                                        <span class="price-value text-4xl self-end">928</span>
+                                                        <span class="price-duration self-end ml-1 text-[1rem]"> USD /Anual</span></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -100,7 +100,7 @@ function StartNow() {
                     <div className="flex flex-wrap mx-[-15px]">
                         <div className="lg:w-10/12 xl:w-9/12 xxl:w-8/12 w-full flex-[0_0_auto] !px-[15px] max-w-full !mx-auto">
                             <h3 className="!text-[calc(2rem_+_0.66vw)] text-[#F6F4EF] font-bold xl:!text-[2.8rem] !leading-[1.3] !mb-[1rem] xl:!mb-6 lg:!mb-6 md:!mb-6 lg:!px-10 xl:!px-10">¿Por que Top Education es la mejor opción de educación en linea?</h3>
-                            <p className="text-[#F6F4EF]">Top Education te ofrece uno de los catálogos de formación online mas grandes en el mercado: más de 13,000 certificaciones en diversas disciplinas, junto con acceso exclusivo a los contenidos de Masterclass, Coursera y edX, todo por un precio que supera significativamente el valor de cada plataforma por separado.</p>
+                            <p className="text-[#F6F4EF]">Top Education te ofrece uno de los catálogos de formación online mas grandes en el mercado: más de 14,500 certificaciones en diversas disciplinas, junto con acceso exclusivo a los contenidos de Masterclass, Coursera y edX, todo por un precio que supera significativamente el valor de cada plataforma por separado.</p>
                         </div>
                     </div>
                 </div>
