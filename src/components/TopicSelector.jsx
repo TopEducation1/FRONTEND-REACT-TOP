@@ -68,7 +68,7 @@ const TopicSelector = ({ topics }) => {
   };
 
   // --- Nodos para NeuronBackground (usa posiciones fijas en %)
-  const nodes = useMemo(() => {
+  /*const nodes = useMemo(() => {
     const out = [];
     topics.forEach((topic, tIndex) => {
       topic.position.forEach((p, i) => {
@@ -82,21 +82,21 @@ const TopicSelector = ({ topics }) => {
       });
     });
     return out;
-  }, [topics]);
+  }, [topics]);*/
 
   return (
     <div
       className="cloud-container relative flex flex-wrap justify-center gap-2 lg:block"
       ref={ref}
     >
-      {/* Fondo neuronal (desktop/tablet) */}
+      {/* Fondo neuronal (desktop/tablet) 
       <NeuronBackground
         nodes={nodes}
         hoveredId={hoveredNodeId}
         k={3}
         maxDistPct={26}
         disableOnMobile={true}
-      />
+      />*/}
 
       {/* Centro: contador grande */}
       <div className="center-text-banner w-full">
@@ -307,7 +307,7 @@ const TopicSelector = ({ topics }) => {
                 </div>
 
                 {/* --- POPUP circular --- */}
-                <AnimatePresence>
+                {/*<AnimatePresence>*/}
                   {hoveredItem?.topic?.name === topic.name &&
                     hoveredItem?.index === i && (
                       <motion.div
@@ -383,7 +383,7 @@ const TopicSelector = ({ topics }) => {
                         </div>
                       </motion.div>
                     )}
-                </AnimatePresence>
+                {/*</AnimatePresence>*/}
               </div>
             </React.Fragment>
           );
