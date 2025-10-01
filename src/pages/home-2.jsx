@@ -765,7 +765,7 @@ function HomePage() {
       {/* Sección 2: Zoom Scroll */}
       <section className="h-[20vh] bg-gradient-to-t from-[#0F090B] to-transparent relative"></section>
       <section
-        className="wrapper bg-[#0F090B] relative section z-10"
+        className="wrapper bg-[#0F090B]/30 relative section z-10"
       >
         
         <div
