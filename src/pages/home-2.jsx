@@ -713,6 +713,58 @@ function HomePage() {
           img: '/assets/companies/icons/ico-ArmEducation.png'
         }
       ]
+    },{
+      name: 'Diseño',
+      type: 'search',
+      position: [{pos: 'topicText', size:'42', y:'64',x:'47'}],
+      img: '/assets/category/icons/TE-ICONO-DISENO.png',
+      description: 'Diseña nuevas formas de enseñar y aprender. Explora metodologías, tecnologías y enfoques que hacen de la educación una experiencia transformadora.',
+      universities: [
+        {
+          name: 'Stanford University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Stanford-University.webp'
+        },{
+          name: 'Harvard University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Harvard.webp'
+        },{
+          name: 'Columbia University',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/malala-yousafzai-ensena-a-crear-cambios',
+          img: '/assets/universities/banners/masterclass/MalalaYousafzai.jpg'
+        },{
+          name: 'ArmEducation',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-ArmEducation.png'
+        }
+      ]
+    },{
+      name: 'Ciberseguridad',
+      type: 'search',
+      position: [{pos: 'topicText', size:'42', y:'64',x:'47'}],
+      img: '/assets/category/icons/TE-ICONO-CIBERSEGURIDAD.png',
+      description: 'Diseña nuevas formas de enseñar y aprender. Explora metodologías, tecnologías y enfoques que hacen de la educación una experiencia transformadora.',
+      universities: [
+        {
+          name: 'Stanford University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Stanford-University.webp'
+        },{
+          name: 'Harvard University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Harvard.webp'
+        },{
+          name: 'Columbia University',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/malala-yousafzai-ensena-a-crear-cambios',
+          img: '/assets/universities/banners/masterclass/MalalaYousafzai.jpg'
+        },{
+          name: 'ArmEducation',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-ArmEducation.png'
+        }
+      ]
     }
   ];
   
