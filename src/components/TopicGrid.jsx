@@ -190,7 +190,7 @@ function TopicCard({ topic, idx, colCount, isTouch, onFilter, scrollYProgress })
 
       {/* Título */}
       <div className="px-5 pb-5 pt-0">
-        <h3 className="text-center text-[1.2rem] font-semibold leading-tight text-[#F6F4EF]">
+        <h3 className="text-center text-[1.2rem] font-semibold font-monts leading-tight text-[#F6F4EF]">
           {topic.name}
         </h3>
       </div>

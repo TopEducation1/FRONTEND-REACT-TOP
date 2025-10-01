@@ -146,7 +146,9 @@ a {
 button{
   cursor: pointer;
 }
-
+.font-monts{
+  font-family: 'Montserrat';
+}
 .top-italic{
   font-family: 'That That New Italic';
 }

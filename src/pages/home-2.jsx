@@ -548,6 +548,171 @@ function HomePage() {
           img: '/assets/universities/icons/ico-University-of-Michigan.webp'
         }
       ]
+    },{
+      name: 'Inteligencia Artificial',
+      type: 'search',
+      position: [{pos: 'topicText', size:'44', y:'25',x:'58'}],
+      img: '/assets/category/icons/TE-ICONO-IA.png',
+      description: 'Descubre cómo las máquinas pueden aprender, adaptarse y tomar decisiones. Desde modelos predictivos hasta ética de la IA, prepárate para liderar la revolución tecnológica.',
+      universities: [
+        {
+          name: 'IBM',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-IBM.png'
+        },{
+          name: 'HP',
+          type: 'Empresa',
+          img: 'assets/companies/icons/ico-HP.png'
+        },{
+          name: 'Microsoft',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-Microsoft.png'
+        },{
+          name: 'DeepLearning.AI',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-DeepLearning-AI.png'
+        },{
+          name: 'Massachusetts Institute of Technology',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Massachusetts-Institute.webp'
+        }
+      ]
+    },{
+      name: 'Programación',
+      type: 'search',
+      position: [{pos: 'topicText', size:'49', y:'70',x:'50'}],
+      img: '/assets/category/icons/TE-ICONO-PROGRAMACION.png',
+      description: 'Habla el lenguaje que construye el futuro. Aprende a desarrollar software, automatizar tareas y resolver problemas con código.',
+      universities: [
+        {
+          name: 'IBM',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-IBM.png'
+        },{
+          name: 'HP',
+          type: 'Empresa',
+          img: 'assets/companies/icons/ico-HP.png'
+        },{
+          name: 'Microsoft',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-Microsoft.png'
+        },{
+          name: 'DeepLearning.AI',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-DeepLearning-AI.png'
+        },{
+          name: 'Massachusetts Institute of Technology',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Massachusetts-Institute.webp'
+        }
+      ]
+    },{
+      name: 'Marketing digital',
+      type: 'search',
+      position: [{pos: 'topicText', size:'43', y:'25',x:'6'}],
+      img: '/assets/category/icons/TE-ICONO-MARKETING.png',
+      description: 'Entiende cómo funcionan las marcas en la era digital. Aprende a atraer, convertir y fidelizar audiencias con herramientas y estrategias actualizadas.',
+      universities: [
+        {
+          name: 'Estrategia de marketing',
+          type: 'search',
+          img: ''
+        },{
+          name: 'Marketing gerencial',
+          type: 'search',
+          img: ''
+        },{
+          name: 'Medición de marketing',
+          type: 'search',
+          img: ''
+        }
+      ]
+    },{
+      name: 'Cine',
+      type: 'search',
+      position: [{pos: 'topicText', size:'44', y:'20',x:'72'}],
+      img: '/assets/category/icons/TE-ICONO-CINE.png',
+      description: 'Explora el cerebro humano desde la ciencia. Comprende cómo pensamos, sentimos y aprendemos, y aplica este conocimiento en salud, educación y tecnología.',
+      universities: [
+        {
+          name: 'Martin Scorsese - Enseña Cinematografía',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/martin-scorsese-ensena-cinematografia',
+          img: '/assets/universities/banners/masterclass/MartinScorsese.jpg'
+        },{
+          name: 'Hans Zimmer - Enseña composición de música para películas',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/hans-zimmer-ensena-composicion-de-musica-para-peliculas',
+          img: '/assets/universities/banners/masterclass/HansZimmer.jpg'
+        },{
+          name: 'Enseña Cinematografía - James Cameron',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/ensena-cinematografia-james-cameron',
+          img: '/assets/universities/banners/masterclass/JamesCameron.jpg'
+        },{
+          name: 'Jodie Foster - Enseña Cinematografía',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/jodie-foster-ensena-cinematografia',
+          img: '/assets/universities/banners/masterclass/JodieFoster.jpg'
+        }
+      ]
+    },{
+      name: 'Psicología',
+      type: 'search',
+      position: [{pos: 'topicText', size:'50', y:'65',x:'4'}],
+      img: '/assets/category/icons/TE-ICONO-PSICOLOGIA.png',
+      description: 'Conoce el comportamiento humano en profundidad. Aprende teorías, métodos y herramientas para comprender, acompañar y transformar realidades personales y sociales.',
+      universities: [
+        {
+          name: 'Robin Arzón - Enseña fuerza mental',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/robin-arzon-ensena-fuerza-mental',
+          img: '/assets/universities/banners/masterclass/RobinArzon.jpg'
+        }
+      ]
+    },{
+      name: 'Videojuegos',
+      type: 'search',
+      position: [{pos: 'topicText', size:'47', y:'59',x:'14'}],
+      img: '/assets/category/icons/TE-ICONO-VIDEOJUEGOS.png',
+      description: 'Descubre el poder narrativo y técnico del gaming. Aprende diseño, desarrollo y lógica interactiva en una industria creativa y en constante evolución.',
+      universities: [
+        {
+          name: 'California Institute of Arts',
+          type: 'Universidad',
+          img: ''
+        },{
+          name: 'Epic Games',
+          type: 'search',
+          img: ''
+        }
+      ]
+    },{
+      name: 'Educación',
+      type: 'search',
+      position: [{pos: 'topicText', size:'42', y:'64',x:'47'}],
+      img: '/assets/category/icons/TE-ICONO-EDUCACION.png',
+      description: 'Diseña nuevas formas de enseñar y aprender. Explora metodologías, tecnologías y enfoques que hacen de la educación una experiencia transformadora.',
+      universities: [
+        {
+          name: 'Stanford University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Stanford-University.webp'
+        },{
+          name: 'Harvard University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Harvard.webp'
+        },{
+          name: 'Columbia University',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/malala-yousafzai-ensena-a-crear-cambios',
+          img: '/assets/universities/banners/masterclass/MalalaYousafzai.jpg'
+        },{
+          name: 'ArmEducation',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-ArmEducation.png'
+        }
+      ]
     }
   ];
   
