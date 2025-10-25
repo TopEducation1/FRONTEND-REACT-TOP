@@ -9,6 +9,9 @@ import ImageSlider3D from "../components/ImageSlider3D";
 import HeroSlider from "../components/HeroSlider";
 import FinisherHeaderComponent from '../components/FinisherHeaderComponent';
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import TopicGrid from "../components/TopicGrid";
+import Galaxy from "../components/GalaxyBackground";
+//import LightRays from "../components/LightRays";
 
 import endpoints from '../config/api';
 
@@ -20,6 +23,7 @@ function HomePage() {
       type: 'Tema',
       position: [{pos: 'topicText', size:'40', y:'9',x:'44'},{pos: 'topicImg', size: '60', y:'84',x:'48'},{pos: 'topicBlur', size: '30', y:'33',x:'15'}],
       img: 'assets/category/topic/ico-Aprendizaje-de-un-idioma',
+      color: '#5CC781',
       description: 'Expande tu universo cultural y profesional. Conecta a través del inglés, francés, alemán y más, cultivando habilidades de comunicación global.',
       universities: [
         {
@@ -40,6 +44,7 @@ function HomePage() {
     {
       name: 'Arte y humanidades',
       img: 'assets/category/topic/ico-Artes-y-humanidades',
+      color: '#034694',
       type: 'Tema',
       position: [{pos: 'topicText', size:'48', y:'4',x:'30'},{pos: 'topicImg', size: '100', y:'76',x:'67'},{pos: 'topicBlur', size: '22', y:'22',x:'17'}],
       description: 'Explora las ideas, historias y expresiones que definen quiénes somos. Conoce el legado cultural que moldea nuestra visión del mundo.',
@@ -73,13 +78,10 @@ function HomePage() {
       type: 'Tema',
       position: [{pos: 'topicText', size:'48', y:'30',x:'30'},{pos: 'topicImg', size: '34', y:'31',x:'3'},{pos: 'topicBlur', size: '39', y:'30',x:'69'}],
       img: 'assets/category/topic/ico-Ciencia-de-datos',
+      color: '#5CC781',
       description: 'Convierte datos en decisiones inteligentes. Aprende a analizar, visualizar y comprender grandes volúmenes de información con impacto real.',
       universities: [
         {
-          name: '',
-          type: '',
-          img: ''
-        },{
           name: 'IBM',
           type: 'Empresa',
           img: '/assets/companies/icons/ico-IBM.png'
@@ -102,6 +104,7 @@ function HomePage() {
       type: 'Tema',
       position: [{pos: 'topicText', size:'26', y:'1',x:'36'},{pos: 'topicImg', size: '30', y:'18',x:'9'},{pos: 'topicBlur', size: '30', y:'35',x:'47'}],
       img: 'assets/category/topic/ico-Ciencias-de-la-computacion',
+      color: '#034694',
       description: 'Domina los lenguajes que impulsan la tecnología. Desde algoritmos hasta desarrollo de software, convierte ideas en soluciones digitales.',
       universities: [
         {
@@ -127,6 +130,7 @@ function HomePage() {
       type: 'Tema',
       position: [{pos: 'topicText', size:'44', y:'92',x:'28'},{pos: 'topicImg', size: '170', y:'72',x:'87'},{pos: 'topicBlur', size: '30', y:'96',x:'37'}],
       img: 'assets/category/topic/ico-Ciencias-sociales',
+      color: '#5CC781',
       description: 'Comprende cómo pensamos, actuamos y evolucionamos como sociedad. Estudia economía, política y cultura para interpretar el mundo con criterio.',
       universities: [
         {
@@ -149,6 +153,7 @@ function HomePage() {
       type: 'Tema',
       position: [{pos: 'topicText', size:'43', y:'90',x:'48'},{pos: 'topicImg', size: '59', y:'58',x:'36'},{pos: 'topicBlur', size: '30', y:'55',x:'15'}],
       img: 'assets/category/topic/ico-Ciencias-fisicas-e-ingenieria',
+      color: '#D33B3E',
       description: 'Aprende a diseñar, modelar y resolver problemas reales. Desde los fundamentos físicos hasta la ingeniería de vanguardia.',
       universities: [
         {
@@ -168,6 +173,7 @@ function HomePage() {
       type: 'Tema',
       position: [{pos: 'topicText', size:'46', y:'34',x:'69'},{pos: 'topicImg', size: '60', y:'18',x:'64'},{pos: 'topicBlur', size: '35', y:'12',x:'52'}],
       img: 'assets/category/topic/ico-Desarrollo-personal',
+      color: '#D33B3E',
       description: 'Construye una versión más fuerte y consciente de ti. Aprende a tomar decisiones, comunicarte mejor y crecer en cada etapa de tu vida.',
       universities: [
         {
@@ -189,6 +195,7 @@ function HomePage() {
       type: 'Tema',
       position: [{pos: 'topicText', size:'36', y:'78',x:'10'},{pos: 'topicImg', size: '45', y:'25',x:'48'},{pos: 'topicBlur', size: '25', y:'16',x:'43'}],
       img: 'assets/category/topic/ico-Matematicas-y-logica',
+      color: '#034694',
       description: 'Activa tu pensamiento crítico. Aprende a resolver problemas complejos con lógica, estructura y claridad matemática.',
       universities: [
         {
@@ -207,6 +214,7 @@ function HomePage() {
       type: 'Tema',
       position: [{pos: 'topicText', size:'38', y:'13',x:'72'},{pos: 'topicImg', size: '50', y:'36',x:'35'},{pos: 'topicBlur', size: '34', y:'66',x:'34'}],
       img: 'assets/category/topic/ico-Negocios',
+      color: '#D33B3E',
       description: 'Comprende cómo se construyen, escalan y lideran organizaciones en la era digital. Desde marketing hasta modelos de negocio.',
       universities: [
         {
@@ -250,6 +258,7 @@ function HomePage() {
       type: 'Tema',
       position: [{pos: 'topicText', size:'74', y:'24',x:'32'},{pos: 'topicImg', size: '32', y:'72',x:'7'},{pos: 'topicBlur', size: '45', y:'61',x:'71'}],
       img: 'assets/category/topic/ico-Salud',
+      color: '#D33B3E',
       description: 'Conoce tu cuerpo, promueve hábitos sanos y comprende cómo prevenir enfermedades desde la ciencia y la práctica.',
       universities: [
         {
@@ -283,6 +292,7 @@ function HomePage() {
       type: 'Tema',
       position: [{pos: 'topicText', size:'48',y:'55',x:'48'},{pos: 'topicImg', size: '47', y:'18',x:'32'},{pos: 'topicBlur', size: '24', y:'90',x:'22'}],
       img: 'assets/category/topic/ico-Tecnologia-de-la-informacion',
+      color: '#5CC781',
       description: 'Gestiona el backend del mundo digital. Aprende redes, sistemas y servicios en la nube que mueven al planeta.',
       universities: [
         {
@@ -308,6 +318,7 @@ function HomePage() {
       type: 'Habilidad',
       position: [{pos: 'topicText', size:'48', y:'19',x:'43'},{pos: 'topicImg', size: '120', y:'68',x:'75'},{pos: 'topicBlur', size: '40', y:'74',x:'48'}],
       img: 'assets/category/ability/ico-Bienestar',
+      color: '#D33B3E',
       description: 'Equilibra cuerpo, mente y entorno. Aprende a manejar el estrés, mejorar tu alimentación y cultivar salud mental.',
       universities: [
         {
@@ -329,13 +340,10 @@ function HomePage() {
       type: 'Habilidad',
       position: [{pos: 'topicText', size:'42', y:'75',x:'76'},{pos: 'topicImg', size: '38', y:'57',x:'1'},{pos: 'topicBlur', size: '35', y:'60',x:'48'}],
       img: 'assets/category/ability/ico-Comunicacion',
+      color: '#034694',
       description: 'Domina el arte de transmitir ideas con claridad y propósito. Aprende a persuadir, inspirar y conectar a través del lenguaje.',
       universities: [
         {
-          name: '',
-          type: '',
-          img: ''
-        },{
           name: 'Northwestern University',
           type: 'Universidad',
           img: '/assets/universities/icons/ico-Northwestern-University.webp'
@@ -366,6 +374,7 @@ function HomePage() {
       type: 'Habilidad',
       position: [{pos: 'topicText', size:'70', y:'70',x:'20'},{pos: 'topicImg', size: '62', y:'96',x:'53'},{pos: 'topicBlur', size: '40', y:'65',x:'85'}],
       img: 'assets/category/ability/ico-Creatividad',
+      color: '#D33B3E',
       description: 'Despierta tu imaginación y transforma la forma en que ves el mundo. Aprende a innovar con pensamiento original y sensibilidad artística.',
       universities: [
         {
@@ -404,6 +413,7 @@ function HomePage() {
       type: 'Habilidad',
       position: [{pos: 'topicText', size:'40', y:'13',x:'14'},{pos: 'topicImg', size: '70', y:'63',x:'63'},{pos: 'topicBlur', size: '25', y:'94',x:'61'}],
       img: 'assets/category/ability/ico-Crecimiento-personal',
+      color: '#5CC781',
       description: 'Impulsa tu desarrollo emocional, físico y mental con el ejemplo de quienes superaron límites.',
       universities: [
         {
@@ -425,6 +435,7 @@ function HomePage() {
       type: 'Habilidad',
       position: [{pos: 'topicText', size:'48', y:'37',x:'1'},{pos: 'topicImg', size: '60', y:'4',x:'60'},{pos: 'topicBlur', size: '22', y:'23',x:'56'}],
       img: 'assets/category/ability/ico-Diversidad-equidad-e-inclusion',
+      color: '#034694',
       description: 'Comprende la riqueza de lo diverso y aprende a construir espacios más equitativos, empáticos y humanos.',
       universities: [
         {
@@ -446,6 +457,7 @@ function HomePage() {
       type: 'Habilidad',
       position: [{pos: 'topicText', size:'70', y:'83',x:'59'},{pos: 'topicImg', size: '30', y:'7',x:'22'},{pos: 'topicBlur', size: '36', y:'8',x:'32'}],
       img: 'assets/category/ability/ico-Estrategia',
+      color: '#D33B3E',
       description: 'Piensa en grande y actúa con visión. Aprende a planear, analizar y tomar decisiones que generan impacto.',
       universities: [
         {
@@ -470,6 +482,7 @@ function HomePage() {
       type: 'Habilidad',
       position: [{pos: 'topicText', size:'48', y:'79',x:'77'},{pos: 'topicImg', size: '65', y:'31',x:'60'},{pos: 'topicBlur', size: '25', y:'75',x:'27'}],
       img: 'assets/category/ability/ico-Liderazgo',
+      color: '#5CC781',
       description: 'Desarrolla tu capacidad de guiar, inspirar y transformar equipos. Aprende de grandes líderes y sus decisiones clave.',
       universities: [
         {
@@ -507,6 +520,7 @@ function HomePage() {
       type: 'Habilidad',
       position: [{pos: 'topicText', size:'48', y:'77',x:'37'},{pos: 'topicImg', size: '42', y:'65',x:'22'},{pos: 'topicBlur', size: '43', y:'38',x:'78'}],
       img: 'assets/category/ability/ico-Personas-y-cultura',
+      color: '#5CC781',
       description: 'Descubre cómo se crean las narrativas que nos unen. Desde sociología hasta cultura pop, entiende lo que mueve a las personas.',
       universities: [
         {
@@ -528,13 +542,10 @@ function HomePage() {
       type: 'Habilidad',
       position: [{pos: 'topicText', size:'68', y:'37',x:'45'},{pos: 'topicImg', size: '280', y:'28',x:'88'},{pos: 'topicBlur', size: '40', y:'16',x:'73'}],
       img: 'assets/category/ability/ico-Productividad',
+      color: '#034694',
       description: 'Gestiona tu tiempo, energía y enfoque con inteligencia. Aprende técnicas para hacer más con propósito y menos desgaste.',
       universities: [
         {
-          name: '',
-          type: '',
-          img: ''
-        },{
           name: 'IBM',
           type: 'Empresa',
           img: '/assets/companies/icons/ico-IBM.png'
@@ -550,6 +561,7 @@ function HomePage() {
       type: 'Habilidad',
       position: [{pos: 'topicText', size:'52', y:'85',x:'17'},{pos: 'topicImg', size: '300', y:'56',x:'90'},{pos: 'topicBlur', size: '32', y:'82',x:'18'}],
       img: 'assets/category/ability/ico-Trabajo-en-equipo',
+      color: '#034694',
       description: 'Colabora, conecta y construye en conjunto. Aprende a liderar desde lo colectivo con inteligencia emocional.',
       universities: [
         {
@@ -562,87 +574,68 @@ function HomePage() {
       name: 'Inteligencia Artificial',
       type: 'search',
       position: [{pos: 'topicText', size:'44', y:'25',x:'58'}],
-      img: '',
+      img: '/assets/category/icons/ico-inteligencia-artificial-t.png',
+      color: '#034694',
       description: 'Descubre cómo las máquinas pueden aprender, adaptarse y tomar decisiones. Desde modelos predictivos hasta ética de la IA, prepárate para liderar la revolución tecnológica.',
       universities: [
         {
-          name: 'UNAM',
-          type: 'search',
-          img: ''
+          name: 'IBM',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-IBM.png'
         },{
-          name: 'Google',
-          type: 'search',
-          img: ''
+          name: 'HP',
+          type: 'Empresa',
+          img: 'assets/companies/icons/ico-HP.png'
         },{
-          name: 'Universidad de los Andes',
-          type: 'search',
-          img: ''
-        }
-      ]
-    },{
-      name: 'Ciberseguridad',
-      type: 'search',
-      position: [{pos: 'topicText', size:'44', y:'61',x:'79'}],
-      img: '',
-      description: 'Protege lo más valioso del entorno digital. Aprende a detectar vulnerabilidades, gestionar riesgos y diseñar sistemas más seguros para un mundo interconectado.',
-      universities: [
-        {
-          name: 'UNAM',
-          type: 'search',
-          img: ''
+          name: 'Microsoft',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-Microsoft.png'
         },{
-          name: 'Google',
-          type: 'search',
-          img: ''
+          name: 'DeepLearning.AI',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-DeepLearning-AI.png'
         },{
-          name: 'Universidad de los Andes',
-          type: 'search',
-          img: ''
+          name: 'Massachusetts Institute of Technology',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Massachusetts-Institute.webp'
         }
       ]
     },{
       name: 'Programación',
       type: 'search',
       position: [{pos: 'topicText', size:'49', y:'70',x:'50'}],
-      img: '',
+      img: '/assets/category/icons/ico-programacion-t.png',
+      color: '#034694',
       description: 'Habla el lenguaje que construye el futuro. Aprende a desarrollar software, automatizar tareas y resolver problemas con código.',
       universities: [
         {
-          name: 'Programación web',
-          type: 'search',
-          img: ''
+          name: 'IBM',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-IBM.png'
         },{
-          name: 'Programación con Python',
-          type: 'search',
-          img: ''
-        }
-      ]
-    },{
-      name: 'Diseño',
-      type: 'search',
-      position: [{pos: 'topicText', size:'50', y:'17',x:'18'}],
-      img: '',
-      description: 'Crea experiencias visuales con propósito. Desde diseño gráfico hasta UX/UI, aprende a comunicar ideas que conectan, impactan y transforman.',
-      universities: [
-        {
-          name: 'Diseño e innovación',
-          type: 'search',
-          img: ''
+          name: 'HP',
+          type: 'Empresa',
+          img: 'assets/companies/icons/ico-HP.png'
         },{
-          name: 'Diseño gráfico',
-          type: 'search',
-          img: ''
+          name: 'Microsoft',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-Microsoft.png'
         },{
-          name: 'Diseño y Arquitectura',
-          type: 'search',
-          img: ''
+          name: 'DeepLearning.AI',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-DeepLearning-AI.png'
+        },{
+          name: 'Massachusetts Institute of Technology',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Massachusetts-Institute.webp'
         }
       ]
     },{
       name: 'Marketing digital',
       type: 'search',
       position: [{pos: 'topicText', size:'43', y:'25',x:'6'}],
-      img: '',
+      img: '/assets/category/icons/ico-marketing-t.png',
+      color: '#034694',
       description: 'Entiende cómo funcionan las marcas en la era digital. Aprende a atraer, convertir y fidelizar audiencias con herramientas y estrategias actualizadas.',
       universities: [
         {
@@ -660,31 +653,41 @@ function HomePage() {
         }
       ]
     },{
-      name: 'Neurociencia',
+      name: 'Cine',
       type: 'search',
       position: [{pos: 'topicText', size:'44', y:'20',x:'72'}],
-      img: '',
+      img: '/assets/category/icons/ico-cine-t.png',
+      color: '#034694',
       description: 'Explora el cerebro humano desde la ciencia. Comprende cómo pensamos, sentimos y aprendemos, y aplica este conocimiento en salud, educación y tecnología.',
       universities: [
         {
-          name: 'UNAM',
-          type: 'search',
-          img: ''
+          name: 'Martin Scorsese - Enseña Cinematografía',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/martin-scorsese-ensena-cinematografia',
+          img: '/assets/universities/banners/masterclass/MartinScorsese.jpg'
         },{
-          name: 'Google',
-          type: 'search',
-          img: ''
+          name: 'Hans Zimmer - Enseña composición de música para películas',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/hans-zimmer-ensena-composicion-de-musica-para-peliculas',
+          img: '/assets/universities/banners/masterclass/HansZimmer.jpg'
         },{
-          name: 'Universidad de los Andes',
-          type: 'search',
-          img: ''
+          name: 'Enseña Cinematografía - James Cameron',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/ensena-cinematografia-james-cameron',
+          img: '/assets/universities/banners/masterclass/JamesCameron.jpg'
+        },{
+          name: 'Jodie Foster - Enseña Cinematografía',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/jodie-foster-ensena-cinematografia',
+          img: '/assets/universities/banners/masterclass/JodieFoster.jpg'
         }
       ]
     },{
       name: 'Psicología',
       type: 'search',
       position: [{pos: 'topicText', size:'50', y:'65',x:'4'}],
-      img: '',
+      img: '/assets/category/icons/ico-psicologia-t.png',
+      color: '#034694',
       description: 'Conoce el comportamiento humano en profundidad. Aprende teorías, métodos y herramientas para comprender, acompañar y transformar realidades personales y sociales.',
       universities: [
         {
@@ -698,7 +701,8 @@ function HomePage() {
       name: 'Videojuegos',
       type: 'search',
       position: [{pos: 'topicText', size:'47', y:'59',x:'14'}],
-      img: '',
+      img: '/assets/category/icons/ico-videojuegos-t.png',
+      color: '#034694',
       description: 'Descubre el poder narrativo y técnico del gaming. Aprende diseño, desarrollo y lógica interactiva en una industria creativa y en constante evolución.',
       universities: [
         {
@@ -714,8 +718,63 @@ function HomePage() {
     },{
       name: 'Educación',
       type: 'search',
+      color: '#034694',
       position: [{pos: 'topicText', size:'42', y:'64',x:'47'}],
-      img: '',
+      img: '/assets/category/icons/ico-educacion-t.png',
+      description: 'Diseña nuevas formas de enseñar y aprender. Explora metodologías, tecnologías y enfoques que hacen de la educación una experiencia transformadora.',
+      universities: [
+        {
+          name: 'Stanford University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Stanford-University.webp'
+        },{
+          name: 'Harvard University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Harvard.webp'
+        },{
+          name: 'Columbia University',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/malala-yousafzai-ensena-a-crear-cambios',
+          img: '/assets/universities/banners/masterclass/MalalaYousafzai.jpg'
+        },{
+          name: 'ArmEducation',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-ArmEducation.png'
+        }
+      ]
+    },{
+      name: 'Diseño',
+      type: 'search',
+      position: [{pos: 'topicText', size:'42', y:'64',x:'47'}],
+      img: '/assets/category/icons/ico-diseno-t.png',
+      color: '#D33B3E',
+      description: 'Diseña nuevas formas de enseñar y aprender. Explora metodologías, tecnologías y enfoques que hacen de la educación una experiencia transformadora.',
+      universities: [
+        {
+          name: 'Stanford University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Stanford-University.webp'
+        },{
+          name: 'Harvard University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Harvard.webp'
+        },{
+          name: 'Columbia University',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/malala-yousafzai-ensena-a-crear-cambios',
+          img: '/assets/universities/banners/masterclass/MalalaYousafzai.jpg'
+        },{
+          name: 'ArmEducation',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-ArmEducation.png'
+        }
+      ]
+    },{
+      name: 'Ciberseguridad',
+      type: 'search',
+      position: [{pos: 'topicText', size:'42', y:'64',x:'47'}],
+      img: '/assets/category/icons/ico-ciberseguridad-t.png',
+      color: '#D33B3E',
       description: 'Diseña nuevas formas de enseñar y aprender. Explora metodologías, tecnologías y enfoques que hacen de la educación una experiencia transformadora.',
       universities: [
         {
@@ -953,17 +1012,32 @@ function HomePage() {
 
       {/* Sección 2: Zoom Scroll */}
       <section className="h-[20vh] bg-gradient-to-t from-[#0F090B] to-transparent relative"></section>
-      <section
-        className="wrapper bg-[#0F090B] relative section z-10"
-      >
-        <div
-          ref={zoomRef}
-          style={{ scale: springScale }}
-          className="container m-auto lg:px-4 justify-center-safe gap-2 "
-        >
-          <TopicSelector topics={topics}/>
-        </div>
-      </section>
+      <section className="h-[20vh] bg-gradient-to-t from-transparent to-[#0F090B] relative"></section>
+      <section className="wrapper relative section z-10">
+      {/* Fondo de sección 
+      <Galaxy
+        className="absolute inset-0 -z-10 pointer-events-none"
+        transparent
+        density={0.9}        // puedes bajar un poco la densidad
+        hueShift={150}
+        starSpeed={0.45}
+        speed={1.0}
+        twinkleIntensity={0.25}
+        glowIntensity={0.28}
+        saturation={0.05}
+        mouseRepulsion={true}
+        repulsionStrength={1.6}
+        rotationSpeed={0.08}
+        autoCenterRepulsion={0}
+      />*/}
+
+      {/* Si quieres un color base muy sutil detrás del galaxy, usa un overlay */}
+      <div className="absolute inset-0 -z-20 bg-[#0F090B]/5 " />
+
+      <div className="container m-auto px-2 lg:px-4 justify-center-safe gap-2 relative">
+        <TopicGrid topics={topics} columns={5} withBackground={false} />
+      </div>
+    </section>
       {/* Sección 3 */}
       <section className="wrapper w-screen h-full bg-[#0F090B] relative flex-shrink-0 flex items-center justify-center">
         <div className="container m-auto py-30 max-w-[90vw] text-center">
