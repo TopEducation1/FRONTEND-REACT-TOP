@@ -38,7 +38,12 @@ function HomePage() {
           name: 'Universidad de los Andes',
           type: 'Universidad',
           img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+        },{
+          name: 'University of California, Davis',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-u-califonia-davis.webp'
         }
+        
       ]
     },
     {
@@ -146,10 +151,14 @@ function HomePage() {
           name: 'UNAM',
           type: 'Universidad',
           img: 'assets/universities/icons/ico-UNAM.webp'
+        },{
+          name: 'IE Business School',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-IE-Business-school.webp'
         }
       ]
     },{
-      name: 'Ciencia física e ingeniería',
+      name: 'Ciencia, física e ingeniería',
       type: 'Tema',
       position: [{pos: 'topicText', size:'43', y:'90',x:'48'},{pos: 'topicImg', size: '59', y:'58',x:'36'},{pos: 'topicBlur', size: '30', y:'55',x:'15'}],
       img: 'assets/category/topic/ico-Ciencias-fisicas-e-ingenieria',
@@ -166,6 +175,14 @@ function HomePage() {
           type: 'Certificacion',
           link: '/certificacion/masterclass/la-exploracion-espacial-y-lo-que-depara-el-futuro-chris-hadfield',
           img: '/assets/universities/banners/masterclass/ChrisHadfield.jpg'
+        },{
+          name: 'UNAM',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-UNAM.webp'
+        },{
+          name: 'Pontificia Universidad Catolica de Chile',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Pontificia-Universidad-Catolica-de-Chile.webp'
         }
       ]
     },{
@@ -188,6 +205,10 @@ function HomePage() {
           name: 'Columbia University',
           type: 'Universidad',
           img: 'assets/universities/icons/ico-Columbia-University.webp'
+        },{
+          name: 'Fundación Raspberry Pi',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-Fundacion-Raspberry-Pi.png'
         }
       ]
     },{
@@ -207,6 +228,14 @@ function HomePage() {
           name: 'Universidad de los Andes',
           type: 'Universidad',
           img: '/assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+        },{
+          name: 'Universitat Politècnica de València',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-u-politecnica-de-valencia.webp'
+        },{
+          name: 'The University of Adelaide',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-u-adelaide.webp'
         }
       ]
     },{
@@ -322,17 +351,28 @@ function HomePage() {
       description: 'Equilibra cuerpo, mente y entorno. Aprende a manejar el estrés, mejorar tu alimentación y cultivar salud mental.',
       universities: [
         {
-          name: 'UNAM',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-UNAM.webp'
+          name: 'Donna Farhi - Enseña Fundamentos de Yoga',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/donna-farhi-ensena-fundamentos-de-yoga',
+          img: '/assets/universities/banners/masterclass/DonnaFarhi.jpg'
         },{
-          name: 'Google',
-          type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
+          name: 'Jon Kabat-Zinn - Enseña Mindfulness y Meditación',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/jon-kabat-zinn-ensena-mindfulness-y-meditacion',
+          img: '/assets/universities/banners/masterclass/JonKabatZinn.jpg'
         },{
           name: 'Universidad de los Andes',
           type: 'Universidad',
           img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+        },{
+          name: ' Salud Cerebral',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/dr-wendy-suzuki-dr-lisa-feldman-barrett-dr-uma-naidoo-and-gregory-gourdet-salud-cerebral',
+          img: '/assets/universities/banners/masterclass/BrainHealth.jpg'
+        },{
+          name: 'Universidad del Rosario',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Universidad-del-Rosario.webp'
         }
       ]
     },{
@@ -417,17 +457,25 @@ function HomePage() {
       description: 'Impulsa tu desarrollo emocional, físico y mental con el ejemplo de quienes superaron límites.',
       universities: [
         {
-          name: 'UNAM',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-UNAM.webp'
+          name: 'Jay Shetty - Navegando por el cambio',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/jay-shetty-navegando-por-el-cambio',
+          img: '/assets/universities/banners/masterclass/JayShetty.jpg'
         },{
-          name: 'Google',
-          type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
+          name: 'Jeff Goodby & Rich Silverstein - Enseñar Publicidad y Creatividad',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/jeff-goodby-rich-silverstein-ensenar-publicidad-y-creatividad',
+          img: '/assets/universities/banners/masterclass/JeffGoodby&RichSilverstein.jpg'
         },{
-          name: 'Universidad de los Andes',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+          name: 'Enseña Skateboarding',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/tony-hawk-ensena-skateboarding',
+          img: '/assets/universities/banners/masterclass/TonyHawk.jpg'
+        },{
+          name: 'Enseña a dar con impacto',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/melinda-french-gates-ensena-a-dar-con-impacto',
+          img: '/assets/universities/banners/masterclass/MelindaFrenchGates.jpg'
         }
       ]
     },{
@@ -450,6 +498,16 @@ function HomePage() {
           name: 'Universidad de los Andes',
           type: 'Universidad',
           img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+        },{
+          name: 'Enseña a rastrear tus raíces a través de la comida',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/michael-w-twitty-ensena-a-rastrear-tus-raices-a-traves-de-la-comida',
+          img: '/assets/universities/banners/masterclass/MichaelTwitty.webp'
+        },{
+          name: 'Lecciones de voces negras influyentes',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/angela-davis-cornel-west-kimberle-williams-crenshaw-nikole-hannah-jones-sherrilyn-ifill-jelani-cobb-and-john-mcwhorter-lecciones-de-voces-negras-influyentes',
+          img: '/assets/universities/banners/masterclass/Blackhistory.jpg'
         }
       ]
     },{
@@ -475,6 +533,11 @@ function HomePage() {
           type: 'Certificacion',
           link: '/certificacion/masterclass/daniel-negreanu-ensena-poquer',
           img: '/assets/universities/banners/masterclass/DanielNegreanu.jpg'
+        },{
+          name: 'El poder de la empatía',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/pharrell-williams-robin-arzon-roxane-gay-walter-mosley-robert-reffkin-gloria-steinem-and-cornel-west-el-poder-de-la-empatia',
+          img: '/assets/universities/banners/masterclass/Elpoderdelaempatia.webp'
         }
       ]
     },{
@@ -528,18 +591,25 @@ function HomePage() {
           type: 'Universidad',
           img: 'assets/universities/icons/ico-UNAM.webp'
         },{
-          name: 'Google',
-          type: 'Empresa',
-          img: 'assets/companies/icons/ico-Google-Cloud.png'
+          name: 'Original Series - Chris Voss, Chris Hadfield, Condoleezza Rice, and Stephen Hadley',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/original-series-chris-voss-chris-hadfield-condoleezza-rice-and-stephen-hadley',
+          img: '/assets/universities/banners/masterclass/crisis-day.png'
         },{
-          name: 'Universidad de los Andes',
-          type: 'Universidad',
-          img: 'assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+          name: 'Pensamiento Independiente y el poder Invisible de los medios de comunicación',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/pensamiento-independiente-y-el-poder-invisible-de-los-medios-de-comunicacion-noam-chomsky',
+          img: '/assets/universities/banners/masterclass/NoamChomsky.jpeg'
+        },{
+          name: 'Piensa como un jefe, vive como una leyenda',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/martha-stewart-piensa-como-un-jefe-vive-como-una-leyenda',
+          img: '/assets/universities/banners/masterclass/MarthaStewart.jpg'
         }
       ]
     },{
       name: 'Productividad',
-      type: 'Habilidad',
+      type: 'Tema',
       position: [{pos: 'topicText', size:'68', y:'37',x:'45'},{pos: 'topicImg', size: '280', y:'28',x:'88'},{pos: 'topicBlur', size: '40', y:'16',x:'73'}],
       img: 'assets/category/ability/ico-Productividad',
       color: '#034694',
@@ -554,6 +624,14 @@ function HomePage() {
           type: 'Certificacion',
           link: '/certificacion/masterclass/james-clear-pequenos-habitos-que-tienen-un-gran-impacto-en-tu-vida',
           img: '/assets/universities/banners/masterclass/JamesClear.jpg'
+        },{
+          name: 'Harvard University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Harvard.webp'
+        },{
+          name: 'University of California Irvine',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-University-of-California-Irvine.webp'
         }
       ]
     },{
@@ -568,6 +646,16 @@ function HomePage() {
           name: 'University of Michigan',
           type: 'Universidad',
           img: '/assets/universities/icons/ico-University-of-Michigan.webp'
+        },{
+          name: 'Mentalidad ganadora - Lewis Hamilton',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/mentalidad-ganadora-lewis-hamilton',
+          img: '/assets/universities/banners/masterclass/LewisHamilton.jpg'
+        },{
+          name: 'Metallica - Enseña a ser una banda',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/metallica-ensena-a-ser-una-banda',
+          img: 'https://top.education/assets/universities/banners/masterclass/Metallica.jpg'
         }
       ]
     },{
@@ -639,17 +727,26 @@ function HomePage() {
       description: 'Entiende cómo funcionan las marcas en la era digital. Aprende a atraer, convertir y fidelizar audiencias con herramientas y estrategias actualizadas.',
       universities: [
         {
-          name: 'Estrategia de marketing',
-          type: 'search',
-          img: ''
+          name: 'Karl Rove and David Axelrod - Enseñar estrategia de campaña y mensajes',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/karl-rove-and-david-axelrod-ensenar-estrategia-de-campana-y-mensajes',
+          img: '/assets/universities/banners/masterclass/KarlRoveandDavidAxelrod.jpg'
         },{
-          name: 'Marketing gerencial',
-          type: 'search',
-          img: ''
+          name: 'Universidad de Palermo',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Universidad-de-Palermo.webp'
         },{
-          name: 'Medición de marketing',
-          type: 'search',
-          img: ''
+          name: 'IE Business School',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-IE-Business-school.webp'
+        },{
+          name: 'Google',
+          type: 'Universidad',
+          img: '/assets/companies/icons/ico-Google-Cloud.png'
+        },{
+          name: 'Universidad Austral',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Universidad-Austral.webp'
         }
       ]
     },{
@@ -695,6 +792,18 @@ function HomePage() {
           type: 'Certificacion',
           link: '/certificacion/masterclass/robin-arzon-ensena-fuerza-mental',
           img: '/assets/universities/banners/masterclass/RobinArzon.jpg'
+        },{
+          name: 'Universidad de Palermo',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Universidad-de-Palermo.webp'
+        },{
+          name: 'UNAM',
+          type: 'Universidad',
+          img: 'assets/universities/icons/ico-UNAM.webp'
+        },{
+          name: 'Yale University',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Yale-University.webp'
         }
       ]
     },{
@@ -706,13 +815,22 @@ function HomePage() {
       description: 'Descubre el poder narrativo y técnico del gaming. Aprende diseño, desarrollo y lógica interactiva en una industria creativa y en constante evolución.',
       universities: [
         {
-          name: 'California Institute of Arts',
+          name: 'Universidad Autónoma de Barcelona',
           type: 'Universidad',
-          img: ''
+          img: '/assets/universities/icons/ico-U-Autonoma-de-barcelona.webp'
         },{
-          name: 'Epic Games',
-          type: 'search',
-          img: ''
+          name: 'Universidad de los Andes',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Universidad-de-los-Andes.webp'
+        },{
+          name: 'Enseña diseño y teoría de juegos',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/will-wright-ensena-diseno-y-teoria-de-juegos',
+          img: '/assets/universities/banners/masterclass/WillWright.jpg'
+        },{
+          name: 'HP',
+          type: 'Empresa',
+          img: '/assets/companies/icons/ico-HP.png'
         }
       ]
     },{
@@ -732,7 +850,7 @@ function HomePage() {
           type: 'Universidad',
           img: '/assets/universities/icons/ico-Harvard.webp'
         },{
-          name: 'Columbia University',
+          name: 'Malala Yousafzai - Enseña a crear cambios',
           type: 'Certificacion',
           link: '/certificacion/masterclass/malala-yousafzai-ensena-a-crear-cambios',
           img: '/assets/universities/banners/masterclass/MalalaYousafzai.jpg'
@@ -751,22 +869,27 @@ function HomePage() {
       description: 'Diseña nuevas formas de enseñar y aprender. Explora metodologías, tecnologías y enfoques que hacen de la educación una experiencia transformadora.',
       universities: [
         {
-          name: 'Stanford University',
+          name: 'Museum of Modern Art',
           type: 'Universidad',
-          img: '/assets/universities/icons/ico-Stanford-University.webp'
+          img: '/assets/universities/icons/ico-Museum-of-Modern-Art.png'
         },{
-          name: 'Harvard University',
-          type: 'Universidad',
-          img: '/assets/universities/icons/ico-Harvard.webp'
-        },{
-          name: 'Columbia University',
-          type: 'Certificacion',
-          link: '/certificacion/masterclass/malala-yousafzai-ensena-a-crear-cambios',
-          img: '/assets/universities/banners/masterclass/MalalaYousafzai.jpg'
-        },{
-          name: 'ArmEducation',
+          name: 'Smithsonian',
           type: 'Empresa',
-          img: '/assets/companies/icons/ico-ArmEducation.png'
+          img: '/assets/companies/icons/ico-Smithsonian.png'
+        },{
+          name: 'Parsons School of Design, The New School',
+          type: 'Universidad',
+          img: '/assets/universities/icons/ico-Parsons-School-of-Design-The-New-School.webp '
+        },{
+          name: 'Diseños Gráficos de Gran Impacto - David Carson',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/disenos-graficos-de-gran-impacto-david-carson',
+          img: '/assets/universities/banners/masterclass/DavidCarson.jpg'
+        },{
+          name: 'Diseño y Arquitectura - Frank Gehry',
+          type: 'Certificacion',
+          link: '/certificacion/masterclass/diseno-y-arquitectura-frank-gehry',
+          img: '/assets/universities/banners/masterclass/FrankGehry.jpg'
         }
       ]
     },{
@@ -778,22 +901,19 @@ function HomePage() {
       description: 'Diseña nuevas formas de enseñar y aprender. Explora metodologías, tecnologías y enfoques que hacen de la educación una experiencia transformadora.',
       universities: [
         {
-          name: 'Stanford University',
-          type: 'Universidad',
-          img: '/assets/universities/icons/ico-Stanford-University.webp'
-        },{
-          name: 'Harvard University',
-          type: 'Universidad',
-          img: '/assets/universities/icons/ico-Harvard.webp'
-        },{
-          name: 'Columbia University',
+          name: 'Escudo Digital: Ciberseguridad para Protección de Datos y Sistemas',
           type: 'Certificacion',
-          link: '/certificacion/masterclass/malala-yousafzai-ensena-a-crear-cambios',
-          img: '/assets/universities/banners/masterclass/MalalaYousafzai.jpg'
+          link: '/certificacion/edx/anahuacx-escudo-digital-ciberseguridad-para-proteccion-de-datos-y-sistemas',
+          img: '/assets/universities/icons/ico-Universidades-Anahuac.webp'
         },{
-          name: 'ArmEducation',
-          type: 'Empresa',
-          img: '/assets/companies/icons/ico-ArmEducation.png'
+          name: 'Analista de Ciberseguridad en Microsoft',
+          type: 'Certificacion',
+          link: '/certificacion/coursera/analista-de-ciberseguridad-en-microsoft-certificado-profesional',
+          img: '/assets/companies/icons/ico-Microsoft.png'
+        },{
+          name: 'Google',
+          type: 'Universidad',
+          img: '/assets/companies/icons/ico-Google-Cloud.png'
         }
       ]
     }
@@ -936,7 +1056,7 @@ function HomePage() {
     },{
       id: 24, src:"/assets/universities/flags/BA-TE-COLORADO.webp", category:"Universidad", link: "University of Colorado Boulder",title:"",desc:""
     },{
-      id: 25, src:"/assets/universities/flags/BA-TE-IRVINE.webp", category:"Universidad", link: "University of California, Irvine",title:"",desc:""
+      id: 25, src:"/assets/universities/flags/BA-TE-IRVINE.webp", category:"Universidad", link: "University of California Irvine",title:"",desc:""
     },{
       id: 26, src:"/assets/universities/flags/BA-TE-NORTHWESTERN.webp", category:"Universidad", link: "Northwestern University",title:"",desc:""
     }
