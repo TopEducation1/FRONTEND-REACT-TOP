@@ -1,6 +1,6 @@
 const Footer = () => {
     return (
-        <footer className="wrapper bg-[#0F090B] relative">
+        <footer className="wrapper bg-[#0F090B] relative" id="footerPage">
             <div className="footer container m-auto">
                 <div className="footer-section section-links">
                     <a href="/politicas-privacidad">Políticas de privacidad</a>

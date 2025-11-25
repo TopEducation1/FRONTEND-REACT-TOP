@@ -36,20 +36,32 @@ export default function SearchLMT() {
 
   return (
     <div className='text-center lg:text-left mt-2 cont-search-top relative'>
-      <input
-        type="text"
-        placeholder="Buscar entre miles de certificaciones..."
-        className="input w-full max-w-[80%] lg:max-w-[100%] px-4 py-2 rounded-full text-black mt-4 mb-4"
-        id='search-lmt'
-        value={query}
-        onChange={handleChange}
-      />
+      <div className="relative w-full max-w-[80%] lg:max-w-[100%] mt-4 mb-4">
+        <input
+          type="text"
+          placeholder="Buscar entre miles de certificaciones..."
+          className="input w-full px-4 py-2 pr-10 rounded-full text-black"
+          id="search-lmt"
+          value={query}
+          onChange={handleChange}
+        />
+
+        {query && (
+          <button
+            type="button"
+            onClick={() => setQuery("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+          >
+            ✕
+          </button>
+        )}
+      </div>
       <p className="text-sm text-center lg:text-left text-[#F6F4EF] mb-2">
         Busca por tema, habilidad, universidad o empresa
       </p>
 
       <div className="flex flex-wrap justify-center lg:justify-start gap-2 text-xs mt-4">
-        {['Google', 'Amazon', 'Desarrollo Personal', 'Programación', 'Negocios', 'Marketing', 'Inteligencia Artificial'].map((tag, idx) => (
+        {['Google', 'AWS', 'Desarrollo Personal', 'Programación', 'Negocios', 'Marketing', 'Inteligencia Artificial'].map((tag, idx) => (
           <span
             key={idx}
             className="bg-[#F6F4EF] px-3 py-1 rounded-full hover:bg-neutral-400 cursor-pointer"

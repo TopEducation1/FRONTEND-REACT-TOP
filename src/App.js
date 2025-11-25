@@ -24,6 +24,7 @@ import LoMasTop from "./pages/loMasTop.jsx";
 import StartNow from "./pages/startNow.jsx";
 import BlogDetailPage from "./pages/BlogDetailPage.jsx";
 import TopList from "./pages/topList.jsx";
+import BrandLandingPage from "./pages/BrandLandingPage";
 
 function App() {
   useEffect(() => {
@@ -76,6 +77,7 @@ function App() {
           <Route path="/lo-mas-top/ranking/:slug" element={<Ranking />} />
           <Route path="/originals/:slug" element={<TopOriginals />} />
           <Route path="/lo-mas-top/:tipo" element={<TopList />} />
+          <Route path="/brand/:slug" element={<BrandLandingPage />} />
         </Route>
 
         {/* Ruta por defecto */}

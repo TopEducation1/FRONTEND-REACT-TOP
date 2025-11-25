@@ -18,15 +18,27 @@ function ParaEquipos () {
         },{
             id: 5, src: "assets/universities/flags/BA-TE-HARVARD.webp", category:"Universidad", link: "Harvard University",title:"",desc:""
         },{
-            id: 6, src: "assets/universities/flags/BA-TE-CAMBRIDGE.webp", category:"Universidad", link: "University of Michigan",title:"",desc:""
+            id: 6, src: "/assets/universities/flags/BA-TE-COLUMBIA.webp", category:"Universidad", link: "Columbia University",title:"",desc:""
         },{
-            id: 7, src: "assets/universities/flags/BA-TE-CAPE-TOWN.webp", category:"Universidad", link: "Berklee College of Music",title:"",desc:""
+            id: 7, src:"/assets/universities/flags/BA-TE-ILLINOIS.webp", category:"Universidad", link: "University of Illinois Urbana-Champaign",title:"",desc:""
         },{
-            id: 8, src: "assets/universities/flags/BA-TE-MASSACHUSETTS.webp", category:"Universidad", link: "Peking University",title:"",desc:""
+            id: 8, src: "/assets/universities/flags/BA-TE-MONTERREY.webp", category:"Universidad", link: "Tecnológico de Monterrey",title:"",desc:""
         },{
-            id: 9, src: "assets/universities/flags/BA-TE-OXFORD.webp", category:"Universidad", link: "Columbia University",title:"",desc:""
+            id: 9, src:"/assets/universities/flags/BA-TE-VIRGINIA.webp", category:"Universidad", link: "University of Virginia",title:"",desc:""
         },{
-            id: 10, src: "assets/universities/flags/BA-TE-HARVARD.webp", category:"Universidad", link: "Harvard University",title:"",desc:""
+            id: 10, src:"/assets/universities/flags/BA-TE-SEA.webp", category:"Universidad", link: "SAE-México",title:"",desc:""
+        },{
+            id: 11, src:"/assets/universities/flags/BA-TE-CHICAGO.webp", category:"Universidad", link: "The University of Chicago",title:"",desc:""
+        },{
+            id: 12, src: "/assets/universities/flags/BA-TE-BERKLEE.webp", category:"Universidad", link: "Berklee College of Music",title:"",desc:""
+        },{
+            id: 13, src:"/assets/universities/flags/BA-TE-PARSONS.webp", category:"Universidad", link: "Parsons School of Design, The New School",title:"",desc:""
+        },{
+            id: 14, src:"/assets/universities/flags/BA-TE-COLORADO.webp", category:"Universidad", link: "University of Colorado Boulder",title:"",desc:""
+        },{
+            id: 15, src:"/assets/universities/flags/BA-TE-IRVINE.webp", category:"Universidad", link: "University of California Irvine",title:"",desc:""
+        },{
+            id: 16, src:"/assets/universities/flags/BA-TE-NORTHWESTERN.webp", category:"Universidad", link: "Northwestern University",title:"",desc:""
         }
     ];
     
@@ -118,7 +130,7 @@ function ParaEquipos () {
                 <div className="container m-auto pb-[4.5rem] xl:pb-28 lg:pb-28 md:pb-28">
                     <div className="flex flex-wrap mx-[-15px] md:mx-[-20px] lg:mx-[-20px] xl:mx-[-35px] !mt-[-50px] items-center">
                         <div className="xl:w-3/12 lg:w-3/12 w-full flex-[0_0_auto] !px-[15px] md:!px-[20px] lg:!px-[20px] xl:!px-[35px] !mt-[50px] max-w-full">
-                            <h2 className="text-[#F6F4EF] text-center leading-[1.2em] md:text-left text-[2.5rem] font-normal font-[Lora] w-full"><span className="top-italic text-[3.5rem]">Forma a tu equipo<br></br></span> ejecutivo con</h2>
+                            <h2 className="text-[#F6F4EF] text-center leading-[1.2em] md:text-left text-[2.3rem] font-normal font-[Lora] w-full"><span className="top-italic text-[2.5rem]">Forma a tu equipo<br></br></span> ejecutivo con</h2>
                             <img className="w-[200px] mt-5 m-auto " src="/assets/content/banners/TE-getsmarter-edx.png" alt="" />
                         </div>
                         <div className="xl:w-9/12 lg:w-9/12 w-full flex-[0_0_auto] !px-[15px] md:!px-[20px] lg:!px-[20px] xl:!px-[35px] !mt-[50px] max-w-full">

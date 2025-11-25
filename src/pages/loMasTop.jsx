@@ -211,7 +211,7 @@ export default function LoMasTop() {
         </HorizontalScroll>
       </section>
       {/* Proveedores / Universidades / Instituciones */}
-      <section className="w-screen h-full flex-shrink-0 p-5 lg:p-10 mt-[-70%] lg:mt-[-20%]">
+      <section className="w-screen h-full flex-shrink-0 p-5 lg:p-10 mt-[-70%] lg:mt-[-20%] relative !z-10">
         <div className='container m-auto'>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm pt-10 lg:pt-20">
             {/* Universidades */}
@@ -240,8 +240,8 @@ export default function LoMasTop() {
       <section className="wrapper">
         <div className="container m-auto">
           <RankingsGrid/>
-          <h3 className='text-white text-center text-[3rem] mb-4'>Ranking de blog</h3>
-          {/*<div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-5">
+          {/*<h3 className='text-white text-center text-[3rem] mb-4'>Ranking de blog</h3>
+          <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-5">
             <Link to="/lo-mas-top/ranking/Top-10-de-universidades" className="rounded-xl flex w-[80%] md:w-[30%] hover:scale-105 transition cursor-pointer">
               <img src="/assets/content/banners/Top-50-Universidades.webp" className='!w-full rounded-xl' alt="" />
               {/*<div className='w-[40%]'>
@@ -266,8 +266,8 @@ export default function LoMasTop() {
                 </div> 
               </div>
             </Link>   
-          </div>*/}
-          <BlogsGrid category='Lo más Top'/>
+          </div>
+          <BlogsGrid category='Lo más Top'/>*/}
         </div>
       </section>
     </>
