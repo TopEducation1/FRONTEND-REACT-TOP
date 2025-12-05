@@ -143,6 +143,26 @@ const CertificationPage = () => {
         );
     }
 
+    function navigateWithTransition(path) {
+        if (document.startViewTransition) {
+        document.startViewTransition(() => {
+            navigate(path);
+        });
+        } else {
+        navigate(path);
+        }
+    }
+
+    const handleItemMenuClick = (category, tag) => {
+       console.log(category, tag);
+
+      const categoryParam = category; // asegura que esté en minúsculas
+      const tagParam = encodeURIComponent(tag); // codifica y pone en minúscula
+
+      const query = `${categoryParam}=${tagParam}&page=1&page_size=15`;
+      navigateWithTransition(`/explora/filter?${query}`);
+    };
+
     return (
         <>
         {/**SEO ELEMENTS WITH REACT -HELMET */}
@@ -397,8 +417,9 @@ const CertificationPage = () => {
                                         <div class=" text-black font-semibold">Plataforma</div>
                                     </div>
                                     <div class="flex justify-end items-center">
-                                        <img class="w-[110px]"  src={certification.plataforma_certificacion.plat_img} alt=""/>
-                                        
+                                        <a className="cursor-pointer" onClick={() => handleItemMenuClick("Plataforma", certification.plataforma_certificacion.nombre)}>
+                                            <img class="w-[110px]"  src={certification.plataforma_certificacion.plat_img} alt=""/>
+                                        </a>
                                     </div>
                                 </li>
 
@@ -408,7 +429,8 @@ const CertificationPage = () => {
                                         <div class=" text-black font-semibold">{(certification.plataforma_certificacion.nombre != 'MasterClass')?"Tema:":"Habilidad:"}</div>
                                     </div>
                                     <div class="flex-none">
-                                        <div className={`tag-category ${certification.tema_certificacion?.tem_col || 'tag-verde'} mt-[15px]`}>{certification.tema_certificacion.nombre}</div>
+                                        <a className="cursor-pointer" onClick={() => handleItemMenuClick(certification.tema_certificacion.tem_type, certification.tema_certificacion.nombre )}>
+                                        <div className={`tag-category ${certification.tema_certificacion?.tem_col || 'tag-verde'} mt-[15px]`}>{certification.tema_certificacion.nombre}</div></a>
                                     </div>
                                 </li>
                                 <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">

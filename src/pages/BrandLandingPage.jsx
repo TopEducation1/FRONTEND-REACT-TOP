@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import SearchBarBrand from "../components/brand/searchBarBrand";
+import BrandExploreSection from "../components/brand/BrandExploreSection";
+import BrandExploreWhiteLabel from "../components/brand/BrandExploreWhiteLabel";
+import BrandBlogsGrid from "../components/brand/BrandBlogsGrid";
 
-const API_BASE = "http://127.0.0.1:8000"; 
-// o process.env.REACT_APP_API_BASE_URL si usas CRA
+//const API_BASE = "http://127.0.0.1:8000"; 
+const API_BASE = process.env.URL_ENV
 
 // --- Secciones (aquí luego conectas tus componentes reales) ---
 
 function AboutSection({ brand }) {
   return (
     <section className="wrapper">
-        <div className="container m-auto h-[80vh] mx-auto px-4 pt-[120px] bg-red pb-[50px] flex justify-center items-center gap-2 sect-h-pequ">
+        <div className="container m-auto h-[80vh] mx-auto px-4 pt-[200px] bg-red pb-[50px] flex justify-center items-center gap-2 sect-h-pequ">
             <div className="flex flex-wrap mx-[-15px] xl:mx-[-35px] lg:mx-[-20px] !mt-[-30px] !mb-[4.5rem] items-center">
                 <div className="xl:w-7/12 lg:w-7/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px]  max-w-full !relative">
                     <h1 className="text-neutral-950 text-6xl font-normal font-[Lora] text-left leading-[1.1em] font-bold relative sm:text-5xl md:text-6xl lg:text-6xl font-[Montserrat]">{brand.phrase || "Aprende hoy...transforma tu futuro"}</h1>
@@ -37,35 +40,32 @@ function AboutSection({ brand }) {
 
 function ExploreSection({ brand }) {
   return (
-    <section className="wrapper" style={{ background: brand.color_principal || "#0F090B" }}>
-        <div className="container m-auto h-[80vh] mx-auto px-4 pt-[120px] bg-red pb-[50px] flex justify-center items-center gap-2 sect-h-pequ">
-            <h2 className="text-xl font-semibold mb-2">Explora</h2>
-            <p className="text-sm text-gray-700">
-                Aquí puedes integrar tu componente de exploración de certificaciones filtradas por esta marca (por slug).
-            </p>
-        </div>
+    <section className="wrapper rounded-t-[50px]" style={{ background: brand.color_principal || "#0F090B" }}>
+      <div className="container m-auto mx-auto px-4  py-[50px] flex justify-center items-center gap-2">
+        <BrandExploreWhiteLabel brandSlug={brand.slug} />
+      </div>
     </section>
   );
 }
 
 function TopSection({ brand }) {
   return (
-    <section className="bg-white rounded-2xl shadow-sm p-6">
-      <h2 className="text-xl font-semibold mb-2">Lo más top</h2>
-      <p className="text-sm text-gray-700">
-        Aquí puedes reutilizar tu módulo de rankings / Top Originals conectado a esta marca.
-      </p>
+    <section className="bg-white">
+      
     </section>
   );
 }
 
 function BlogSection() {
   return (
-    <section className="bg-white rounded-2xl shadow-sm p-6">
-      <h2 className="text-xl font-semibold mb-2">Blog</h2>
-      <p className="text-sm text-gray-700">
-        Entradas del blog relacionadas con esta marca.
-      </p>
+    <section className="bg-white">
+      <div className="container m-auto mx-auto px-4  py-[50px] flex justify-center items-center gap-2">
+        <BrandBlogsGrid
+          category=""           // o la categoría que uses para esta marca
+          title="Blog"
+          showSearch={true}     // o false si no quieres buscador
+        />
+      </div>
     </section>
   );
 }
@@ -203,10 +203,10 @@ export default function BrandLandingPage() {
                     </div>
                 )}
                 <div className="flex flex-col ">
-                    <h2 className="text-[20px] md:text-[24px] font-semibold text-white">
+                    {/*<h2 className="text-[20px] md:text-[24px] font-semibold text-white">
                     {brand.nombre}
                     </h2>
-                    {/*brand.descripcion && (
+                    brand.descripcion && (
                     <p className="text-xs md:text-sm text-white/80 line-clamp-2">
                         {brand.descripcion}
                     </p>
