@@ -5,8 +5,8 @@ import BrandExploreSection from "../components/brand/BrandExploreSection";
 import BrandExploreWhiteLabel from "../components/brand/BrandExploreWhiteLabel";
 import BrandBlogsGrid from "../components/brand/BrandBlogsGrid";
 
-//const API_BASE = "http://127.0.0.1:8000"; 
-const API_BASE = process.env.URL_ENV
+const API_BASE = "https://app.top.education/"; 
+//const API_BASE = process.env.URL_ENV 
 
 // --- Secciones (aquí luego conectas tus componentes reales) ---
 
