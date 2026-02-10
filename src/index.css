@@ -259,6 +259,7 @@ header {
 
 .navigation-menu{
   position: relative;
+  display: flex;
 }
 .navigation-menu .cont-menu-categ{
   display: none;
@@ -310,7 +311,7 @@ header {
   background: #1c1c1c;
   backdrop-filter: blur(10px);
   top: 56px;
-  left: -22.8%;
+  left: -12%;
   padding: 0;
   width: 80vw;
   border-radius: var(--esquinaSm);
@@ -336,7 +337,7 @@ header {
   border-bottom: 40px solid #1c1c1c;
   top: -40px;
   z-index: -10 !important;
-  left: 13.6%;
+  left: 7%;
 }
 .nav-main .submenu::before{
   content: '';
@@ -350,7 +351,7 @@ header {
   border-bottom: 40px solid #1c1c1c;
   top: -40px;
   z-index: -10 !important;
-  right: 13.6%;
+  right: 8%;
 }
 
 .submenu > .submenu-section:first-of-type {

@@ -22,6 +22,11 @@ import Ranking from "./pages/rankings.jsx";
 
 import LoMasTop from "./pages/loMasTop.jsx";
 import StartNow from "./pages/startNow.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import Account from "./pages/Account.jsx";
+import Success from "./pages/Success.jsx";
 import BlogDetailPage from "./pages/BlogDetailPage.jsx";
 import TopList from "./pages/topList.jsx";
 import BrandLandingPage from "./pages/BrandLandingPage";
@@ -74,6 +79,11 @@ function App() {
           <Route path="/para-equipos" element={<ParaEquipos />} />
           <Route path="/empieza-ahora" element={<StartNow />} />
           <Route path="/lo-mas-top" element={<LoMasTop />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/success" element={<Success />} />
           <Route path="/lo-mas-top/ranking/:slug" element={<Ranking />} />
           <Route path="/originals/:slug" element={<TopOriginals />} />
           <Route path="/lo-mas-top/:tipo" element={<TopList />} />

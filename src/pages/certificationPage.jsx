@@ -94,7 +94,7 @@ const CertificationPage = () => {
 
     const getImageUrl = (url) => {
         if (!url) return null;
-        return url.startsWith('/') ? url : `/${url}`;
+        return url.startsWith('') ? url : `${url}`;
     };
 
     if (loading) {
@@ -127,8 +127,8 @@ const CertificationPage = () => {
 
     if (error) {
         return (
-            <div className="container-main-info">
-                <div>Error: {error}</div>
+            <div className="flex h-[100vh] w-full justify-items-center items-center">
+                <div className="text-white font-bold text-[40px] m-auto">Error: {error}</div>
             </div>
         );
     }
@@ -136,9 +136,8 @@ const CertificationPage = () => {
 
     if (!certification) {
         return (
-            <div className="container-main-info">
-
-                <div>No se encontró la certificación</div>
+            <div className="flex h-[100vh] w-full justify-items-center items-center">
+                <div className="text-white font-bold text-[40px] m-auto">No se encontró la certificación</div>
             </div>
         );
     }
@@ -162,6 +161,28 @@ const CertificationPage = () => {
       const query = `${categoryParam}=${tagParam}&page=1&page_size=15`;
       navigateWithTransition(`/explora/filter?${query}`);
     };
+    
+    // ✅ Normaliza habilidades_certificacion para que siempre sea un array de strings
+    const skills = (() => {
+        const raw = certification?.habilidades_certificacion;
+
+        const toText = (x) => {
+            if (typeof x === "string") return x;
+            if (x && typeof x === "object") return String(x.nombre ?? x.name ?? "");
+            return "";
+        };
+
+        // Convierte raw a lista de textos base
+        const baseList = Array.isArray(raw) ? raw.map(toText) : [toText(raw)];
+
+        // 🔥 Divide CADA texto por coma y aplana
+        return baseList
+            .flatMap((t) => String(t).split(","))   // <-- clave
+            .map((s) => s.trim())
+            .filter(Boolean);
+    })();
+
+
 
     return (
         <>
@@ -251,56 +272,97 @@ const CertificationPage = () => {
                                     Habilidades
                                     </a>
                                     </li>
-                                    <li>
+                                    {/*<li>
                                     <a className={`flex text-[1.1rem] px-2 lg:px-4 py-1 lg:py-2 rounded ${activeTab === 'tab3' ? 'bg-blue-500 text-white' : 'bg-gray-300'}`} onClick={() => setActiveTab('tab3')}>
                                         {(certification.plataforma_certificacion && certification.plataforma_certificacion.nombre == 'MasterClass')?'Lecciones':'Modulos'}
                                     </a>
-                                    </li>
+                                    </li>*/}
                                 </ul>
                                 <div className="w-full">
                                     {activeTab === 'tab1' && <div className="cert-cont w-full">
                                             <h2 className="text-[1.7rem] md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">¿Qué aprenderás?</h2>
-                                            <div className="mt-2" dangerouslySetInnerHTML={{ __html: certification.contenido_certificacion.cantidad_modulos}}/>
-                                            {certification.aprendizaje_certificacion && certification.aprendizaje_certificacion.some(aprendizaje => aprendizaje.nombre.startsWith('x')) ? null : (<ul className="ml-10 mt-5 list-disc">
-                                                {certification.aprendizaje_certificacion?.map((aprendizaje, index) => (
-                                                    aprendizaje.nombre.startsWith(' ') ? null : (<li key={index}>{aprendizaje.nombre}</li>)
-                                                ))}
-                                            </ul>)}
-                                            
-                                            <p className="text-sm">
-                                                {certification.contenido_certificacion.contenido_certificacion.join(
-                                                "\n"
+                                            {/*<div className="mt-2" dangerouslySetInnerHTML={{ __html: certification.contenido_certificacion.cantidad_modulos}}/>*/}
+                                            {Array.isArray(certification?.aprendizaje_certificacion) &&
+                                                certification.aprendizaje_certificacion.length > 0 &&
+                                                certification.aprendizaje_certificacion[0]?.nombre !== "NONE" &&
+                                                !certification.aprendizaje_certificacion.some(
+                                                    aprendizaje => aprendizaje.nombre?.startsWith("x")
+                                                ) && (
+                                                    <ul className="ml-10 mt-5 list-disc">
+                                                    {certification.aprendizaje_certificacion
+                                                        .filter(
+                                                        aprendizaje =>
+                                                            aprendizaje?.nombre &&
+                                                            aprendizaje.nombre.trim() !== "" &&
+                                                            !aprendizaje.nombre.startsWith(" ")
+                                                        )
+                                                        .map((aprendizaje, index) => (
+                                                        <li key={index}>{aprendizaje.nombre}</li>
+                                                        ))}
+                                                    </ul>
                                                 )}
-                                            </p>
-                                        </div>
-                                    }
-                                    {activeTab === 'tab2' && <div id="widgets-learning-masterclass" className="w-full">
-                                        <h2 className="text-[1.7rem] md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate my-5">Habilidades que obtendrás</h2>
-                                            {(certification.plataforma_certificacion && certification.plataforma_certificacion.nombre == 'MasterClass')?( 
-                                                <div id="wrapper-widgets-learning">
-                                                    {certification.aprendizaje_certificacion.map((item) => {
-                                                        // Dividimos el string usando el guión como separador
-                                                        const habilidades = item.nombre.split(' - ');
-                                                        
-                                                        // Creamos un div para cada habilidad
-                                                        return habilidades.map((habilidad, index) => (
-                                                            <div key={index} className="skill-item">
-                                                                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#ffffff"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l5 5l10 -10" /></svg>
-                                                                {habilidad}
-                                                            </div>
-                                                        ));
-                                                    })}
-                                                </div>
-                                            ):(certification.habilidades_certificacion.some(habilidad => habilidad.nombre.startsWith('x'))) ? null : (
-                                                <div id="wrapper-tags-skills" style={{ display: "grid", gridTemplateColumns: "repeat(3, auto)", gridTemplateRows: `repeat(${countSkills}, auto)`, width: "100%", columnGap: "5px", rowGap: "10px", padding: "" }}>
-                                                    {certification.habilidades_certificacion.map((habilidad, index) => (
-                                                        <div className=" btn btn-col-1 font-bold py-2 px-4 rounded-full" key={index}>{habilidad.nombre}</div>
-                                                    ))}
-                                                </div>
+
+                                            {certification?.plataforma_certificacion?.nombre === "Coursera" &&
+                                            Array.isArray(certification?.contenido_certificacion?.contenido_certificacion) && (
+                                                <p className="text-sm whitespace-pre-line">
+                                                {certification.contenido_certificacion.contenido_certificacion.join("\n")}
+                                                </p>
                                             )}
+
                                         </div>
                                     }
-                                    {activeTab === 'tab3' && <div className="grid-main-info-section cert-habi w-full gap-5">
+                                    {activeTab === 'tab2' && (
+                                        <div id="widgets-learning-masterclass" className="w-full">
+                                            <h2 className="text-[1.7rem] md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate my-5">
+                                            Habilidades que obtendrás
+                                            </h2>
+
+                                            {certification?.plataforma_certificacion?.nombre === "MasterClass" ? (
+                                            <div id="wrapper-widgets-learning">
+                                                {certification?.aprendizaje_certificacion?.flatMap((item, idxItem) => {
+                                                const habilidades = (item?.nombre || "")
+                                                    .split(" - ")
+                                                    .map((h) => h.trim())
+                                                    .filter(Boolean);
+
+                                                return habilidades.map((habilidad, index) => (
+                                                    <div key={`${idxItem}-${index}`} className="skill-item">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="#ffffff"
+                                                        strokeWidth="2"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        className="icon icon-tabler icons-tabler-outline icon-tabler-check"
+                                                    >
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                        <path d="M5 12l5 5l10 -10" />
+                                                    </svg>
+                                                    {habilidad}
+                                                    </div>
+                                                ));
+                                                })}
+                                            </div>
+                                            ) : skills.length ? (
+                                            <div
+                                                id="wrapper-tags-skills"
+                                                className="grid grid-cols-3 gap-x-[5px] gap-y-[10px] w-full"
+                                            >
+                                                {skills.map((habilidad, index) => (
+                                                    <div key={index} className="btn btn-col-1 font-bold py-2 px-4 rounded-full">
+                                                        {habilidad}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            ) : null}
+                                        </div>
+                                        )}
+
+                                    {/*activeTab === 'tab3' && <div className="grid-main-info-section cert-habi w-full gap-5">
                                         {(certification.contenido_certificacion && certification.plataforma_certificacion.nombre === 'MasterClass')?(
                                             certification.contenido_certificacion.contenido_certificacion.reduce((modules, content, index) => {
                                                 // Si el contenido está vacío (""), lo ignoramos
@@ -384,7 +446,7 @@ const CertificationPage = () => {
                                             })
                                         ):null}
                                     </div>
-                                    }
+                                    */}
                                 </div>
                             </div>
                         </div>
@@ -429,8 +491,26 @@ const CertificationPage = () => {
                                         <div class=" text-black font-semibold">{(certification.plataforma_certificacion.nombre != 'MasterClass')?"Tema:":"Habilidad:"}</div>
                                     </div>
                                     <div class="flex-none">
-                                        <a className="cursor-pointer" onClick={() => handleItemMenuClick(certification.tema_certificacion.tem_type, certification.tema_certificacion.nombre )}>
-                                        <div className={`tag-category ${certification.tema_certificacion?.tem_col || 'tag-verde'} mt-[15px]`}>{certification.tema_certificacion.nombre}</div></a>
+                                        {certification.tema_certificacion?.nombre && (
+                                            <a
+                                                className="cursor-pointer"
+                                                onClick={() =>
+                                                handleItemMenuClick(
+                                                    certification.tema_certificacion.tem_type,
+                                                    certification.tema_certificacion.nombre
+                                                )
+                                                }
+                                            >
+                                                <div
+                                                className={`tag-category ${
+                                                    certification.tema_certificacion.tem_col || "tag-verde"
+                                                } mt-[15px]`}
+                                                >
+                                                {certification.tema_certificacion.nombre}
+                                                </div>
+                                            </a>
+                                        )}
+
                                     </div>
                                 </li>
                                 <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">

@@ -14,10 +14,13 @@ import endpoints from '../config/api';
 export default function LoMasTop() {
   const [empresas, setEmpresas] = useState([]);
   const [universidades, setUniversidades] = useState([]);
+  const [universidadesLatam, setUniversidadesLatam] = useState([]);
   const [rankingName1, setRankingName1] = useState("");
   const [rankingName2, setRankingName2] = useState("");
+  const [rankingName3, setRankingName3] = useState("");
   const [rankingName1Slug, setRankingName1Slug] = useState("");
   const [rankingName2Slug, setRankingName2Slug] = useState("");
+  const [rankingName3Slug, setRankingName3Slug] = useState("");
   const [selectedTags, setSelectedTags] = useState({});
   const [limit, setLimit] = useState(7);
 
@@ -25,7 +28,7 @@ export default function LoMasTop() {
     if (typeof window === "undefined") return;
 
     const calcLimit = () =>
-      window.matchMedia("(max-width: 767px)").matches ? 7 : 14;
+      window.matchMedia("(max-width: 767px)").matches ? 5 : 5;
 
     // set inicial
     setLimit(calcLimit());
@@ -53,9 +56,10 @@ export default function LoMasTop() {
       .replace(/[\u0300-\u036f]/g, "");
     Promise.all([
       fetch(endpoints.ranking_detail("Top-50-de-universidades")).then(res => res.json()),
-      fetch(endpoints.ranking_detail("Top-50-de-empresas")).then(res => res.json())
+      fetch(endpoints.ranking_detail("Top-50-de-empresas")).then(res => res.json()),
+      fetch(endpoints.ranking_detail("Top-50-Universidades-Latam")).then(res => res.json())
     ])
-    .then(([universidadesData, empresasData]) => {
+    .then(([universidadesData, empresasData, universidData]) => {
       // Ranking universidades
       if (universidadesData?.entradas) {
         setRankingName1(universidadesData.nombre);
@@ -84,6 +88,18 @@ export default function LoMasTop() {
           }));
         setEmpresas(empresasFiltradas);
       }
+      if (universidData?.entradas) {
+        setRankingName3(universidData.nombre);
+        setRankingName3Slug(toSlug(universidData.nombre));
+        const universidFiltradas = universidData.entradas
+          .filter(e => e.universidad !== null) 
+          .map(e => ({
+            nombre: e.universidad?.nombre || e.nombre,
+            univ_ico: e.universidad?.univ_ico,
+            ...e
+          }));
+        setUniversidadesLatam(universidFiltradas);
+      }
     })
     .catch(err => console.error("Error cargando rankings:", err));
 }, []);
@@ -96,6 +112,10 @@ export default function LoMasTop() {
     {
       title: "Empresa",
       renderContent: () => renderItems(empresas,"Empresa") // solo el array
+    },
+    {
+      title: "UniversidadesLatam",
+      renderContent: () => renderItems(universidadesLatam,"Universidad") // solo el array
     }
   ];
 
@@ -148,13 +168,13 @@ export default function LoMasTop() {
       return (
           <Link
             to="#"
-            className='w-full lg:w-[48%] gap-2 p-1 flex items-center'
+            className='w-full lg:w-[100%] gap-2 p-1 flex items-center hover:opacity-80'
             onClick={() =>
               handleItemMenuClick({
                 [title]: item.nombre,
               })
             }
-          >
+          > <span className='bg-white font-[24px] font-bold py-2 pl-3 pr-4 rounded-[25px_0px_0px_25px] mr-[-17px]'>{i+1}</span>
               <img
                   className="w-[35px] lg:w-[18%]"
                   src={item.empr_ico || item.univ_ico}
@@ -213,10 +233,10 @@ export default function LoMasTop() {
       {/* Proveedores / Universidades / Instituciones */}
       <section className="w-screen h-full flex-shrink-0 p-5 lg:p-10 mt-[-70%] lg:mt-[-20%] relative !z-10">
         <div className='container m-auto'>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm pt-10 lg:pt-20">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-sm pt-10 lg:pt-20">
             {/* Universidades */}
             <div>
-              <h4 className="text-[2rem] font-semibold mb-3 text-[#F6F4EF]"> {rankingName1} </h4>
+              <h4 className="text-[1.8rem] font-semibold mb-3 text-[#F6F4EF]"> {rankingName1} </h4>
               <div className="flex flex-wrap gap-1">
                 {sections
                   .find(s => s.title === "Universidad")
@@ -224,9 +244,19 @@ export default function LoMasTop() {
               </div>
               <Link className="mt-5 flex max-w-[250px] font-bold transition duration-300  hover:text-shadow-[0_35px_35px_rgb(255_255_255_/_0.25)] item-empezar  ml-4 shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full " to={`/lo-mas-top/ranking/${rankingName1Slug}`}>Ver el top de universidades →</Link>
             </div>
+            {/* Universidades */}
+            <div>
+              <h4 className="text-[1.8rem] font-semibold mb-3 text-[#F6F4EF]"> {rankingName3} </h4>
+              <div className="flex flex-wrap gap-1">
+                {sections
+                  .find(s => s.title === "UniversidadesLatam")
+                  ?.renderContent()}
+              </div>
+              <Link className="mt-5 flex max-w-[250px] font-bold transition duration-300  hover:text-shadow-[0_35px_35px_rgb(255_255_255_/_0.25)] item-empezar  ml-4 shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full " to={`/lo-mas-top/ranking/${rankingName1Slug}`}>Ver el top de universidades →</Link>
+            </div>
             {/* Instituciones */}
             <div className='my-5  lg:my-0'>
-              <h4 className="text-[2rem] font-semibold mb-3 text-[#F6F4EF]"> {rankingName2}</h4>
+              <h4 className="text-[1.8rem] font-semibold mb-3 text-[#F6F4EF]"> {rankingName2}</h4>
               <div className="flex flex-wrap gap-1">
                 {sections
                   .find(s => s.title === "Empresa")
