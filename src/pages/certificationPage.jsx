@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { getLanguageLabel } from '../utils/languageMapper';
+import { getLevelLabel } from '../utils/levelMapper';
 import { useParams } from 'react-router-dom';
 import getCertificationById from "../services/getCertificationById";
 import RightPop from "../components/RightPop";
@@ -182,6 +184,55 @@ const CertificationPage = () => {
             .filter(Boolean);
     })();
 
+    const level = getLevelLabel(certification?.nivel_certificacion);
+    const isCoursera =
+    certification?.plataforma_certificacion?.nombre?.toString().trim().toLowerCase() === "coursera";
+
+    const contenidoObj = certification?.contenido_certificacion;
+    const contenidoArr = Array.isArray(contenidoObj?.contenido_certificacion)
+    ? contenidoObj.contenido_certificacion.map(x => (x ?? "").toString().trim()).filter(Boolean)
+    : [];
+
+    const cantidad = (contenidoObj?.cantidad_modulos ?? "").toString().trim();
+
+    const isMasterClass =
+    certification?.plataforma_certificacion?.nombre === 'MasterClass';
+
+    const videoUrl = certification?.video_certificacion?.url;
+
+    const hasValidVideo =
+    videoUrl &&
+    typeof videoUrl === 'string' &&
+    !['null', 'none'].includes(videoUrl.trim().toLowerCase());
+
+
+    const raw = certification?.instructores_certificacion;
+
+    const instructoresList = (() => {
+    if (!raw) return [];
+
+    // Caso A: array
+    if (Array.isArray(raw)) {
+        return raw
+        .map(x => (x?.name ?? x?.nombre ?? x ?? '').toString().trim())
+        .filter(Boolean);
+    }
+
+    // Caso B: string
+    if (typeof raw === 'string') {
+        const t = raw.trim();
+        if (!t || ['none', 'null'].includes(t.toLowerCase())) return [];
+
+        return t
+        .replace(/\s*(?:&| and | y )\s*/gi, ',')
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+
+    return [];
+    })();
+
 
 
     return (
@@ -234,17 +285,22 @@ const CertificationPage = () => {
                                     <div className="flex w-1/1 lg:w-2/8 items-start gap-[10px] border-l border-[#CDCDCD] first:border-none pl-[10px] first:pl-0">
                                         <div>
                                             <h6 className="font-bold text-edblue leading-[1.2]">Idioma:</h6>
-                                            <p class="text-[14px] text-edgray leading-[1.1em]">{(certification.lenguaje_certificacion ==='NONE')?'Ingles (subtitulado: Español)':certification.lenguaje_certificacion}</p>
+                                            <p className="text-[14px] text-edgray leading-[1.1em]">
+                                                {getLanguageLabel(certification.lenguaje_certificacion)}
+                                            </p>
                                         </div>
                                     </div>
-                                    {(certification.nivel_certificacion ==='NONE')? null :(
+                                    {level && (
                                         <div className="flex w-1/1 lg:w-3/8 items-start gap-[10px] border-l border-[#CDCDCD] first:border-none pl-[10px] first:pl-0">
-                                        <div>
+                                            <div>
                                             <h6 className="font-bold text-edblue leading-[1.2]">Nivel:</h6>
-                                            <p class="text-[14px] text-edgray leading-[1.1em]">{(certification.nivel_certificacion ==='NONE')?'No aplica':certification.nivel_certificacion}</p>
+                                            <p className="text-[14px] text-edgray leading-[1.1em]">
+                                                {level}
+                                            </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    )}
+                                        )}
+
                                     <div className="flex w-1/1 lg:w-3/8 items-center gap-[10px] border-l border-[#CDCDCD] first:border-none pl-[10px] first:pl-0">
                                         <div>
                                             <h6 className="font-bold text-edblue leading-[1.2]">Cronograma:</h6>
@@ -254,14 +310,13 @@ const CertificationPage = () => {
                                 </div>
                                 
                             </div>
-                            {(certification.plataforma_certificacion.nombre != 'MasterClass')?null:(
+                            {isMasterClass && hasValidVideo && (
                                 <div className="px-8 py-1 w-full cert-video rounded-xl overflow-hidden">
-                                    <YouTubePlayer url={certification.video_certificacion.url} />
+                                    <YouTubePlayer url={videoUrl} />
                                 </div>
-                                
-                             )}
-                             <div className="nav-tab-wrapper px-3 lg:px-7 py-5 w-full">
-                                <ul id="tabs-nav" class="flex flex-wrap course-tab mb-8 w-auto overflow-x-auto">
+                            )}
+                             <div className="nav-tab-wrapper px-3 lg:px-7  w-full">
+                                <ul id="tabs-nav" class="flex flex-wrap course-tab mb-4 w-auto overflow-x-auto">
                                     <li>
                                     <a className={`flex text-[1.1rem] px-2 lg:px-4 py-1 lg:py-2 rounded ${activeTab === 'tab1' ? 'bg-blue-500 text-white' : 'bg-gray-300'}`} onClick={() => setActiveTab('tab1')}>
                                     Descripción
@@ -280,7 +335,7 @@ const CertificationPage = () => {
                                 </ul>
                                 <div className="w-full">
                                     {activeTab === 'tab1' && <div className="cert-cont w-full">
-                                            <h2 className="text-[1.7rem] md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">¿Qué aprenderás?</h2>
+                                            <h2 className="text-[1.7rem] md:text-[1.5rem] font-bold mb-3 text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">¿Qué aprenderás?</h2>
                                             {/*<div className="mt-2" dangerouslySetInnerHTML={{ __html: certification.contenido_certificacion.cantidad_modulos}}/>*/}
                                             {Array.isArray(certification?.aprendizaje_certificacion) &&
                                                 certification.aprendizaje_certificacion.length > 0 &&
@@ -302,23 +357,35 @@ const CertificationPage = () => {
                                                     </ul>
                                                 )}
 
-                                            {certification?.plataforma_certificacion?.nombre === "Coursera" &&
-                                            Array.isArray(certification?.contenido_certificacion?.contenido_certificacion) && (
-                                                <p className="text-sm whitespace-pre-line">
-                                                {certification.contenido_certificacion.contenido_certificacion.join("\n")}
-                                                </p>
-                                            )}
+                                                {(isCoursera  || isMasterClass) && (cantidad || contenidoArr.length > 0) && (
+                                                    <div className="space-y-2">
+                                                        {cantidad && cantidad !== "NONE" && (
+                                                        <p className="text-[1rem]">
+                                                            {cantidad}
+                                                        </p>
+                                                        )}
+
+                                                        {contenidoArr.length > 0 && (
+                                                        <ul className="text-[1rem] list-disc pl-5 space-y-1">
+                                                            {contenidoArr.map((item, idx) => (
+                                                            <li key={idx}>{item}</li>
+                                                            ))}
+                                                        </ul>
+                                                        )}
+                                                    </div>
+                                                )}
+
 
                                         </div>
                                     }
                                     {activeTab === 'tab2' && (
                                         <div id="widgets-learning-masterclass" className="w-full">
-                                            <h2 className="text-[1.7rem] md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate my-5">
+                                            <h2 className="text-[1.7rem] md:text-[1.5rem] font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate my-5">
                                             Habilidades que obtendrás
                                             </h2>
 
-                                            {certification?.plataforma_certificacion?.nombre === "MasterClass" ? (
-                                            <div id="wrapper-widgets-learning">
+                                            {isMasterClass ? (
+                                            <div className="flex flex-wrap gap-2">
                                                 {certification?.aprendizaje_certificacion?.flatMap((item, idxItem) => {
                                                 const habilidades = (item?.nombre || "")
                                                     .split(" - ")
@@ -326,22 +393,7 @@ const CertificationPage = () => {
                                                     .filter(Boolean);
 
                                                 return habilidades.map((habilidad, index) => (
-                                                    <div key={`${idxItem}-${index}`} className="skill-item">
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="24"
-                                                        height="24"
-                                                        viewBox="0 0 24 24"
-                                                        fill="none"
-                                                        stroke="#ffffff"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        className="icon icon-tabler icons-tabler-outline icon-tabler-check"
-                                                    >
-                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                                        <path d="M5 12l5 5l10 -10" />
-                                                    </svg>
+                                                    <div key={`${idxItem}-${index}`} className="bg-black text-white w-auto px-3 py-1 rounded-full">
                                                     {habilidad}
                                                     </div>
                                                 ));
@@ -353,7 +405,7 @@ const CertificationPage = () => {
                                                 className="grid grid-cols-3 gap-x-[5px] gap-y-[10px] w-full"
                                             >
                                                 {skills.map((habilidad, index) => (
-                                                    <div key={index} className="btn btn-col-1 font-bold py-2 px-4 rounded-full">
+                                                    <div key={index} className="btn btn-col-1 leading-[1.2em] font-bold py-[6px] px-3 rounded-full">
                                                         {habilidad}
                                                     </div>
                                                 ))}
@@ -459,23 +511,27 @@ const CertificationPage = () => {
                             <div className="w-full flex justify-center">
                                 <button onClick={() => window.open(certification.url_certificacion_original, '_blank')} className="btn btn-col-1 font-bold mt-[-40px] mb-2 py-2 px-4 rounded-full">Ver en la página oficial</button>
                             </div>
+
                             <ul class="list  ">
-                                <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
-                                    {(certification.instructores_certificacion && certification.instructores_certificacion.length > 0)?(
-                                    <div class="flex-1 space-x-3 flex">
-                                        <img class="w-[30px] h-[30px]" src="/assets/content/icons/user-te.png" alt=""/>
-                                        <div class=" text-blackflex flex-wrap"><b>Instructor/es:</b>
-                                        <ul className="list-disc">
-                                            {certification.instructores_certificacion.map((instructor, index) => (
-                                                <li key={index}>{instructor.name}</li>
-                                            ))}
-                                        </ul>
+                                {instructoresList.length > 0 && (
+                                    <li className="flex flex-wrap space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 last:mb-0 last:border-0">
+                                        <div className="flex  space-x-3 flex">
+                                            <img className="w-[30px] h-[30px]" src="/assets/content/icons/user-te.png" alt="" />
+                                            <b>Instructor/es:</b>
                                         </div>
-                                    </div>):null}
-                                </li>
+                                        <div className="text-black w-full">
+                                            
+                                            <ul className="list-disc ml-5">
+                                            {instructoresList.map((name, idx) => (
+                                                <li key={idx}>{name}</li>
+                                            ))}
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    )}
+
                                 <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
                                     <div class="flex-1 space-x-3 flex">
-                                        <img src="assets/images/icon/file2.svg" alt=""/>
                                         <div class=" text-black font-semibold">Plataforma</div>
                                     </div>
                                     <div class="flex justify-end items-center">
@@ -487,7 +543,6 @@ const CertificationPage = () => {
 
                                 <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
                                     <div class="flex-1 space-x-3 flex">
-                                        <img src="assets/images/icon/clock.svg" alt=""/>
                                         <div class=" text-black font-semibold">{(certification.plataforma_certificacion.nombre != 'MasterClass')?"Tema:":"Habilidad:"}</div>
                                     </div>
                                     <div class="flex-none">
@@ -515,11 +570,10 @@ const CertificationPage = () => {
                                 </li>
                                 <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
                                     <div class="flex-1 space-x-3 flex">
-                                        <img src="assets/images/icon/web.svg" alt=""/>
                                         <div class=" text-black font-semibold">Idioma:</div>
                                     </div>
                                     <div class="flex-none">
-                                        {(certification.lenguaje_certificacion ==='NONE')?'Ingles (subtitulado)':certification.lenguaje_certificacion}
+                                        {getLanguageLabel(certification.lenguaje_certificacion)}
                                     </div>
                                 </li>
                             </ul>
@@ -545,7 +599,7 @@ const CertificationPage = () => {
                         
                     </div>
                     <div className="lg:col-start-1 lg:col-span-12 border-1 border-[#ECECEC] rounded-[15px] bg-[#F6F4EF] px-3 py-5 lg:p-8 z-1 order-3 ">
-                        <h2 className="text-[1.7rem] md:text-3xl font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">Clases recomendadas para ti</h2>
+                        <h2 className="text-[1.7rem] md:text-[1.5rem] font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">Clases recomendadas para ti</h2>
                         <div>
                             <CertificationSlider/>
                         </div>
