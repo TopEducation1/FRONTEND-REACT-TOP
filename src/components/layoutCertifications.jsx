@@ -39,10 +39,11 @@ const CertificationsList = memo(({ certifications }) => {
         }
     };
 
-    const getImageUrl = useCallback((url) => {
+    
+    const getImageUrl = (url) => {
         if (!url) return null;
-        return url.startsWith('/') ? url : `/${url}`;
-      }, []);
+        return url.startsWith('') ? url : `${url}`;
+    };
 
     if (!Array.isArray(certifications)) {
         return <div className="error-message">Error: No se pudieron cargar las certificaciones</div>;
@@ -63,7 +64,7 @@ const CertificationsList = memo(({ certifications }) => {
                             >
                                 <div className="container-img-card">
                                     <img
-                                        src={getImageUrl(certification.universidad_certificacion?.univ_img || certification.empresa_certificacion?.empr_img || certification.imagen_final)}
+                                        src={getImageUrl(certification.universidad_certificacion?.univ_img|| certification.empresa_certificacion?.empr_img || certification.imagen_final)}
                                         alt="imagen-certificacion"
                                         onError={handleImageError}
                                     />

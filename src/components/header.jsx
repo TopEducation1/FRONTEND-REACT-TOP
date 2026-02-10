@@ -6,7 +6,7 @@ import { FaUserCircle, FaChevronDown } from "react-icons/fa";
 
 const API = (process.env.REACT_APP_API_URL || "http://localhost:8000").replace(/\/+$/, "");
 
-const Header = ({ toggleMenu, isMenuOpen }) => {
+const Header = ({ toggleMenu,onTagSelect, openIndexResponsiveMenu, isMenuOpen }) => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
@@ -111,69 +111,65 @@ const Header = ({ toggleMenu, isMenuOpen }) => {
             />
           </button>
         </div>
-
-        {/* MENU */}
-        <div className={`navigation-menu ${isMenuOpen ? "open" : ""}`}>
-          <MenuTop toggleMenu={toggleMenu} />
-          <div className="flex items-center gap-0 relative" ref={dropdownRef}>
-          {/* AUTH STATE */}
-          {!loadingAuth && !user && (
-            <button
-              onClick={() => navigateWithTransition("/login")}
-              className="ml-0 mt-3 lg:mt-0 lg:ml-4 shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full"
-            >
-              Iniciar sesión
-            </button>
-          )}
-
-          {!loadingAuth && user && (
-            <button
-              onClick={() => setOpenDropdown((v) => !v)}
-              className="flex items-center gap-2 px-3 py-2 rounded-full border border-slate-600 text-slate-100 hover:bg-slate-800"
-            >
-              <FaUserCircle className="text-xl" />
-              <span className="hidden sm:block text-sm max-w-[120px] truncate">
-                {user.full_name || user.email}
-              </span>
-              <FaChevronDown className="text-xs opacity-70" />
-            </button>
-          )}
-
-          {/* DROPDOWN */}
-          {openDropdown && user && (
-            <div className="absolute right-0 top-[120%] w-48 rounded-xl border border-slate-700 bg-neutral-900 shadow-xl z-50 overflow-hidden">
-              <button
-                onClick={() => {
-                  setOpenDropdown(false);
-                  navigateWithTransition("/account");
-                }}
-                className="w-full text-left px-4 py-3 text-sm text-slate-200 hover:bg-slate-800"
-              >
-                Mi cuenta
-              </button>
-
-              <div className="h-px bg-slate-700" />
-
-              <button
-                onClick={handleLogout}
-                className="w-full text-left px-4 py-3 text-sm text-red-300 hover:bg-red-500/10"
-              >
-                Cerrar sesión
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* RIGHT AREA */}
-        
-
-          {/* BURGUER */}
+        {/* BURGUER */}
           <div
             className="container-burguer-button"
             onClick={() => toggleMenu()}
           >
             <span className="burguer-bar"></span>
           </div>
+        {/* MENU */}
+        <div className={`navigation-menu ${isMenuOpen ? "open" : ""}`}>
+            <MenuTop toggleMenu={toggleMenu} />
+            <div className="flex items-center gap-0 relative" ref={dropdownRef}>
+            {/* AUTH STATE */}
+            {!loadingAuth && !user && (
+              <button
+                onClick={() => navigateWithTransition("/login")}
+                className="ml-0 mt-3 lg:mt-0 lg:ml-4 shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full"
+              >
+                Iniciar sesión
+              </button>
+            )}
+
+            {!loadingAuth && user && (
+              <button
+                onClick={() => setOpenDropdown((v) => !v)}
+                className="flex items-center gap-2 px-3 py-2 rounded-full border border-slate-600 text-slate-100 hover:bg-slate-800"
+              >
+                <FaUserCircle className="text-xl" />
+                <span className="hidden sm:block text-sm max-w-[120px] truncate">
+                  {user.full_name || user.email}
+                </span>
+                <FaChevronDown className="text-xs opacity-70" />
+              </button>
+            )}
+
+            {/* DROPDOWN */}
+            {openDropdown && user && (
+              <div className="absolute right-0 top-[120%] w-48 rounded-xl border border-slate-700 bg-neutral-900 shadow-xl z-50 overflow-hidden">
+                <button
+                  onClick={() => {
+                    setOpenDropdown(false);
+                    navigateWithTransition("/account");
+                  }}
+                  className="w-full text-left px-4 py-3 text-sm text-slate-200 hover:bg-slate-800"
+                >
+                  Mi cuenta
+                </button>
+
+                <div className="h-px bg-slate-700" />
+
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-3 text-sm text-red-300 hover:bg-red-500/10"
+                >
+                  Cerrar sesión
+                </button>
+              </div>
+            )}
+          </div>
+    
         </div>
       </nav>
     </header>
