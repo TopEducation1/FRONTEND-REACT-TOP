@@ -91,7 +91,7 @@ const Header = ({ toggleMenu,onTagSelect, openIndexResponsiveMenu, isMenuOpen })
 
   return (
     <header>
-      <nav className="nav-main relative m-auto w-[90vw] md:w-[64vw] rounded-[36px] bg-[#1c1c1c] px-4 py-2 backdrop-blur-md md:flex md:items-center md:justify-between md:px-6 md:py-0 lg:px-8">
+      <nav className="nav-main relative m-auto w-[90vw] md:w-[66vw] rounded-[36px] bg-[#1c1c1c] px-4 py-2 backdrop-blur-md md:flex md:items-center md:justify-between md:px-6 md:py-0 lg:px-8">
 
         {/* LOGO + BACK */}
         <div className="wrapper-logo-nav flex items-center gap-2">

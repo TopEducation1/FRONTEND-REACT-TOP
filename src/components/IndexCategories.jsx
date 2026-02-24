@@ -135,7 +135,42 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
     },
     {
       title: "Empresa",
-      renderContent: (index) => renderItems("Empresa", empresas, index),
+      renderContent: (index) => (
+        <div className="submenu">
+          {/* 4 columnas */}
+          <div className="unfold-list grid grid-cols-1 md:grid-cols-3 gap-0">
+            {empresas.map((empr) => (
+              <div key={empr.id} className="subitem">
+                <Link
+                  to="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onTagSelect("Empresa", empr.nombre);
+                    setOpenSection(null);
+                  }}
+                  style={{
+                    pointerEvents: isSectionDisabled("Empresa") ? "none" : "auto",
+                    opacity: isSectionDisabled("Empresa") ? 0.5 : 1,
+                  }}
+                >
+                  <img
+                    className="sect-ico"
+                    src={
+                      empr.empr_ico ||
+                      empr.univ_ico ||
+                      empr.tem_img ||
+                      empr.plat_ico ||
+                      `/assets/category/${empr.nombre}.png`
+                    }
+                    alt={empr.nombre}
+                  />
+                  {empr.nombre}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      ),
     },
     {
       title: "Plataforma",

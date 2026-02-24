@@ -478,6 +478,9 @@ header {
 .page-recursos .btn-atras, .page-certificacion .btn-atras{
   display: block;
 }
+.page-certificacion h1{
+  font-family: 'Montserrat';
+}
 
 .wrapper-logo-platforms{
   position: relative;
@@ -911,7 +914,7 @@ header {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-content: flex-end;
+  align-content: space-between;
   background: var(--blanco);
   border-radius: var(--esquinaSm);
   cursor: pointer;

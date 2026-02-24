@@ -505,7 +505,7 @@ const CertificationPage = () => {
                     </div>
                     <div className="lg:col-start-9 lg:col-span-4 br-15 border-1 border-[#ECECEC] rounded-[15px] z-1 order-1 md:order-2" >
                         <div className="cert-img">
-                            <img src={getImageUrl(certification.universidad_certificacion?.univ_img|| certification.empresa_certificacion?.empr_img || certification.imagen_final)} alt="Logo de la certificación" />
+                            <img src={getImageUrl(certification.imagen_final || certification.universidad_certificacion?.univ_img|| certification.empresa_certificacion?.empr_img)} alt="Logo de la certificación" />
                         </div>
                         <div className="cert-det p-5">
                             <div className="w-full flex justify-center">
@@ -536,10 +536,39 @@ const CertificationPage = () => {
                                     </div>
                                     <div class="flex justify-end items-center">
                                         <a className="cursor-pointer" onClick={() => handleItemMenuClick("Plataforma", certification.plataforma_certificacion.nombre)}>
-                                            <img class="w-[110px]"  src={certification.plataforma_certificacion.plat_img} alt=""/>
+                                            <img class="max-w-[110px] max-h-[50px]"  src={certification.plataforma_certificacion.plat_img} alt=""/>
                                         </a>
                                     </div>
                                 </li>
+                                {(certification.universidad_certificacion?.univ_img ||
+                                            certification.empresa_certificacion?.empr_img) && (
+                                <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
+                                    <div class="flex-1 space-x-3 flex">
+                                        <div className="text-black font-semibold">
+                                        {certification.universidad_certificacion?.univ_img
+                                            ? "Universidad"
+                                            : certification.empresa_certificacion?.empr_img
+                                            ? "Empresa"
+                                            : ""}
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-end items-center">
+                                        {(certification.universidad_certificacion?.univ_img ||
+                                            certification.empresa_certificacion?.empr_img) && (
+                                            <a className="cursor-pointer w-auto bg-neutral-200 flex items-center rounded-xl max-h-[30px] overflow-hidden" onClick={() => handleItemMenuClick("Plataforma", certification.empresa_certificacion.nombre)}>
+                                                <img
+                                                    className="max-w-[100px] w-full"
+                                                    src={getImageUrl(
+                                                    certification.universidad_certificacion?.univ_img ||
+                                                    certification.empresa_certificacion?.empr_img
+                                                    )}
+                                                    alt="imagen-certificacion"
+                                                />
+                                            </a>
+                                        )}
+                                    </div>
+                                </li>)}
+                                
 
                                 <li class=" flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
                                     <div class="flex-1 space-x-3 flex">
