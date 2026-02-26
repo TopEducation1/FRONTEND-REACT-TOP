@@ -80,7 +80,9 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
             }
             alt={item.nombre}
           />
-          {item.nombre}
+          {item?.translate && item.translate.trim() !== ""
+          ? item.translate
+          : item.nombre}
         </Link>
       </div>
     ));

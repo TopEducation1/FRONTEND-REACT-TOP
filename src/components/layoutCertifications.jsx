@@ -131,7 +131,7 @@ const sortedCertifications = [...certifications].sort(
                             </div>
                             <div className="tags-card">
                                 <div className={`tag-category ${certification.tema_certificacion?.tem_col || 'tag-verde'}`}>
-                                    {certification.tema_certificacion?.nombre || 'Sin categoría'}
+                                    {certification.tema_certificacion?.translate || certification.tema_certificacion?.nombre || 'Sin categoría'}
                                 </div>
                             </div>
                             <div className="title-certification">
