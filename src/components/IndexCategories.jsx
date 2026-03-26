@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
-
 import endpoints from "../config/api";
 
 const IndexCategories = ({ onTagSelect, selectedTags }) => {
-  const [openSection, setOpenSection] = useState(null); // 👈 solo una sección abierta
+  const [openSection, setOpenSection] = useState(null);
+  const [openChildMenu, setOpenChildMenu] = useState(null);
   const [temas, setTemas] = useState([]);
   const [habilidades, setHabilidades] = useState([]);
   const [empresas, setEmpresas] = useState([]);
@@ -12,49 +12,248 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
   const [universidadesPorRegion, setUniversidadesPorRegion] = useState({});
   const indexRef = useRef(null);
 
+  const normalizeSkillType = (value) => {
+    const v = (value || "").toString().trim().toLowerCase();
+
+    if (["tema", "category", "principal"].includes(v)) return "tema";
+    if (["habilidad", "skill", "subskill", "secondary"].includes(v)) return "habilidad";
+
+    return "";
+  };
+
+  const isSkillActive = (item) => {
+    return item?.estado === true || item?.estado === 1 || item?.estado === "1";
+  };
+
+  const getSkillLabel = (item) => {
+    return item?.translate && item.translate.trim() !== ""
+      ? item.translate
+      : item?.nombre || "";
+  };
+
+  const getParentId = (item) => {
+    if (!item?.parent) return null;
+    if (typeof item.parent === "object") return item.parent.id || null;
+    return item.parent;
+  };
+
   useEffect(() => {
-    fetch(endpoints.topics)
+    fetch(endpoints.skills)
       .then((res) => res.json())
       .then((data) => {
+        const safeData = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.results)
+          ? data.results
+          : [];
+
+        const activeSkills = safeData.filter((item) => isSkillActive(item));
+
         setTemas(
-          data.filter((t) => t.tem_type === "Tema" && t.tem_est === "enabled")
-        );
-        setHabilidades(
-          data.filter(
-            (h) => h.tem_type === "Habilidad" && h.tem_est === "enabled"
+          activeSkills.filter(
+            (item) => normalizeSkillType(item.skill_type) === "tema"
           )
         );
+
+        setHabilidades(
+          activeSkills.filter(
+            (item) => normalizeSkillType(item.skill_type) === "habilidad"
+          )
+        );
+      })
+      .catch((err) => {
+        console.error("Error cargando skills:", err);
+        setTemas([]);
+        setHabilidades([]);
       });
 
     fetch(endpoints.empresas)
       .then((res) => res.json())
-      .then((data) => setEmpresas(data.filter((t) => t.empr_est === "enabled")));
+      .then((data) => {
+        const safeData = Array.isArray(data) ? data : [];
+        setEmpresas(
+          safeData.filter((item) => item.empr_est === "enabled" || item.estado === true)
+        );
+      })
+      .catch((err) => {
+        console.error("Error cargando empresas:", err);
+        setEmpresas([]);
+      });
 
     fetch(endpoints.platforms)
       .then((res) => res.json())
-      .then((data) => setPlataformas(data));
+      .then((data) => setPlataformas(Array.isArray(data) ? data : []))
+      .catch((err) => {
+        console.error("Error cargando plataformas:", err);
+        setPlataformas([]);
+      });
 
     fetch(endpoints.universities_region)
       .then((res) => res.json())
-      .then((data) => setUniversidadesPorRegion(data));
+      .then((data) => setUniversidadesPorRegion(data || {}))
+      .catch((err) => {
+        console.error("Error cargando universidades por región:", err);
+        setUniversidadesPorRegion({});
+      });
   }, []);
 
   const isSectionDisabled = (sectionTitle) => {
-    if (!selectedTags || !selectedTags.Plataforma) return false;
+    if (!selectedTags || !selectedTags.plataforma) return false;
 
-    if (selectedTags.Plataforma.includes("MasterClass"))
-      return sectionTitle === "Tema";
+    if (selectedTags.plataforma.includes("MasterClass")) {
+      return sectionTitle === "temas";
+    }
+
     if (
-      selectedTags.Plataforma.includes("Coursera") ||
-      selectedTags.Plataforma.includes("EdX")
-    )
-      return sectionTitle === "Habilidad";
+      selectedTags.plataforma.includes("Coursera") ||
+      selectedTags.plataforma.includes("EdX")
+    ) {
+      return sectionTitle === "habilidades";
+    }
 
     return false;
   };
 
-  // ahora recibe también el índice de la sección para poder cerrarla al hacer click
-  const renderItems = (category, items, sectionIndex) => {
+  const buildSkillTree = (items) => {
+    const parentItems = items
+      .filter((item) => !getParentId(item))
+      .sort((a, b) => getSkillLabel(a).localeCompare(getSkillLabel(b)));
+
+    return parentItems.map((parent) => ({
+      ...parent,
+      children: items
+        .filter((item) => String(getParentId(item)) === String(parent.id))
+        .sort((a, b) => getSkillLabel(a).localeCompare(getSkillLabel(b))),
+    }));
+  };
+
+  const temasTree = useMemo(() => buildSkillTree(temas), [temas]);
+  const habilidadesTree = useMemo(() => buildSkillTree(habilidades), [habilidades]);
+
+  const handleSkillSelect = (category, item) => {
+    onTagSelect(category, {
+      id: item.id,
+      nombre: item.nombre,
+      translate: item.translate,
+      slug: item.slug,
+      skill_type: item.skill_type,
+      parent: item.parent ?? null,
+    });
+
+    setOpenSection(null);
+    setOpenChildMenu(null);
+  };
+
+  const renderSkillTree = (category, treeItems) => {
+    return treeItems.map((parent) => {
+      const hasChildren = Array.isArray(parent.children) && parent.children.length > 0;
+      const disabled = isSectionDisabled(category);
+      const isHovered =
+        openChildMenu &&
+        openChildMenu.category === category &&
+        openChildMenu.parentId === parent.id;
+
+      return (
+        <div
+          key={parent.id}
+          className="item-category relative"
+          onMouseEnter={() => {
+            if (hasChildren && !disabled) {
+              setOpenChildMenu({
+                category,
+                parentId: parent.id,
+              });
+            }
+          }}
+          onMouseLeave={() => {
+            if (hasChildren) {
+              setOpenChildMenu(null);
+            }
+          }}
+        >
+          <Link
+            to="#"
+            onClick={(e) => {
+              e.preventDefault();
+              handleSkillSelect(category, parent);
+            }}
+            style={{
+              pointerEvents: disabled ? "none" : "auto",
+              opacity: disabled ? 0.5 : 1,
+            }}
+            className="flex items-center justify-between gap-2"
+          >
+            <span className="flex items-center gap-2">
+              <img
+                className="sect-ico"
+                src={
+                  parent.skill_ico ||
+                  parent.skill_img ||
+                  `/assets/category/${parent.nombre}.png`
+                }
+                alt={parent.nombre}
+              />
+              {getSkillLabel(parent)}
+            </span>
+
+            {hasChildren && (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="opacity-70"
+              >
+                <path d="M9 6l6 6l-6 6" />
+              </svg>
+            )}
+          </Link>
+
+          {hasChildren && isHovered && (
+            <div
+              className="absolute left-full top-0 z-50 min-w-[280px] rounded-2xl border border-neutral-300  shadow-2xl overflow-hidden"
+              data-lenis-prevent
+            >
+              <div className="subsub-item p-3">
+                <div className="mb-1 border-b border-neutral-400 pb-1 text-sm font-semibold text-black">
+                  {getSkillLabel(parent)}
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  {parent.children.map((child) => (
+                    <div key={child.id} className="item-category">
+                      <Link
+                        to="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSkillSelect(category, child);
+                        }}
+                        style={{
+                          pointerEvents: disabled ? "none" : "auto",
+                          opacity: disabled ? 0.5 : 1,
+                        }}
+                        className="flex items-center !text-black"
+                      >
+                        
+                        {getSkillLabel(child)}
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    });
+  };
+
+  const renderItems = (category, items) => {
     return items.map((item) => (
       <div key={item.id} className="item-category">
         <Link
@@ -62,7 +261,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
           onClick={(e) => {
             e.preventDefault();
             onTagSelect(category, item.nombre);
-            setOpenSection(null); // 🔥 cerrar el submenu al seleccionar
+            setOpenSection(null);
           }}
           style={{
             pointerEvents: isSectionDisabled(category) ? "none" : "auto",
@@ -72,17 +271,17 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
           <img
             className="sect-ico"
             src={
+              item.skill_ico ||
               item.empr_ico ||
               item.univ_ico ||
-              item.tem_img ||
               item.plat_ico ||
               `/assets/category/${item.nombre}.png`
             }
             alt={item.nombre}
           />
           {item?.translate && item.translate.trim() !== ""
-          ? item.translate
-          : item.nombre}
+            ? item.translate
+            : item.nombre}
         </Link>
       </div>
     ));
@@ -91,55 +290,57 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
   const sections = [
     {
       title: "Tema",
-      renderContent: (index) => renderItems("Tema", temas, index),
+      key: "temas",
+      renderContent: () => renderSkillTree("temas", temasTree),
     },
     {
       title: "Habilidad",
-      renderContent: (index) => renderItems("Habilidad", habilidades, index),
+      key: "habilidades",
+      renderContent: () => renderSkillTree("habilidades", habilidadesTree),
     },
     {
       title: "Universidad",
-      renderContent: (index) =>
-        Object.entries(universidadesPorRegion).map(
-          ([region, universidades]) => (
-            <div key={region} className="submenu">
-              <h3>{region}</h3>
-              <div className={`unfold-list list-${region}`}>
-                {universidades.map((uni) => (
-                  <div key={uni.id} className="subitem">
-                    <Link
-                      to="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onTagSelect("Universidad", uni.nombre);
-                        setOpenSection(null); // 🔥 cerrar al elegir una universidad
-                      }}
-                      style={{
-                        pointerEvents: isSectionDisabled("Universidad")
-                          ? "none"
-                          : "auto",
-                        opacity: isSectionDisabled("Universidad") ? 0.5 : 1,
-                      }}
-                    >
-                      <img
-                        className="sect-ico"
-                        src={uni.img || uni.univ_img}
-                        alt={uni.nombre}
-                      />
-                      {uni.nombre}
-                    </Link>
-                  </div>
-                ))}
-              </div>
+      key: "universidades",
+      renderContent: () =>
+        Object.entries(universidadesPorRegion).map(([region, universidades]) => (
+          <div key={region} className="submenu">
+            <h3 className="!text-black">{region}</h3>
+            <div className={`unfold-list list-${region}`}>
+              {universidades.map((uni) => (
+                <div key={uni.id} className="subitem ">
+                  <Link
+                    to="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onTagSelect("universidades", uni.nombre);
+                      setOpenSection(null);
+                    }}
+                    className="!text-black"
+                    style={{
+                      pointerEvents: isSectionDisabled("universidades")
+                        ? "none"
+                        : "auto",
+                      opacity: isSectionDisabled("universidades") ? 0.5 : 1,
+                    }}
+                  >
+                    <img
+                      className="sect-ico"
+                      src={uni.img || uni.univ_img}
+                      alt={uni.nombre}
+                    />
+                    {uni.nombre}
+                  </Link>
+                </div>
+              ))}
             </div>
-          )
-        ),
+          </div>
+        )),
     },
     {
       title: "Empresa",
-      renderContent: (index) => (
+      key: "empresas",
+      renderContent: () => (
         <div className="submenu">
-          {/* 4 columnas */}
           <div className="unfold-list grid grid-cols-1 md:grid-cols-3 gap-0">
             {empresas.map((empr) => (
               <div key={empr.id} className="subitem">
@@ -147,21 +348,19 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                   to="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    onTagSelect("Empresa", empr.nombre);
+                    onTagSelect("empresas", empr.nombre);
                     setOpenSection(null);
                   }}
                   style={{
-                    pointerEvents: isSectionDisabled("Empresa") ? "none" : "auto",
-                    opacity: isSectionDisabled("Empresa") ? 0.5 : 1,
+                    pointerEvents: isSectionDisabled("empresas") ? "none" : "auto",
+                    opacity: isSectionDisabled("empresas") ? 0.5 : 1,
                   }}
                 >
                   <img
                     className="sect-ico"
                     src={
                       empr.empr_ico ||
-                      empr.univ_ico ||
-                      empr.tem_img ||
-                      empr.plat_ico ||
+                      empr.empr_img ||
                       `/assets/category/${empr.nombre}.png`
                     }
                     alt={empr.nombre}
@@ -176,7 +375,8 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
     },
     {
       title: "Plataforma",
-      renderContent: (index) => renderItems("Plataforma", plataformas, index),
+      key: "plataforma",
+      renderContent: () => renderItems("plataforma", plataformas),
     },
   ];
 
@@ -191,24 +391,24 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
           return (
             <div
               key={index}
-              className={`category-item item-${section.title} ${
-                isOpen ? "open" : ""
-              }`}
-              // 👇 el hover abre / cierra la sección
+              className={`category-item item-${section.title} ${isOpen ? "open" : ""}`}
               onMouseEnter={() =>
-                isSectionDisabled(section.title) ? null : setOpenSection(index)
+                isSectionDisabled(section.key) ? null : setOpenSection(index)
               }
               onMouseLeave={() => {
-                if (openSection === index) setOpenSection(null);
+                if (openSection === index) {
+                  setOpenSection(null);
+                  setOpenChildMenu(null);
+                }
               }}
             >
               <button
                 type="button"
                 className="unfold-category-button"
-                disabled={isSectionDisabled(section.title)}
+                disabled={isSectionDisabled(section.key)}
                 style={{
-                  opacity: isSectionDisabled(section.title) ? 0.5 : 1,
-                  cursor: isSectionDisabled(section.title)
+                  opacity: isSectionDisabled(section.key) ? 0.5 : 1,
+                  cursor: isSectionDisabled(section.key)
                     ? "not-allowed"
                     : "pointer",
                 }}
@@ -233,10 +433,9 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                 </span>
               </button>
 
-              {/* Solo renderizamos el submenu cuando está "hovered" */}
               {isOpen && (
-                <div className="unfold-list subprimery" data-lenis-prevent>
-                  {section.renderContent(index)}
+                <div className="unfold-list subprimery relative" data-lenis-prevent>
+                  {section.renderContent()}
                 </div>
               )}
             </div>

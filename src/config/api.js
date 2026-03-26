@@ -23,6 +23,7 @@ export const endpoints = {
   masterclassGrid: `${BASE_URL}/masterclass-certificaciones-grid/`,
   empresas: `${BASE_URL}/api/companies/`,
   topics: `${BASE_URL}/api/topics/`,
+  skills: `${BASE_URL}/api/skills/`,
   platforms: `${BASE_URL}/api/platforms/`,
   originals: `${BASE_URL}/api/originals/`,
   universities_region: `${BASE_URL}/api/universities-by-region/`,

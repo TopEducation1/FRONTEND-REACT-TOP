@@ -105,7 +105,7 @@ const CertificationSlider = () => {
           <SwiperSlide key={index}>
             <div className="cert-card" onClick={() => handleCertificationClick(cert)}>
               <img src={cert.universidad_certificacion?.univ_img || cert.empresa_certificacion?.empr_img || cert.imagen_final} alt={cert.nombre} />
-              <div className='card-tit'><h3>{cert.nombre}</h3></div>
+              <div className='text-[16px] p-2 leading-[1.2em]'><h3>{cert.nombre}</h3></div>
             </div>
           </SwiperSlide>
         ))}

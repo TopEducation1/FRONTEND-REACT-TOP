@@ -252,7 +252,7 @@ export default function LoMasTop() {
                   .find(s => s.title === "UniversidadesLatam")
                   ?.renderContent()}
               </div>
-              <Link className="mt-5 flex max-w-[250px] font-bold transition duration-300  hover:text-shadow-[0_35px_35px_rgb(255_255_255_/_0.25)] item-empezar  ml-4 shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full " to={`/lo-mas-top/ranking/${rankingName1Slug}`}>Ver el top de universidades →</Link>
+              <Link className="mt-5 flex max-w-[250px] font-bold transition duration-300  hover:text-shadow-[0_35px_35px_rgb(255_255_255_/_0.25)] item-empezar  ml-4 shadow-[0px_0px_10px_3px_#F6F4EF] bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full " to={`/lo-mas-top/ranking/${rankingName3Slug}`}>Ver el top de universidades →</Link>
             </div>
             {/* Instituciones */}
             <div className='my-5  lg:my-0'>

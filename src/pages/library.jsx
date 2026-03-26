@@ -8,23 +8,18 @@ import { useDebounce } from "use-debounce";
 import IndexCategories from "../components/IndexCategories";
 import { Helmet } from "react-helmet";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import axios from 'axios';
+import axios from "axios";
+import endpoints from "../config/api";
 
-import endpoints from '../config/api';
-
-/**
- * Pagina de la biblioteca
- *  */
-
-function LibraryPage({ showRoutes = true }) {  
-
+function LibraryPage({ showRoutes = true }) {
   const location = useLocation();
+
   const [certifications, setCertifications] = useState([]);
   const [tempCertifications, setTempCertifications] = useState([]);
   const [selectedTags, setSelectedTags] = useState({});
+  const [skillsCatalog, setSkillsCatalog] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 1025);
   const [debouncedSelectedTags] = useDebounce(selectedTags, 100);
 
   const [pagination, setPagination] = useState({
@@ -32,143 +27,465 @@ function LibraryPage({ showRoutes = true }) {
     current_page: 1,
     total_pages: 1,
   });
+
   const certificationsRef = useRef(null);
-  // Leer filtros desde la URL
+  const initialLoadRef = useRef(false);
+  const isHydratingFromUrlRef = useRef(false);
+  const skipNextDebouncedEffectRef = useRef(false);
+
+  function normalizeCategoryKey(key) {
+    const map = {
+      Plataforma: "plataforma",
+      Empresas: "empresas",
+      Empresa: "empresas",
+      Universidad: "universidades",
+      Universidades: "universidades",
+      Temas: "temas",
+      Tema: "temas",
+      Habilidades: "habilidades",
+      Habilidad: "habilidades",
+      plataforma: "plataforma",
+      empresas: "empresas",
+      universidades: "universidades",
+      temas: "temas",
+      habilidades: "habilidades",
+    };
+
+    return map[key] || String(key).toLowerCase();
+  }
+
+  const normalizeSkillType = (value) => {
+    const v = (value || "").toString().trim().toLowerCase();
+
+    if (["tema", "category", "principal"].includes(v)) return "tema";
+    if (["habilidad", "skill", "subskill", "secondary"].includes(v)) {
+      return "habilidad";
+    }
+
+    return "";
+  };
+
+  const isSkillCategory = (category) => {
+    const normalized = normalizeCategoryKey(category);
+    return normalized === "temas" || normalized === "habilidades";
+  };
+
+  const isSkillActive = (item) => {
+    return item?.estado === true || item?.estado === 1 || item?.estado === "1";
+  };
+
+  const getTagLabel = (tag) => {
+    if (!tag) return "";
+    if (typeof tag === "string" || typeof tag === "number") return String(tag);
+    return tag.translate || tag.nombre || tag.slug || "";
+  };
+
+  const getTagUrlValue = (category, tag) => {
+    if (!tag) return "";
+
+    const normalizedCategory = normalizeCategoryKey(category);
+
+    if (normalizedCategory === "temas" || normalizedCategory === "habilidades") {
+      if (typeof tag === "object") return tag.slug || "";
+      return String(tag).trim();
+    }
+
+    if (typeof tag === "object") {
+      return tag.slug || tag.nombre || "";
+    }
+
+    return String(tag).trim();
+  };
+
+  const getQueryKey = (category) => {
+    const normalizedCategory = normalizeCategoryKey(category);
+
+    const map = {
+      temas: "Tema",
+      habilidades: "Habilidad",
+      universidades: "Universidad",
+      empresas: "Empresa",
+      plataforma: "Plataforma",
+    };
+
+    return map[normalizedCategory] || category;
+  };
+
+  const areTagsEqual = (a, b) => {
+    if (typeof a === "object" && typeof b === "object") {
+      if (a?.slug && b?.slug) return a.slug === b.slug;
+      if (a?.id && b?.id) return String(a.id) === String(b.id);
+      return JSON.stringify(a) === JSON.stringify(b);
+    }
+    return a === b;
+  };
+
   function parseQueryParams(queryString) {
     const params = new URLSearchParams(queryString);
     const tags = {};
 
     for (const [key, value] of params.entries()) {
-      // Ignorar parámetros que no son filtros reales
       if (key === "page" || key === "page_size") continue;
 
-      if (!tags[key]) tags[key] = [];
-      tags[key].push(value);
+      const normalizedKey = normalizeCategoryKey(key);
+      if (!tags[normalizedKey]) tags[normalizedKey] = [];
+
+      if (normalizedKey === "temas" || normalizedKey === "habilidades") {
+        tags[normalizedKey].push({
+          slug: value,
+          nombre: "",
+          translate: "",
+        });
+      } else {
+        tags[normalizedKey].push(value);
+      }
     }
 
     return tags;
   }
 
-  const loadLatestCertifications = async () => {
-    
-    try {
-    setLoading(true); // ✅ Activa el estado de carga
-      const response = await axios.get(endpoints.latest_certifications);
-      console.log('Certificaciones recibidas:', response.data); // depuración
-      setCertifications(response.data);
-    } catch (error) {
-      console.error('Error al cargar las certificaciones más recientes:', error);
-    } finally {
-      setLoading(false); // ✅ Desactiva la carga incluso si hay error
-    }
-  };
+  const normalizeTagsForCompare = useCallback(
+    (tags) => {
+      const result = {};
 
-  const updateHistoryState = useCallback((tags, page = 1, pageSize = 16) => {
-    const searchParams = new URLSearchParams();
-    Object.entries(tags).forEach(([key, values]) => {
-      values.forEach((val) => searchParams.append(key, val));
-    });
-    searchParams.set("page", page);
-    searchParams.set("page_size", pageSize);
-    window.history.pushState({}, "", `${location.pathname}?${searchParams.toString()}`);
-  }, [location.pathname]);
+      Object.entries(tags || {}).forEach(([category, values]) => {
+        const normalizedCategory = normalizeCategoryKey(category);
+        const normalizedValues = (values || [])
+          .map((tag) => getTagUrlValue(normalizedCategory, tag))
+          .filter(Boolean)
+          .map((val) => String(val).trim())
+          .sort();
 
-  const removeTag = (category, tagToRemove) => {
-  setSelectedTags((prevTags) => {
-    const updatedTags = { ...prevTags };
-      if (updatedTags[category]) {
-        const filteredTags = updatedTags[category].filter(
-          (tag) => tag !== tagToRemove
-        );
+        if (normalizedValues.length > 0) {
+          result[normalizedCategory] = normalizedValues;
+        }
+      });
 
-        if (filteredTags.length === 0) {
-          delete updatedTags[category];
-        } else {
-          updatedTags[category] = filteredTags;
+      return result;
+    },
+    []
+  );
+
+  const areTagMapsEqualByUrlValues = useCallback(
+    (a, b) => {
+      const normA = normalizeTagsForCompare(a);
+      const normB = normalizeTagsForCompare(b);
+
+      const keysA = Object.keys(normA).sort();
+      const keysB = Object.keys(normB).sort();
+
+      if (keysA.length !== keysB.length) return false;
+
+      for (let i = 0; i < keysA.length; i++) {
+        if (keysA[i] !== keysB[i]) return false;
+
+        const arrA = normA[keysA[i]] || [];
+        const arrB = normB[keysA[i]] || [];
+
+        if (arrA.length !== arrB.length) return false;
+
+        for (let j = 0; j < arrA.length; j++) {
+          if (arrA[j] !== arrB[j]) return false;
         }
       }
-    return updatedTags;
-    });
-  };
 
-  const handleBannerClick = (category, tag) => {
-    if (tag === "Nuevo en Top.education") {
-      loadLatestCertifications();
+      return true;
+    },
+    [normalizeTagsForCompare]
+  );
+
+  const hydrateTagsFromCatalog = useCallback((tags, catalog) => {
+    if (!tags) return {};
+
+    const hydrated = {};
+
+    Object.entries(tags).forEach(([category, values]) => {
+      const normalizedCategory = normalizeCategoryKey(category);
+
+      hydrated[normalizedCategory] = (values || []).map((tag) => {
+        if (!isSkillCategory(normalizedCategory)) return tag;
+
+        const slug = typeof tag === "object" ? tag.slug : String(tag).trim();
+
+        const matchedSkill = catalog.find((skill) => {
+          const skillType = normalizeSkillType(skill.skill_type);
+
+          if (normalizedCategory === "temas" && skillType !== "tema") {
+            return false;
+          }
+
+          if (
+            normalizedCategory === "habilidades" &&
+            skillType !== "habilidad"
+          ) {
+            return false;
+          }
+
+          return String(skill.slug || "").trim() === slug;
+        });
+
+        if (!matchedSkill) {
+          return typeof tag === "object"
+            ? tag
+            : { slug, nombre: "", translate: "" };
+        }
+
+        return {
+          id: matchedSkill.id,
+          nombre: matchedSkill.nombre,
+          translate: matchedSkill.translate,
+          slug: matchedSkill.slug,
+          skill_type: matchedSkill.skill_type,
+          parent: matchedSkill.parent ?? null,
+        };
+      });
+    });
+
+    return hydrated;
+  }, []);
+
+  const loadSkillsCatalog = useCallback(async () => {
+    try {
+      const response = await axios.get(endpoints.skills);
+      const safeData = Array.isArray(response.data)
+        ? response.data
+        : Array.isArray(response.data?.results)
+        ? response.data.results
+        : [];
+
+      const activeSkills = safeData.filter((item) => isSkillActive(item));
+      setSkillsCatalog(activeSkills);
+      return activeSkills;
+    } catch (err) {
+      console.error("Error cargando catálogo de skills:", err);
+      setSkillsCatalog([]);
+      return [];
     }
-    setSelectedTags((prevTags) => {
-      const updatedTags = { ...prevTags };
+  }, []);
 
-      // Si la categoría no existe, inicialízala como array
-      if (!updatedTags[category]) {
-        updatedTags[category] = [];
-      }
+  const loadLatestCertifications = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-      // Agrega el tag si no está ya presente
-      if (!updatedTags[category].includes(tag)) {
-        updatedTags[category] = [...updatedTags[category], tag];
-      }
+      const response = await axios.get(endpoints.latest_certifications);
+      const rows = Array.isArray(response.data) ? response.data : [];
 
-      // Actualiza la URL con los nuevos filtros
-      const queryString = tagFilterService.buildQueryString(updatedTags);
-      const newUrl = `/explora/filter/${queryString}`;
-      window.history.pushState({}, "", newUrl);
-
-      // Carga las certificaciones filtradas desde la página 1
-      loadCertifications(1, 16, updatedTags);
-
-      return updatedTags;
-    });
+      setCertifications(rows);
+      setTempCertifications(rows);
+      setPagination({
+        count: rows.length,
+        current_page: 1,
+        total_pages: 1,
+      });
+    } catch (err) {
+      console.error("Error al cargar las certificaciones más recientes:", err);
+      setError("Error al cargar las certificaciones más recientes");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const loadCertifications = useCallback(
     async (page = 1, pageSize = 16, tags = debouncedSelectedTags) => {
       setLoading(true);
+      setError(null);
       setTempCertifications([]);
+
       try {
+        console.log("loadCertifications tags ->", tags);
+
         let fetchData;
-        if (Object.keys(tags).length > 0) {
+
+        if (Object.keys(tags || {}).length > 0) {
           fetchData = await tagFilterService.filterByTags(tags, page, pageSize);
         } else {
-          fetchData = await CertificationsFetcher.getAllCertifications(page, pageSize);
+          fetchData = await CertificationsFetcher.getAllCertifications(
+            page,
+            pageSize
+          );
         }
-      if (fetchData && Array.isArray(fetchData.results)) {
+
+        console.log("fetchData ->", fetchData);
+
+        if (fetchData && Array.isArray(fetchData.results)) {
           setTempCertifications(fetchData.results);
           setPagination({
             count: fetchData.count || 0,
             current_page: page,
-            total_pages: Math.ceil(fetchData.count / pageSize) || 1,
+            total_pages: Math.ceil((fetchData.count || 0) / pageSize) || 1,
           });
         } else {
           setTempCertifications([]);
+          setPagination({
+            count: 0,
+            current_page: 1,
+            total_pages: 1,
+          });
         }
-      } catch (error) {
+      } catch (err) {
+        console.error("Error cargando certificaciones:", err);
         setError("Error al cargar certificaciones");
         setTempCertifications([]);
       } finally {
         setLoading(false);
       }
-  },
+    },
     [debouncedSelectedTags]
   );
 
-  // Carga inicial desde la URL
-  useEffect(() => {
-    window.scrollTo(0,0);
-    const filtersFromURL = parseQueryParams(location.search);
-    const pageFromURL = parseInt(new URLSearchParams(location.search).get("page")) || 1;
-    const pageSizeFromURL = parseInt(new URLSearchParams(location.search).get("page_size")) || 16;
+  const updateHistoryState = useCallback(
+    (tags, page = 1, pageSize = 16) => {
+      const searchParams = new URLSearchParams();
 
-    setSelectedTags(filtersFromURL); // ← esto garantiza que .container-tags se actualice
-    loadCertifications(pageFromURL, pageSizeFromURL, filtersFromURL);
+      Object.entries(tags || {}).forEach(([key, values]) => {
+        if (!Array.isArray(values)) return;
+
+        values.forEach((val) => {
+          const queryKey = getQueryKey(key);
+          const queryValue = getTagUrlValue(key, val);
+
+          if (queryValue) {
+            searchParams.append(queryKey, queryValue);
+          }
+        });
+      });
+
+      searchParams.set("page", String(page));
+      searchParams.set("page_size", String(pageSize));
+
+      const query = searchParams.toString();
+      const nextUrl = `${location.pathname}${query ? `?${query}` : ""}`;
+      const currentUrl = `${location.pathname}${location.search || ""}`;
+
+      if (nextUrl === currentUrl) return;
+
+      console.log("updateHistoryState ->", nextUrl);
+      window.history.pushState({}, "", nextUrl);
+    },
+    [location.pathname, location.search]
+  );
+
+  const applySelectedTags = useCallback((updater) => {
+    setSelectedTags((prevTags) => {
+      const nextTags =
+        typeof updater === "function" ? updater(prevTags) : updater;
+
+      return nextTags;
+    });
   }, []);
 
-// Carga cuando cambian los filtros (resetea a página 1)
-  useEffect(() => {
-    updateHistoryState(debouncedSelectedTags, 1); // ⬅ siempre reinicia desde página 1 al aplicar filtros nuevos
-    loadCertifications(1, 16, debouncedSelectedTags);
-  }, [debouncedSelectedTags]);
+  const addTag = useCallback((category, tag) => {
+    const normalizedCategory = normalizeCategoryKey(category);
 
-  // Aplicar resultados temporales
+    applySelectedTags((prevTags) => {
+      const currentTags = prevTags[normalizedCategory] || [];
+
+      const alreadyExists = currentTags.some((existingTag) =>
+        areTagsEqual(existingTag, tag)
+      );
+
+      if (alreadyExists) return prevTags;
+
+      return {
+        ...prevTags,
+        [normalizedCategory]: [...currentTags, tag],
+      };
+    });
+  }, [applySelectedTags]);
+
+  const removeTag = useCallback((category, tagToRemove) => {
+    const normalizedCategory = normalizeCategoryKey(category);
+
+    applySelectedTags((prevTags) => {
+      const updatedTags = { ...prevTags };
+
+      if (updatedTags[normalizedCategory]) {
+        const filteredTags = updatedTags[normalizedCategory].filter(
+          (tag) => !areTagsEqual(tag, tagToRemove)
+        );
+
+        if (filteredTags.length === 0) {
+          delete updatedTags[normalizedCategory];
+        } else {
+          updatedTags[normalizedCategory] = filteredTags;
+        }
+      }
+
+      return updatedTags;
+    });
+  }, [applySelectedTags]);
+
+  const clearAllTags = useCallback(() => {
+    setSelectedTags({});
+  }, []);
+
+  const handleBannerClick = (category, tag) => {
+    if (tag === "Nuevo en Top.education") {
+      loadLatestCertifications();
+      return;
+    }
+
+    addTag(category, tag);
+  };
+
+  useEffect(() => {
+    const init = async () => {
+      window.scrollTo(0, 0);
+      isHydratingFromUrlRef.current = true;
+
+      const params = new URLSearchParams(location.search);
+      const filtersFromURL = parseQueryParams(location.search);
+      const pageFromURL = parseInt(params.get("page"), 10) || 1;
+      const pageSizeFromURL = parseInt(params.get("page_size"), 10) || 16;
+
+      console.log("filtersFromURL raw ->", filtersFromURL);
+
+      const catalog =
+        skillsCatalog.length > 0 ? skillsCatalog : await loadSkillsCatalog();
+
+      const hydratedFilters = hydrateTagsFromCatalog(filtersFromURL, catalog);
+
+      console.log("filtersFromURL hydrated ->", hydratedFilters);
+
+      skipNextDebouncedEffectRef.current = true;
+      setSelectedTags(hydratedFilters);
+      await loadCertifications(pageFromURL, pageSizeFromURL, hydratedFilters);
+
+      initialLoadRef.current = true;
+      isHydratingFromUrlRef.current = false;
+    };
+
+    init();
+  }, [location.search]);
+
+  useEffect(() => {
+    if (!initialLoadRef.current) return;
+    if (isHydratingFromUrlRef.current) return;
+
+    if (skipNextDebouncedEffectRef.current) {
+      skipNextDebouncedEffectRef.current = false;
+      return;
+    }
+
+    const tagsFromCurrentUrl = parseQueryParams(location.search);
+
+    if (areTagMapsEqualByUrlValues(debouncedSelectedTags, tagsFromCurrentUrl)) {
+      return;
+    }
+
+    console.log("debouncedSelectedTags ->", debouncedSelectedTags);
+
+    updateHistoryState(debouncedSelectedTags, 1, 16);
+    loadCertifications(1, 16, debouncedSelectedTags);
+  }, [
+    debouncedSelectedTags,
+    location.search,
+    areTagMapsEqualByUrlValues,
+    updateHistoryState,
+    loadCertifications,
+  ]);
+
   useEffect(() => {
     if (!loading) {
       setCertifications(tempCertifications);
@@ -177,27 +494,37 @@ function LibraryPage({ showRoutes = true }) {
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.total_pages && !loading) {
-      updateHistoryState(debouncedSelectedTags, newPage); // ⬅ actualiza la URL con filtros y nueva página
-      loadCertifications(newPage, 16, debouncedSelectedTags); // ⬅ recarga resultados manteniendo los filtros
+      updateHistoryState(debouncedSelectedTags, newPage, 16);
+      loadCertifications(newPage, 16, debouncedSelectedTags);
+
+      if (certificationsRef.current) {
+        certificationsRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
     }
   };
 
   const PaginationControls = () => {
     const { current_page, total_pages } = pagination;
-     const getVisiblePages = () => {
+
+    const getVisiblePages = () => {
       let start = Math.max(current_page - 2, 1);
       let end = Math.min(start + 4, total_pages);
+
       if (end - start < 4) {
         start = Math.max(end - 4, 1);
       }
+
       const pages = [];
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-       return pages;
+      for (let i = start; i <= end; i++) pages.push(i);
+      return pages;
     };
+
     const pages = getVisiblePages();
     const lastPageIncluded = pages.includes(total_pages);
+
     return (
       <div className="container-buttons-pagination gap-1">
         {loading ? (
@@ -215,12 +542,12 @@ function LibraryPage({ showRoutes = true }) {
                 r="10"
                 stroke="currentColor"
                 strokeWidth="4"
-              ></circle>
+              />
               <path
                 className="opacity-75"
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8v8H4z"
-              ></path>
+              />
             </svg>
             <span className="ml-2 text-neutral-700">Cargando...</span>
           </div>
@@ -234,7 +561,7 @@ function LibraryPage({ showRoutes = true }) {
               <FaChevronLeft />
             </button>
 
-            {pages.map((page, idx) => (
+            {pages.map((page) => (
               <button
                 key={page}
                 onClick={() => handlePageChange(page)}
@@ -268,246 +595,153 @@ function LibraryPage({ showRoutes = true }) {
               className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full"
             >
               <FaChevronRight />
-              </button>
+            </button>
           </>
         )}
       </div>
     );
   };
+
   const NoResultsMessage = () => (
     <div className="no-results-container text-center py-10">
-      <h3 className="text-lg font-semibold text-white mb-0 ">No se encontraron certificaciones en la búsqueda</h3>
-      <p className="text-neutral-100 mt-[-10px]"> No hay resultados que coincidan con los filtros seleccionados.</p>
-      <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-        class="icon icon-tabler icons-tabler-outline icon-tabler-face-id-error w-full" >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-        <path d="M4 8v-2a2 2 0 0 1 2 -2h2" />
-        <path d="M4 16v2a2 2 0 0 0 2 2h2" />
-        <path d="M16 4h2a2 2 0 0 1 2 2v2" />
-        <path d="M16 20h2a2 2 0 0 0 2 -2v-2" />
-        <path d="M9 10h.01" />
-        <path d="M15 10h.01" />
-        <path d="M9.5 15.05a3.5 3.5 0 0 1 5 0" />
-      </svg>
+      <h3 className="text-lg font-semibold text-black mb-0">
+        No se encontraron certificaciones en la búsqueda
+      </h3>
+      <p className="text-neutral-900 mt-[-10px]">
+        No hay resultados que coincidan con los filtros seleccionados.
+      </p>
       <button
-      onClick={() => setSelectedTags({})}
-        className="mt-4 bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full"
+        onClick={clearAllTags}
+        className="mt-4 bg-neutral-950 hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded-full"
       >
-      Limpiar filtros
+        Limpiar filtros
       </button>
     </div>
   );
 
   return (
     <>
-    <Helmet>
-      <title>Certificaciones | Top Education</title>
-      <meta
-        name="description"
-        content="Explora más de 13,000 certificaciones de las mejores universidades y empresas líderes del mundo."
-      />
-      <meta property="og:title" content="Top Education | Aprende con edX, Coursera y MasterClass" />
-    </Helmet>
-    <div className="wrapper-logo-platforms ">
-        <div className="wrapper-logos flex justify-between">
-          <div className="flex gap-3">
-            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "Coursera")} >
-              <img src="/assets/platforms/coursera-logo.png" />
+      <Helmet>
+        <title>Certificaciones | Top Education</title>
+      </Helmet>
+      <div className="w-full">
+        <div className="wrapper-logo-platforms">
+          <div className="wrapper-logos flex justify-between">
+            <div className="flex gap-3">
+              <div
+                className="container-logo !bg-[#e3e1dce6]"
+                onClick={() => handleBannerClick("plataforma", "Coursera")}
+              >
+                <img src="/assets/platforms/coursera-logo.png" alt="Coursera" />
+              </div>
+              <div
+                className="container-logo !bg-[#e3e1dce6]"
+                onClick={() => handleBannerClick("plataforma", "EdX")}
+              >
+                <img src="/assets/platforms/edx-logo.png" alt="EdX" />
+              </div>
+              <div
+                className="container-logo !bg-[#e3e1dce6]"
+                onClick={() => handleBannerClick("plataforma", "MasterClass")}
+              >
+                <img src="/assets/platforms/masterclass-logo.png" alt="MasterClass" />
+              </div>
             </div>
-            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "EdX")} > 
-              <img src="/assets/platforms/edx-logo.png" />
-            </div>
-            <div className="container-logo" onClick={() => handleBannerClick("Plataforma", "MasterClass")} >
-              <img src="/assets/platforms/masterclass-logo.png" />
+
+            <div
+              className="container-logo !bg-[#e3e1dce6]"
+              onClick={() => handleBannerClick("plataforma", "Nuevo en Top.education")}
+            >
+              Nuevo en<span id="top">top.</span><span id="education">education</span>
             </div>
           </div>
-          <div className="container-logo" onClick={() => handleBannerClick('Plataforma', 'Nuevo en Top.education')}>
-            Nuevo en<span id="top">top.</span><span id="education">education</span>
+        </div>
+
+        <div className="cont-explora px-0 lg:px-10">
+          <IndexCategories
+            onTagSelect={(category, tag) => {
+              console.log("onTagSelect recibido:", category, tag);
+              addTag(category, tag);
+            }}
+            selectedTags={selectedTags}
+          />
+
+          <div className="cont-filter">
+            <div className="flex flex-wrap">
+              <div className="container-tags">
+                {Object.keys(selectedTags).length === 0 ||
+                Object.values(selectedTags).every((tags) => !tags || tags.length === 0) ? (
+                  <p>Aún no has seleccionado tags</p>
+                ) : (
+                  Object.entries(selectedTags).map(([category, tags]) =>
+                    tags.map((tag, tagIndex) => (
+                      <div
+                        key={`${category}-${tagIndex}-${getTagUrlValue(category, tag)}`}
+                        className="tag"
+                      >
+                        <span>{getTagLabel(tag)}</span>
+                        <button
+                          onClick={() => removeTag(category, tag)}
+                          className="remove-tag-button"
+                        >
+                          x
+                        </button>
+                      </div>
+                    ))
+                  )
+                )}
+              </div>
+
+              <SearchBar />
+            </div>
+
+            <div ref={certificationsRef} className="certifications-container">
+              {loading ? (
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 p-2">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-full overflow-hidden rounded-[15px] bg-[#F6F4EF] border border-[#ECE7DE] animate-pulse"
+                    >
+                      {/* Imagen superior */}
+                      <div className="relative h-[200px] w-full rounded-xl bg-[linear-gradient(135deg,#d6d0c8_0%,#f0ece6_45%,#cfc7bc_100%)]">
+                        <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.7),transparent_35%),radial-gradient(circle_at_70%_40%,rgba(255,255,255,0.5),transparent_30%),radial-gradient(circle_at_50%_80%,rgba(255,255,255,0.35),transparent_25%)]"></div>
+
+                        {/* Badge Certificación */}
+                        <div className="absolute top-1 right-0 h-5 w-24 rounded-[25px_0px_0px_25px] bg-white shadow-sm"></div>
+                      </div>
+
+                      {/* Body */}
+                      <div className="relative px-4 pb-4 pt-4">
+                        {/* Categoría */}
+                        <div className="absolute -top-2 left-1/2 h-5 w-[150px] -translate-x-1/2 rounded-full bg-[#C4C4C4]"></div>
+
+                        {/* Título */}
+                        <div className="mt-4 flex flex-col items-center gap-1">
+                          <div className="h-4 w-[85%] rounded bg-neutral-300"></div>
+                          <div className="h-4 w-[78%] rounded bg-neutral-300"></div>
+                        </div>
+
+                        {/* Footer logos */}
+                        <div className="mt-2 flex items-center justify-between">
+                          <div className="h-6 w-20 rounded bg-neutral-300"></div>
+                          <div className="h-6 w-28 rounded-full bg-neutral-300"></div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : certifications.length === 0 ? (
+                <NoResultsMessage />
+              ) : (
+                <CertificationsList certifications={certifications} />
+              )}
+
+              <PaginationControls />
+            </div>
           </div>
         </div>
       </div>
-    
-    <div className="cont-explora px-0 lg:px-10">
-      
-      <IndexCategories 
-        onTagSelect={(category, tag) => {
-          setSelectedTags((prev) => {
-            const updated = { ...prev };
-            if (!updated[category]) updated[category] = [];
-            if (!updated[category].includes(tag)) {
-              updated[category].push(tag);
-            }
-            return updated;
-          });
-        }}
-        selectedTags={selectedTags}
-      />
-      <div className="cont-filter">
-        <div className="flex flex-wrap">
-          <div className="container-tags">
-            {Object.keys(selectedTags).length === 0 || Object.values(selectedTags).every((tags) => tags.length === 0) ? (
-              <p>Aún no has seleccionado tags</p>
-            ) : (
-              Object.entries(selectedTags).map(([category, tags], index) =>
-                tags.map((tag, tagIndex) => (
-                  <div key={`${category}-${tagIndex}`} className="tag">
-                    <span>{tag}</span>
-                    <button onClick={() => removeTag(category, tag)} className="remove-tag-button" >x</button>
-                  </div>
-                ))
-              )
-            )}
-          </div>
-          <SearchBar />
-        </div>
-        <div ref={certificationsRef} className="certifications-container">
-          {loading ? (
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 p-5">
-            <div class="mx-auto w-full rounded-md border border-gray-300 p-4">
-              <div class="flex animate-pulse space-x-4">
-                <div class="size-10 rounded-full bg-gray-200"></div>
-                <div class="flex-1 space-y-6 py-1">
-                  <div class="h-2 rounded bg-gray-200"></div>
-                  <div class="space-y-3">
-                    <div class="grid grid-cols-3 gap-4">
-                      <div class="col-span-2 h-2 rounded bg-gray-200"></div>
-                      <div class="col-span-1 h-2 rounded bg-gray-200"></div>
-                    </div>
-                    <div class="h-2 rounded bg-gray-200"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="mx-auto w-full rounded-md border border-gray-300 p-4">
-              <div class="flex animate-pulse space-x-4">
-                <div class="size-10 rounded-full bg-gray-200"></div>
-                <div class="flex-1 space-y-6 py-1">
-                  <div class="h-2 rounded bg-gray-200"></div>
-                  <div class="space-y-3">
-                    <div class="grid grid-cols-3 gap-4">
-                      <div class="col-span-2 h-2 rounded bg-gray-200"></div>
-                      <div class="col-span-1 h-2 rounded bg-gray-200"></div>
-                    </div>
-                    <div class="h-2 rounded bg-gray-200"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="mx-auto w-full max-w-sm rounded-md border border-gray-300 p-4">
-              <div class="flex animate-pulse space-x-4">
-                <div class="size-10 rounded-full bg-gray-200"></div>
-                <div class="flex-1 space-y-6 py-1">
-                  <div class="h-2 rounded bg-gray-200"></div>
-                  <div class="space-y-3">
-                    <div class="grid grid-cols-3 gap-4">
-                      <div class="col-span-2 h-2 rounded bg-gray-200"></div>
-                      <div class="col-span-1 h-2 rounded bg-gray-200"></div>
-                    </div>
-                    <div class="h-2 rounded bg-gray-200"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="mx-auto w-full rounded-md border border-gray-300 p-4">
-              <div class="flex animate-pulse space-x-4">
-                <div class="size-10 rounded-full bg-gray-200"></div>
-                <div class="flex-1 space-y-6 py-1">
-                  <div class="h-2 rounded bg-gray-200"></div>
-                  <div class="space-y-3">
-                    <div class="grid grid-cols-3 gap-4">
-                      <div class="col-span-2 h-2 rounded bg-gray-200"></div>
-                      <div class="col-span-1 h-2 rounded bg-gray-200"></div>
-                    </div>
-                    <div class="h-2 rounded bg-gray-200"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="mx-auto w-full rounded-md border border-gray-300 p-4">
-              <div class="flex animate-pulse space-x-4">
-                <div class="size-10 rounded-full bg-gray-200"></div>
-                <div class="flex-1 space-y-6 py-1">
-                  <div class="h-2 rounded bg-gray-200"></div>
-                  <div class="space-y-3">
-                    <div class="grid grid-cols-3 gap-4">
-                      <div class="col-span-2 h-2 rounded bg-gray-200"></div>
-                      <div class="col-span-1 h-2 rounded bg-gray-200"></div>
-                    </div>
-                    <div class="h-2 rounded bg-gray-200"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="mx-auto w-full rounded-md border border-gray-300 p-4">
-              <div class="flex animate-pulse space-x-4">
-                <div class="size-10 rounded-full bg-gray-200"></div>
-                <div class="flex-1 space-y-6 py-1">
-                  <div class="h-2 rounded bg-gray-200"></div>
-                  <div class="space-y-3">
-                    <div class="grid grid-cols-3 gap-4">
-                      <div class="col-span-2 h-2 rounded bg-gray-200"></div>
-                      <div class="col-span-1 h-2 rounded bg-gray-200"></div>
-                    </div>
-                    <div class="h-2 rounded bg-gray-200"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="mx-auto w-full max-w-sm rounded-md border border-gray-300 p-4">
-              <div class="flex animate-pulse space-x-4">
-                <div class="size-10 rounded-full bg-gray-200"></div>
-                <div class="flex-1 space-y-6 py-1">
-                  <div class="h-2 rounded bg-gray-200"></div>
-                  <div class="space-y-3">
-                    <div class="grid grid-cols-3 gap-4">
-                      <div class="col-span-2 h-2 rounded bg-gray-200"></div>
-                      <div class="col-span-1 h-2 rounded bg-gray-200"></div>
-                    </div>
-                    <div class="h-2 rounded bg-gray-200"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="mx-auto w-full rounded-md border border-gray-300 p-4">
-              <div class="flex animate-pulse space-x-4">
-                <div class="size-10 rounded-full bg-gray-200"></div>
-                <div class="flex-1 space-y-6 py-1">
-                  <div class="h-2 rounded bg-gray-200"></div>
-                  <div class="space-y-3">
-                    <div class="grid grid-cols-3 gap-4">
-                      <div class="col-span-2 h-2 rounded bg-gray-200"></div>
-                      <div class="col-span-1 h-2 rounded bg-gray-200"></div>
-                    </div>
-                    <div class="h-2 rounded bg-gray-200"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : certifications.length === 0 ? (
-          <NoResultsMessage />
-        ) : (
-          <CertificationsList certifications={certifications} />
-        )}
-        <PaginationControls />
-      </div>
-    </div>
-      {/*showRoutes && (
-        <section className="wrapper w-full">
-          <div className="container m-auto pt-14 pb-2 xl:pt-7 lg:pt-7">
-            <h2 className="text-white text-center text-5xl mb-1">¿Encontraste lo que estabas buscando?</h2>
-            <p className="text-white text-center text-2xl">Quizás te interese explorar nuestras Rutas del Conocimiento, donde podrás seguir el camino de grandes figuras históricas y aprender de los mejores en cada campo. ¡Descubre cursos inspirados en Einstein, Da Vinci, Marie Curie y más!</p>
-            <HeroSlider authors={authors} />
-          </div>
-        </section>
-        
-      )
-      <section className="wrapper w-full">
-        <div className="container m-auto">
-          <iframe width="100%" height="700" src="https://lookerstudio.google.com/embed/reporting/34a9037d-151f-4d49-9aca-117e32dc8fd9/page/HlAIF" frameborder="0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-        </div>
-      </section>*/}
-    </div>
     </>
   );
 }

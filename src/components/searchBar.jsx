@@ -118,7 +118,7 @@ const SearchBar = () => {
                     : "relative "
                 }`}
             >
-                <span className='absolute top-[-15px] text-[0.7rem] w-[100%] text-white'>Busca por tema, habilidad, universidad o empresa</span>
+                <span className='absolute top-[-15px] text-[0.7rem] w-[100%] text-black'>Busca por tema, habilidad, universidad o empresa</span>
                 <input
                     type="text"
                     placeholder="¿Qué quieres aprender?"
@@ -132,7 +132,7 @@ const SearchBar = () => {
                         <X />
                     </button>
                 )}
-                <div className='serch-btn'>
+                <div className='serch-btn cursor-pointer'>
                 <svg
                     fill="white"
                     width="20px"
