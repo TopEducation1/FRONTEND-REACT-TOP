@@ -21,7 +21,7 @@ const CertificationPage = () => {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const navigate = useNavigate();
 
-  const MAX_CHARS = 120;
+  const MAX_CHARS = 400;
 
 const getDescription = () => {
   return (
@@ -616,7 +616,7 @@ const truncateText = (text, max) => {
                         {/* DESCRIPCIÓN */}
                         {(certification.universidad_certificacion?.descripcion_institucion ||
                         certification.empresa_certificacion?.descripcion_institucion) && (
-                        <div className="text-sm text-neutral-700 leading-relaxed">
+                        <div className="text-[12px] text-neutral-700 leading-[1.1em]">
 
                             <p>
                             {showFullDescription
