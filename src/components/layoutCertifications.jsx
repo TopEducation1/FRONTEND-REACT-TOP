@@ -86,7 +86,7 @@ const CertificationsList = memo(({ certifications }) => {
               <div
                 onClick={() => handleCertificationClick(certification)}
                 key={certification.id}
-                className="certification-card grid grid-cols-1 content-between bg-[#f6f4ef] rounded-xl cursor-pointer overflow-hidden"
+                className="certification-card grid grid-cols-1 content-between bg-[#e3e1dce6] rounded-xl cursor-pointer overflow-hidden"
               >
                 <div className="container-img-card">
                   <img
@@ -144,7 +144,7 @@ const CertificationsList = memo(({ certifications }) => {
             <div
               onClick={() => handleCertificationClick(certification)}
               key={certification.id}
-              className="certification-card grid grid-cols-1 content-between bg-[#F2F0E8] border-1 border-[#ECECEC] rounded-[15px] rounded-xl cursor-pointer overflow-hidden"
+              className="certification-card grid grid-cols-1 content-between inset-shadow-xs bg-[#F2F0E8] hover:bg-[#e3e1dce6] hover:shadow-md border-1 border-[#e3e1dce6] rounded-[15px] rounded-xl cursor-pointer overflow-hidden"
             >
               <div>
               <div className="container-img-card !rounded-xl min-h-[200px] !max-h-[200px] overflow-hidden relative">

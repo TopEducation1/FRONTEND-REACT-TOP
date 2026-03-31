@@ -311,7 +311,7 @@ header {
   background: #1c1c1c;
   backdrop-filter: blur(10px);
   top: 56px;
-  left: -12%;
+  left: -7vw;
   padding: 0;
   width: 80vw;
   border-radius: var(--esquinaSm);
@@ -337,7 +337,7 @@ header {
   border-bottom: 40px solid #1c1c1c;
   top: -40px;
   z-index: -10 !important;
-  left: 7%;
+  left: 6vw;
 }
 .nav-main .submenu::before{
   content: '';
@@ -351,7 +351,7 @@ header {
   border-bottom: 40px solid #1c1c1c;
   top: -40px;
   z-index: -10 !important;
-  right: 8%;
+  right: 6vw;
 }
 
 .submenu > .submenu-section:first-of-type {
@@ -719,15 +719,16 @@ header {
 
 .unfold-category-button {
   width: 100%;
-  padding: 8px 12px;
+  padding: 5px 12px;
   border: none;
+  border-radius: 15px 0px 0px 15px ;
   background: transparent;
   color: var(--negro);
   cursor: pointer;
   text-align: left;
   display: flex;
   align-items: center;
-  font-size: 24px;
+  font-size: 22px;
   gap: 15px;
   transition: background-color 0.2s ease;
 
@@ -829,7 +830,7 @@ header {
 .category-item:focus-within .unfold-category-button {
   background-color: rgba(227,225,220, 0.9);
   backdrop-filter: blur(20px);
-  border-radius: 25px 0px 0px 25px;
+  border-radius: 15px 0px 0px 15px;
 }
 .unfold-list .submenu{
   width: 100vw;
@@ -2388,7 +2389,6 @@ header {
   }
   .container-burguer-button {
     display: block;
-    margin-top: 20px;
     padding: 5px;
     height: 35px;
     align-items: center;
@@ -2517,14 +2517,14 @@ header {
     transition: height 1s ease !important;
   }
   .category-item:hover .unfold-category-button{
-    border-radius: 15px 15px 0px 0px !important;
+    border-radius: 15px  0px 0px 15px !important;
   }
   .category-item:hover > .unfold-list{
     position: relative;
     left: 0px;
     margin-top: 0px;
     padding: 0px;
-    border-radius: 0px 0px 15px 15px;
+    border-radius: 15px 0px 0px  15px;
   }
   .category-item:hover > .unfold-list,
   .category-item:hover > .unfold-list .unfold-list,

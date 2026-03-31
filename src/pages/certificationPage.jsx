@@ -242,26 +242,60 @@ const truncateText = (text, max) => {
     typeof videoUrl === "string" &&
     !["null", "none"].includes(videoUrl.trim().toLowerCase());
 
-  const raw = certification?.instructores_certificacion;
+  const instructorsDetailed = certification?.instructores_detalle_certificacion;
+  const instructorsLegacy = certification?.instructores_certificacion;
 
   const instructoresList = (() => {
-    if (!raw) return [];
+    // 1) Prioridad: nueva relación con imagen + nombre
+    if (Array.isArray(instructorsDetailed) && instructorsDetailed.length > 0) {
+      return instructorsDetailed
+        .map((item) => {
+          const nombre = (item?.nombre || item?.name || "").toString().trim();
+          const imagen = (item?.imagen || item?.image || "").toString().trim();
 
-    if (Array.isArray(raw)) {
-      return raw
-        .map((x) => (x?.name ?? x?.nombre ?? x ?? "").toString().trim())
+          if (!nombre) return null;
+
+          return {
+            nombre,
+            imagen,
+            source: "relation",
+          };
+        })
         .filter(Boolean);
     }
 
-    if (typeof raw === "string") {
-      const t = raw.trim();
+    // 2) Fallback: campo legacy
+    if (!instructorsLegacy) return [];
+
+    if (Array.isArray(instructorsLegacy)) {
+      return instructorsLegacy
+        .map((x) => {
+          const nombre = (x?.name ?? x?.nombre ?? x ?? "").toString().trim();
+          if (!nombre) return null;
+
+          return {
+            nombre,
+            imagen: "",
+            source: "legacy",
+          };
+        })
+        .filter(Boolean);
+    }
+
+    if (typeof instructorsLegacy === "string") {
+      const t = instructorsLegacy.trim();
       if (!t || ["none", "null"].includes(t.toLowerCase())) return [];
 
       return t
         .replace(/\s*(?:&| and | y )\s*/gi, ",")
         .split(",")
         .map((s) => s.trim())
-        .filter(Boolean);
+        .filter(Boolean)
+        .map((nombre) => ({
+          nombre,
+          imagen: "",
+          source: "legacy",
+        }));
     }
 
     return [];
@@ -480,24 +514,32 @@ const truncateText = (text, max) => {
                       <div id="widgets-learning-masterclass" className="w-full">
                         {instructoresList.length > 0 && (
                           <div>
-                            <div className="flex space-x-3 flex">
-                              <img
-                                className="w-[30px] h-[30px]"
-                                src="/assets/content/icons/user-te.png"
-                                alt=""
-                              />
-                              <b>Instructor/es:</b>
-                            </div>
-                            <div className="text-black w-full">
-                              <ul className="list-disc ml-5">
-                                {instructoresList.map((name, idx) => (
-                                  <li key={idx}>{name}</li>
+                            
+                            <div className="text-black w-full mt-3">
+                              <div className="flex flex-col gap-3">
+                                {instructoresList.map((instructor, idx) => (
+                                  <div
+                                    key={`${instructor.nombre}-${idx}`}
+                                    className="flex items-center gap-3"
+                                  >
+                                    <img
+                                      className="w-[42px] h-[42px] rounded-full object-cover border border-neutral-200"
+                                      src={
+                                        instructor.imagen && instructor.imagen.trim() !== ""
+                                          ? instructor.imagen
+                                          : "/assets/content/icons/user-te.png"
+                                      }
+                                      alt={instructor.nombre}
+                                    />
+                                    <div className="text-[15px] text-black">
+                                      {instructor.nombre}
+                                    </div>
+                                  </div>
                                 ))}
-                              </ul>
+                              </div>
                             </div>
                           </div>
                         )}
-                        
                       </div>
                     )}
                   </div>

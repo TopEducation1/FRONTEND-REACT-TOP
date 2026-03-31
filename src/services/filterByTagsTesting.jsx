@@ -26,6 +26,9 @@ class TagFilterService {
       Universidad: "Universidad",
       Universidades: "Universidad",
       universidades: "Universidad",
+
+      Idioma: "idioma",
+      idioma: "idioma",
     };
 
     return map[category] || category;
@@ -41,6 +44,10 @@ class TagFilterService {
         return tag.slug || "";
       }
       return String(tag).trim();
+    }
+
+    if (normalizedCategory === "idioma") {
+      return String(tag).trim().toLowerCase();
     }
 
     if (typeof tag === "object") {
@@ -80,6 +87,7 @@ class TagFilterService {
       const url = `${this.baseUrl}${queryString}`;
 
       console.log("TagFilterService URL:", url);
+      console.log("TagFilterService selectedTags:", selectedTags);
 
       const response = await fetch(url, {
         method: "GET",

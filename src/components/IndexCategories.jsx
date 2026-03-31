@@ -9,6 +9,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
   const [habilidades, setHabilidades] = useState([]);
   const [empresas, setEmpresas] = useState([]);
   const [plataformas, setPlataformas] = useState([]);
+  const [idiomas, setIdiomas] = useState([]);
   const [universidadesPorRegion, setUniversidadesPorRegion] = useState({});
   const indexRef = useRef(null);
 
@@ -35,6 +36,10 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
     if (!item?.parent) return null;
     if (typeof item.parent === "object") return item.parent.id || null;
     return item.parent;
+  };
+
+  const isLanguageSelected = (code) => {
+    return Array.isArray(selectedTags?.idioma) && selectedTags.idioma.includes(code);
   };
 
   useEffect(() => {
@@ -72,7 +77,9 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
       .then((data) => {
         const safeData = Array.isArray(data) ? data : [];
         setEmpresas(
-          safeData.filter((item) => item.empr_est === "enabled" || item.estado === true)
+          safeData.filter(
+            (item) => item.empr_est === "enabled" || item.estado === true
+          )
         );
       })
       .catch((err) => {
@@ -94,6 +101,17 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
       .catch((err) => {
         console.error("Error cargando universidades por región:", err);
         setUniversidadesPorRegion({});
+      });
+
+    fetch(endpoints.certification_languages)
+      .then((res) => res.json())
+      .then((data) => {
+        const safeData = Array.isArray(data) ? data : [];
+        setIdiomas(safeData);
+      })
+      .catch((err) => {
+        console.error("Error cargando idiomas:", err);
+        setIdiomas([]);
       });
   }, []);
 
@@ -142,6 +160,10 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
 
     setOpenSection(null);
     setOpenChildMenu(null);
+  };
+
+  const handleLanguageToggle = (code) => {
+    onTagSelect("idioma", code);
   };
 
   const renderSkillTree = (category, treeItems) => {
@@ -216,7 +238,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
 
           {hasChildren && isHovered && (
             <div
-              className="absolute left-full top-0 z-50 min-w-[280px] rounded-2xl border border-neutral-300  shadow-2xl overflow-hidden"
+              className="absolute left-full top-0 z-50 min-w-[280px] rounded-2xl border border-neutral-300 shadow-2xl overflow-hidden"
               data-lenis-prevent
             >
               <div className="subsub-item p-3">
@@ -239,7 +261,6 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                         }}
                         className="flex items-center !text-black"
                       >
-                        
                         {getSkillLabel(child)}
                       </Link>
                     </div>
@@ -287,6 +308,59 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
     ));
   };
 
+  const renderLanguages = () => {
+    return (
+      <div className="language-checklist mb-5">
+        <div className="mb-2 flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-black">Idioma</h3>
+        </div>
+
+        <div
+          data-lenis-prevent
+          className="flex flex-col gap-0 overflow-y-auto max-h-[250px] pb-6 mb-10"
+        >
+          {idiomas.map((lang) => {
+            const checked = isLanguageSelected(lang.code);
+
+            return (
+              <label
+                key={lang.code}
+                className="flex items-center justify-between gap-3 cursor-pointer rounded-lg px-2 py-1 hover:bg-neutral-100"
+              >
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => handleLanguageToggle(lang.code)}
+                    className="h-4 w-4 rounded-xl"
+                  />
+                  <span className="text-sm text-black">{lang.label}</span>
+                </div>
+
+                <span className="text-xs text-neutral-500">{lang.count}</span>
+              </label>
+            );
+          })}
+          {/* Indicador scroll */}
+          <div className="pointer-events-none absolute bottom-0 left-0 w-full flex justify-center pb-1 bg-gradient-to-t from-[#F6F4EF] via-[#F6F4EF]/80 to-transparent">
+            <div className="flex flex-col items-center animate-bounce text-neutral-400">
+              {/*<span className="text-xs">scroll</span>*/}
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const sections = [
     {
       title: "Tema",
@@ -303,11 +377,11 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
       key: "universidades",
       renderContent: () =>
         Object.entries(universidadesPorRegion).map(([region, universidades]) => (
-          <div key={region} className="submenu">
+          <div key={region} className="submenu" >
             <h3 className="!text-black">{region}</h3>
             <div className={`unfold-list list-${region}`}>
               {universidades.map((uni) => (
-                <div key={uni.id} className="subitem ">
+                <div key={uni.id} className="subitem">
                   <Link
                     to="#"
                     onClick={(e) => {
@@ -341,7 +415,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
       key: "empresas",
       renderContent: () => (
         <div className="submenu">
-          <div className="unfold-list grid grid-cols-1 md:grid-cols-3 gap-0">
+          <div className="unfold-list grid grid-cols-1 md:grid-cols-3 gap-0 overflow-y-auto max-h-[65vh]" data-lenis-prevent>
             {empresas.map((empr) => (
               <div key={empr.id} className="subitem">
                 <Link
@@ -390,8 +464,8 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
 
           return (
             <div
-              key={index}
-              className={`category-item item-${section.title} ${isOpen ? "open" : ""}`}
+              key={section.key}
+              className={`category-item item-${section.key} ${isOpen ? "open" : ""}`}
               onMouseEnter={() =>
                 isSectionDisabled(section.key) ? null : setOpenSection(index)
               }
@@ -434,13 +508,17 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
               </button>
 
               {isOpen && (
-                <div className="unfold-list subprimery relative" data-lenis-prevent>
+                <div className="unfold-list subprimery relative overflow-y-auto !max-h-[65vh]" data-lenis-prevent>
                   {section.renderContent()}
                 </div>
               )}
             </div>
           );
         })}
+
+        <div className="mt-4 border-t border-neutral-200 pt-4">
+          {renderLanguages()}
+        </div>
       </div>
     </div>
   );

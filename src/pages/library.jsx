@@ -11,12 +11,16 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import axios from "axios";
 import endpoints from "../config/api";
 
+const DEFAULT_SELECTED_TAGS = {
+  idioma: ["es", "en"],
+};
+
 function LibraryPage({ showRoutes = true }) {
   const location = useLocation();
 
   const [certifications, setCertifications] = useState([]);
   const [tempCertifications, setTempCertifications] = useState([]);
-  const [selectedTags, setSelectedTags] = useState({});
+  const [selectedTags, setSelectedTags] = useState(DEFAULT_SELECTED_TAGS);
   const [skillsCatalog, setSkillsCatalog] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,6 +48,8 @@ function LibraryPage({ showRoutes = true }) {
       Tema: "temas",
       Habilidades: "habilidades",
       Habilidad: "habilidades",
+      Idioma: "idioma",
+      idioma: "idioma",
       plataforma: "plataforma",
       empresas: "empresas",
       universidades: "universidades",
@@ -90,6 +96,10 @@ function LibraryPage({ showRoutes = true }) {
       return String(tag).trim();
     }
 
+    if (normalizedCategory === "idioma") {
+      return typeof tag === "string" ? tag.trim() : "";
+    }
+
     if (typeof tag === "object") {
       return tag.slug || tag.nombre || "";
     }
@@ -106,17 +116,25 @@ function LibraryPage({ showRoutes = true }) {
       universidades: "Universidad",
       empresas: "Empresa",
       plataforma: "Plataforma",
+      idioma: "idioma",
     };
 
     return map[normalizedCategory] || category;
   };
 
-  const areTagsEqual = (a, b) => {
+  const areTagsEqual = (category, a, b) => {
+    const normalizedCategory = normalizeCategoryKey(category);
+
+    if (normalizedCategory === "idioma") {
+      return String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
+    }
+
     if (typeof a === "object" && typeof b === "object") {
       if (a?.slug && b?.slug) return a.slug === b.slug;
       if (a?.id && b?.id) return String(a.id) === String(b.id);
       return JSON.stringify(a) === JSON.stringify(b);
     }
+
     return a === b;
   };
 
@@ -141,30 +159,31 @@ function LibraryPage({ showRoutes = true }) {
       }
     }
 
+    if (!tags.idioma || tags.idioma.length === 0) {
+      tags.idioma = [...DEFAULT_SELECTED_TAGS.idioma];
+    }
+
     return tags;
   }
 
-  const normalizeTagsForCompare = useCallback(
-    (tags) => {
-      const result = {};
+  const normalizeTagsForCompare = useCallback((tags) => {
+    const result = {};
 
-      Object.entries(tags || {}).forEach(([category, values]) => {
-        const normalizedCategory = normalizeCategoryKey(category);
-        const normalizedValues = (values || [])
-          .map((tag) => getTagUrlValue(normalizedCategory, tag))
-          .filter(Boolean)
-          .map((val) => String(val).trim())
-          .sort();
+    Object.entries(tags || {}).forEach(([category, values]) => {
+      const normalizedCategory = normalizeCategoryKey(category);
+      const normalizedValues = (values || [])
+        .map((tag) => getTagUrlValue(normalizedCategory, tag))
+        .filter(Boolean)
+        .map((val) => String(val).trim())
+        .sort();
 
-        if (normalizedValues.length > 0) {
-          result[normalizedCategory] = normalizedValues;
-        }
-      });
+      if (normalizedValues.length > 0) {
+        result[normalizedCategory] = normalizedValues;
+      }
+    });
 
-      return result;
-    },
-    []
-  );
+    return result;
+  }, []);
 
   const areTagMapsEqualByUrlValues = useCallback(
     (a, b) => {
@@ -195,7 +214,7 @@ function LibraryPage({ showRoutes = true }) {
   );
 
   const hydrateTagsFromCatalog = useCallback((tags, catalog) => {
-    if (!tags) return {};
+    if (!tags) return { ...DEFAULT_SELECTED_TAGS };
 
     const hydrated = {};
 
@@ -240,6 +259,10 @@ function LibraryPage({ showRoutes = true }) {
         };
       });
     });
+
+    if (!hydrated.idioma || hydrated.idioma.length === 0) {
+      hydrated.idioma = [...DEFAULT_SELECTED_TAGS.idioma];
+    }
 
     return hydrated;
   }, []);
@@ -375,49 +398,96 @@ function LibraryPage({ showRoutes = true }) {
     });
   }, []);
 
-  const addTag = useCallback((category, tag) => {
-    const normalizedCategory = normalizeCategoryKey(category);
+  const addTag = useCallback(
+    (category, tag) => {
+      const normalizedCategory = normalizeCategoryKey(category);
 
-    applySelectedTags((prevTags) => {
-      const currentTags = prevTags[normalizedCategory] || [];
+      applySelectedTags((prevTags) => {
+        const currentTags = prevTags[normalizedCategory] || [];
 
-      const alreadyExists = currentTags.some((existingTag) =>
-        areTagsEqual(existingTag, tag)
-      );
-
-      if (alreadyExists) return prevTags;
-
-      return {
-        ...prevTags,
-        [normalizedCategory]: [...currentTags, tag],
-      };
-    });
-  }, [applySelectedTags]);
-
-  const removeTag = useCallback((category, tagToRemove) => {
-    const normalizedCategory = normalizeCategoryKey(category);
-
-    applySelectedTags((prevTags) => {
-      const updatedTags = { ...prevTags };
-
-      if (updatedTags[normalizedCategory]) {
-        const filteredTags = updatedTags[normalizedCategory].filter(
-          (tag) => !areTagsEqual(tag, tagToRemove)
+        const alreadyExists = currentTags.some((existingTag) =>
+          areTagsEqual(normalizedCategory, existingTag, tag)
         );
 
-        if (filteredTags.length === 0) {
-          delete updatedTags[normalizedCategory];
-        } else {
-          updatedTags[normalizedCategory] = filteredTags;
-        }
-      }
+        if (alreadyExists) return prevTags;
 
-      return updatedTags;
-    });
-  }, [applySelectedTags]);
+        return {
+          ...prevTags,
+          [normalizedCategory]: [...currentTags, tag],
+        };
+      });
+    },
+    [applySelectedTags]
+  );
+
+  const removeTag = useCallback(
+    (category, tagToRemove) => {
+      const normalizedCategory = normalizeCategoryKey(category);
+
+      applySelectedTags((prevTags) => {
+        const updatedTags = { ...prevTags };
+
+        if (updatedTags[normalizedCategory]) {
+          const filteredTags = updatedTags[normalizedCategory].filter(
+            (tag) => !areTagsEqual(normalizedCategory, tag, tagToRemove)
+          );
+
+          if (filteredTags.length === 0) {
+            if (normalizedCategory === "idioma") {
+              updatedTags[normalizedCategory] = [];
+            } else {
+              delete updatedTags[normalizedCategory];
+            }
+          } else {
+            updatedTags[normalizedCategory] = filteredTags;
+          }
+        }
+
+        return updatedTags;
+      });
+    },
+    [applySelectedTags]
+  );
+
+  const toggleTag = useCallback(
+    (category, tag) => {
+      const normalizedCategory = normalizeCategoryKey(category);
+
+      applySelectedTags((prevTags) => {
+        const currentTags = prevTags[normalizedCategory] || [];
+        const alreadyExists = currentTags.some((existingTag) =>
+          areTagsEqual(normalizedCategory, existingTag, tag)
+        );
+
+        let nextCategoryValues;
+        if (alreadyExists) {
+          nextCategoryValues = currentTags.filter(
+            (existingTag) => !areTagsEqual(normalizedCategory, existingTag, tag)
+          );
+        } else {
+          nextCategoryValues = [...currentTags, tag];
+        }
+
+        const updatedTags = { ...prevTags };
+
+        if (nextCategoryValues.length === 0) {
+          if (normalizedCategory === "idioma") {
+            updatedTags[normalizedCategory] = [];
+          } else {
+            delete updatedTags[normalizedCategory];
+          }
+        } else {
+          updatedTags[normalizedCategory] = nextCategoryValues;
+        }
+
+        return updatedTags;
+      });
+    },
+    [applySelectedTags]
+  );
 
   const clearAllTags = useCallback(() => {
-    setSelectedTags({});
+    setSelectedTags({ ...DEFAULT_SELECTED_TAGS });
   }, []);
 
   const handleBannerClick = (category, tag) => {
@@ -624,6 +694,7 @@ function LibraryPage({ showRoutes = true }) {
       <Helmet>
         <title>Certificaciones | Top Education</title>
       </Helmet>
+
       <div className="w-full">
         <div className="wrapper-logo-platforms">
           <div className="wrapper-logos flex justify-between">
@@ -644,15 +715,21 @@ function LibraryPage({ showRoutes = true }) {
                 className="container-logo !bg-[#e3e1dce6]"
                 onClick={() => handleBannerClick("plataforma", "MasterClass")}
               >
-                <img src="/assets/platforms/masterclass-logo.png" alt="MasterClass" />
+                <img
+                  src="/assets/platforms/masterclass-logo.png"
+                  alt="MasterClass"
+                />
               </div>
             </div>
 
             <div
               className="container-logo !bg-[#e3e1dce6]"
-              onClick={() => handleBannerClick("plataforma", "Nuevo en Top.education")}
+              onClick={() =>
+                handleBannerClick("plataforma", "Nuevo en Top.education")
+              }
             >
-              Nuevo en<span id="top">top.</span><span id="education">education</span>
+              Nuevo en<span id="top">top.</span>
+              <span id="education">education</span>
             </div>
           </div>
         </div>
@@ -661,7 +738,7 @@ function LibraryPage({ showRoutes = true }) {
           <IndexCategories
             onTagSelect={(category, tag) => {
               console.log("onTagSelect recibido:", category, tag);
-              addTag(category, tag);
+              toggleTag(category, tag);
             }}
             selectedTags={selectedTags}
           />
@@ -670,13 +747,18 @@ function LibraryPage({ showRoutes = true }) {
             <div className="flex flex-wrap">
               <div className="container-tags">
                 {Object.keys(selectedTags).length === 0 ||
-                Object.values(selectedTags).every((tags) => !tags || tags.length === 0) ? (
+                Object.values(selectedTags).every(
+                  (tags) => !tags || tags.length === 0
+                ) ? (
                   <p>Aún no has seleccionado tags</p>
                 ) : (
                   Object.entries(selectedTags).map(([category, tags]) =>
                     tags.map((tag, tagIndex) => (
                       <div
-                        key={`${category}-${tagIndex}-${getTagUrlValue(category, tag)}`}
+                        key={`${category}-${tagIndex}-${getTagUrlValue(
+                          category,
+                          tag
+                        )}`}
                         className="tag"
                       >
                         <span>{getTagLabel(tag)}</span>
@@ -703,26 +785,19 @@ function LibraryPage({ showRoutes = true }) {
                       key={i}
                       className="w-full overflow-hidden rounded-[15px] bg-[#F6F4EF] border border-[#ECE7DE] animate-pulse"
                     >
-                      {/* Imagen superior */}
                       <div className="relative h-[200px] w-full rounded-xl bg-[linear-gradient(135deg,#d6d0c8_0%,#f0ece6_45%,#cfc7bc_100%)]">
                         <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.7),transparent_35%),radial-gradient(circle_at_70%_40%,rgba(255,255,255,0.5),transparent_30%),radial-gradient(circle_at_50%_80%,rgba(255,255,255,0.35),transparent_25%)]"></div>
-
-                        {/* Badge Certificación */}
                         <div className="absolute top-1 right-0 h-5 w-24 rounded-[25px_0px_0px_25px] bg-white shadow-sm"></div>
                       </div>
 
-                      {/* Body */}
                       <div className="relative px-4 pb-4 pt-4">
-                        {/* Categoría */}
                         <div className="absolute -top-2 left-1/2 h-5 w-[150px] -translate-x-1/2 rounded-full bg-[#C4C4C4]"></div>
 
-                        {/* Título */}
                         <div className="mt-4 flex flex-col items-center gap-1">
                           <div className="h-4 w-[85%] rounded bg-neutral-300"></div>
                           <div className="h-4 w-[78%] rounded bg-neutral-300"></div>
                         </div>
 
-                        {/* Footer logos */}
                         <div className="mt-2 flex items-center justify-between">
                           <div className="h-6 w-20 rounded bg-neutral-300"></div>
                           <div className="h-6 w-28 rounded-full bg-neutral-300"></div>
