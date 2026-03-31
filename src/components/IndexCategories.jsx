@@ -332,7 +332,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                     type="checkbox"
                     checked={checked}
                     onChange={() => handleLanguageToggle(lang.code)}
-                    className="h-4 w-4 rounded-xl"
+                    className="h-4 w-4 rounded-xl accent-black"
                   />
                   <span className="text-sm text-black">{lang.label}</span>
                 </div>
@@ -508,7 +508,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
               </button>
 
               {isOpen && (
-                <div className="unfold-list subprimery relative overflow-y-auto !max-h-[65vh]" data-lenis-prevent>
+                <div className="unfold-list subprimery relative" data-lenis-prevent>
                   {section.renderContent()}
                 </div>
               )}
