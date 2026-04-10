@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import Galaxy from "../components/GalaxyBackground";
 
 const GRID_COL_CLASSES =
   "relative overflow-visible grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-0";
@@ -226,7 +225,7 @@ function TopicCard({
         <div className="w-full aspect-[4/3] flex items-center justify-center p-6 transition-transform duration-300 group-hover:scale-[1.03] will-change-transform transform-gpu">
           {topic.img ? (
             <img
-              src={topic.img.startsWith("/") ? topic.img : `/${topic.img}-t.png`}
+              src={topic.img}
               alt={topic.name}
               className="h-full w-full object-contain"
               style={{

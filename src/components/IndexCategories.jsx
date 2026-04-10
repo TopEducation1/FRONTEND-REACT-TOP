@@ -397,11 +397,15 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                       opacity: isSectionDisabled("universidades") ? 0.5 : 1,
                     }}
                   >
-                    <img
-                      className="sect-ico"
-                      src={uni.img || uni.univ_img}
-                      alt={uni.nombre}
-                    />
+                    {uni?.univ_img && 
+                    uni.univ_img !== "None" && 
+                    uni.univ_img.trim() !== "" && (
+                      <img
+                        className="sect-ico"
+                        src={uni.univ_ico || uni.univ_img}
+                        alt={uni.nombre}
+                      />
+                    )}
                     {uni.nombre}
                   </Link>
                 </div>
@@ -430,15 +434,15 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                     opacity: isSectionDisabled("empresas") ? 0.5 : 1,
                   }}
                 >
-                  <img
-                    className="sect-ico"
-                    src={
-                      empr.empr_ico ||
-                      empr.empr_img ||
-                      `/assets/category/${empr.nombre}.png`
-                    }
-                    alt={empr.nombre}
-                  />
+                  {empr?.empr_ico && 
+                    empr.empr_ico !== "None" && 
+                    empr.empr_ico.trim() !== "" && (
+                      <img
+                        className="sect-ico"
+                        src={empr.empr_ico}
+                        alt={empr.nombre}
+                      />
+                    )}
                   {empr.nombre}
                 </Link>
               </div>
