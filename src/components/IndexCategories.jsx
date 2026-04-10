@@ -375,44 +375,53 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
     {
       title: "Universidad",
       key: "universidades",
-      renderContent: () =>
-        Object.entries(universidadesPorRegion).map(([region, universidades]) => (
-          <div key={region} className="submenu" >
-            <h3 className="!text-black">{region}</h3>
-            <div className={`unfold-list list-${region}`}>
-              {universidades.map((uni) => (
-                <div key={uni.id} className="subitem">
-                  <Link
-                    to="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onTagSelect("universidades", uni.nombre);
-                      setOpenSection(null);
-                    }}
-                    className="!text-black"
-                    style={{
-                      pointerEvents: isSectionDisabled("universidades")
-                        ? "none"
-                        : "auto",
-                      opacity: isSectionDisabled("universidades") ? 0.5 : 1,
-                    }}
-                  >
-                    {uni?.univ_img && 
-                    uni.univ_img !== "None" && 
-                    uni.univ_img.trim() !== "" && (
-                      <img
-                        className="sect-ico"
-                        src={uni.univ_ico || uni.univ_img}
-                        alt={uni.nombre}
-                      />
-                    )}
-                    {uni.nombre}
-                  </Link>
-                </div>
-              ))}
+      renderContent: () => (
+        <div
+          className="submenu overflow-y-auto max-h-[65vh] pr-2"
+          data-lenis-prevent
+        >
+          {Object.entries(universidadesPorRegion).map(([region, universidades]) => (
+            <div key={region} className="mb-4">
+              <h3 className="!text-black sticky top-0 bg-[#F6F4EF] z-10 py-1">
+                {region}
+              </h3>
+
+              <div className={`unfold-list list-${region}`}>
+                {universidades.map((uni) => (
+                  <div key={uni.id} className="subitem">
+                    <Link
+                      to="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        onTagSelect("universidades", uni.nombre);
+                        setOpenSection(null);
+                      }}
+                      className="!text-black"
+                      style={{
+                        pointerEvents: isSectionDisabled("universidades")
+                          ? "none"
+                          : "auto",
+                        opacity: isSectionDisabled("universidades") ? 0.5 : 1,
+                      }}
+                    >
+                      {uni?.univ_img &&
+                        uni.univ_img !== "None" &&
+                        uni.univ_img.trim() !== "" && (
+                          <img
+                            className="sect-ico"
+                            src={uni.univ_ico || uni.univ_img}
+                            alt={uni.nombre}
+                          />
+                        )}
+                      {uni.nombre}
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )),
+          ))}
+        </div>
+      ),
     },
     {
       title: "Empresa",
