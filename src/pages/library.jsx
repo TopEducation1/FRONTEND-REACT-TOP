@@ -24,6 +24,7 @@ function LibraryPage({ showRoutes = true }) {
   const [skillsCatalog, setSkillsCatalog] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isReady, setIsReady] = useState(false);
   const [debouncedSelectedTags] = useDebounce(selectedTags, 100);
 
   const [pagination, setPagination] = useState({
@@ -35,7 +36,6 @@ function LibraryPage({ showRoutes = true }) {
   const certificationsRef = useRef(null);
   const initialLoadRef = useRef(false);
   const isHydratingFromUrlRef = useRef(false);
-  const skipNextDebouncedEffectRef = useRef(false);
 
   function normalizeCategoryKey(key) {
     const map = {
@@ -316,8 +316,6 @@ function LibraryPage({ showRoutes = true }) {
       setTempCertifications([]);
 
       try {
-        console.log("loadCertifications tags ->", tags);
-
         let fetchData;
 
         if (Object.keys(tags || {}).length > 0) {
@@ -328,8 +326,6 @@ function LibraryPage({ showRoutes = true }) {
             pageSize
           );
         }
-
-        console.log("fetchData ->", fetchData);
 
         if (fetchData && Array.isArray(fetchData.results)) {
           setTempCertifications(fetchData.results);
@@ -383,7 +379,6 @@ function LibraryPage({ showRoutes = true }) {
 
       if (nextUrl === currentUrl) return;
 
-      console.log("updateHistoryState ->", nextUrl);
       window.history.pushState({}, "", nextUrl);
     },
     [location.pathname, location.search]
@@ -487,10 +482,13 @@ function LibraryPage({ showRoutes = true }) {
   );
 
   const clearAllTags = useCallback(() => {
+    if (!isReady) return;
     setSelectedTags({ ...DEFAULT_SELECTED_TAGS });
-  }, []);
+  }, [isReady]);
 
   const handleBannerClick = (category, tag) => {
+    if (!isReady) return;
+
     if (tag === "Nuevo en Top.education") {
       loadLatestCertifications();
       return;
@@ -503,27 +501,24 @@ function LibraryPage({ showRoutes = true }) {
     const init = async () => {
       window.scrollTo(0, 0);
       isHydratingFromUrlRef.current = true;
+      setIsReady(false);
 
       const params = new URLSearchParams(location.search);
       const filtersFromURL = parseQueryParams(location.search);
       const pageFromURL = parseInt(params.get("page"), 10) || 1;
       const pageSizeFromURL = parseInt(params.get("page_size"), 10) || 16;
 
-      console.log("filtersFromURL raw ->", filtersFromURL);
-
       const catalog =
         skillsCatalog.length > 0 ? skillsCatalog : await loadSkillsCatalog();
 
       const hydratedFilters = hydrateTagsFromCatalog(filtersFromURL, catalog);
 
-      console.log("filtersFromURL hydrated ->", hydratedFilters);
-
-      skipNextDebouncedEffectRef.current = true;
       setSelectedTags(hydratedFilters);
       await loadCertifications(pageFromURL, pageSizeFromURL, hydratedFilters);
 
       initialLoadRef.current = true;
       isHydratingFromUrlRef.current = false;
+      setIsReady(true);
     };
 
     init();
@@ -532,11 +527,7 @@ function LibraryPage({ showRoutes = true }) {
   useEffect(() => {
     if (!initialLoadRef.current) return;
     if (isHydratingFromUrlRef.current) return;
-
-    if (skipNextDebouncedEffectRef.current) {
-      skipNextDebouncedEffectRef.current = false;
-      return;
-    }
+    if (!isReady) return;
 
     const tagsFromCurrentUrl = parseQueryParams(location.search);
 
@@ -544,13 +535,12 @@ function LibraryPage({ showRoutes = true }) {
       return;
     }
 
-    console.log("debouncedSelectedTags ->", debouncedSelectedTags);
-
     updateHistoryState(debouncedSelectedTags, 1, 16);
     loadCertifications(1, 16, debouncedSelectedTags);
   }, [
     debouncedSelectedTags,
     location.search,
+    isReady,
     areTagMapsEqualByUrlValues,
     updateHistoryState,
     loadCertifications,
@@ -563,6 +553,8 @@ function LibraryPage({ showRoutes = true }) {
   }, [loading, tempCertifications]);
 
   const handlePageChange = (newPage) => {
+    if (!isReady) return;
+
     if (newPage >= 1 && newPage <= pagination.total_pages && !loading) {
       updateHistoryState(debouncedSelectedTags, newPage, 16);
       loadCertifications(newPage, 16, debouncedSelectedTags);
@@ -625,7 +617,7 @@ function LibraryPage({ showRoutes = true }) {
           <>
             <button
               onClick={() => handlePageChange(current_page - 1)}
-              disabled={current_page === 1}
+              disabled={current_page === 1 || !isReady}
               className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full"
             >
               <FaChevronLeft />
@@ -635,6 +627,7 @@ function LibraryPage({ showRoutes = true }) {
               <button
                 key={page}
                 onClick={() => handlePageChange(page)}
+                disabled={!isReady}
                 className={`${
                   page === current_page
                     ? "bg-neutral-700 text-white"
@@ -652,6 +645,7 @@ function LibraryPage({ showRoutes = true }) {
                 )}
                 <button
                   onClick={() => handlePageChange(total_pages)}
+                  disabled={!isReady}
                   className="bg-neutral-50 text-neutral-700 hover:text-neutral-50 hover:bg-neutral-700 font-bold py-2 px-4 rounded-full"
                 >
                   {total_pages}
@@ -661,7 +655,7 @@ function LibraryPage({ showRoutes = true }) {
 
             <button
               onClick={() => handlePageChange(current_page + 1)}
-              disabled={current_page === total_pages}
+              disabled={current_page === total_pages || !isReady}
               className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full"
             >
               <FaChevronRight />
@@ -683,6 +677,7 @@ function LibraryPage({ showRoutes = true }) {
       <button
         onClick={clearAllTags}
         className="mt-4 bg-neutral-950 hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded-full"
+        disabled={!isReady}
       >
         Limpiar filtros
       </button>
@@ -702,18 +697,33 @@ function LibraryPage({ showRoutes = true }) {
               <div
                 className="container-logo !bg-[#e3e1dce6]"
                 onClick={() => handleBannerClick("plataforma", "Coursera")}
+                style={{
+                  opacity: !isReady ? 0.5 : 1,
+                  cursor: !isReady ? "not-allowed" : "pointer",
+                  pointerEvents: !isReady ? "none" : "auto",
+                }}
               >
                 <img src="/assets/platforms/coursera-logo.png" alt="Coursera" />
               </div>
               <div
                 className="container-logo !bg-[#e3e1dce6]"
                 onClick={() => handleBannerClick("plataforma", "EdX")}
+                style={{
+                  opacity: !isReady ? 0.5 : 1,
+                  cursor: !isReady ? "not-allowed" : "pointer",
+                  pointerEvents: !isReady ? "none" : "auto",
+                }}
               >
                 <img src="/assets/platforms/edx-logo.png" alt="EdX" />
               </div>
               <div
                 className="container-logo !bg-[#e3e1dce6]"
                 onClick={() => handleBannerClick("plataforma", "MasterClass")}
+                style={{
+                  opacity: !isReady ? 0.5 : 1,
+                  cursor: !isReady ? "not-allowed" : "pointer",
+                  pointerEvents: !isReady ? "none" : "auto",
+                }}
               >
                 <img
                   src="/assets/platforms/masterclass-logo.png"
@@ -727,6 +737,11 @@ function LibraryPage({ showRoutes = true }) {
               onClick={() =>
                 handleBannerClick("plataforma", "Nuevo en Top.education")
               }
+              style={{
+                opacity: !isReady ? 0.5 : 1,
+                cursor: !isReady ? "not-allowed" : "pointer",
+                pointerEvents: !isReady ? "none" : "auto",
+              }}
             >
               Nuevo en<span id="top">top.</span>
               <span id="education">education</span>
@@ -737,10 +752,11 @@ function LibraryPage({ showRoutes = true }) {
         <div className="cont-explora px-0 lg:px-10">
           <IndexCategories
             onTagSelect={(category, tag) => {
-              console.log("onTagSelect recibido:", category, tag);
+              if (!isReady) return;
               toggleTag(category, tag);
             }}
             selectedTags={selectedTags}
+            disabled={!isReady}
           />
 
           <div className="cont-filter">
@@ -763,8 +779,16 @@ function LibraryPage({ showRoutes = true }) {
                       >
                         <span>{getTagLabel(tag)}</span>
                         <button
-                          onClick={() => removeTag(category, tag)}
+                          onClick={() => {
+                            if (!isReady) return;
+                            removeTag(category, tag);
+                          }}
                           className="remove-tag-button"
+                          disabled={!isReady}
+                          style={{
+                            opacity: !isReady ? 0.5 : 1,
+                            cursor: !isReady ? "not-allowed" : "pointer",
+                          }}
                         >
                           x
                         </button>
@@ -774,7 +798,7 @@ function LibraryPage({ showRoutes = true }) {
                 )}
               </div>
 
-              <SearchBar />
+              <SearchBar selectedTags={selectedTags} />
             </div>
 
             <div ref={certificationsRef} className="certifications-container">

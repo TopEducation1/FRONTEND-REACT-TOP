@@ -44,17 +44,29 @@ const CertificationsList = memo(({ certifications }) => {
   };
 
   const getPrimaryTheme = (certification) => {
-    return certification?.tema_certificacion || null;
+    const theme = certification?.tema_certificacion;
+    if (!theme) return null;
+
+    const label = theme?.translate || theme?.nombre;
+    if (!label) return null;
+
+    return theme;
   };
 
   const getPrimarySkill = (certification) => {
-    if (certification?.primary_skill) return certification.primary_skill;
-
-    if (!Array.isArray(certification?.skills) || certification.skills.length === 0) {
-      return null;
+    const skill = certification?.primary_skill;
+    if (skill && (skill?.translate || skill?.nombre)) {
+      return skill;
     }
 
-    return certification.skills[0];
+    if (Array.isArray(certification?.skills) && certification.skills.length > 0) {
+      const firstSkill = certification.skills[0];
+      if (firstSkill && (firstSkill?.translate || firstSkill?.nombre)) {
+        return firstSkill;
+      }
+    }
+
+    return null;
   };
 
   if (!Array.isArray(certifications)) {

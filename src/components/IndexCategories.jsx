@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import endpoints from "../config/api";
 
-const IndexCategories = ({ onTagSelect, selectedTags }) => {
+const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
   const [openSection, setOpenSection] = useState(null);
   const [openChildMenu, setOpenChildMenu] = useState(null);
   const [temas, setTemas] = useState([]);
@@ -149,6 +149,8 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
   const habilidadesTree = useMemo(() => buildSkillTree(habilidades), [habilidades]);
 
   const handleSkillSelect = (category, item) => {
+    if (disabled) return;
+
     onTagSelect(category, {
       id: item.id,
       nombre: item.nombre,
@@ -163,13 +165,14 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
   };
 
   const handleLanguageToggle = (code) => {
+    if (disabled) return;
     onTagSelect("idioma", code);
   };
 
   const renderSkillTree = (category, treeItems) => {
     return treeItems.map((parent) => {
       const hasChildren = Array.isArray(parent.children) && parent.children.length > 0;
-      const disabled = isSectionDisabled(category);
+      const sectionDisabled = disabled || isSectionDisabled(category);
       const isHovered =
         openChildMenu &&
         openChildMenu.category === category &&
@@ -180,7 +183,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
           key={parent.id}
           className="item-category relative"
           onMouseEnter={() => {
-            if (hasChildren && !disabled) {
+            if (hasChildren && !sectionDisabled) {
               setOpenChildMenu({
                 category,
                 parentId: parent.id,
@@ -200,8 +203,8 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
               handleSkillSelect(category, parent);
             }}
             style={{
-              pointerEvents: disabled ? "none" : "auto",
-              opacity: disabled ? 0.5 : 1,
+              pointerEvents: sectionDisabled ? "none" : "auto",
+              opacity: sectionDisabled ? 0.5 : 1,
             }}
             className="flex items-center justify-between gap-2"
           >
@@ -256,8 +259,8 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                           handleSkillSelect(category, child);
                         }}
                         style={{
-                          pointerEvents: disabled ? "none" : "auto",
-                          opacity: disabled ? 0.5 : 1,
+                          pointerEvents: sectionDisabled ? "none" : "auto",
+                          opacity: sectionDisabled ? 0.5 : 1,
                         }}
                         className="flex items-center !text-black"
                       >
@@ -281,12 +284,13 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
           to="#"
           onClick={(e) => {
             e.preventDefault();
+            if (disabled) return;
             onTagSelect(category, item.nombre);
             setOpenSection(null);
           }}
           style={{
-            pointerEvents: isSectionDisabled(category) ? "none" : "auto",
-            opacity: isSectionDisabled(category) ? 0.5 : 1,
+            pointerEvents: disabled || isSectionDisabled(category) ? "none" : "auto",
+            opacity: disabled || isSectionDisabled(category) ? 0.5 : 1,
           }}
         >
           <img
@@ -326,6 +330,10 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
               <label
                 key={lang.code}
                 className="flex items-center justify-between gap-3 cursor-pointer rounded-lg px-2 py-1 hover:bg-neutral-100"
+                style={{
+                  opacity: disabled ? 0.5 : 1,
+                  pointerEvents: disabled ? "none" : "auto",
+                }}
               >
                 <div className="flex items-center gap-3">
                   <input
@@ -333,6 +341,7 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                     checked={checked}
                     onChange={() => handleLanguageToggle(lang.code)}
                     className="h-4 w-4 rounded-xl accent-black"
+                    disabled={disabled}
                   />
                   <span className="text-sm text-black">{lang.label}</span>
                 </div>
@@ -341,10 +350,8 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
               </label>
             );
           })}
-          {/* Indicador scroll */}
           <div className="pointer-events-none absolute bottom-0 left-0 w-full flex justify-center pb-1 bg-gradient-to-t from-[#F6F4EF] via-[#F6F4EF]/80 to-transparent">
             <div className="flex flex-col items-center animate-bounce text-neutral-400">
-              {/*<span className="text-xs">scroll</span>*/}
               <svg
                 className="w-4 h-4"
                 fill="none"
@@ -393,15 +400,18 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
                       to="#"
                       onClick={(e) => {
                         e.preventDefault();
+                        if (disabled) return;
                         onTagSelect("universidades", uni.nombre);
                         setOpenSection(null);
                       }}
                       className="!text-black"
                       style={{
-                        pointerEvents: isSectionDisabled("universidades")
-                          ? "none"
-                          : "auto",
-                        opacity: isSectionDisabled("universidades") ? 0.5 : 1,
+                        pointerEvents:
+                          disabled || isSectionDisabled("universidades")
+                            ? "none"
+                            : "auto",
+                        opacity:
+                          disabled || isSectionDisabled("universidades") ? 0.5 : 1,
                       }}
                     >
                       {uni?.univ_img &&
@@ -428,23 +438,28 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
       key: "empresas",
       renderContent: () => (
         <div className="submenu">
-          <div className="unfold-list grid grid-cols-1 md:grid-cols-3 gap-0 overflow-y-auto max-h-[65vh]" data-lenis-prevent>
+          <div
+            className="unfold-list grid grid-cols-1 md:grid-cols-3 gap-0 overflow-y-auto max-h-[65vh]"
+            data-lenis-prevent
+          >
             {empresas.map((empr) => (
               <div key={empr.id} className="subitem">
                 <Link
                   to="#"
                   onClick={(e) => {
                     e.preventDefault();
+                    if (disabled) return;
                     onTagSelect("empresas", empr.nombre);
                     setOpenSection(null);
                   }}
                   style={{
-                    pointerEvents: isSectionDisabled("empresas") ? "none" : "auto",
-                    opacity: isSectionDisabled("empresas") ? 0.5 : 1,
+                    pointerEvents:
+                      disabled || isSectionDisabled("empresas") ? "none" : "auto",
+                    opacity: disabled || isSectionDisabled("empresas") ? 0.5 : 1,
                   }}
                 >
-                  {empr?.empr_ico && 
-                    empr.empr_ico !== "None" && 
+                  {empr?.empr_ico &&
+                    empr.empr_ico !== "None" &&
                     empr.empr_ico.trim() !== "" && (
                       <img
                         className="sect-ico"
@@ -474,13 +489,14 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
 
         {sections.map((section, index) => {
           const isOpen = openSection === index;
+          const sectionDisabled = disabled || isSectionDisabled(section.key);
 
           return (
             <div
               key={section.key}
               className={`category-item item-${section.key} ${isOpen ? "open" : ""}`}
               onMouseEnter={() =>
-                isSectionDisabled(section.key) ? null : setOpenSection(index)
+                sectionDisabled ? null : setOpenSection(index)
               }
               onMouseLeave={() => {
                 if (openSection === index) {
@@ -492,12 +508,10 @@ const IndexCategories = ({ onTagSelect, selectedTags }) => {
               <button
                 type="button"
                 className="unfold-category-button"
-                disabled={isSectionDisabled(section.key)}
+                disabled={sectionDisabled}
                 style={{
-                  opacity: isSectionDisabled(section.key) ? 0.5 : 1,
-                  cursor: isSectionDisabled(section.key)
-                    ? "not-allowed"
-                    : "pointer",
+                  opacity: sectionDisabled ? 0.5 : 1,
+                  cursor: sectionDisabled ? "not-allowed" : "pointer",
                 }}
               >
                 <svg
