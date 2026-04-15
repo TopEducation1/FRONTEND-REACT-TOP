@@ -188,7 +188,7 @@ const SearchBar = ({ selectedTags = {} }) => {
       <div
         className={`wrapper-search-bar transition-all duration-300 ${
           isFixed
-            ? "!fixed top-[83px] left-1/2 -translate-x-1/2 !w-[min(900px,90vw)] z-[70]"
+            ? "!fixed top-[100px] left-1/2 -translate-x-1/2 !w-[min(900px,90vw)] z-[70]"
             : "relative"
         }`}
       >
@@ -292,4 +292,4 @@ const SearchBar = ({ selectedTags = {} }) => {
   );
 };
 
-export default SearchBar;
+export default SearchBar; 
