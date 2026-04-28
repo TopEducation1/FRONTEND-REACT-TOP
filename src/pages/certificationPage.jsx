@@ -301,6 +301,39 @@ const truncateText = (text, max) => {
     return [];
   })();
 
+  const specializationCourses = Array.isArray(certification?.specialization_courses)
+  ? certification.specialization_courses
+  : [];
+
+const hasSpecializationCourses = specializationCourses.length > 0;
+
+const getCourseImage = (course) => {
+  return (
+    course?.imagen_final ||
+    course?.universidad_certificacion?.univ_img ||
+    course?.empresa_certificacion?.empr_img ||
+    course?.plataforma_certificacion?.plat_img ||
+    "/assets/content/default-course.webp"
+  );
+};
+
+const getCoursePath = (course) => {
+  const platform = course?.plataforma_certificacion?.nombre
+    ?.toString()
+    ?.trim()
+    ?.toLowerCase();
+
+  if (platform && course?.slug) {
+    return `/certificacion/${platform}/${course.slug}`;
+  }
+
+  if (course?.slug) {
+    return `/certificacion/${course.slug}`;
+  }
+
+  return null;
+};
+
   return (
     <>
       <Helmet>
@@ -486,10 +519,8 @@ const truncateText = (text, max) => {
                             </div>
                           )}
                           <h2 className="text-[1.7rem] md:text-[1.5rem] font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate my-5">
-                          Habilidades que obtendrás
-                        </h2>
+                          Habilidades que obtendrás </h2>
 
-                        
                           <div className="flex flex-wrap gap-2">
                             {certification?.habilidades_certificacion?.flatMap((item, idxItem) => {
                               const habilidades = (item?.nombre || "")
@@ -507,7 +538,86 @@ const truncateText = (text, max) => {
                               ));
                             })}
                           </div>
+                          {hasSpecializationCourses && (
+                            <div className="mt-8">
+                              <div className="flex items-center justify-between gap-3 mb-4">
+                                <div>
+                                  <h2 className="text-[1.7rem] md:text-[1.5rem] font-bold text-blackColor dark:text-blackColor-dark leading-8">
+                                    Cursos incluidos en esta especialización
+                                  </h2>
+                                  {certification?.specialization_detail?.specialization_name && (
+                                    <p className="text-sm text-neutral-600 leading-tight mt-1">
+                                      {certification.specialization_detail.specialization_name}
+                                    </p>
+                                  )}
+                                </div>
+
+                                <span className="shrink-0 text-xs font-bold bg-black text-white rounded-full px-3 py-1">
+                                  {specializationCourses.length} cursos
+                                </span>
+                              </div>
+
+                              <div className="flex flex-col gap-3">
+                                {specializationCourses.map((course, index) => {
+                                  const path = getCoursePath(course);
+
+                                  return (
+                                    <button
+                                      key={course.id || `${course.slug}-${index}`}
+                                      type="button"
+                                      onClick={() => path && navigateWithTransition(path)}
+                                      className="group w-full text-left rounded-2xl border border-[#E3E0D6] bg-white/70 hover:bg-white hover:shadow-md transition-all duration-300 p-3 flex items-center gap-4"
+                                    >
+                                      <div className="relative shrink-0 w-[86px] h-[64px] rounded-xl overflow-hidden bg-[#F6F4EF] border border-[#ECECEC]">
+                                        <img
+                                          src={getCourseImage(course)}
+                                          alt={course.nombre}
+                                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                          loading="lazy"
+                                        />
+
+                                        <span className="absolute left-1.5 top-1.5 bg-black/75 text-white text-[10px] rounded-full px-2 py-0.5">
+                                          {index + 1}
+                                        </span>
+                                      </div>
+
+                                      <div className="min-w-0 flex-1">
+                                        <h3 className="text-[15px] md:text-[16px] font-bold text-[#0F090B] leading-tight group-hover:text-edblue transition-colors">
+                                          {course.nombre}
+                                        </h3>
+
+                                        {course.metadescripcion_certificacion && (
+                                          <p className="text-[12px] text-neutral-600 leading-snug mt-1 line-clamp-2">
+                                            {course.metadescripcion_certificacion}
+                                          </p>
+                                        )}
+
+                                        <div className="flex flex-wrap items-center gap-2 mt-2">
+                                          {course?.plataforma_certificacion?.nombre && (
+                                            <span className="text-[10px] rounded-full bg-[#F6F4EF] border border-[#E5E5E5] px-2 py-0.5 text-neutral-700">
+                                              {course.plataforma_certificacion.nombre}
+                                            </span>
+                                          )}
+
+                                          {course?.tipo_certificacion && (
+                                            <span className="text-[10px] rounded-full bg-[#F6F4EF] border border-[#E5E5E5] px-2 py-0.5 text-neutral-700">
+                                              {course.tipo_certificacion}
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      <div className="shrink-0 w-8 h-8 rounded-full bg-[#F6F4EF] border border-[#E5E5E5] grid place-items-center group-hover:bg-black group-hover:text-white transition">
+                                        ›
+                                      </div>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
                       </div>
+                      
                     )}
 
                     {activeTab === "tab2" && (
