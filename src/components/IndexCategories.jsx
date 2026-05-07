@@ -6,7 +6,6 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
   const [openSection, setOpenSection] = useState(null);
   const [openChildMenu, setOpenChildMenu] = useState(null);
   const [temas, setTemas] = useState([]);
-  const [habilidades, setHabilidades] = useState([]);
   const [empresas, setEmpresas] = useState([]);
   const [plataformas, setPlataformas] = useState([]);
   const [idiomas, setIdiomas] = useState([]);
@@ -60,11 +59,6 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
           )
         );
 
-        setHabilidades(
-          activeSkills.filter(
-            (item) => normalizeSkillType(item.skill_type) === "habilidad"
-          )
-        );
       })
       .catch((err) => {
         console.error("Error cargando skills:", err);
@@ -115,20 +109,7 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
       });
   }, []);
 
-  const isSectionDisabled = (sectionTitle) => {
-    if (!selectedTags || !selectedTags.plataforma) return false;
-
-    if (selectedTags.plataforma.includes("MasterClass")) {
-      return sectionTitle === "temas";
-    }
-
-    if (
-      selectedTags.plataforma.includes("Coursera") ||
-      selectedTags.plataforma.includes("EdX")
-    ) {
-      return sectionTitle === "habilidades";
-    }
-
+  const isSectionDisabled = () => {
     return false;
   };
 
@@ -146,7 +127,6 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
   };
 
   const temasTree = useMemo(() => buildSkillTree(temas), [temas]);
-  const habilidadesTree = useMemo(() => buildSkillTree(habilidades), [habilidades]);
 
   const handleSkillSelect = (category, item) => {
     if (disabled) return;
@@ -293,17 +273,18 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
             opacity: disabled || isSectionDisabled(category) ? 0.5 : 1,
           }}
         >
-          <img
-            className="sect-ico"
-            src={
-              item.skill_ico ||
-              item.empr_ico ||
-              item.univ_ico ||
-              item.plat_ico ||
-              `/assets/category/${item.nombre}.png`
-            }
-            alt={item.nombre}
-          />
+    
+            <img
+              className="sect-ico"
+              src={
+                item.skill_ico ||
+                item.empr_ico ||
+                item.univ_ico ||
+                item.plat_ico ||
+                `/assets/category/${item.nombre}.png`
+              }
+              alt={item.nombre}
+            />
           {item?.translate && item.translate.trim() !== ""
             ? item.translate
             : item.nombre}
@@ -375,11 +356,6 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
       renderContent: () => renderSkillTree("temas", temasTree),
     },
     {
-      title: "Habilidad",
-      key: "habilidades",
-      renderContent: () => renderSkillTree("habilidades", habilidadesTree),
-    },
-    {
       title: "Universidad",
       key: "universidades",
       renderContent: () => (
@@ -414,15 +390,19 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
                           disabled || isSectionDisabled("universidades") ? 0.5 : 1,
                       }}
                     >
+                      
                       {uni?.univ_img &&
                         uni.univ_img !== "None" &&
                         uni.univ_img.trim() !== "" && (
-                          <img
-                            className="sect-ico"
-                            src={uni.univ_ico || uni.univ_img}
-                            alt={uni.nombre}
-                          />
+                          <div className="bg-white rounded-full h-[30px] w-[30px] mr-1">
+                            <img
+                              className="sect-ico"
+                              src={uni.univ_ico || uni.univ_img}
+                              alt={uni.nombre}
+                            />
+                          </div>
                         )}
+                        
                       {uni.nombre}
                     </Link>
                   </div>
@@ -461,11 +441,13 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
                   {empr?.empr_ico &&
                     empr.empr_ico !== "None" &&
                     empr.empr_ico.trim() !== "" && (
+                      <div className="bg-white rounded-full h-[30px] w-[30px] mr-1">
                       <img
                         className="sect-ico"
                         src={empr.empr_ico}
                         alt={empr.nombre}
                       />
+                      </div>
                     )}
                   {empr.nombre}
                 </Link>

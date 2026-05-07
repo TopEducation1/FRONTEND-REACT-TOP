@@ -203,7 +203,7 @@ const BlogDetailPage = () => {
             <aside className="xl:w-4/12 lg:w-4/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px] max-w-full sidebar">
               <div className="widget">
                 <div className="video-container">
-                  <video className="w-full" src="/assets/video/main-video.mp4" controls="true"></video> 
+                  <video className="w-full" src="/assets/video/main-video-2.mp4" controls="true"></video> 
                 </div>
               </div>
               <div className="widget !mt-[40px]">

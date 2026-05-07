@@ -19,13 +19,12 @@ function LibraryPage({ showRoutes = true }) {
   const location = useLocation();
 
   const [certifications, setCertifications] = useState([]);
-  const [tempCertifications, setTempCertifications] = useState([]);
   const [selectedTags, setSelectedTags] = useState(DEFAULT_SELECTED_TAGS);
   const [skillsCatalog, setSkillsCatalog] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isReady, setIsReady] = useState(false);
-  const [debouncedSelectedTags] = useDebounce(selectedTags, 100);
+  const [debouncedSelectedTags] = useDebounce(selectedTags, 350);
 
   const [pagination, setPagination] = useState({
     count: 0,
@@ -73,7 +72,7 @@ function LibraryPage({ showRoutes = true }) {
 
   const isSkillCategory = (category) => {
     const normalized = normalizeCategoryKey(category);
-    return normalized === "temas" || normalized === "habilidades";
+    return normalized === "temas";
   };
 
   const isSkillActive = (item) => {
@@ -112,7 +111,6 @@ function LibraryPage({ showRoutes = true }) {
 
     const map = {
       temas: "Tema",
-      habilidades: "Habilidad",
       universidades: "Universidad",
       empresas: "Empresa",
       plataforma: "Plataforma",
@@ -148,7 +146,7 @@ function LibraryPage({ showRoutes = true }) {
       const normalizedKey = normalizeCategoryKey(key);
       if (!tags[normalizedKey]) tags[normalizedKey] = [];
 
-      if (normalizedKey === "temas" || normalizedKey === "habilidades") {
+      if (normalizedKey === "temas") {
         tags[normalizedKey].push({
           slug: value,
           nombre: "",
@@ -233,13 +231,6 @@ function LibraryPage({ showRoutes = true }) {
             return false;
           }
 
-          if (
-            normalizedCategory === "habilidades" &&
-            skillType !== "habilidad"
-          ) {
-            return false;
-          }
-
           return String(skill.slug || "").trim() === slug;
         });
 
@@ -295,7 +286,6 @@ function LibraryPage({ showRoutes = true }) {
       const rows = Array.isArray(response.data) ? response.data : [];
 
       setCertifications(rows);
-      setTempCertifications(rows);
       setPagination({
         count: rows.length,
         current_page: 1,
@@ -313,7 +303,7 @@ function LibraryPage({ showRoutes = true }) {
     async (page = 1, pageSize = 16, tags = debouncedSelectedTags) => {
       setLoading(true);
       setError(null);
-      setTempCertifications([]);
+      setCertifications([]);
 
       try {
         let fetchData;
@@ -328,14 +318,14 @@ function LibraryPage({ showRoutes = true }) {
         }
 
         if (fetchData && Array.isArray(fetchData.results)) {
-          setTempCertifications(fetchData.results);
+          setCertifications(fetchData.results);
           setPagination({
             count: fetchData.count || 0,
             current_page: page,
             total_pages: Math.ceil((fetchData.count || 0) / pageSize) || 1,
           });
         } else {
-          setTempCertifications([]);
+          setCertifications([]);
           setPagination({
             count: 0,
             current_page: 1,
@@ -345,7 +335,7 @@ function LibraryPage({ showRoutes = true }) {
       } catch (err) {
         console.error("Error cargando certificaciones:", err);
         setError("Error al cargar certificaciones");
-        setTempCertifications([]);
+        setCertifications([]);
       } finally {
         setLoading(false);
       }
@@ -508,13 +498,25 @@ function LibraryPage({ showRoutes = true }) {
       const pageFromURL = parseInt(params.get("page"), 10) || 1;
       const pageSizeFromURL = parseInt(params.get("page_size"), 10) || 16;
 
-      const catalog =
-        skillsCatalog.length > 0 ? skillsCatalog : await loadSkillsCatalog();
+      const hasSkillFilters =
+        Array.isArray(filtersFromURL.temas) && filtersFromURL.temas.length > 0;
 
-      const hydratedFilters = hydrateTagsFromCatalog(filtersFromURL, catalog);
+      let hydratedFilters = filtersFromURL;
+
+      if (hasSkillFilters) {
+        const catalog =
+          skillsCatalog.length > 0 ? skillsCatalog : await loadSkillsCatalog();
+
+        hydratedFilters = hydrateTagsFromCatalog(filtersFromURL, catalog);
+      }
 
       setSelectedTags(hydratedFilters);
       await loadCertifications(pageFromURL, pageSizeFromURL, hydratedFilters);
+
+      // carga el catálogo después, sin bloquear el grid
+      if (!hasSkillFilters && skillsCatalog.length === 0) {
+        loadSkillsCatalog();
+      }
 
       initialLoadRef.current = true;
       isHydratingFromUrlRef.current = false;
@@ -545,12 +547,6 @@ function LibraryPage({ showRoutes = true }) {
     updateHistoryState,
     loadCertifications,
   ]);
-
-  useEffect(() => {
-    if (!loading) {
-      setCertifications(tempCertifications);
-    }
-  }, [loading, tempCertifications]);
 
   const handlePageChange = (newPage) => {
     if (!isReady) return;

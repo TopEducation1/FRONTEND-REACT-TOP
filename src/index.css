@@ -280,7 +280,7 @@ header {
   text-decoration: none;
   text-align: left;
   font-family: 'Montserrat';
-  font-size: 16px;
+  font-size: 14px;
   color: #a8a8a8;
   position: relative;
 }
@@ -310,7 +310,7 @@ header {
   z-index: 0;
   background: #1c1c1c;
   backdrop-filter: blur(10px);
-  top: 56px;
+  top: 50px;
   left: -7vw;
   padding: 0;
   width: 80vw;
@@ -462,7 +462,7 @@ header {
   padding: 5px 0px;
   justify-content: start;
   align-items: center;
-  width: 25%;
+  width: 20%;
   box-sizing: border-box;
 }
 
