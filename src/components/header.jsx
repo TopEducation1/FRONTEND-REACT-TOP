@@ -38,8 +38,20 @@ const Header = ({ toggleMenu,onTagSelect, openIndexResponsiveMenu, isMenuOpen })
       headers: { Accept: "application/json" },
     })
       .then(async (res) => {
+        if (res.status === 401) {
+          return null;
+        }
+
         const ct = res.headers.get("content-type") || "";
-        if (!ct.includes("application/json")) return null;
+
+        if (!ct.includes("application/json")) {
+          return null;
+        }
+
+        if (!res.ok) {
+          return null;
+        }
+
         return res.json();
       })
       .then((data) => {
