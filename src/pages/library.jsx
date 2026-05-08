@@ -7,9 +7,15 @@ import CertificationsFetcher from "../services/certificationsFetcher";
 import { useDebounce } from "use-debounce";
 import IndexCategories from "../components/IndexCategories";
 import { Helmet } from "react-helmet";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaAnglesLeft,
+  FaAnglesRight,
+} from "react-icons/fa6";
 import axios from "axios";
 import endpoints from "../config/api";
+
 
 const DEFAULT_SELECTED_TAGS = {
   idioma: ["es", "en"],
@@ -324,18 +330,20 @@ function LibraryPage({ showRoutes = true }) {
         if (fetchData && Array.isArray(fetchData.results)) {
           setCertifications(fetchData.results);
           setPagination({
-            count: fetchData.count ?? null,
+            count: fetchData.count ?? 0,
             current_page: fetchData.current_page || page,
             page_size: fetchData.page_size || pageSize,
+            total_pages: fetchData.total_pages || 1,
             has_next: !!fetchData.has_next,
             has_previous: !!fetchData.has_previous,
           });
         } else {
           setCertifications([]);
           setPagination({
-            count: null,
+            count: 0,
             current_page: 1,
             page_size: pageSize,
+            total_pages: 1,
             has_next: false,
             has_previous: false,
           });
@@ -573,58 +581,89 @@ function LibraryPage({ showRoutes = true }) {
   };
 
   const PaginationControls = () => {
-    const { current_page, has_next, has_previous } = pagination;
+    const { current_page, total_pages } = pagination;
+
+    const getVisiblePages = () => {
+      const pages = [];
+      let start = Math.max(current_page - 2, 1);
+      let end = Math.min(current_page + 2, total_pages);
+
+      if (current_page <= 3) {
+        end = Math.min(5, total_pages);
+      }
+
+      if (current_page >= total_pages - 2) {
+        start = Math.max(total_pages - 4, 1);
+      }
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      return pages;
+    };
 
     if (loading) {
       return (
         <div className="container-buttons-pagination gap-1">
-          <div className="flex justify-center items-center w-full py-4">
-            <svg
-              className="animate-spin h-6 w-6 text-neutral-700"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v8H4z"
-              />
-            </svg>
-            <span className="ml-2 text-neutral-700">Cargando...</span>
-          </div>
+          <span className="ml-2 text-neutral-700">Cargando...</span>
         </div>
       );
     }
 
+    const pages = getVisiblePages();
+
     return (
-      <div className="container-buttons-pagination gap-2">
+      <div className="container-buttons-pagination gap-1">
+        <button
+          onClick={() => handlePageChange(1)}
+          disabled={current_page === 1 || !isReady}
+          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <FaAnglesLeft />
+        </button>
+
         <button
           onClick={() => handlePageChange(current_page - 1)}
-          disabled={!has_previous || !isReady}
+          disabled={current_page === 1 || !isReady}
           className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <FaChevronLeft />
         </button>
 
-        <span className="bg-neutral-700 text-white font-bold py-2 px-4 rounded-full">
-          Página {current_page}
-        </span>
+        {pages[0] > 1 && <span className="px-2">...</span>}
+
+        {pages.map((page) => (
+          <button
+            key={page}
+            onClick={() => handlePageChange(page)}
+            disabled={!isReady}
+            className={`${
+              page === current_page
+                ? "bg-neutral-700 text-white"
+                : "bg-neutral-50 text-neutral-700 hover:bg-neutral-200"
+            } font-bold py-2 px-4 rounded-full`}
+          >
+            {page}
+          </button>
+        ))}
+
+        {pages[pages.length - 1] < total_pages && <span className="px-2">...</span>}
 
         <button
           onClick={() => handlePageChange(current_page + 1)}
-          disabled={!has_next || !isReady}
+          disabled={current_page === total_pages || !isReady}
           className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <FaChevronRight />
+        </button>
+
+        <button
+          onClick={() => handlePageChange(total_pages)}
+          disabled={current_page === total_pages || !isReady}
+          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <FaAnglesRight />
         </button>
       </div>
     );
