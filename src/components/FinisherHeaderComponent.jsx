@@ -94,6 +94,9 @@ const FinisherHeaderComponent = () => {
     }),
     []
   );
+  const handleAnimationComplete = () => {
+  console.log('Animation completed!');
+};
 
   return (
     <>
