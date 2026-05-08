@@ -63,7 +63,6 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
       .catch((err) => {
         console.error("Error cargando skills:", err);
         setTemas([]);
-        setHabilidades([]);
       });
 
     fetch(endpoints.empresas)
@@ -394,9 +393,9 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
                       {uni?.univ_img &&
                         uni.univ_img !== "None" &&
                         uni.univ_img.trim() !== "" && (
-                          <div className="bg-white rounded-full h-[30px] w-[30px] mr-1">
+                          <div className="bg-white rounded-full overflow-hidden flex justify-center items-center h-[30px] w-[30px] mr-1">
                             <img
-                              className="sect-ico"
+                              className=""
                               src={uni.univ_ico || uni.univ_img}
                               alt={uni.nombre}
                             />
@@ -441,10 +440,10 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
                   {empr?.empr_ico &&
                     empr.empr_ico !== "None" &&
                     empr.empr_ico.trim() !== "" && (
-                      <div className="bg-white rounded-full h-[30px] w-[30px] mr-1">
+                      <div className="bg-white rounded-full overflow-hidden flex justify-center items-center h-[30px] w-[30px] mr-1">
                       <img
-                        className="sect-ico"
-                        src={empr.empr_ico}
+                        className=""
+                        src={empr.empr_ico || empr.empr_img}
                         alt={empr.nombre}
                       />
                       </div>

@@ -27,9 +27,11 @@ function LibraryPage({ showRoutes = true }) {
   const [debouncedSelectedTags] = useDebounce(selectedTags, 350);
 
   const [pagination, setPagination] = useState({
-    count: 0,
+    count: null,
     current_page: 1,
-    total_pages: 1,
+    page_size: 16,
+    has_next: false,
+    has_previous: false,
   });
 
   const certificationsRef = useRef(null);
@@ -289,7 +291,9 @@ function LibraryPage({ showRoutes = true }) {
       setPagination({
         count: rows.length,
         current_page: 1,
-        total_pages: 1,
+        page_size: rows.length,
+        has_next: false,
+        has_previous: false,
       });
     } catch (err) {
       console.error("Error al cargar las certificaciones más recientes:", err);
@@ -320,16 +324,20 @@ function LibraryPage({ showRoutes = true }) {
         if (fetchData && Array.isArray(fetchData.results)) {
           setCertifications(fetchData.results);
           setPagination({
-            count: fetchData.count || 0,
-            current_page: page,
-            total_pages: Math.ceil((fetchData.count || 0) / pageSize) || 1,
+            count: fetchData.count ?? null,
+            current_page: fetchData.current_page || page,
+            page_size: fetchData.page_size || pageSize,
+            has_next: !!fetchData.has_next,
+            has_previous: !!fetchData.has_previous,
           });
         } else {
           setCertifications([]);
           setPagination({
-            count: 0,
+            count: null,
             current_page: 1,
-            total_pages: 1,
+            page_size: pageSize,
+            has_next: false,
+            has_previous: false,
           });
         }
       } catch (err) {
@@ -551,7 +559,7 @@ function LibraryPage({ showRoutes = true }) {
   const handlePageChange = (newPage) => {
     if (!isReady) return;
 
-    if (newPage >= 1 && newPage <= pagination.total_pages && !loading) {
+    if (newPage >= 1 && !loading) {
       updateHistoryState(debouncedSelectedTags, newPage, 16);
       loadCertifications(newPage, 16, debouncedSelectedTags);
 
@@ -565,27 +573,11 @@ function LibraryPage({ showRoutes = true }) {
   };
 
   const PaginationControls = () => {
-    const { current_page, total_pages } = pagination;
+    const { current_page, has_next, has_previous } = pagination;
 
-    const getVisiblePages = () => {
-      let start = Math.max(current_page - 2, 1);
-      let end = Math.min(start + 4, total_pages);
-
-      if (end - start < 4) {
-        start = Math.max(end - 4, 1);
-      }
-
-      const pages = [];
-      for (let i = start; i <= end; i++) pages.push(i);
-      return pages;
-    };
-
-    const pages = getVisiblePages();
-    const lastPageIncluded = pages.includes(total_pages);
-
-    return (
-      <div className="container-buttons-pagination gap-1">
-        {loading ? (
+    if (loading) {
+      return (
+        <div className="container-buttons-pagination gap-1">
           <div className="flex justify-center items-center w-full py-4">
             <svg
               className="animate-spin h-6 w-6 text-neutral-700"
@@ -609,55 +601,31 @@ function LibraryPage({ showRoutes = true }) {
             </svg>
             <span className="ml-2 text-neutral-700">Cargando...</span>
           </div>
-        ) : (
-          <>
-            <button
-              onClick={() => handlePageChange(current_page - 1)}
-              disabled={current_page === 1 || !isReady}
-              className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full"
-            >
-              <FaChevronLeft />
-            </button>
+        </div>
+      );
+    }
 
-            {pages.map((page) => (
-              <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                disabled={!isReady}
-                className={`${
-                  page === current_page
-                    ? "bg-neutral-700 text-white"
-                    : "bg-neutral-50 text-neutral-700 hover:bg-neutral-200"
-                } font-bold py-2 px-4 rounded-full`}
-              >
-                {page}
-              </button>
-            ))}
+    return (
+      <div className="container-buttons-pagination gap-2">
+        <button
+          onClick={() => handlePageChange(current_page - 1)}
+          disabled={!has_previous || !isReady}
+          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <FaChevronLeft />
+        </button>
 
-            {!lastPageIncluded && total_pages > 5 && (
-              <>
-                {pages[pages.length - 1] < total_pages - 1 && (
-                  <span className="px-2">...</span>
-                )}
-                <button
-                  onClick={() => handlePageChange(total_pages)}
-                  disabled={!isReady}
-                  className="bg-neutral-50 text-neutral-700 hover:text-neutral-50 hover:bg-neutral-700 font-bold py-2 px-4 rounded-full"
-                >
-                  {total_pages}
-                </button>
-              </>
-            )}
+        <span className="bg-neutral-700 text-white font-bold py-2 px-4 rounded-full">
+          Página {current_page}
+        </span>
 
-            <button
-              onClick={() => handlePageChange(current_page + 1)}
-              disabled={current_page === total_pages || !isReady}
-              className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full"
-            >
-              <FaChevronRight />
-            </button>
-          </>
-        )}
+        <button
+          onClick={() => handlePageChange(current_page + 1)}
+          disabled={!has_next || !isReady}
+          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <FaChevronRight />
+        </button>
       </div>
     );
   };

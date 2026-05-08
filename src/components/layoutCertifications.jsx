@@ -105,6 +105,8 @@ const CertificationsList = memo(({ certifications }) => {
                     src={getImageUrl(certificationImage)}
                     alt={certification.nombre || "imagen-certificacion"}
                     onError={handleImageError}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
 
@@ -134,6 +136,8 @@ const CertificationsList = memo(({ certifications }) => {
                         src={getImageUrl(institutionImage)}
                         alt="institucion"
                         onError={handleImageError}
+                        loading="lazy"
+                        decoding="async"
                       />
                     )}
                   </div>
@@ -144,6 +148,8 @@ const CertificationsList = memo(({ certifications }) => {
                         src={platformImage}
                         alt={certification.plataforma_certificacion?.nombre || "plataforma"}
                         onError={handleImageError}
+                        loading="lazy"
+                        decoding="async"
                       />
                     )}
                   </div>
@@ -165,6 +171,8 @@ const CertificationsList = memo(({ certifications }) => {
                   src={getImageUrl(certificationImage)}
                   alt={certification.nombre || "imagen-certificacion"}
                   onError={handleImageError}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="absolute top-1 right-0 rounded-[25px_0px_0px_25px] text-[14px] font-bold text-black bg-[#F6F4EF] px-2 py-0.5 text-xs">
                   {certification.tipo_certificacion === "Curso"
@@ -198,6 +206,8 @@ const CertificationsList = memo(({ certifications }) => {
                       src={getImageUrl(institutionImage)}
                       alt="institucion"
                       onError={handleImageError}
+                      loading="lazy"
+                      decoding="async"
                     />
                   )}
                 </div>
@@ -209,6 +219,8 @@ const CertificationsList = memo(({ certifications }) => {
                       src={platformImage}
                       alt={certification.plataforma_certificacion?.nombre || "plataforma"}
                       onError={handleImageError}
+                      loading="lazy"
+                      decoding="async"
                     />
                   )}
                 </div>
