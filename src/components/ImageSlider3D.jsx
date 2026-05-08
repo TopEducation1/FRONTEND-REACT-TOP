@@ -17,7 +17,6 @@ const ImageSlider3D = ({images,action}) => {
       }
     }
     const handleItemMenuClick = (category, tag) => {
-        console.log(category, tag);
 
       const categoryParam = category; // asegura que esté en minúsculas
       const tagParam = encodeURIComponent(tag); // codifica y pone en minúscula

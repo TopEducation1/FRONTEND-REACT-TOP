@@ -38,9 +38,7 @@ console.log("Slug actual:", slug);
   useEffect(() => {
     const fetchOriginal = async () => {
       try {
-        //console.log("Obteniendo slug:", slug);
         const res = await axios.get(endpoints.original_detail(slug));
-        //console.log("Respuesta del backend:", res.data);
         setOriginal(res.data);
       } catch (error) {
         console.error("Error al cargar autor:", error);

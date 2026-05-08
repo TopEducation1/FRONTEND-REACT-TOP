@@ -86,9 +86,6 @@ class TagFilterService {
       const queryString = this.buildQueryString(selectedTags, page, pageSize);
       const url = `${this.baseUrl}${queryString}`;
 
-      console.log("TagFilterService URL:", url);
-      console.log("TagFilterService selectedTags:", selectedTags);
-
       const response = await fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" },

@@ -15,8 +15,6 @@ const CertificationsFetcher = {
       const baseUrl = endpoints.certificaciones;
       const url = `${baseUrl}?page=${page}&page_size=${pageSize}`;
       
-      //console.log('Requesting URL:', url);
-      
       const response = await fetch(url, fetchConfig);
       
       if (!response.ok) {
@@ -24,7 +22,6 @@ const CertificationsFetcher = {
       }
 
       const data = await response.json();
-      //console.log(data);
 
       return data;
       

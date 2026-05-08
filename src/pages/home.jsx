@@ -24,8 +24,6 @@ function HomePage() {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/home/skills-grid/`);
       const data = await response.json();
 
-      console.log("data:", data);
-
       if (!cancelled) {
         setTopics(Array.isArray(data) ? data : []);
       }

@@ -10,7 +10,6 @@ const FlagsCafam = ({ direction = 'left', handleBannerClick }) => {
     const initialTags = {
       "Empresa": [company]
     };
-    console.log(initialTags);
 
     navigate('/cafam/', {
       state: { selectedTags: initialTags },

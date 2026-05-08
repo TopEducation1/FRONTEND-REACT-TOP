@@ -29,9 +29,6 @@ const masterclassGridFetcher = {
 
             const data = await response.json();
 
-            console.log("HOLAAAAAAAAAAAAAA LOS DATOSSSSSSSSSSS");
-            console.log(data)
-
             return data;
         } catch (error) {
 

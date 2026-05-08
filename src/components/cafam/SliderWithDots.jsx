@@ -49,7 +49,6 @@ const SliderWithDots = ({
     const initialTags = {
       "Universidad": [university]
     };
-    console.log(initialTags);
 
     navigate('/cafam/', {
       state: { selectedTags: initialTags },

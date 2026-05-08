@@ -62,7 +62,6 @@ const SearchBar = () => {
 
   const handleCertificationClick = (certification) => {
 
-    console.log(certification);
     try {
       
       if (!certification) {
@@ -86,8 +85,7 @@ const SearchBar = () => {
       }
 
       navigate(path);
-      console.log("NAVIGATING TO")
-      console.log(path)
+
     } catch (err) {
       console.error("Navigation error:", err);
       setError("Error al navegar a la certificación");

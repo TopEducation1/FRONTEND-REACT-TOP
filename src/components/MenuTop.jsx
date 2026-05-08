@@ -7,10 +7,6 @@ const MenuTop = ({ toggleMenu }) => {
   const [showSubmenu, setShowSubmenu] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log('toggleMenu prop recibido:', toggleMenu);
-  }, [toggleMenu]);
-
   const isActive = (path) => location.pathname === path;
 
   const closeMenuIfMobile = () => {

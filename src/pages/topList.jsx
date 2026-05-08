@@ -73,9 +73,6 @@ const TopList = () => {
     });
   };
 
-  const handleAnimationComplete = () => {
-  console.log('Animation completed!');
-};
   const getTitulo = () => {
     if (tipo === "universidades") return "Universidades";
     if (tipo === "empresas") return "Empresas";

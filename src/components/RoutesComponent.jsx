@@ -7,7 +7,6 @@ const RoutesComponent = ({ images,time,classSlider}) => {
     const sliderRef = useRef(null);
     const scrollAmount = 145;
     const handleItemMenuClick = (category, tag) => {
-        console.log(category, tag);
   
         const initialTags = {
             [category]: [tag]

@@ -38,8 +38,6 @@ const BlogsFetcher = {
                 url += `&categoria_blog=${categoriasParam}`;
             }
 
-            console.log("Fetching blogs from:", url);
-
             const response = await fetch(url, fetchConfig);
 
             if (!response.ok) {

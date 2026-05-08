@@ -15,8 +15,6 @@ const InterestCertificationsFetcher = {
       const baseUrl = endpoints.certificacionesCafam; 
       const url = `${baseUrl}?amount=${amount}`; 
 
-      console.log('Requesting URL:', url);
-
       const response = await fetch(url, fetchConfig);
 
       if (!response.ok) {
@@ -24,7 +22,6 @@ const InterestCertificationsFetcher = {
       }
 
       const data = await response.json();
-      console.log('Fetched certifications data:', data);
 
       return data;
       

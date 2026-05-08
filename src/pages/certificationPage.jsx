@@ -77,8 +77,6 @@ const truncateText = (text, max) => {
         setLoading(true);
         const data = await getCertificationById(slug);
         setCertification(data);
-        console.log("INFORMACIÓN ESPECIFICA DE LA CERTIFICACION");
-        console.log(data);
       } catch (error) {
         setError(error.message);
       } finally {

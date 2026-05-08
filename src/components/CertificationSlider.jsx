@@ -23,7 +23,6 @@ const CertificationSlider = () => {
     setLoading(true);
     try {
       const fetchData = await masterclassGridFetcher.getMasterclassGrid(amount);
-      console.log("Datos recibidos:", fetchData);
 
         if (fetchData && Array.isArray(fetchData)) {
             const filtered = fetchData.filter(cert => cert.slug != currentSlug);

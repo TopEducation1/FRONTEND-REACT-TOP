@@ -15,8 +15,6 @@ const LatestInTopFetcher = {
       const baseUrl = endpoints.ultimas_certificaciones;
       const url = `${baseUrl}?page=${page}&page_size=${pageSize}`;
       
-      //console.log('Requesting URL:', url);
-      
       const response = await fetch(url, fetchConfig);
       
       if (!response.ok) {
@@ -24,7 +22,6 @@ const LatestInTopFetcher = {
       }
 
       const data = await response.json();
-      console.log(data);
 
       return data;
       

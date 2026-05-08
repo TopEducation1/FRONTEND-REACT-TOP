@@ -121,7 +121,6 @@ function LibraryPageCafam({ showRoutes = true }) {
   };
 
   const handleBannerClick = (category, tag) => {
-    console.log(category, tag);
 
     setSelectedTags((prevTags) => {
       const updatedTags = { ...prevTags };

@@ -32,10 +32,8 @@ const BlogDetailPage = () => {
       try {
         setLoading(true);
         const data = await getBlogBySlug(slug);
-        console.log("Blog data received:", data); 
         setBlog(data);
       } catch (error) {
-        console.error("Error loading blog:", error); 
         setError(error.message);
       } finally {
         setLoading(false);
@@ -49,15 +47,10 @@ const BlogDetailPage = () => {
 
 
   const renderBlogContent = (content) => {
-    console.log("Content to render:", content); // Debug log
 
     if (!content) {
       return null;
     }
-
-    // Verifica si el contenido ya está en el campo contenido_blog o solo contenido
-    
-
 
     const links = tempDiv.querySelectorAll("a");
 
