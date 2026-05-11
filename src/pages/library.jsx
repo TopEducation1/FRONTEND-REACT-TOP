@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import tagFilterService from "../services/filterByTagsTesting";
 import CertificationsList from "../components/layoutCertifications";
-import SearchBar from "../components/searchBar";
 import CertificationsFetcher from "../services/certificationsFetcher";
 import { useDebounce } from "use-debounce";
 import IndexCategories from "../components/IndexCategories";
+import SearchBar from "../components/searchBar";
 import { Helmet } from "react-helmet";
 import {
   FaChevronLeft,
@@ -16,33 +16,34 @@ import {
 import axios from "axios";
 import endpoints from "../config/api";
 
-
 const DEFAULT_SELECTED_TAGS = {
   idioma: ["es", "en"],
 };
 
 function LibraryPage({ showRoutes = true }) {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [certifications, setCertifications] = useState([]);
   const [selectedTags, setSelectedTags] = useState(DEFAULT_SELECTED_TAGS);
   const [skillsCatalog, setSkillsCatalog] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const [debouncedSelectedTags] = useDebounce(selectedTags, 350);
 
   const [pagination, setPagination] = useState({
-    count: null,
+    count: 0,
     current_page: 1,
     page_size: 16,
+    total_pages: 1,
     has_next: false,
     has_previous: false,
   });
 
   const certificationsRef = useRef(null);
-  const initialLoadRef = useRef(false);
   const isHydratingFromUrlRef = useRef(false);
+  const firstLoadDoneRef = useRef(false);
+  const requestSeqRef = useRef(0);
 
   function normalizeCategoryKey(key) {
     const map = {
@@ -53,52 +54,23 @@ function LibraryPage({ showRoutes = true }) {
       Universidades: "universidades",
       Temas: "temas",
       Tema: "temas",
-      Habilidades: "habilidades",
-      Habilidad: "habilidades",
       Idioma: "idioma",
       idioma: "idioma",
       plataforma: "plataforma",
       empresas: "empresas",
       universidades: "universidades",
       temas: "temas",
-      habilidades: "habilidades",
     };
 
     return map[key] || String(key).toLowerCase();
   }
-
-  const normalizeSkillType = (value) => {
-    const v = (value || "").toString().trim().toLowerCase();
-
-    if (["tema", "category", "principal"].includes(v)) return "tema";
-    if (["habilidad", "skill", "subskill", "secondary"].includes(v)) {
-      return "habilidad";
-    }
-
-    return "";
-  };
-
-  const isSkillCategory = (category) => {
-    const normalized = normalizeCategoryKey(category);
-    return normalized === "temas";
-  };
-
-  const isSkillActive = (item) => {
-    return item?.estado === true || item?.estado === 1 || item?.estado === "1";
-  };
-
-  const getTagLabel = (tag) => {
-    if (!tag) return "";
-    if (typeof tag === "string" || typeof tag === "number") return String(tag);
-    return tag.translate || tag.nombre || tag.slug || "";
-  };
 
   const getTagUrlValue = (category, tag) => {
     if (!tag) return "";
 
     const normalizedCategory = normalizeCategoryKey(category);
 
-    if (normalizedCategory === "temas" || normalizedCategory === "habilidades") {
+    if (normalizedCategory === "temas") {
       if (typeof tag === "object") return tag.slug || "";
       return String(tag).trim();
     }
@@ -112,6 +84,12 @@ function LibraryPage({ showRoutes = true }) {
     }
 
     return String(tag).trim();
+  };
+
+  const getTagLabel = (tag) => {
+    if (!tag) return "";
+    if (typeof tag === "string" || typeof tag === "number") return String(tag);
+    return tag.translate || tag.nombre || tag.slug || "";
   };
 
   const getQueryKey = (category) => {
@@ -149,7 +127,7 @@ function LibraryPage({ showRoutes = true }) {
     const tags = {};
 
     for (const [key, value] of params.entries()) {
-      if (key === "page" || key === "page_size") continue;
+      if (["page", "page_size", "latest", "clear"].includes(key)) continue;
 
       const normalizedKey = normalizeCategoryKey(key);
       if (!tags[normalizedKey]) tags[normalizedKey] = [];
@@ -165,7 +143,7 @@ function LibraryPage({ showRoutes = true }) {
       }
     }
 
-    if (!tags.idioma || tags.idioma.length === 0) {
+    if (!params.get("clear") && (!tags.idioma || tags.idioma.length === 0)) {
       tags.idioma = [...DEFAULT_SELECTED_TAGS.idioma];
     }
 
@@ -219,6 +197,27 @@ function LibraryPage({ showRoutes = true }) {
     [normalizeTagsForCompare]
   );
 
+  const loadSkillsCatalog = useCallback(async () => {
+    try {
+      const response = await axios.get(endpoints.skills);
+      const safeData = Array.isArray(response.data)
+        ? response.data
+        : Array.isArray(response.data?.results)
+        ? response.data.results
+        : [];
+
+      const activeSkills = safeData.filter(
+        (item) => item?.estado === true || item?.estado === 1 || item?.estado === "1"
+      );
+
+      setSkillsCatalog(activeSkills);
+      return activeSkills;
+    } catch {
+      setSkillsCatalog([]);
+      return [];
+    }
+  }, []);
+
   const hydrateTagsFromCatalog = useCallback((tags, catalog) => {
     if (!tags) return { ...DEFAULT_SELECTED_TAGS };
 
@@ -228,18 +227,13 @@ function LibraryPage({ showRoutes = true }) {
       const normalizedCategory = normalizeCategoryKey(category);
 
       hydrated[normalizedCategory] = (values || []).map((tag) => {
-        if (!isSkillCategory(normalizedCategory)) return tag;
+        if (normalizedCategory !== "temas") return tag;
 
         const slug = typeof tag === "object" ? tag.slug : String(tag).trim();
 
         const matchedSkill = catalog.find((skill) => {
-          const skillType = normalizeSkillType(skill.skill_type);
-
-          if (normalizedCategory === "temas" && skillType !== "tema") {
-            return false;
-          }
-
-          return String(skill.slug || "").trim() === slug;
+          const skillType = String(skill.skill_type || "").trim().toLowerCase();
+          return skillType === "tema" && String(skill.slug || "").trim() === slug;
         });
 
         if (!matchedSkill) {
@@ -259,108 +253,11 @@ function LibraryPage({ showRoutes = true }) {
       });
     });
 
-    if (!hydrated.idioma || hydrated.idioma.length === 0) {
-      hydrated.idioma = [...DEFAULT_SELECTED_TAGS.idioma];
-    }
-
     return hydrated;
   }, []);
 
-  const loadSkillsCatalog = useCallback(async () => {
-    try {
-      const response = await axios.get(endpoints.skills);
-      const safeData = Array.isArray(response.data)
-        ? response.data
-        : Array.isArray(response.data?.results)
-        ? response.data.results
-        : [];
-
-      const activeSkills = safeData.filter((item) => isSkillActive(item));
-      setSkillsCatalog(activeSkills);
-      return activeSkills;
-    } catch (err) {
-      console.error("Error cargando catálogo de skills:", err);
-      setSkillsCatalog([]);
-      return [];
-    }
-  }, []);
-
-  const loadLatestCertifications = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await axios.get(endpoints.latest_certifications);
-      const rows = Array.isArray(response.data) ? response.data : [];
-
-      setCertifications(rows);
-      setPagination({
-        count: rows.length,
-        current_page: 1,
-        page_size: rows.length,
-        has_next: false,
-        has_previous: false,
-      });
-    } catch (err) {
-      console.error("Error al cargar las certificaciones más recientes:", err);
-      setError("Error al cargar las certificaciones más recientes");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadCertifications = useCallback(
-    async (page = 1, pageSize = 16, tags = debouncedSelectedTags) => {
-      setLoading(true);
-      setError(null);
-      setCertifications([]);
-
-      try {
-        let fetchData;
-
-        if (Object.keys(tags || {}).length > 0) {
-          fetchData = await tagFilterService.filterByTags(tags, page, pageSize);
-        } else {
-          fetchData = await CertificationsFetcher.getAllCertifications(
-            page,
-            pageSize
-          );
-        }
-
-        if (fetchData && Array.isArray(fetchData.results)) {
-          setCertifications(fetchData.results);
-          setPagination({
-            count: fetchData.count ?? 0,
-            current_page: fetchData.current_page || page,
-            page_size: fetchData.page_size || pageSize,
-            total_pages: fetchData.total_pages || 1,
-            has_next: !!fetchData.has_next,
-            has_previous: !!fetchData.has_previous,
-          });
-        } else {
-          setCertifications([]);
-          setPagination({
-            count: 0,
-            current_page: 1,
-            page_size: pageSize,
-            total_pages: 1,
-            has_next: false,
-            has_previous: false,
-          });
-        }
-      } catch (err) {
-        console.error("Error cargando certificaciones:", err);
-        setError("Error al cargar certificaciones");
-        setCertifications([]);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [debouncedSelectedTags]
-  );
-
-  const updateHistoryState = useCallback(
-    (tags, page = 1, pageSize = 16) => {
+  const buildUrlFromTags = useCallback(
+    (tags, page = 1, pageSize = 16, pathname = location.pathname) => {
       const searchParams = new URLSearchParams();
 
       Object.entries(tags || {}).forEach(([key, values]) => {
@@ -379,124 +276,172 @@ function LibraryPage({ showRoutes = true }) {
       searchParams.set("page", String(page));
       searchParams.set("page_size", String(pageSize));
 
-      const query = searchParams.toString();
-      const nextUrl = `${location.pathname}${query ? `?${query}` : ""}`;
-      const currentUrl = `${location.pathname}${location.search || ""}`;
-
-      if (nextUrl === currentUrl) return;
-
-      window.history.pushState({}, "", nextUrl);
+      return `${pathname}?${searchParams.toString()}`;
     },
-    [location.pathname, location.search]
+    [location.pathname]
   );
 
-  const applySelectedTags = useCallback((updater) => {
-    setSelectedTags((prevTags) => {
-      const nextTags =
-        typeof updater === "function" ? updater(prevTags) : updater;
+  const loadLatestCertifications = useCallback(async () => {
+    setLoading(true);
 
-      return nextTags;
+    try {
+      const response = await axios.get(endpoints.latest_certifications);
+      const rows = Array.isArray(response.data) ? response.data : [];
+
+      setSelectedTags({});
+      setCertifications(rows);
+      setPagination({
+        count: rows.length,
+        current_page: 1,
+        page_size: rows.length || 16,
+        total_pages: 1,
+        has_next: false,
+        has_previous: false,
+      });
+    } catch {
+      setCertifications([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const loadCertifications = useCallback(async (page, pageSize, tags) => {
+    const requestId = ++requestSeqRef.current;
+
+    setLoading(true);
+
+    try {
+      const fetchData =
+        Object.keys(tags || {}).length > 0
+          ? await tagFilterService.filterByTags(tags, page, pageSize)
+          : await CertificationsFetcher.getAllCertifications(page, pageSize);
+
+      if (requestId !== requestSeqRef.current) return;
+
+      if (fetchData && Array.isArray(fetchData.results)) {
+        setCertifications(fetchData.results);
+        setPagination({
+          count: fetchData.count ?? 0,
+          current_page: fetchData.current_page || page,
+          page_size: fetchData.page_size || pageSize,
+          total_pages: fetchData.total_pages || 1,
+          has_next: !!fetchData.has_next,
+          has_previous: !!fetchData.has_previous,
+        });
+      } else {
+        setCertifications([]);
+        setPagination({
+          count: 0,
+          current_page: 1,
+          page_size: pageSize,
+          total_pages: 1,
+          has_next: false,
+          has_previous: false,
+        });
+      }
+    } catch {
+      if (requestId !== requestSeqRef.current) return;
+      setCertifications([]);
+    } finally {
+      if (requestId === requestSeqRef.current) {
+        setLoading(false);
+      }
+    }
+  }, []);
+
+  const addTag = useCallback((category, tag) => {
+    const normalizedCategory = normalizeCategoryKey(category);
+
+    setSelectedTags((prevTags) => {
+      const currentTags = prevTags[normalizedCategory] || [];
+      const exists = currentTags.some((oldTag) =>
+        areTagsEqual(normalizedCategory, oldTag, tag)
+      );
+
+      if (exists) return prevTags;
+
+      return {
+        ...prevTags,
+        [normalizedCategory]: [...currentTags, tag],
+      };
     });
   }, []);
 
-  const addTag = useCallback(
-    (category, tag) => {
-      const normalizedCategory = normalizeCategoryKey(category);
+  const removeTag = useCallback((category, tagToRemove) => {
+    const normalizedCategory = normalizeCategoryKey(category);
 
-      applySelectedTags((prevTags) => {
-        const currentTags = prevTags[normalizedCategory] || [];
+    setSelectedTags((prevTags) => {
+      const updatedTags = { ...prevTags };
+      const currentTags = updatedTags[normalizedCategory] || [];
 
-        const alreadyExists = currentTags.some((existingTag) =>
-          areTagsEqual(normalizedCategory, existingTag, tag)
-        );
+      const filtered = currentTags.filter(
+        (tag) => !areTagsEqual(normalizedCategory, tag, tagToRemove)
+      );
 
-        if (alreadyExists) return prevTags;
-
-        return {
-          ...prevTags,
-          [normalizedCategory]: [...currentTags, tag],
-        };
-      });
-    },
-    [applySelectedTags]
-  );
-
-  const removeTag = useCallback(
-    (category, tagToRemove) => {
-      const normalizedCategory = normalizeCategoryKey(category);
-
-      applySelectedTags((prevTags) => {
-        const updatedTags = { ...prevTags };
-
-        if (updatedTags[normalizedCategory]) {
-          const filteredTags = updatedTags[normalizedCategory].filter(
-            (tag) => !areTagsEqual(normalizedCategory, tag, tagToRemove)
-          );
-
-          if (filteredTags.length === 0) {
-            if (normalizedCategory === "idioma") {
-              updatedTags[normalizedCategory] = [];
-            } else {
-              delete updatedTags[normalizedCategory];
-            }
-          } else {
-            updatedTags[normalizedCategory] = filteredTags;
-          }
-        }
-
-        return updatedTags;
-      });
-    },
-    [applySelectedTags]
-  );
-
-  const toggleTag = useCallback(
-    (category, tag) => {
-      const normalizedCategory = normalizeCategoryKey(category);
-
-      applySelectedTags((prevTags) => {
-        const currentTags = prevTags[normalizedCategory] || [];
-        const alreadyExists = currentTags.some((existingTag) =>
-          areTagsEqual(normalizedCategory, existingTag, tag)
-        );
-
-        let nextCategoryValues;
-        if (alreadyExists) {
-          nextCategoryValues = currentTags.filter(
-            (existingTag) => !areTagsEqual(normalizedCategory, existingTag, tag)
-          );
+      if (filtered.length === 0) {
+        if (normalizedCategory === "idioma") {
+          updatedTags[normalizedCategory] = [];
         } else {
-          nextCategoryValues = [...currentTags, tag];
+          delete updatedTags[normalizedCategory];
         }
+      } else {
+        updatedTags[normalizedCategory] = filtered;
+      }
 
-        const updatedTags = { ...prevTags };
+      return updatedTags;
+    });
+  }, []);
 
-        if (nextCategoryValues.length === 0) {
-          if (normalizedCategory === "idioma") {
-            updatedTags[normalizedCategory] = [];
-          } else {
-            delete updatedTags[normalizedCategory];
-          }
+  const toggleTag = useCallback((category, tag) => {
+    const normalizedCategory = normalizeCategoryKey(category);
+
+    setSelectedTags((prevTags) => {
+      const currentTags = prevTags[normalizedCategory] || [];
+      const exists = currentTags.some((oldTag) =>
+        areTagsEqual(normalizedCategory, oldTag, tag)
+      );
+
+      const nextValues = exists
+        ? currentTags.filter((oldTag) => !areTagsEqual(normalizedCategory, oldTag, tag))
+        : [...currentTags, tag];
+
+      const updatedTags = { ...prevTags };
+
+      if (nextValues.length === 0) {
+        if (normalizedCategory === "idioma") {
+          updatedTags[normalizedCategory] = [];
         } else {
-          updatedTags[normalizedCategory] = nextCategoryValues;
+          delete updatedTags[normalizedCategory];
         }
+      } else {
+        updatedTags[normalizedCategory] = nextValues;
+      }
 
-        return updatedTags;
-      });
-    },
-    [applySelectedTags]
-  );
+      return updatedTags;
+    });
+  }, []);
 
   const clearAllTags = useCallback(() => {
     if (!isReady) return;
-    setSelectedTags({ ...DEFAULT_SELECTED_TAGS });
-  }, [isReady]);
+
+    navigate("/explora/filter?clear=1&page=1&page_size=16", {
+      replace: false,
+    });
+  }, [isReady, navigate]);
+
+  const handleLatestClick = useCallback(() => {
+    if (!isReady) return;
+
+    navigate("/explora/filter?latest=1&page=1&page_size=16", {
+      replace: false,
+    });
+  }, [isReady, navigate]);
 
   const handleBannerClick = (category, tag) => {
     if (!isReady) return;
 
     if (tag === "Nuevo en Top.education") {
-      loadLatestCertifications();
+      handleLatestClick();
       return;
     }
 
@@ -506,36 +451,48 @@ function LibraryPage({ showRoutes = true }) {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
 
-    const hasIdioma = params.getAll("idioma").length > 0;
+    if (params.get("latest") === "1" || params.get("clear") === "1") return;
 
-    if (!hasIdioma) {
+    if (params.getAll("idioma").length === 0) {
       params.append("idioma", "es");
       params.append("idioma", "en");
+      if (!params.get("page")) params.set("page", "1");
+      if (!params.get("page_size")) params.set("page_size", "16");
 
-      if (!params.get("page")) {
-        params.set("page", "1");
-      }
-
-      if (!params.get("page_size")) {
-        params.set("page_size", "16");
-      }
-
-      navigate(
-        `/explora?${params.toString()}`,
-        { replace: true }
-      );
-
-      return;
+      navigate(`${location.pathname}?${params.toString()}`, { replace: true });
     }
-  }, [location.search, navigate]);
+  }, [location.pathname, location.search, navigate]);
 
   useEffect(() => {
-    const init = async () => {
-      window.scrollTo(0, 0);
+    const run = async () => {
+      const params = new URLSearchParams(location.search);
+
       isHydratingFromUrlRef.current = true;
       setIsReady(false);
 
-      const params = new URLSearchParams(location.search);
+      if (params.get("latest") === "1") {
+        await loadLatestCertifications();
+        isHydratingFromUrlRef.current = false;
+        firstLoadDoneRef.current = true;
+        setIsReady(true);
+        return;
+      }
+
+      if (params.get("clear") === "1") {
+        const pageFromURL = parseInt(params.get("page"), 10) || 1;
+        const pageSizeFromURL = parseInt(params.get("page_size"), 10) || 16;
+
+        setSelectedTags({});
+        await loadCertifications(pageFromURL, pageSizeFromURL, {});
+
+        isHydratingFromUrlRef.current = false;
+        firstLoadDoneRef.current = true;
+        setIsReady(true);
+        return;
+      }
+
+      if (params.getAll("idioma").length === 0) return;
+
       const filtersFromURL = parseQueryParams(location.search);
       const pageFromURL = parseInt(params.get("page"), 10) || 1;
       const pageSizeFromURL = parseInt(params.get("page_size"), 10) || 16;
@@ -555,55 +512,58 @@ function LibraryPage({ showRoutes = true }) {
       setSelectedTags(hydratedFilters);
       await loadCertifications(pageFromURL, pageSizeFromURL, hydratedFilters);
 
-      // carga el catálogo después, sin bloquear el grid
       if (!hasSkillFilters && skillsCatalog.length === 0) {
         loadSkillsCatalog();
       }
 
-      initialLoadRef.current = true;
       isHydratingFromUrlRef.current = false;
+      firstLoadDoneRef.current = true;
       setIsReady(true);
     };
 
-    init();
-  }, [location.search]);
+    run();
+  }, [location.pathname, location.search]);
 
   useEffect(() => {
-    if (!initialLoadRef.current) return;
+    if (!firstLoadDoneRef.current) return;
     if (isHydratingFromUrlRef.current) return;
     if (!isReady) return;
 
-    const tagsFromCurrentUrl = parseQueryParams(location.search);
+    const params = new URLSearchParams(location.search);
+    if (params.get("latest") === "1" || params.get("clear") === "1") return;
 
-    if (areTagMapsEqualByUrlValues(debouncedSelectedTags, tagsFromCurrentUrl)) {
+    const tagsFromUrl = parseQueryParams(location.search);
+
+    if (areTagMapsEqualByUrlValues(debouncedSelectedTags, tagsFromUrl)) {
       return;
     }
 
-    updateHistoryState(debouncedSelectedTags, 1, 16);
-    loadCertifications(1, 16, debouncedSelectedTags);
+    const nextUrl = buildUrlFromTags(debouncedSelectedTags, 1, 16, location.pathname);
+    const currentUrl = `${location.pathname}${location.search}`;
+
+    if (nextUrl !== currentUrl) {
+      navigate(nextUrl, { replace: false });
+    }
   }, [
     debouncedSelectedTags,
-    location.search,
     isReady,
+    location.pathname,
+    location.search,
     areTagMapsEqualByUrlValues,
-    updateHistoryState,
-    loadCertifications,
+    buildUrlFromTags,
+    navigate,
   ]);
 
   const handlePageChange = (newPage) => {
-    if (!isReady) return;
+    if (!isReady || loading) return;
 
-    if (newPage >= 1 && !loading) {
-      updateHistoryState(debouncedSelectedTags, newPage, 16);
-      loadCertifications(newPage, 16, debouncedSelectedTags);
+    const nextUrl = buildUrlFromTags(debouncedSelectedTags, newPage, 16, location.pathname);
+    navigate(nextUrl, { replace: false });
 
-      if (certificationsRef.current) {
-        certificationsRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    }
+    certificationsRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
   };
 
   const PaginationControls = () => {
@@ -612,20 +572,14 @@ function LibraryPage({ showRoutes = true }) {
     const getVisiblePages = () => {
       const pages = [];
       let start = Math.max(current_page - 2, 1);
-      let end = Math.min(current_page + 2, total_pages);
+      let end = Math.min(current_page + 2, total_pages || 1);
 
-      if (current_page <= 3) {
-        end = Math.min(5, total_pages);
+      if (current_page <= 3) end = Math.min(5, total_pages || 1);
+      if (current_page >= (total_pages || 1) - 2) {
+        start = Math.max((total_pages || 1) - 4, 1);
       }
 
-      if (current_page >= total_pages - 2) {
-        start = Math.max(total_pages - 4, 1);
-      }
-
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
-
+      for (let i = start; i <= end; i++) pages.push(i);
       return pages;
     };
 
@@ -695,24 +649,6 @@ function LibraryPage({ showRoutes = true }) {
     );
   };
 
-  const NoResultsMessage = () => (
-    <div className="no-results-container text-center py-10">
-      <h3 className="text-lg font-semibold text-black mb-0">
-        No se encontraron certificaciones en la búsqueda
-      </h3>
-      <p className="text-neutral-900 mt-[-10px]">
-        No hay resultados que coincidan con los filtros seleccionados.
-      </p>
-      <button
-        onClick={clearAllTags}
-        className="mt-4 bg-neutral-950 hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded-full"
-        disabled={!isReady}
-      >
-        Limpiar filtros
-      </button>
-    </div>
-  );
-
   return (
     <>
       <Helmet>
@@ -734,6 +670,7 @@ function LibraryPage({ showRoutes = true }) {
               >
                 <img src="/assets/platforms/coursera-logo.png" alt="Coursera" />
               </div>
+
               <div
                 className="container-logo !bg-[#e3e1dce6]"
                 onClick={() => handleBannerClick("plataforma", "EdX")}
@@ -745,6 +682,7 @@ function LibraryPage({ showRoutes = true }) {
               >
                 <img src="/assets/platforms/edx-logo.png" alt="EdX" />
               </div>
+
               <div
                 className="container-logo !bg-[#e3e1dce6]"
                 onClick={() => handleBannerClick("plataforma", "MasterClass")}
@@ -789,8 +727,8 @@ function LibraryPage({ showRoutes = true }) {
           />
 
           <div className="cont-filter">
-            <div className="flex flex-wrap">
-              <div className="container-tags">
+            <div className="flex flex-wrap justify-between items-center gap-2 relative">
+              <div className="container-tags !w-[68%]">
                 {Object.keys(selectedTags).length === 0 ||
                 Object.values(selectedTags).every(
                   (tags) => !tags || tags.length === 0
@@ -827,6 +765,15 @@ function LibraryPage({ showRoutes = true }) {
                 )}
               </div>
 
+              <button
+                type="button"
+                onClick={clearAllTags}
+                disabled={!isReady || loading}
+                className="bg-neutral-950 hover:bg-neutral-800 text-white font-bold py-2 px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Limpiar filtros
+              </button>
+
               <SearchBar selectedTags={selectedTags} />
             </div>
 
@@ -860,7 +807,21 @@ function LibraryPage({ showRoutes = true }) {
                   ))}
                 </div>
               ) : certifications.length === 0 ? (
-                <NoResultsMessage />
+                <div className="no-results-container text-center py-10">
+                  <h3 className="text-lg font-semibold text-black mb-0">
+                    No se encontraron certificaciones en la búsqueda
+                  </h3>
+                  <p className="text-neutral-900 mt-[-10px]">
+                    No hay resultados que coincidan con los filtros seleccionados.
+                  </p>
+                  <button
+                    onClick={clearAllTags}
+                    className="mt-4 bg-neutral-950 hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded-full"
+                    disabled={!isReady}
+                  >
+                    Limpiar filtros
+                  </button>
+                </div>
               ) : (
                 <CertificationsList certifications={certifications} />
               )}
