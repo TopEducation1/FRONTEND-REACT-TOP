@@ -202,7 +202,7 @@ const CertificationsList = memo(({ certifications }) => {
                 <div className="w-auto  flex items-center rounded-xl max-h-[30px]">
                   {institutionImage && (
                     <img
-                      className="max-w-[120px] max-h-[35px] w-full"
+                      className="max-w-[120px] max-h-[35px] w-full !brightness-100 !mix-blend-multiply"
                       src={getImageUrl(institutionImage)}
                       alt="institucion"
                       onError={handleImageError}
