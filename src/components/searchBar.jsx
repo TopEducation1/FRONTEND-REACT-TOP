@@ -186,7 +186,7 @@ const SearchBar = ({ selectedTags = {} }) => {
   return (
     <>
       <div
-        className={` !w-[20%] transition-all duration-300 ${
+        className={` !w-[25%] transition-all duration-300 ${
           isFixed
             ? "!fixed top-[100px] left-1/2 -translate-x-1/2 !w-[min(900px,90vw)] z-[70]"
             : "relative"
@@ -195,7 +195,7 @@ const SearchBar = ({ selectedTags = {} }) => {
         <span className="absolute top-[-15px] text-[0.7rem] w-full text-black">
           Busca por tema, habilidad, universidad o empresa
         </span>
-        <div className="flex">
+        <div className="flex relative">
           <input
             type="text"
             placeholder="¿Qué quieres aprender?"
@@ -206,7 +206,7 @@ const SearchBar = ({ selectedTags = {} }) => {
           />
 
           {text && (
-            <button onClick={handleClear} className="clear-button" type="button">
+            <button onClick={handleClear} className="clear-button text-black !z-2 absolute right-[60px] top-2" type="button">
               <X />
             </button>
           )}

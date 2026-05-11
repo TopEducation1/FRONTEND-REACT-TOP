@@ -127,7 +127,7 @@ function LibraryPage({ showRoutes = true }) {
     const tags = {};
 
     for (const [key, value] of params.entries()) {
-      if (["page", "page_size", "latest", "clear"].includes(key)) continue;
+      if (["page", "page_size", "latest"].includes(key)) continue;
 
       const normalizedKey = normalizeCategoryKey(key);
       if (!tags[normalizedKey]) tags[normalizedKey] = [];
@@ -424,7 +424,7 @@ function LibraryPage({ showRoutes = true }) {
   const clearAllTags = useCallback(() => {
     if (!isReady) return;
 
-    navigate("/explora/filter?clear=1&page=1&page_size=16", {
+    navigate("/explora?idioma=es&idioma=en&page=1&page_size=16", {
       replace: false,
     });
   }, [isReady, navigate]);
@@ -451,7 +451,7 @@ function LibraryPage({ showRoutes = true }) {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
 
-    if (params.get("latest") === "1" || params.get("clear") === "1") return;
+    if (params.get("latest") === "1") return;
 
     if (params.getAll("idioma").length === 0) {
       params.append("idioma", "es");
@@ -472,19 +472,6 @@ function LibraryPage({ showRoutes = true }) {
 
       if (params.get("latest") === "1") {
         await loadLatestCertifications();
-        isHydratingFromUrlRef.current = false;
-        firstLoadDoneRef.current = true;
-        setIsReady(true);
-        return;
-      }
-
-      if (params.get("clear") === "1") {
-        const pageFromURL = parseInt(params.get("page"), 10) || 1;
-        const pageSizeFromURL = parseInt(params.get("page_size"), 10) || 16;
-
-        setSelectedTags({});
-        await loadCertifications(pageFromURL, pageSizeFromURL, {});
-
         isHydratingFromUrlRef.current = false;
         firstLoadDoneRef.current = true;
         setIsReady(true);
@@ -728,7 +715,7 @@ function LibraryPage({ showRoutes = true }) {
 
           <div className="cont-filter">
             <div className="flex flex-wrap justify-between items-center gap-2 relative">
-              <div className="container-tags !w-[68%]">
+              <div className="container-tags !w-[74%]">
                 {Object.keys(selectedTags).length === 0 ||
                 Object.values(selectedTags).every(
                   (tags) => !tags || tags.length === 0
@@ -765,14 +752,14 @@ function LibraryPage({ showRoutes = true }) {
                 )}
               </div>
 
-              <button
+              {/*<button
                 type="button"
                 onClick={clearAllTags}
                 disabled={!isReady || loading}
                 className="bg-neutral-950 hover:bg-neutral-800 text-white font-bold py-2 px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 Limpiar filtros
-              </button>
+              </button>*/}
 
               <SearchBar selectedTags={selectedTags} />
             </div>
