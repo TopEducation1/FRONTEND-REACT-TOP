@@ -1,5 +1,5 @@
 const API_URL = "https://app.top.education";
-//const API_URL = "http://127.0.0.1:8000";
+//const API_URL = "http://localhost:8000";
 
 // LOCAL HOST API URL FOR TESTING http://127.0.0.1:8000
 
@@ -9,11 +9,11 @@ const BASE_URL = API_URL;
 export const endpoints = {
   certificaciones: `${BASE_URL}/certificaciones/`,
   certificaciones_sitemap: `${BASE_URL}/sitemap/certificaciones/`,
-  certificaciones_tags: `${BASE_URL}/certificaciones/filter/`,
+  certificaciones_filter: `${BASE_URL}/certificaciones/filter/`,
   certificaciones_busqueda: `${BASE_URL}/certificaciones/busqueda/`,
   certificaciones_id: (slug) => `${BASE_URL}/certificacion/${slug}/`,
   certificaciones_by_name: (slug) => `${BASE_URL}/certificacion/${slug}/`,
-  certification_languages: `${API_URL}/certificaciones/languages/`,
+  certification_languages: `${BASE_URL}/certificaciones/languages/`,
   habilidades: `${BASE_URL}/certificaciones/skills/`,
   temas: `${BASE_URL}/certificaciones/topics/`,
   universidades: `${BASE_URL}/certificaciones/universities/`,

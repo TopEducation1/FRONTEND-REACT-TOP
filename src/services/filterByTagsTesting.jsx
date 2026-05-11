@@ -1,7 +1,7 @@
 import { endpoints } from "../config/api";
 
 class TagFilterService {
-  constructor(baseUrl = endpoints.certificaciones_tags) {
+  constructor(baseUrl = endpoints.certificaciones_filter) {
     this.baseUrl = baseUrl;
   }
 
@@ -88,7 +88,9 @@ class TagFilterService {
 
       const response = await fetch(url, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Accept: "application/json",
+        },
       });
 
       if (!response.ok) {
