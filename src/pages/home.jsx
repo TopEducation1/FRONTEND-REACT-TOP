@@ -21,14 +21,40 @@ function HomePage() {
 
   async function loadHomeSkillsGrid() {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/home/skills-grid/`);
-      const data = await response.json();
+      setTopicsLoading(true);
+      setTopicsError("");
+
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/home/skills-grid/`, {
+        headers: { Accept: "application/json" },
+      });
+
+      const text = await response.text();
+
+      let data = [];
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(`Respuesta no JSON. Status ${response.status}: ${text.slice(0, 200)}`);
+      }
+
+      if (!response.ok) {
+        throw new Error(data?.error || `Error HTTP ${response.status}`);
+      }
 
       if (!cancelled) {
         setTopics(Array.isArray(data) ? data : []);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error cargando home skills grid:", error);
+
+      if (!cancelled) {
+        setTopics([]);
+        setTopicsError("No se pudieron cargar los temas.");
+      }
+    } finally {
+      if (!cancelled) {
+        setTopicsLoading(false);
+      }
     }
   }
 

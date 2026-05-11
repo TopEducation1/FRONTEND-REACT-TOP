@@ -46,22 +46,48 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
     }
   }
 
+  const normalizeFilterKey = (key) => {
+    const map = {
+      Temas: "Tema",
+      Tema: "Tema",
+      Habilidades: "Tema",
+      Habilidad: "Tema",
+      Universidades: "Universidad",
+      Universidad: "Universidad",
+      Empresas: "Empresa",
+      Empresa: "Empresa",
+      Plataformas: "Plataforma",
+      Plataforma: "Plataforma",
+    };
+
+    return map[key] || key;
+  };
+
   const handleItemMenuClick = (filtersObject) => {
     const queryParams = new URLSearchParams();
+
+    // filtros por defecto
+    queryParams.append("idioma", "es");
+    queryParams.append("idioma", "en");
 
     for (const [key, value] of Object.entries(filtersObject || {})) {
       if (value === undefined || value === null || value === "") continue;
 
+      const normalizedKey = normalizeFilterKey(key);
+
       if (Array.isArray(value)) {
         value.forEach((v) => {
           if (v !== undefined && v !== null && v !== "") {
-            queryParams.append(key, v);
+            queryParams.append(normalizedKey, v);
           }
         });
       } else {
-        queryParams.append(key, value);
+        queryParams.append(normalizedKey, value);
       }
     }
+
+    queryParams.set("page", "1");
+    queryParams.set("page_size", "16");
 
     navigateWithTransition(`/explora/filter?${queryParams.toString()}`);
   };
@@ -193,7 +219,7 @@ function TopicCard({
     }
 
     if (topic?.type && topic?.name) {
-      onFilter({ [topic.type]: topic.name });
+      onFilter({ [topic.type]: topic.slug || topic.name });
     }
   };
 
@@ -331,7 +357,7 @@ function TopicCard({
                               ...(topic?.type === "search"
                                 ? {}
                                 : topic?.type && topic?.name
-                                ? { [topic.type]: topic.name }
+                                ? { [topic.type]: topic.slug || topic.name }
                                 : {}),
                             });
                             return;
@@ -345,7 +371,7 @@ function TopicCard({
                             if (topic?.type === "search") {
                               filters.search = topic.name;
                             } else if (topic?.type && topic?.name) {
-                              filters[topic.type] = topic.name;
+                              filters[topic.type] = topic.slug || topic.name;
                             }
 
                             onFilter(filters);
