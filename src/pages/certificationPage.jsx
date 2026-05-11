@@ -658,7 +658,7 @@ const getCoursePath = (course) => {
                   Clases recomendadas para ti
                 </h2>
                 <div>
-                  <CertificationSlider />
+                  <CertificationSlider certification={certification} />
                 </div>
               </div>
             </div>
