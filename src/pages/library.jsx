@@ -504,6 +504,32 @@ function LibraryPage({ showRoutes = true }) {
   };
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+
+    const hasIdioma = params.getAll("idioma").length > 0;
+
+    if (!hasIdioma) {
+      params.append("idioma", "es");
+      params.append("idioma", "en");
+
+      if (!params.get("page")) {
+        params.set("page", "1");
+      }
+
+      if (!params.get("page_size")) {
+        params.set("page_size", "16");
+      }
+
+      navigate(
+        `/explora?${params.toString()}`,
+        { replace: true }
+      );
+
+      return;
+    }
+  }, [location.search, navigate]);
+
+  useEffect(() => {
     const init = async () => {
       window.scrollTo(0, 0);
       isHydratingFromUrlRef.current = true;
