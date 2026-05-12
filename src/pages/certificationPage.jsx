@@ -397,18 +397,18 @@ const getCoursePath = (course) => {
       </Helmet>
 
       <div className="w-full bg-[#F6F4EF] relative">
-        <div className="container  mx-auto py-25 md:py-50px lg:py-60px 2xl:py-100px ">
+        <div className="container  mx-auto py-1 md:py-50px lg:py-60px 2xl:py-100px ">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             <div className="lg:col-start-1 lg:col-span-8 space-y-[35px]  order-2 md:order-1">
               <div className="container-main-info pb-8 border-1 bg-[#F2F0E8] border-[#ECECEC] rounded-[15px] z-1">
                 <div className="cert-int px-3 lg:px-7 pt-3 lg:pt-8">
-                  <h1 className="text-[2rem] md:text-4xl mb-2 font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-10 md:leading-10 aos-init aos-animate">
+                  <h1 className="text-[1.8rem] md:text-4xl mb-2 font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-[1.1em] md:leading-10 aos-init aos-animate">
                     {certification.nombre}
                   </h1>
                   <p className="text-sm md:text-lg text-contentColor dark:contentColor-dark mb-25px !leading-[1.2em] aos-init aos-animate">
                     {certification.metadescripcion_certificacion}
                   </p>
-                  <div className="border-b border-[#E5E5E5] pb-[25px] flex flex-wrap lg:flex-nowrap items-start gap-[10px] lg:gap-[40px] xs:gap-[20px] mt-5 mb-[20px]">
+                  <div className="border-b border-[#E5E5E5] pb-[25px] flex lg:flex-nowrap items-start gap-[10px] lg:gap-[40px] xs:gap-[20px] mt-5 mb-[20px]">
                     <div className="flex w-1/1 lg:w-2/8 items-start gap-[10px] border-l border-[#CDCDCD] first:border-none pl-[10px] first:pl-0">
                       <div>
                         <h6 className="font-bold text-edblue leading-[1.2]">Idioma:</h6>
@@ -476,7 +476,7 @@ const getCoursePath = (course) => {
                   <div className="w-full">
                     {activeTab === "tab1" && (
                       <div className="cert-cont w-full">
-                        <h2 className="text-[1.7rem] md:text-[1.5rem] font-bold mb-3 text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">
+                        <h2 className="text-[1.5rem] md:text-[1.5rem] font-bold mb-3 text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">
                           ¿Qué aprenderás?
                         </h2>
 
@@ -516,7 +516,7 @@ const getCoursePath = (course) => {
                               )}
                             </div>
                           )}
-                          <h2 className="text-[1.7rem] md:text-[1.5rem] font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate my-5">
+                          <h2 className="text-[1.5rem] md:text-[1.5rem] font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate my-5">
                           Habilidades que obtendrás </h2>
 
                           <div className="flex flex-wrap gap-2">
@@ -654,7 +654,7 @@ const getCoursePath = (course) => {
                 </div>
               </div>
               <div className="lg:col-start-1 lg:col-span-12 border-1 bg-[#F2F0E8] border-[#ECECEC] rounded-[15px] px-3 py-3 lg:p-8 z-1 order-3 ">
-                <h2 className="text-[1.7rem] md:text-[1.5rem] font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">
+                <h2 className="text-[1.5rem] md:text-[1.5rem] font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate">
                   Clases recomendadas para ti
                 </h2>
                 <div>
@@ -674,7 +674,7 @@ const getCoursePath = (course) => {
                   className="rounded-xl overflow-hidden"
                   alt="Logo de la certificación"
                 />
-                <div className="absolute top-2 right-0 rounded-[25px_0px_0px_25px] text-[16px] font-bold text-black bg-[#F6F4EF] px-3 py-0.5 text-xs">
+                <div className="absolute top-20 md:top-2 right-0 rounded-[25px_0px_0px_25px] text-[16px] font-bold text-black bg-[#F6F4EF] px-3 py-0.5 text-xs">
                   {certification.tipo_certificacion === "Curso"
                     ? "Certificación"
                     : certification.tipo_certificacion}
@@ -751,7 +751,7 @@ const getCoursePath = (course) => {
                                 }
                             >
                                 <img
-                                className="max-w-[150px] m-2 w-full"
+                                className="max-w-[150px] m-2 w-full max-h-[100px] !brightness-100 !mix-blend-multiply"
                                 src={getImageUrl(
                                     certification.universidad_certificacion?.univ_img ||
                                     certification.empresa_certificacion?.empr_img

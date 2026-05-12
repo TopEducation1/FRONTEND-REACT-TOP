@@ -527,7 +527,7 @@ function LibraryPage({ showRoutes = true }) {
     run();
   }, [location.pathname, location.search]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (!firstLoadDoneRef.current) return;
     if (isHydratingFromUrlRef.current) return;
     if (!isReady) return;
@@ -556,7 +556,7 @@ function LibraryPage({ showRoutes = true }) {
     areTagMapsEqualByUrlValues,
     buildUrlFromTags,
     navigate,
-  ]);
+  ]);*/
 
   const handlePageChange = (newPage) => {
     if (!isReady || loading) return;
@@ -724,7 +724,39 @@ function LibraryPage({ showRoutes = true }) {
           <IndexCategories
             onTagSelect={(category, tag) => {
               if (!isReady) return;
-              toggleTag(category, tag);
+
+              const normalizedCategory = normalizeCategoryKey(category);
+
+              setSelectedTags((prevTags) => {
+                const currentTags = prevTags[normalizedCategory] || [];
+
+                const exists = currentTags.some((oldTag) =>
+                  areTagsEqual(normalizedCategory, oldTag, tag)
+                );
+
+                const nextValues = exists
+                  ? currentTags.filter(
+                      (oldTag) => !areTagsEqual(normalizedCategory, oldTag, tag)
+                    )
+                  : [...currentTags, tag];
+
+                const updatedTags = { ...prevTags };
+
+                if (nextValues.length === 0) {
+                  if (normalizedCategory === "idioma") {
+                    updatedTags[normalizedCategory] = [];
+                  } else {
+                    delete updatedTags[normalizedCategory];
+                  }
+                } else {
+                  updatedTags[normalizedCategory] = nextValues;
+                }
+
+                const nextUrl = buildUrlFromTags(updatedTags, 1, 16, location.pathname);
+                navigate(nextUrl, { replace: false });
+
+                return updatedTags;
+              });
             }}
             selectedTags={selectedTags}
             disabled={!isReady}
@@ -752,7 +784,32 @@ function LibraryPage({ showRoutes = true }) {
                         <button
                           onClick={() => {
                             if (!isReady) return;
-                            removeTag(category, tag);
+
+                            const normalizedCategory = normalizeCategoryKey(category);
+
+                            setSelectedTags((prevTags) => {
+                              const updatedTags = { ...prevTags };
+                              const currentTags = updatedTags[normalizedCategory] || [];
+
+                              const filtered = currentTags.filter(
+                                (oldTag) => !areTagsEqual(normalizedCategory, oldTag, tag)
+                              );
+
+                              if (filtered.length === 0) {
+                                if (normalizedCategory === "idioma") {
+                                  updatedTags[normalizedCategory] = [];
+                                } else {
+                                  delete updatedTags[normalizedCategory];
+                                }
+                              } else {
+                                updatedTags[normalizedCategory] = filtered;
+                              }
+
+                              const nextUrl = buildUrlFromTags(updatedTags, 1, 16, location.pathname);
+                              navigate(nextUrl, { replace: false });
+
+                              return updatedTags;
+                            });
                           }}
                           className="remove-tag-button"
                           disabled={!isReady}

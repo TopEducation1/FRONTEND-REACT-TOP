@@ -108,11 +108,11 @@ const Header = ({ toggleMenu,onTagSelect, openIndexResponsiveMenu, isMenuOpen })
         {/* LOGO + BACK */}
         <div className="wrapper-logo-nav flex items-center gap-2">
           <button
-            className="btn-atras text-[#F6F4EF]"
+            className="btn-atras text-[#F6F4EF] -ml-3"
             onClick={handleAtras}
             title="Volver atrás"
           >
-            <FaAnglesLeft className="text-[2.3rem]" />
+            <FaAnglesLeft className="text-[1.8rem]" />
           </button>
 
           <button onClick={() => navigateWithTransition("/inicio")}>

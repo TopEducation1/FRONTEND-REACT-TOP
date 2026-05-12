@@ -289,12 +289,13 @@ const MenuTop = ({ toggleMenu }) => {
             }`}
             onClick={() => {
               if (window.innerWidth < 768) {
-                setShowSubmenu((prev) => !prev);
+                navigateWithTransition("/explora?idioma=es&idioma=en&page=1&page_size=16");
+                closeMenuIfMobile();
                 return;
               }
 
               if (!isActive(item.path)) {
-                navigateWithTransition(item.path);
+                navigateWithTransition("/explora?idioma=es&idioma=en&page=1&page_size=16");
                 closeMenuIfMobile();
               }
             }}
