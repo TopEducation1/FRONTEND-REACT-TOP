@@ -331,6 +331,13 @@ const getCoursePath = (course) => {
 
   return null;
 };
+const validSkills = Array.isArray(allSkills)
+  ? allSkills.filter(
+      (skill) =>
+        skill?.nombre?.trim()?.toLowerCase() !== "uncategorized" &&
+        skill?.translate?.trim()?.toLowerCase() !== "uncategorized"
+    )
+  : [];
 
   return (
     <>
@@ -397,7 +404,7 @@ const getCoursePath = (course) => {
       </Helmet>
 
       <div className="w-full bg-[#F6F4EF] relative">
-        <div className="container  mx-auto py-1 md:py-50px lg:py-60px 2xl:py-100px ">
+        <div className="container  mx-auto pt-0 !md:py-[70px] lg:py-[90px] ">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             <div className="lg:col-start-1 lg:col-span-8 space-y-[35px]  order-2 md:order-1">
               <div className="container-main-info pb-8 border-1 bg-[#F2F0E8] border-[#ECECEC] rounded-[15px] z-1">
@@ -453,7 +460,7 @@ const getCoursePath = (course) => {
                   >
                     <li>
                       <a
-                        className={`flex text-[1.1rem] px-2 lg:px-4 py-1 lg:py-2 rounded ${
+                        className={`flex text-[1rem] md:text-[1.1rem] px-3 lg:px-4 py-2 rounded ${
                           activeTab === "tab1" ? "bg-blue-500 text-white" : "bg-gray-300"
                         }`}
                         onClick={() => setActiveTab("tab1")}
@@ -463,7 +470,7 @@ const getCoursePath = (course) => {
                     </li>
                     <li>
                       <a
-                        className={`flex text-[1.1rem] px-2 lg:px-4 py-1 lg:py-2 rounded ${
+                        className={`flex text-[1rem] md:text-[1.1rem] px-3 lg:px-4 py-2 rounded ${
                           activeTab === "tab2" ? "bg-blue-500 text-white" : "bg-gray-300"
                         }`}
                         onClick={() => setActiveTab("tab2")}
@@ -516,26 +523,30 @@ const getCoursePath = (course) => {
                               )}
                             </div>
                           )}
-                          <h2 className="text-[1.5rem] md:text-[1.5rem] font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate my-5">
-                          Habilidades que obtendrás </h2>
+                          {(validSkills.length > 0) && (
+                            <div>
+                              <h2 className="text-[1.5rem] md:text-[1.5rem] font-bold text-blackColor dark:text-blackColor-dark mb-15px leading-8 md:leading-8 aos-init aos-animate my-5">
+                              Habilidades que obtendrás </h2>
 
-                          <div className="flex flex-wrap gap-2">
-                            {certification?.habilidades_certificacion?.flatMap((item, idxItem) => {
-                              const habilidades = (item?.nombre || "")
-                                .split(",")
-                                .map((h) => h.trim())
-                                .filter(Boolean);
+                              <div className="flex flex-wrap gap-2">
+                                {certification?.habilidades_certificacion?.flatMap((item, idxItem) => {
+                                  const habilidades = (item?.nombre || "")
+                                    .split(",")
+                                    .map((h) => h.trim())
+                                    .filter(Boolean);
 
-                              return habilidades.map((habilidad, index) => (
-                                <div
-                                  key={`${idxItem}-${index}`}
-                                  className="bg-black text-white w-auto px-3 py-1 rounded-full"
-                                >
-                                  {habilidad}
-                                </div>
-                              ));
-                            })}
+                                  return habilidades.map((habilidad, index) => (
+                                    <div
+                                      key={`${idxItem}-${index}`}
+                                      className="bg-black text-white w-auto px-3 py-1 rounded-full"
+                                    >
+                                      {habilidad}
+                                    </div>
+                                  ));
+                                })}
+                              </div>
                           </div>
+                        )}
                           {hasSpecializationCourses && (
                             <div className="mt-8">
                               <div className="flex items-center justify-between gap-3 mb-4">
@@ -671,7 +682,7 @@ const getCoursePath = (course) => {
                       certification.universidad_certificacion?.univ_img ||
                       certification.empresa_certificacion?.empr_img
                   )}
-                  className="rounded-xl overflow-hidden"
+                  className="rounded-[0px_0px_20px_20px] md:rounded-xl overflow-hidden"
                   alt="Logo de la certificación"
                 />
                 <div className="absolute top-20 md:top-2 right-0 rounded-[25px_0px_0px_25px] text-[16px] font-bold text-black bg-[#F6F4EF] px-3 py-0.5 text-xs">
@@ -788,68 +799,74 @@ const getCoursePath = (course) => {
                     </li>
                     )}
 
-                  <li className="flex flex-wrap space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
-                    <div className="flex-1 space-x-3 flex">
-                      <div className="text-black font-semibold">
-                        {certification.plataforma_certificacion.nombre !== "MasterClass"
-                          ? "Temas:"
-                          : "Habilidades:"}
+                  {(validSkills.length > 0) && (
+                    <li className="flex flex-wrap space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
+                      
+                      <div className="flex-1 space-x-3 flex">
+                        <div className="text-black font-semibold">
+                          {certification.plataforma_certificacion.nombre !== "MasterClass"
+                            ? "Temas:"
+                            : "Habilidades:"}
+                        </div>
                       </div>
-                    </div>
 
-                    <div className={`flex-none max-w-[100%] flex ${
-                        allSkills.length > 2 && "mt-[-20px]"
-                      } flex-wrap justify-end gap-1`}>
-                      {Array.isArray(allSkills) && allSkills.length > 0 ? (
-                        allSkills.map((skill, index) => {
-                          const label = getSkillLabel(skill);
-                          const slugValue = getSkillSlug(skill);
-                          const categoryKey = getSkillCategoryKey(skill);
+                      <div
+                        className={`flex-none max-w-[100%] flex ${
+                          allSkills.length > 2 && "mt-[-20px]"
+                        } flex-wrap justify-end gap-1`}
+                      >
+                        {hasSkills ? (
+                          allSkills.map((skill, index) => {
+                            const label = getSkillLabel(skill);
+                            const slugValue = getSkillSlug(skill);
+                            const categoryKey = getSkillCategoryKey(skill);
 
-                          return (
-                            <a
-                              key={skill.id || index}
-                              className="cursor-pointer"
-                              onClick={() => {
-                                if (slugValue) {
-                                  handleItemMenuClick(categoryKey, slugValue);
-                                }
-                              }}
-                            >
-                              <div
-                                className={`tag-category ${
-                                  skill.skill_col || "tag-verde"
-                                } ${
-                                  allSkills.length > 1 && index === 0 ? "ml-[50px]" : ""
-                                }`}
+                            return (
+                              <a
+                                key={skill.id || index}
+                                className="cursor-pointer"
+                                onClick={() => {
+                                  if (slugValue) {
+                                    handleItemMenuClick(categoryKey, slugValue);
+                                  }
+                                }}
                               >
-                                {label}
-                              </div>
-                            </a>
-                          );
-                        })
-                      ) : certification.tema_certificacion?.nombre ? (
-                        <a
-                          className="cursor-pointer"
-                          onClick={() =>
-                            handleItemMenuClick(
-                              certification.tema_certificacion.tem_type || "Tema",
-                              certification.tema_certificacion.slug ||
-                                certification.tema_certificacion.nombre
-                            )
-                          }
-                        >
-                          <div
-                            className={`tag-category ${
-                              certification.tema_certificacion.tem_col || "tag-verde"
-                            } mt-[15px]`}
+                                <div
+                                  className={`tag-category ${
+                                    skill.skill_col || "tag-verde"
+                                  } ${
+                                    allSkills.length > 1 && index === 0 ? "ml-[50px]" : ""
+                                  }`}
+                                >
+                                  {label}
+                                </div>
+                              </a>
+                            );
+                          })
+                        ) : hasValidTheme ? (
+                          <a
+                            className="cursor-pointer"
+                            onClick={() =>
+                              handleItemMenuClick(
+                                certification.tema_certificacion.tem_type || "Tema",
+                                certification.tema_certificacion.slug ||
+                                  certification.tema_certificacion.nombre
+                              )
+                            }
                           >
-                            {certification.tema_certificacion.nombre}
-                          </div>
-                        </a>
-                      ) : null}
-                    </div>
-                  </li>
+                            <div
+                              className={`tag-category ${
+                                certification.tema_certificacion.tem_col || "tag-verde"
+                              } mt-[15px]`}
+                            >
+                              {certification.tema_certificacion.nombre}
+                            </div>
+                          </a>
+                        ) : null}
+                      </div>
+
+                    </li>
+                  )}
 
                   <li className="flex space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
                     <div className="flex-1 space-x-3 flex">

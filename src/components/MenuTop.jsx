@@ -1,17 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 import { FaChevronRight } from "react-icons/fa";
-import endpoints from "../config/api";
 
 const MenuTop = ({ toggleMenu }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [showSubmenu, setShowSubmenu] = useState(false);
-
-  const [platforms, setPlatforms] = useState([]);
-  const [topics, setTopics] = useState([]);
-  const [companies, setCompanies] = useState([]);
-  const [universities, setUniversities] = useState([]);
 
   const isActive = (path) => location.pathname === path;
 
@@ -29,165 +23,6 @@ const MenuTop = ({ toggleMenu }) => {
     }
   }
 
-  const isValidImage = (value) => {
-    if (!value) return false;
-    const v = String(value).trim().toLowerCase();
-    return v && !["none", "null", "undefined"].includes(v);
-  };
-
-  const getImage = (item, keys = []) => {
-    for (const key of keys) {
-      if (isValidImage(item?.[key])) return item[key];
-    }
-    return "";
-  };
-
-  const normalizeSkillType = (value) => {
-    const v = (value || "").toString().trim().toLowerCase();
-    if (["tema", "category", "principal"].includes(v)) return "tema";
-    return "";
-  };
-
-  const getParentId = (item) => {
-    if (!item?.parent && !item?.parent_id) return null;
-    if (typeof item.parent === "object") return item.parent.id || null;
-    return item.parent || item.parent_id || null;
-  };
-
-  const getSkillLabel = (item) => {
-    return item?.translate && item.translate.trim() !== ""
-      ? item.translate
-      : item?.nombre || "";
-  };
-
-  useEffect(() => {
-    fetch(endpoints.platforms)
-      .then((res) => res.json())
-      .then((data) => {
-        const safeData = Array.isArray(data) ? data : [];
-
-        const fallback = [
-          {
-            id: "edx",
-            nombre: "EdX",
-            plat_ico: "/assets/platforms/icons/icon-edx.png",
-          },
-          {
-            id: "coursera",
-            nombre: "Coursera",
-            plat_ico: "/assets/platforms/icons/icon-coursera.png",
-          },
-          {
-            id: "masterclass",
-            nombre: "MasterClass",
-            plat_ico: "/assets/platforms/icons/icon-masterclass.png",
-          },
-        ];
-
-        setPlatforms(safeData.length ? safeData : fallback);
-      })
-      .catch(() => {
-        setPlatforms([
-          {
-            id: "edx",
-            nombre: "EdX",
-            plat_ico: "/assets/platforms/icons/icon-edx.png",
-          },
-          {
-            id: "coursera",
-            nombre: "Coursera",
-            plat_ico: "/assets/platforms/icons/icon-coursera.png",
-          },
-          {
-            id: "masterclass",
-            nombre: "MasterClass",
-            plat_ico: "/assets/platforms/icons/icon-masterclass.png",
-          },
-        ]);
-      });
-
-    fetch(endpoints.skills)
-      .then((res) => res.json())
-      .then((data) => {
-        const safeData = Array.isArray(data)
-          ? data
-          : Array.isArray(data?.results)
-          ? data.results
-          : [];
-
-        const rows = safeData
-          .filter((item) => item?.estado === true || item?.estado === 1 || item?.estado === "1")
-          .filter((item) => normalizeSkillType(item.skill_type) === "tema")
-          .filter((item) => !getParentId(item))
-          .filter((item) => item?.slug)
-          .sort((a, b) => getSkillLabel(a).localeCompare(getSkillLabel(b)))
-          .slice(0, 12);
-
-        setTopics(rows);
-      })
-      .catch(() => setTopics([]));
-
-    fetch(endpoints.empresas)
-      .then((res) => res.json())
-      .then((data) => {
-        const safeData = Array.isArray(data) ? data : [];
-
-        const uniqueNames = new Set();
-
-        const rows = safeData
-          .filter((item) => item?.empr_est === "enabled" || item?.estado === true)
-          .filter((item) => isValidImage(item?.empr_ico) || isValidImage(item?.empr_img))
-
-          // evitar duplicados tipo Google / Google Cloud
-          .filter((item) => {
-            const normalized = String(item?.nombre || "")
-              .trim()
-              .toLowerCase();
-
-            if (!normalized) return false;
-
-            // evita repetir marcas similares
-            const rootName = normalized.split(" ")[0];
-
-            if (uniqueNames.has(rootName)) return false;
-
-            uniqueNames.add(rootName);
-            return true;
-          })
-
-          .sort((a, b) => {
-            const topA = Number(a?.total_certificaciones || a?.empr_top || 0);
-            const topB = Number(b?.total_certificaciones || b?.empr_top || 0);
-            return topB - topA;
-          })
-
-          // máximo 10
-          .slice(0, 10);
-
-        setCompanies(rows);
-      })
-      .catch(() => setCompanies([]));
-
-    fetch(endpoints.universities)
-      .then((res) => res.json())
-      .then((data) => {
-        const safeData = Array.isArray(data) ? data : [];
-
-        const rows = safeData
-          .filter((item) => item?.univ_est === "enabled" || item?.estado === true)
-          .filter((item) => isValidImage(item?.univ_ico) || isValidImage(item?.univ_img))
-          .sort((a, b) => {
-            const topA = Number(a?.total_certificaciones || a?.univ_top || 0);
-            const topB = Number(b?.total_certificaciones || b?.univ_top || 0);
-            return topB - topA;
-          })
-          .slice(0, 18);
-
-        setUniversities(rows);
-      })
-      .catch(() => setUniversities([]));
-  }, []);
-
   const menuItems = [
     { name: "Explora", path: "/explora", isDropdown: true, classItem: "item-explora" },
     { name: "Lo más Top", path: "/lo-mas-top", classItem: "item-mastop" },
@@ -196,43 +31,72 @@ const MenuTop = ({ toggleMenu }) => {
     { name: "Empieza ahora", path: "/empieza-ahora", classItem: "item-empezar" },
   ];
 
-  const exploraSubmenu = useMemo(() => {
-    return {
-      Plataforma: platforms.map((item) => ({
-        img:
-          getImage(item, ["plat_ico", "plat_img"]) ||
-          `/assets/platforms/icons/icon-${String(item.nombre || "").toLowerCase()}.png`,
-        text: item.nombre,
-        type: "Plataforma",
-        tag: item.nombre,
-      })),
+  const exploraSubmenu = {
+    Plataforma: [
+      { img: "/assets/platforms/icons/icon-edx.png", text: "EdX", type: "Plataforma", tag: "EdX" },
+      { img: "/assets/platforms/icons/icon-coursera.png", text: "Coursera", type: "Plataforma", tag: "Coursera" },
+      { img: "/assets/platforms/icons/icon-masterclass.png", text: "MasterClass", type: "Plataforma", tag: "MasterClass" },
+    ],
 
-      Temas: topics.map((item) => ({
-        img:
-          getImage(item, ["skill_ico", "skill_img"]) ||
-          `/assets/category/${item.nombre}.png`,
-        text: getSkillLabel(item),
-        type: "Tema",
-        tag: item.slug,
-      })),
+    Temas: [
+      { img: "/assets/category/topic/ico-Aprendizaje-de-un-idioma.png", text: "Aprendizaje de idiomas", type: "Tema", tag: "language-learning" },
+      { img: "/assets/category/topic/ico-Artes-y-humanidades.png", text: "Arte y humanidades", type: "Tema", tag: "arts-and-humanities" },
+      { img: "/assets/category/topic/ico-Ciencia-de-datos.png", text: "Ciencias de datos", type: "Tema", tag: "data-science" },
+      { img: "/assets/category/topic/ico-Ciencias-de-la-computacion.png", text: "Ciencias de la Computación", type: "Tema", tag: "computer-science" },
+      { img: "/assets/category/topic/ico-Ciencias-fisicas-e-ingenieria.png", text: "Ciencias físicas e ingeniería", type: "Tema", tag: "physical-science-and-engineering" },
+      { img: "/assets/category/topic/ico-Ciencias-sociales.png", text: "Ciencias Sociales", type: "Tema", tag: "social-sciences" },
+      { img: "/assets/category/topic/ico-Desarrollo-personal.png", text: "Desarrollo personal", type: "Tema", tag: "personal-development" },
+      { img: "/assets/category/topic/ico-Matematicas-y-logica.png", text: "Matemáticas y lógica", type: "Tema", tag: "math-and-logic" },
+      { img: "/assets/category/topic/ico-Negocios.png", text: "Negocios", type: "Tema", tag: "business" },
+      { img: "/assets/category/topic/ico-Salud.png", text: "Salud", type: "Tema", tag: "health" },
+      { img: "/assets/category/topic/ico-Tecnologia-de-la-informacion.png", text: "Tecnología de la información", type: "Tema", tag: "information-technology" },
+    ],
 
-      
+    Universidades: [
+      // Norteamérica
+      { img: "/assets/universities/icons/ico-Harvard.webp", text: "Harvard University", type: "Universidad", tag: "Harvard University" },
+      { img: "/assets/universities/icons/ico-Stanford-University.webp", text: "Stanford University", type: "Universidad", tag: "Stanford University" },
+      { img: "/assets/universities/icons/ico-Massachusetts-Institute.webp", text: "Massachusetts Institute of Technology", type: "Universidad", tag: "Massachusetts Institute of Technology" },
+      { img: "/assets/universities/icons/ico-Yale-University.webp", text: "Yale University", type: "Universidad", tag: "Yale University" },
+      { img: "/assets/universities/icons/ico-Columbia-University.webp", text: "Columbia University", type: "Universidad", tag: "Columbia University" },
+      { img: "/assets/universities/icons/ico-University-of-Michigan.webp", text: "University of Michigan", type: "Universidad", tag: "University of Michigan" },
+      { img: "/assets/universities/icons/ico-University-of-Illinois-Urbana-Champaign.webp", text: "University of Illinois Urbana-Champaign", type: "Universidad", tag: "University of Illinois Urbana-Champaign" },
+      { img: "/assets/universities/icons/ico-University-of-Pennsylvania.webp", text: "University of Pennsylvania", type: "Universidad", tag: "University of Pennsylvania" },
+      { img: "/assets/universities/icons/ico-The-University-of-Chicago.webp", text: "The University of Chicago", type: "Universidad", tag: "The University of Chicago" },
 
-      Universidades: universities.map((item) => ({
-        img: getImage(item, ["univ_ico", "univ_img"]),
-        text: item.nombre,
-        type: "Universidad",
-        tag: item.nombre,
-      })),
+      // Latinoamérica
+      { img: "/assets/universities/icons/ico-Universidad-de-los-Andes.webp", text: "Universidad de los Andes", type: "Universidad", tag: "Universidad de los Andes" },
+      { img: "/assets/universities/icons/ico-Universidad-nacional-de-colombia.webp", text: "Universidad Nacional de Colombia", type: "Universidad", tag: "Universidad Nacional de Colombia" },
+      { img: "/assets/universities/icons/ico-Tecnologico-de-Monterrey.webp", text: "Tecnológico de Monterrey", type: "Universidad", tag: "Tecnológico de Monterrey" },
+      { img: "/assets/universities/icons/ico-Pontificia-Universidad-Catolica-de-Chile.webp", text: "Pontificia Universidad Católica de Chile", type: "Universidad", tag: "Pontificia Universidad Catolica de Chile" },
+      { img: "/assets/universities/icons/ico-Pontificia-Universidad-Catolica-del-Peru.webp", text: "Pontificia Universidad Católica del Perú", type: "Universidad", tag: "Pontificia Universidad Catolica de Peru" },
+      { img: "/assets/universities/icons/ico-Universidad-del-Rosario.webp", text: "Universidad del Rosario", type: "Universidad", tag: "Universidad del Rosario" },
 
-      Empresas: companies.map((item) => ({
-        img: getImage(item, ["empr_ico", "empr_img"]),
-        text: item.nombre,
-        type: "Empresa",
-        tag: item.nombre,
-      })),
-    };
-  }, [platforms, topics, companies, universities]);
+      // Europa
+      { img: "/assets/universities/icons/ico-IE-Business-school.webp", text: "IE Business School", type: "Universidad", tag: "IE Business School" },
+      { img: "/assets/universities/icons/ico-Universidad-Tecnologica-de-Delft.webp", text: "Universidad Tecnológica de Delft", type: "Universidad", tag: "Universidad Tecnológica de Delft" },
+      { img: "/assets/universities/icons/ico-Imperial-College-de-Londres.webp", text: "Imperial College de Londres", type: "Universidad", tag: "Imperial College de Londres" },
+
+      // Asia / Oriente
+      { img: "/assets/universities/icons/ico-Peking-University.webp", text: "Peking University", type: "Universidad", tag: "Peking University" },
+      { img: "/assets/universities/icons/ico-National_University_of_Singapore.webp", text: "National University of Singapore", type: "Universidad", tag: "National University of Singapore" },
+      { img: "/assets/universities/icons/ico-Waseda.webp", text: "Universidad de Waseda", type: "Universidad", tag: "Universidad de Waseda" },
+      { img: "/assets/universities/icons/ico-u-tel-aviv.webp", text: "Universidad de Tel Aviv", type: "Universidad", tag: "Universidad de Tel Aviv" },
+    ],
+
+    Empresas: [
+      { img: "/assets/companies/icons/ico-Google-Cloud.png", text: "Google Cloud", type: "Empresa", tag: "Google Cloud" },
+      { img: "/assets/companies/icons/ico-IBM.png", text: "IBM", type: "Empresa", tag: "IBM" },
+      { img: "/assets/companies/icons/ico-Microsoft.png", text: "Microsoft", type: "Empresa", tag: "Microsoft" },
+      { img: "/assets/companies/icons/ico-Meta.png", text: "Meta", type: "Empresa", tag: "Meta" },
+      { img: "/assets/companies/icons/ico-DeepLearning-AI.png", text: "DeepLearning.AI", type: "Empresa", tag: "DeepLearning.AI" },
+      { img: "/assets/companies/icons/ico-HubSpot-Academy.png", text: "HubSpot Academy", type: "Empresa", tag: "HubSpot Academy" },
+      { img: "/assets/companies/icons/ico-Salesforce.png", text: "Salesforce", type: "Empresa", tag: "Salesforce" },
+      { img: "/assets/companies/icons/ico-HP.png", text: "HP", type: "Empresa", tag: "HP" },
+      { img: "/assets/companies/icons/ico-Oracle.png", text: "Oracle", type: "Empresa", tag: "Oracle" },
+      { img: "/assets/companies/icons/ico-UBITS.png", text: "UBITS", type: "Empresa", tag: "UBITS" },
+    ],
+  };
 
   const getQueryKey = (category) => {
     const map = {
@@ -255,6 +119,7 @@ const MenuTop = ({ toggleMenu }) => {
 
     params.append("idioma", "es");
     params.append("idioma", "en");
+
     const normalizedValue =
       category === "Tema"
         ? String(queryValue).trim().toLowerCase()
@@ -333,6 +198,7 @@ const MenuTop = ({ toggleMenu }) => {
                               loading="lazy"
                             />
                           )}
+
                           {sub.text && (
                             <span className="leading-[1.1em]">{sub.text}</span>
                           )}

@@ -1057,7 +1057,6 @@ header {
 .cert-img{
   width: 100%;
   overflow: hidden;
-  border-radius: var(--esquinaSm) var(--esquinaSm) 0px 0px;
 }
 .cert-img img{
   width: 100%;

@@ -3,7 +3,7 @@ import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "fra
 import { useNavigate } from "react-router-dom";
 
 const GRID_COL_CLASSES =
-  "relative overflow-visible grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-0";
+  "relative overflow-visible grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-0";
 
 export default function TopicGrid({ topics = [], columns = 5 }) {
   const navigate = useNavigate();
