@@ -329,7 +329,7 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
             return (
               <label
                 key={lang.code}
-                className="flex items-center justify-between gap-3 cursor-pointer rounded-lg px-2 py-2 hover:bg-neutral-100"
+                className="flex items-center justify-between gap-3 cursor-pointer rounded-lg px-2 py-1 hover:bg-neutral-100"
                 style={{
                   opacity: disabled ? 0.5 : 1,
                   pointerEvents: disabled ? "none" : "auto",

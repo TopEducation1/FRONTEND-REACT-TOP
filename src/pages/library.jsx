@@ -30,6 +30,7 @@ function LibraryPage({ showRoutes = true }) {
   const [loading, setLoading] = useState(true);
   const [isReady, setIsReady] = useState(false);
   const [debouncedSelectedTags] = useDebounce(selectedTags, 350);
+  const lastHydratedSearchRef = useRef("");
 
   const [pagination, setPagination] = useState({
     count: 0,
@@ -450,15 +451,29 @@ function LibraryPage({ showRoutes = true }) {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
+    const currentSearch = location.search;
 
     if (params.get("latest") === "1") return;
+
+    let changed = false;
 
     if (params.getAll("idioma").length === 0) {
       params.append("idioma", "es");
       params.append("idioma", "en");
-      if (!params.get("page")) params.set("page", "1");
-      if (!params.get("page_size")) params.set("page_size", "16");
+      changed = true;
+    }
 
+    if (!params.get("page")) {
+      params.set("page", "1");
+      changed = true;
+    }
+
+    if (!params.get("page_size")) {
+      params.set("page_size", "16");
+      changed = true;
+    }
+
+    if (changed) {
       navigate(`${location.pathname}?${params.toString()}`, { replace: true });
     }
   }, [location.pathname, location.search, navigate]);
@@ -472,6 +487,7 @@ function LibraryPage({ showRoutes = true }) {
 
       if (params.get("latest") === "1") {
         await loadLatestCertifications();
+        lastHydratedSearchRef.current = currentSearch;
         isHydratingFromUrlRef.current = false;
         firstLoadDoneRef.current = true;
         setIsReady(true);
@@ -515,6 +531,7 @@ function LibraryPage({ showRoutes = true }) {
     if (!firstLoadDoneRef.current) return;
     if (isHydratingFromUrlRef.current) return;
     if (!isReady) return;
+    if (lastHydratedSearchRef.current !== location.search) return;
 
     const params = new URLSearchParams(location.search);
     if (params.get("latest") === "1" || params.get("clear") === "1") return;
@@ -585,7 +602,7 @@ function LibraryPage({ showRoutes = true }) {
         <button
           onClick={() => handlePageChange(1)}
           disabled={current_page === 1 || !isReady}
-          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-3 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-2 md:px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <FaAnglesLeft />
         </button>
@@ -593,12 +610,12 @@ function LibraryPage({ showRoutes = true }) {
         <button
           onClick={() => handlePageChange(current_page - 1)}
           disabled={current_page === 1 || !isReady}
-          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-3 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-2 md:px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <FaChevronLeft />
         </button>
 
-        {pages[0] > 1 && <span className="px-1">...</span>}
+        {pages[0] > 1 && <span className="px-0">...</span>}
 
         {pages.map((page) => (
           <button
@@ -609,18 +626,18 @@ function LibraryPage({ showRoutes = true }) {
               page === current_page
                 ? "bg-neutral-700 text-white"
                 : "bg-neutral-50 text-neutral-700 hover:bg-neutral-200"
-            } font-bold py-2 px-4 rounded-full`}
+            } font-bold py-2 px-3 rounded-full`}
           >
             {page}
           </button>
         ))}
 
-        {pages[pages.length - 1] < total_pages && <span className="px-1">...</span>}
+        {pages[pages.length - 1] < total_pages && <span className="px-0">...</span>}
 
         <button
           onClick={() => handlePageChange(current_page + 1)}
           disabled={current_page === total_pages || !isReady}
-          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-3 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-2 md:px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <FaChevronRight />
         </button>
@@ -628,7 +645,7 @@ function LibraryPage({ showRoutes = true }) {
         <button
           onClick={() => handlePageChange(total_pages)}
           disabled={current_page === total_pages || !isReady}
-          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-3 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-2 md:px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <FaAnglesRight />
         </button>
