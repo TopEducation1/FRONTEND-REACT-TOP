@@ -585,7 +585,7 @@ function LibraryPage({ showRoutes = true }) {
         <button
           onClick={() => handlePageChange(1)}
           disabled={current_page === 1 || !isReady}
-          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-3 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <FaAnglesLeft />
         </button>
@@ -593,12 +593,12 @@ function LibraryPage({ showRoutes = true }) {
         <button
           onClick={() => handlePageChange(current_page - 1)}
           disabled={current_page === 1 || !isReady}
-          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-3 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <FaChevronLeft />
         </button>
 
-        {pages[0] > 1 && <span className="px-2">...</span>}
+        {pages[0] > 1 && <span className="px-1">...</span>}
 
         {pages.map((page) => (
           <button
@@ -615,12 +615,12 @@ function LibraryPage({ showRoutes = true }) {
           </button>
         ))}
 
-        {pages[pages.length - 1] < total_pages && <span className="px-2">...</span>}
+        {pages[pages.length - 1] < total_pages && <span className="px-1">...</span>}
 
         <button
           onClick={() => handlePageChange(current_page + 1)}
           disabled={current_page === total_pages || !isReady}
-          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-3 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <FaChevronRight />
         </button>
@@ -628,7 +628,7 @@ function LibraryPage({ showRoutes = true }) {
         <button
           onClick={() => handlePageChange(total_pages)}
           disabled={current_page === total_pages || !isReady}
-          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-3 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <FaAnglesRight />
         </button>
@@ -715,7 +715,7 @@ function LibraryPage({ showRoutes = true }) {
 
           <div className="cont-filter">
             <div className="flex flex-wrap justify-between items-center gap-2 relative">
-              <div className="container-tags !w-[74%]">
+              <div className="container-tags w-full md:!w-[74%]">
                 {Object.keys(selectedTags).length === 0 ||
                 Object.values(selectedTags).every(
                   (tags) => !tags || tags.length === 0

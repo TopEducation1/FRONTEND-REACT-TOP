@@ -186,7 +186,7 @@ const SearchBar = ({ selectedTags = {} }) => {
   return (
     <>
       <div
-        className={` !w-[25%] transition-all duration-300 ${
+        className={` w-full md:!w-[25%] mt-2 md:mt-0 transition-all duration-300 ${
           isFixed
             ? "!fixed top-[100px] left-1/2 -translate-x-1/2 !w-[min(900px,90vw)] z-[70]"
             : "relative"
