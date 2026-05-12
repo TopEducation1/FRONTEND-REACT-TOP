@@ -331,14 +331,16 @@ const getCoursePath = (course) => {
 
   return null;
 };
-const validSkills = Array.isArray(allSkills)
-  ? allSkills.filter(
-      (skill) =>
-        skill?.nombre?.trim()?.toLowerCase() !== "uncategorized" &&
-        skill?.translate?.trim()?.toLowerCase() !== "uncategorized"
-    )
-  : [];
-
+  const validSkills = Array.isArray(allSkills)
+    ? allSkills.filter(
+        (skill) =>
+          skill?.nombre?.trim()?.toLowerCase() !== "uncategorized" &&
+          skill?.translate?.trim()?.toLowerCase() !== "uncategorized"
+      )
+    : [];
+  const hasSkills =
+    Array.isArray(allSkills) &&
+    allSkills.length > 0;
   return (
     <>
       <Helmet>
