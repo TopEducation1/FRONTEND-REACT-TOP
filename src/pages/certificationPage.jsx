@@ -76,6 +76,10 @@ const truncateText = (text, max) => {
       try {
         setLoading(true);
         const data = await getCertificationById(slug);
+
+        console.log("CERTIFICACIÓN:", data);
+        console.log("CURSOS ESPECIALIZACIÓN:", data?.specialization_courses);
+
         setCertification(data);
       } catch (error) {
         setError(error.message);
@@ -300,10 +304,14 @@ const truncateText = (text, max) => {
   })();
 
   const specializationCourses = Array.isArray(certification?.specialization_courses)
-  ? certification.specialization_courses
-  : [];
+    ? certification.specialization_courses
+    : [];
 
-const hasSpecializationCourses = specializationCourses.length > 0;
+  const hasSpecializationCourses = specializationCourses.length > 0;
+
+  const isSpecialization = ["especialización", "especializacion", "specialization"].includes(
+    certification?.tipo_certificacion?.toString().trim().toLowerCase()
+  );
 
 const getCourseImage = (course) => {
   return (
@@ -341,6 +349,36 @@ const getCoursePath = (course) => {
   const hasSkills =
     Array.isArray(allSkills) &&
     allSkills.length > 0;
+
+  const isValidImageValue = (value) => {
+  if (!value) return false;
+
+  const v = String(value).trim().toLowerCase();
+
+  return !["none", "null", "undefined", ""].includes(v);
+};
+
+const institutionImage = isValidImageValue(
+  certification.universidad_certificacion?.univ_img
+)
+  ? certification.universidad_certificacion.univ_img
+  : isValidImageValue(certification.empresa_certificacion?.empr_img)
+  ? certification.empresa_certificacion.empr_img
+  : null;
+
+const institutionType = isValidImageValue(
+  certification.universidad_certificacion?.univ_img
+)
+  ? "Universidad"
+  : isValidImageValue(certification.empresa_certificacion?.empr_img)
+  ? "Empresa"
+  : "";
+
+const institutionName =
+  institutionType === "Universidad"
+    ? certification.universidad_certificacion?.nombre
+    : certification.empresa_certificacion?.nombre;
+
   return (
     <>
       <Helmet>
@@ -549,7 +587,7 @@ const getCoursePath = (course) => {
                               </div>
                           </div>
                         )}
-                          {hasSpecializationCourses && (
+                          {isSpecialization && hasSpecializationCourses && (
                             <div className="mt-8">
                               <div className="flex items-center justify-between gap-3 mb-4">
                                 <div>
@@ -730,76 +768,53 @@ const getCoursePath = (course) => {
                     </div>
                   </li>
 
-                  {(certification.universidad_certificacion?.univ_img ||
-                    certification.empresa_certificacion?.empr_img) && (
+                  {institutionImage && (
                     <li className="flex flex-col space-y-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 last:mb-0 last:border-0">
+                      <div className="flex justify-between items-center">
+                        <div className="text-black font-semibold">{institutionType}</div>
 
-                        {/* HEADER */}
-                        <div className="flex justify-between items-center">
-                        <div className="text-black font-semibold">
-                            {certification.universidad_certificacion?.univ_img
-                            ? "Universidad"
-                            : certification.empresa_certificacion?.empr_img
-                            ? "Empresa"
-                            : ""}
+                        <div>
+                          <a
+                            className="cursor-pointer w-auto flex items-center rounded-[5px] max-h-[30px] hover:opacity-80 transition"
+                            onClick={() =>
+                              institutionType === "Universidad"
+                                ? handleItemMenuClick("Universidad", institutionName)
+                                : handleItemMenuClick("Empresa", institutionName)
+                            }
+                          >
+                            <img
+                              className="max-w-[150px] m-2 w-full max-h-[100px] !brightness-100 !mix-blend-multiply"
+                              src={getImageUrl(institutionImage)}
+                              alt="imagen-certificacion"
+                              onError={(e) => {
+                                e.currentTarget.style.display = "none";
+                              }}
+                            />
+                          </a>
                         </div>
+                      </div>
 
-                        {(certification.universidad_certificacion?.univ_img ||
-                            certification.empresa_certificacion?.empr_img) && (
-                            <div>
-                            <a
-                                className="cursor-pointer w-auto flex items-center rounded-[5px] max-h-[30px] hover:opacity-80 transition"
-                                onClick={() =>
-                                certification.universidad_certificacion?.nombre
-                                    ? handleItemMenuClick(
-                                        "Universidad",
-                                        certification.universidad_certificacion.nombre
-                                    )
-                                    : certification.empresa_certificacion?.nombre
-                                    ? handleItemMenuClick(
-                                        "Empresa",
-                                        certification.empresa_certificacion.nombre
-                                    )
-                                    : null
-                                }
-                            >
-                                <img
-                                className="max-w-[150px] m-2 w-full max-h-[100px] !brightness-100 !mix-blend-multiply"
-                                src={getImageUrl(
-                                    certification.universidad_certificacion?.univ_img ||
-                                    certification.empresa_certificacion?.empr_img
-                                )}
-                                alt="imagen-certificacion"
-                                />
-                            </a>
-                            </div>
-                        )}
-                        </div>
-
-                        {/* DESCRIPCIÓN */}
-                        {(certification.universidad_certificacion?.descripcion_institucion ||
+                      {(certification.universidad_certificacion?.descripcion_institucion ||
                         certification.empresa_certificacion?.descripcion_institucion) && (
                         <div className="text-[12px] text-neutral-700 leading-[1.1em]">
-
-                            <p>
+                          <p>
                             {showFullDescription
-                                ? getDescription()
-                                : truncateText(getDescription(), MAX_CHARS)}
-                            </p>
+                              ? getDescription()
+                              : truncateText(getDescription(), MAX_CHARS)}
+                          </p>
 
-                            {/* BOTÓN LEER MÁS */}
-                            {getDescription().length > MAX_CHARS && (
+                          {getDescription().length > MAX_CHARS && (
                             <button
-                                onClick={() => setShowFullDescription(!showFullDescription)}
-                                className="mt-0 text-neutral-600 font-medium hover:underline transition"
+                              onClick={() => setShowFullDescription(!showFullDescription)}
+                              className="mt-0 text-neutral-600 font-medium hover:underline transition"
                             >
-                                {showFullDescription ? "Leer menos" : "Leer más"}
+                              {showFullDescription ? "Leer menos" : "Leer más"}
                             </button>
-                            )}
+                          )}
                         </div>
-                        )}
+                      )}
                     </li>
-                    )}
+                  )}
 
                   {(validSkills.length > 0) && (
                     <li className="flex flex-wrap space-x-3 border-b border-[#ECECEC] mb-4 pb-4 last:pb-0 past:mb-0 last:border-0">
