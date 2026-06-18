@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { useLocation } from "react-router-dom";
-import { X } from "lucide-react";
+import { X, Search } from "lucide-react";
 
 import FilterBySearch from "../services/filterBySearch";
 import CertificationsList from "../components/layoutCertifications";
@@ -22,17 +22,12 @@ const SearchBar = ({ selectedTags = {} }) => {
   const getTagUrlValue = (category, tag) => {
     if (!tag) return "";
 
-    if (category === "temas" || category === "habilidades") {
-      if (typeof tag === "object") return tag.slug || "";
-      return String(tag).trim();
-    }
-
     if (category === "idioma") {
       return typeof tag === "string" ? tag.trim() : "";
     }
 
     if (typeof tag === "object") {
-      return tag.slug || tag.nombre || "";
+      return tag.id || tag.slug || tag.nombre || "";
     }
 
     return String(tag).trim();
@@ -41,23 +36,44 @@ const SearchBar = ({ selectedTags = {} }) => {
   const getTagLabel = (tag) => {
     if (!tag) return "";
     if (typeof tag === "string" || typeof tag === "number") return String(tag);
-    return tag.translate || tag.nombre || tag.slug || "";
+
+    return (
+      tag.translate ||
+      tag.nombre ||
+      tag.name ||
+      tag.slug ||
+      tag.id ||
+      ""
+    );
   };
 
   const activeFilters = useMemo(() => {
     return {
-      idioma: (selectedTags?.idioma || []).map((tag) => getTagUrlValue("idioma", tag)),
-      Plataforma: (selectedTags?.plataforma || []).map((tag) => getTagUrlValue("plataforma", tag)),
-      Empresa: (selectedTags?.empresas || []).map((tag) => getTagUrlValue("empresas", tag)),
-      Universidad: (selectedTags?.universidades || []).map((tag) => getTagUrlValue("universidades", tag)),
-      Tema: (selectedTags?.temas || []).map((tag) => getTagUrlValue("temas", tag)),
-      Habilidad: (selectedTags?.habilidades || []).map((tag) => getTagUrlValue("habilidades", tag)),
+      idioma: (selectedTags?.idioma || []).map((tag) =>
+        getTagUrlValue("idioma", tag)
+      ),
+      Plataforma: (selectedTags?.plataforma || []).map((tag) =>
+        getTagUrlValue("plataforma", tag)
+      ),
+      Empresa: (selectedTags?.empresas || []).map((tag) =>
+        getTagUrlValue("empresas", tag)
+      ),
+      Universidad: (selectedTags?.universidades || []).map((tag) =>
+        getTagUrlValue("universidades", tag)
+      ),
+      Tema: (selectedTags?.temas || []).map((tag) =>
+        getTagUrlValue("temas", tag)
+      ),
+      Habilidad: (selectedTags?.habilidades || []).map((tag) =>
+        getTagUrlValue("habilidades", tag)
+      ),
     };
   }, [selectedTags]);
 
-  const activeFiltersKey = useMemo(() => {
-    return JSON.stringify(activeFilters);
-  }, [activeFilters]);
+  const activeFiltersKey = useMemo(
+    () => JSON.stringify(activeFilters),
+    [activeFilters]
+  );
 
   const activeFiltersSummary = useMemo(() => {
     const items = [];
@@ -146,8 +162,7 @@ const SearchBar = ({ selectedTags = {} }) => {
 
         if (currentRequestId !== requestIdRef.current) return;
 
-        const normalizedData = Array.isArray(data?.results) ? data.results : [];
-        setResults(normalizedData);
+        setResults(Array.isArray(data?.results) ? data.results : []);
       } catch (err) {
         if (currentRequestId !== requestIdRef.current) return;
 
@@ -166,17 +181,14 @@ const SearchBar = ({ selectedTags = {} }) => {
 
   useEffect(() => {
     const shouldShow =
-      debouncedText.trim().length >= 3 && (loading || results.length > 0 || hasSearched);
+      debouncedText.trim().length >= 3 &&
+      (loading || results.length > 0 || hasSearched);
 
     setResultsVisible(shouldShow);
   }, [debouncedText, loading, results, hasSearched]);
 
   useEffect(() => {
-    if (resultsVisible) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
+    document.body.style.overflow = resultsVisible ? "hidden" : "auto";
 
     return () => {
       document.body.style.overflow = "auto";
@@ -186,60 +198,175 @@ const SearchBar = ({ selectedTags = {} }) => {
   return (
     <>
       <div
-        className={` w-full md:!w-[25%] mt-2 md:mt-0 transition-all duration-300 ${
-          isFixed
-            ? "!fixed top-[100px] left-1/2 -translate-x-1/2 !w-[min(900px,90vw)] z-[70]"
-            : "relative"
-        }`}
+        className={`
+          w-full
+          transition-all
+          duration-300
+          ${
+            isFixed
+              ? "fixed left-1/2 top-[96px] z-[80] w-[min(960px,92vw)] max-w-[80%] -translate-x-1/2"
+              : "relative"
+          }
+        `}
       >
-        <span className="absolute top-[-15px] text-[0.7rem] w-full text-black">
-          Busca por tema, habilidad, universidad o empresa
-        </span>
-        <div className="flex relative">
+        <div
+          className="
+            group
+            flex
+            h-[50px]
+            w-full
+            items-center
+            gap-3
+            rounded-[25px]
+            border
+            border-black/10
+            bg-white
+            px-4
+            shadow-[0_12px_40px_rgba(0,0,0,0.04)]
+            transition-all
+            duration-300
+            focus-within:border-[#1941cf]/40
+            focus-within:shadow-[0_18px_50px_rgba(87,80,255,0.10)]
+          "
+        >
+          <Search className="h-5 w-5 shrink-0 text-neutral-400 transition group-focus-within:text-[#1941cf]" />
+
           <input
             type="text"
-            placeholder="¿Qué quieres aprender?"
+            placeholder="Busca por tema, habilidad, universidad o empresa"
             name="text"
-            className="input rounded-3xl w-full z-1"
+            className="
+              h-full
+              w-full
+              bg-transparent
+              text-[15px]
+              text-neutral-800
+              border-0
+              focus:ring-0
+              active:ring-0
+              outline-none
+              placeholder:text-neutral-400
+            "
             onChange={handleWriting}
             value={text}
           />
 
           {text && (
-            <button onClick={handleClear} className="clear-button text-black !z-2 absolute right-[60px] top-2" type="button">
-              <X />
+            <button
+              onClick={handleClear}
+              type="button"
+              className="
+                grid
+                h-8
+                w-8
+                shrink-0
+                place-items-center
+                rounded-full
+                bg-neutral-100
+                text-neutral-500
+                transition
+                hover:bg-neutral-900
+                hover:text-white
+              "
+            >
+              <X className="h-4 w-4" />
             </button>
           )}
 
-          <div className="bg-black rounded-[0px_25px_25px_0px] flex items-center pl-8 pr-3 -ml-5 z-0 cursor-pointer">
-            <svg
-              fill="white"
-              width="20px"
-              height="20px"
-              viewBox="0 0 1920 1920"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M790.588 1468.235c-373.722 0-677.647-303.924-677.647-677.647 0-373.722 303.925-677.647 677.647-677.647 373.723 0 677.647 303.925 677.647 677.647 0 373.723-303.924 677.647-677.647 677.647Zm596.781-160.715c120.396-138.692 193.807-319.285 193.807-516.932C1581.176 354.748 1226.428 0 790.588 0S0 354.748 0 790.588s354.748 790.588 790.588 790.588c197.647 0 378.24-73.411 516.932-193.807l516.028 516.142 79.963-79.963-516.142-516.028Z"
-                fillRule="evenodd"
-              />
-            </svg>
-          </div>
+          <button
+            type="button"
+            className="
+              hidden
+              h-10
+              -mr-3
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              bg-[#111111]
+              px-5
+              text-sm
+              font-bold
+              text-white
+              transition
+              hover:bg-black
+              sm:flex
+            "
+          >
+            Buscar
+          </button>
         </div>
       </div>
 
       {resultsVisible && (
         <div
-          className="fixed inset-0 z-[60] bg-[#F6F4EF]/99 backdrop-blur-[2px] pt-[150px] px-4 pb-6 overflow-y-auto"
+          className="
+            fixed
+            inset-0
+            z-[70]
+            overflow-y-auto
+            bg-[#F8F7F4]/95
+            px-4
+            pb-10
+            pt-[180px]
+            backdrop-blur-md
+          "
           data-lenis-prevent
         >
-          <div className="w-full max-w-[1200px] mx-auto rounded-2xl p-3">
+          <div className="mx-auto w-full max-w-[1200px]">
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold text-neutral-900">
+                  Resultados de búsqueda
+                </p>
+
+                <p className="mt-1 text-sm text-neutral-500">
+                  Mostrando coincidencias para{" "}
+                  <span className="font-semibold text-neutral-900">
+                    “{debouncedText}”
+                  </span>
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleClear}
+                className="
+                  grid
+                  h-10
+                  w-10
+                  shrink-0
+                  place-items-center
+                  rounded-full
+                  bg-white
+                  text-neutral-600
+                  shadow-[0_10px_30px_rgba(0,0,0,0.08)]
+                  transition
+                  hover:bg-neutral-900
+                  hover:text-white
+                "
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
             {activeFiltersSummary.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-3">
+              <div className="mb-5 flex flex-wrap gap-2">
                 {activeFiltersSummary.map((item, index) => (
                   <span
                     key={`${item}-${index}`}
-                    className="text-[11px] bg-white border border-[#E6DFD1] text-[#4B4B4B] rounded-full px-3 py-1"
+                    className="
+                      rounded-full
+                      border
+                      border-black/10
+                      bg-white
+                      px-3
+                      py-1.5
+                      text-[12px]
+                      font-medium
+                      text-neutral-600
+                      shadow-sm
+                    "
                   >
                     {item}
                   </span>
@@ -248,43 +375,46 @@ const SearchBar = ({ selectedTags = {} }) => {
             )}
 
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div
                     key={i}
-                    className="w-full overflow-hidden rounded-[15px] bg-[#F6F4EF] border border-[#ECE7DE] animate-pulse"
+                    className="
+                      w-full
+                      animate-pulse
+                      rounded-[18px]
+                      border
+                      border-black/10
+                      bg-white
+                    "
                   >
-                    <div className="relative h-[200px] w-full rounded-xl bg-[linear-gradient(135deg,#d6d0c8_0%,#f0ece6_45%,#cfc7bc_100%)]">
-                      <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.7),transparent_35%),radial-gradient(circle_at_70%_40%,rgba(255,255,255,0.5),transparent_30%),radial-gradient(circle_at_50%_80%,rgba(255,255,255,0.35),transparent_25%)]"></div>
-                      <div className="absolute top-1 right-0 h-5 w-24 rounded-[25px_0px_0px_25px] bg-white shadow-sm"></div>
-                    </div>
+                    <div className="h-[180px] rounded-t-[18px] bg-neutral-200" />
 
-                    <div className="relative px-4 pb-4 pt-4">
-                      <div className="absolute -top-2 left-1/2 h-5 w-[150px] -translate-x-1/2 rounded-full bg-[#C4C4C4]"></div>
-
-                      <div className="mt-4 flex flex-col items-center gap-1">
-                        <div className="h-4 w-[85%] rounded bg-neutral-300"></div>
-                        <div className="h-4 w-[78%] rounded bg-neutral-300"></div>
-                      </div>
-
-                      <div className="mt-2 flex items-center justify-between">
-                        <div className="h-6 w-20 rounded bg-neutral-300"></div>
-                        <div className="h-6 w-28 rounded-full bg-neutral-300"></div>
-                      </div>
+                    <div className="space-y-3 p-4">
+                      <div className="h-4 w-[90%] rounded bg-neutral-200" />
+                      <div className="h-4 w-[70%] rounded bg-neutral-200" />
+                      <div className="h-6 w-[45%] rounded-full bg-neutral-200" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : error ? (
-              <div className="p-4 text-center text-sm text-red-500">{error}</div>
+              <div className="rounded-[24px] bg-white p-8 text-center text-sm text-red-500 shadow-[0_16px_50px_rgba(0,0,0,0.04)]">
+                {error}
+              </div>
             ) : results.length === 0 && hasSearched ? (
-              <div className="p-6 text-center text-sm text-neutral-500">
-                No encontramos resultados para <strong>{debouncedText}</strong>.
+              <div className="rounded-[24px] bg-white p-10 text-center shadow-[0_16px_50px_rgba(0,0,0,0.04)]">
+                <h3 className="text-lg font-semibold text-black">
+                  No encontramos resultados
+                </h3>
+
+                <p className="mt-2 text-sm text-neutral-500">
+                  No hay coincidencias para{" "}
+                  <strong className="text-neutral-800">{debouncedText}</strong>.
+                </p>
               </div>
             ) : (
-              <div className="search-results-list">
-                <CertificationsList certifications={results} />
-              </div>
+              <CertificationsList certifications={results} />
             )}
           </div>
         </div>
@@ -293,4 +423,4 @@ const SearchBar = ({ selectedTags = {} }) => {
   );
 };
 
-export default SearchBar; 
+export default SearchBar;

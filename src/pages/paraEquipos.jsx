@@ -66,198 +66,591 @@ function ParaEquipos () {
                 <meta property="og:description" content="Potencia tu perfil profesional con una suscripción a Top Education. Accede a +13,000 certificaciones y recursos exclusivos para transformar tu futuro." />
                 <meta property="og:type" content="website" />
             </Helmet>
-            <section className="wrapper ">
-                <div className="container m-auto h-screen mx-auto flex justify-center items-center gap-2 relative sect-h-pequ">
-                    <span class="w-5/15 lg:w-5/15 aspect-square bg-gradient-to-tr from-red-500 to-red-900 absolute top-30 lg:left-50 rounded-full skew-y-0 blur-2xl opacity-40 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
-                    <div className='m-auto max-w-[100vw] lg:max-w-[50vw]'>
-                        <h1 className="text-[#F6F4EF] text-[3rem] font-normal font-[Lora] text-center leading-[1em] z-10 relative sm:text-6xl md:text-6xl lg:text-6xl xl:text-8xl">Capacita a tu equipo<br></br> <span className="text-[5rem] leading-[1.2em]"><span className="top-italic">sin</span> grandes inversiones</span></h1>
-                        <p className="mt-5 text-[1.125rem] text-[#a8a8a8] text-center z-10 relative">Numerosas compañías invierten sumas significativas en la formación de sus empleados sin obtener mejoras tangibles. <span id="top">top</span><span id="education">.education</span> optimiza los procesos de capacitación, reduciendo costos y aumentando la eficiencia.</p>
+            <section className="relative overflow-hidden bg-[#07030B]">
+                {/* GRID + PARTICULAS */}
+                <div
+                    className="
+                    absolute inset-0 opacity-[0.08]
+                    [background-image:radial-gradient(#7C72FF_1px,transparent_1px)]
+                    [background-size:22px_22px]
+                    "
+                />
+
+                {/* BLUR MORADO */}
+                <div className="pointer-events-none absolute left-1/2 top-[8%] h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[#2563EB]/25 blur-[120px]" />
+
+                {/* BLUR ROJO */}
+                <div className="pointer-events-none absolute left-[12%] top-[22%] h-[280px] w-[280px] rounded-full bg-[#D33B3E]/20 blur-[120px]" />
+
+                {/* BLUR VERDE */}
+                <div className="pointer-events-none absolute right-[10%] bottom-[18%] h-[260px] w-[260px] rounded-full bg-[#5CC781]/10 blur-[120px]" />
+
+                <div
+                    className="
+                    relative z-10 mx-auto flex md:min-h-screen max-w-[1280px]
+                    flex-col items-center justify-center px-6 pt-32 text-center
+                    "
+                >
+                    {/* TITULO */}
+                    <h1 className="max-w-[1100px] font-te text-[2.5rem] leading-[1.2em] text-[#F6F4EF] sm:text-[2.8rem] lg:text-[4.8rem]">
+                        <span className="text-[#2563EB]">Capacita a tu equipo{" "}</span>
+                        <span className="font-te-it ">
+                            sin
+                        </span>
+                        <br />
+                        grandes inversiones
+                    </h1>
+
+                    {/* DESCRIPCIÓN */}
+                    <p
+                    className="
+                        mt-2 max-w-[580px]
+                        !font-['Montserrat']
+                        text-[1rem]
+                        leading-[1.5em]
+                        text-[#B7B2C8]
+                        md:text-[1rem]
+                    "
+                    >
+                    Accede a los mejores programas del mundo para formar a tu
+                    equipo con las habilidades que tu empresa necesita hoy y mañana.
+                    </p>
+
+                    {/* BOTONES */}
+                    <div className="mt-6 flex flex-col items-center gap-2 md:gap-4 sm:flex-row">
+                    <a
+                        href="/para-equipos"
+                        className="inline-flex items-center gap-3 rounded-full bg-[#2563EB] px-4 py-2 md:px-8 md:py-4 !font-['Montserrat'] text-[15px] font-bold text-white shadow-[0_20px_60px_rgba(87,80,255,0.35)] transition-all duration-300 hover:scale-[1.03] hover:bg-[#1941CF] "
+                    >
+                        Reserva una demo
+
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="translate-y-[1px]"
+                        >
+                        <path d="M5 12h14" />
+                        <path d="m13 5 7 7-7 7" />
+                        </svg>
+                    </a>
+
+                    <a
+                        href="/explora"
+                        className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 md:px-8 md:py-4 !font-['Montserrat'] text-[15px] font-semibold text-[#F6F4EF] backdrop-blur-xl transition-all duration-300 hover:border-white/20 hover:bg-white/10 "
+                    >
+                        Ver planes
+                    </a>
+                    </div>
+
+                    {/* MOCKUP SAFARI */}
+                    <div
+                    className="relative mt-20 w-full max-w-[1000px] overflow-hidden rounded-[25px_25px_0px_0px] bg-[#120C16]/95 shadow-[0_40px_120px_rgba(0,0,0,0.45)] backdrop-blur-xl
+                    "
+                    >
+                    {/* HEADER SAFARI */}
+                    <div
+                        className="flex h-[50px] items-center gap-4 border-b border-white/5 bg-[#1A141F]/90 px-5 "
+                    >
+                        {/* BOTONES */}
+                        <div className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded-full bg-[#FF5F57]" />
+                        <span className="h-3 w-3 rounded-full bg-[#FEBC2E]" />
+                        <span className="h-3 w-3 rounded-full bg-[#28C840]" />
+                        </div>
+
+                        {/* URL BAR */}
+                        <div
+                        className="flex h-[28px] flex-1 items-center rounded-full bg-white/[0.04] px-5 !font-['Montserrat'] text-[13px] text-white/30
+                        "
+                        >
+                        app.top.education/equipos
+                        </div>
+                    </div>
+
+                    {/* CONTENIDO */}
+                    <div
+                        className="relative flex overflow-hidden items-center justify-center bg-[#09060D] "
+                    >
+                        <img src="/assets/content/banners/banner-para-equipo.png" className="md:-mt-10 md:-mb-10" alt="" />
+                    </div>
                     </div>
                 </div>
             </section>
-            <section className="wrapper ">
-                <div className="container m-auto !pb-[4.5rem] xl:!pb-24 lg:!pb-24 md:!pb-24">
-                    <div className="flex flex-wrap mx-[-15px] xl:mx-[-35px] lg:mx-[-20px] !mt-[-50px] items-center">
-                        <div className="xl:w-7/12 lg:w-7/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px] !mt-[50px] max-w-full">
-                            <img className="w-full lg:ml-[-30px] rounded-lg" src="/assets/content/banners/u-top-education.gif" alt="" />
+            <section className="relative overflow-hidden bg-[#F5F3EE] px-4 py-20 md:py-28">
+                <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-14 lg:grid-cols-2">
+                    {/* MOCKUP */}
+                    <div
+                    className="overflow-hidden rounded-[18px] border border-black/10 bg-white shadow-[0_18px_50px_rgba(0,0,0,0.10)]
+                    "
+                    >
+                    {/* SAFARI BAR */}
+                    <div className="flex h-[46px] items-center gap-2 bg-[#0F090B] px-6">
+                        <span className="h-3 w-3 rounded-full bg-[#FF6259]" />
+                        <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
+                        <span className="h-3 w-3 rounded-full bg-[#28C840]" />
+                    </div>
+
+                    {/* CONTENT */}
+                    <div className="bg-white px-6 py-8 md:px-8 md:py-6">
+                        <div className="space-y-2">
+                        <div className="flex items-center gap-4">
+                            <span className="grid h-11 w-11 place-items-center rounded-[12px] bg-[#2563EB]/10">
+                            <span className="h-4 w-4 rounded-full bg-[#2563EB]" />
+                            </span>
+
+                            <p className="!font-['Montserrat'] text-[15px] font-semibold text-[#0F090B]">
+                            Onboarding ejecutivo Q1
+                            </p>
                         </div>
-                        <div className="xl:w-5/12 lg:w-5/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px] !mt-[50px] max-w-full">
-                            <h2 className="text-[#F6F4EF] text-[3rem] font-normal font-[Lora] w-full leading-[1.2em]">Crea tu propia <br></br><span className="top-italic text-[2.8rem]">universidad corporativa</span></h2>
-                            <p className="text-[1.125rem] text-[#a8a8a8] mt-5 mb-5 text-left z-10 relative">Desarrolla un ecosistema de aprendizaje para potenciar el talento de tu equipo y asegurar un crecimiento sostenible. Mide su progreso y fortalece su competitividad con Top Education para Equipos.</p>
-                            <a className="btn py-2 px-8 rounded-full btn-col-2 text-lg font-semibold" href="https://meetings.hubspot.com/top-education-master">Reserva una sesión informativa</a>
-                        </div>
-                    </div>   
-                </div>
-            </section>
-            <section className="wrapper ">
-                <div className="container m-auto pt-14 pb-14 xl:pt-7 lg:pt-7 xl:pb-20 lg:pb-10 md:pb-10">
-                    <div className="flex flex-wrap">
-                        <div className="lg:w-12/12 xl:w-12/12 xxl:w-12/12 w-full flex-[0_0_auto] !px-[15px] max-w-full !mx-auto !text-center">
-                            <h2 className="text-[#F6F4EF] text-[3.75rem] font-normal font-[Lora] w-full top-italic leading-[1.2em]">Impulsa el crecimiento y la productividad</h2>
-                            <p className="text-[1.125rem] text-[#a8a8a8] mt-5 mb-5 max-w-[100vw] m-auto lg:max-w-[50vw] text-center z-10 relative">Organizaciones líderes han transformado su desempeño y talento humano con nuestras soluciones educativas. Con Top Education, tu empresa puede:</p>
-                        </div>
-                        <div className="grid  grid-cols-1 lg:grid-cols-3 gap-4 max-w-full !mx-auto mt-5">
-                            <div className="card bg-white rounded-md">
-                                <div className="card-body py-4 pl-1 pr-5">
-                                    <div className="grid grid-cols-5 items-center">
-                                        <div><img className="w-full rounded-full invert" src="/assets/content/icons/TE-Engranaje.png" alt="" /></div>
-                                        <div className="col-span-4"><p className="text-neutral text-[16px] leading-[1.2em]  font-semibold">Desarrollar habilidades clave para la productividad e innovación.</p></div>
-                                    </div>
-                                </div>
+
+                        <div>
+                            <div className="flex items-center gap-4">
+                            <span className="grid h-11 w-11 place-items-center rounded-[12px] bg-[#5CC781]/15">
+                                <span className="h-4 w-4 rounded-full bg-[#5CC781]" />
+                            </span>
+
+                            <p className="!font-['Montserrat'] text-[15px] font-semibold text-[#0F090B]">
+                                Certificación en datos
+                            </p>
                             </div>
-                            <div className="card bg-white rounded-md ">
-                                <div className="card-body py-4 pl-1 pr-5">
-                                    <div className="grid grid-cols-5 items-center items-center">
-                                        <div><img className="w-full rounded-full invert" src="/assets/content/icons/TE-Imán.png" alt="" /></div>
-                                        <div className="col-span-4"><p className="text-neutral text-[16px] leading-[1.2em] font-semibold">Atraer y retener los mejores talentos con oportunidades de aprendizaje atractivas.</p></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="card bg-white rounded-md">
-                                <div className="card-body py-4 pl-1 pr-5">
-                                    <div className="grid grid-cols-5 items-center">
-                                        <div><img className="w-full rounded-full invert" src="/assets/content/icons/TE-Cohete.png" alt="" /></div>
-                                        <div className="col-span-4"><p className="text-neutral text-[16px] leading-[1.2em] font-semibold">Capacitar a tu equipo sin necesidad de grandes inversiones en infraestructura y logística.</p></div>
-                                    </div>
-                                </div>
+
+                            <div className="ml-[60px] -mt-2 h-2 rounded-full bg-[#F3F1EC]">
+                            <div className="h-full w-[85%] rounded-full bg-[#5CC781]" />
                             </div>
                         </div>
-                        <a className="btn py-2 px-8 rounded-full btn-col-2 text-lg m-auto mt-5 font-semibold" href="https://meetings.hubspot.com/top-education-master">Prueba<span id="top">top</span><span id="education">.education</span> para equipos</a>
+
+                        <div>
+                            <div className="flex items-center gap-4">
+                            <span className="grid h-11 w-11 place-items-center rounded-[12px] bg-[#F5B942]/15">
+                                <span className="h-4 w-4 rounded-full bg-[#F5B942]" />
+                            </span>
+
+                            <p className="!font-['Montserrat'] text-[15px] font-semibold text-[#0F090B]">
+                                Liderazgo avanzado
+                            </p>
+                            </div>
+
+                            <div className="ml-[60px] -mt-2 h-2 rounded-full bg-[#F3F1EC]">
+                            <div className="h-full w-[42%] rounded-full bg-[#F5B942]" />
+                            </div>
+                        </div>
+                        </div>
+
+                        <div className="mt-5 flex items-center justify-between border-t border-black/10 pt-3">
+                        <span className="!font-['Montserrat'] text-[14px] text-neutral-500">
+                            12 miembros activos
+                        </span>
+
+                        <a
+                            href="/para-equipos"
+                            className="!font-['Montserrat'] text-[14px] font-bold text-[#2563EB]"
+                        >
+                            Ver reporte →
+                        </a>
+                        </div>
+                    </div>
+                    </div>
+
+                    {/* TEXT */}
+                    <div className="text-center lg:text-left">
+                    <span className="mb-3 block !font-['Montserrat'] text-[13px] font-bold uppercase tracking-[0.18em] text-neutral-500">
+                        Para empresas
+                    </span>
+
+                    <h2 className="!font-[Montserrat] text-[2rem] font-semibold leading-[1.2em] md:leading-[1.02em] text-[#0F090B] md:text-[3.2rem]">
+                        Crea tu propia
+                        <br />
+                        <span className="font-te-it !text-[2.5rem] md:!text-[2.8rem]">universidad corporativa</span>
+                    </h2>
+
+                    <p className="mt-8 max-w-[610px] !font-['Montserrat'] text-[1rem] leading-[1.5em] text-neutral-600 lg:max-w-none">
+                        Centraliza toda la formación de tu empresa en un solo lugar. Asigna
+                        rutas, monitorea el progreso y emite certificaciones con el respaldo de
+                        las mejores instituciones del mundo.
+                    </p>
+
+                    <a
+                        href="https://meetings.hubspot.com/top-education-master"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-10 inline-flex items-center gap-3 rounded-full bg-[#2563EB] px-8 py-4 !font-['Montserrat'] text-[16px] font-bold text-white shadow-[0_18px_45px_rgba(25,65,207,0.30)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#1941CF] "
+                    >
+                        Empieza gratis
+
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="translate-y-[1px]"
+                        >
+                        <path d="M5 12h14" />
+                        <path d="m13 5 7 7-7 7" />
+                        </svg>
+                    </a>
                     </div>
                 </div>
             </section>
-            <section className="wrapper ">
-                <div className="container m-auto pb-[4.5rem] xl:pb-28 lg:pb-28 md:pb-28">
-                    <div className="flex flex-wrap mx-[-15px] md:mx-[-20px] lg:mx-[-20px] xl:mx-[-35px] !mt-[-50px] items-center">
-                        <div className="xl:w-3/12 lg:w-3/12 w-full flex-[0_0_auto] !px-[15px] md:!px-[20px] lg:!px-[20px] xl:!px-[35px] !mt-[50px] max-w-full">
-                            <h2 className="text-[#F6F4EF] text-center leading-[1.2em] md:text-left text-[2.3rem] font-normal font-[Lora] w-full"><span className="top-italic text-[2.5rem]">Forma a tu equipo<br></br></span> ejecutivo con</h2>
-                            <img className="w-[200px] mt-5 m-auto " src="/assets/content/banners/TE-getsmarter-edx.png" alt="" />
-                        </div>
-                        <div className="xl:w-9/12 lg:w-9/12 w-full flex-[0_0_auto] !px-[15px] md:!px-[20px] lg:!px-[20px] xl:!px-[35px] !mt-[50px] max-w-full">
-                            <p className="text-[#a8a8a8] text-lg justify text-center md:text-left">Transforma el futuro de tu empresa con una experiencia de aprendizaje flexible y personalizada, diseñada para maximizar cada minuto de formación. Con el respaldo de instructores expertos, garantizamos resultados tangibles y aplicables a la realidad de tu negocio.
-                            <br></br><b>Con GetSmarter by edX, tu equipo accederá a los conocimientos de instituciones de élite como Oxford, MIT, Harvard y Cambridge.</b></p>
-                        </div>
+            <section className="relative overflow-hidden bg-white px-4 py-20 md:py-28">
+                <div className="mx-auto max-w-[1200px]">
+                    {/* TITLE */}
+                    <div className="mx-auto max-w-[880px] text-center">
+                        <h2 className="font-te text-[2.5rem] leading-[1.05em] text-[#0F090B] md:text-[3.8rem]">
+                            <span className="font-te-it">Impulsa</span> el crecimiento
+                            <br />
+                            y la productividad
+                        </h2>
                     </div>
-                </div>
-                <div className="container m-auto pt-14 xl:pt-7 lg:pt-7 pb-[3.5rem] xl:pb-10 lg:pb-10 md:pb-10">
-                    <div className="flex flex-wrap">
-                        <ImageSlider3D images={flagsTeams} />
+
+                    {/* CARDS */}
+                    <div className="mt-8 grid grid-cols-1 gap-3 md:gap-6 md:grid-cols-3">
+                    <div className="rounded-[18px] border border-black/10 bg-white p-8 shadow-[0_18px_50px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(0,0,0,0.08)]">
+                        <div className="mb-3 grid h-[58px] w-[58px] place-items-center rounded-[16px] bg-[#2563EB]/10 text-[#2563EB]">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="28"
+                            height="28"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <path d="M4 20V10" />
+                            <path d="M10 20V4" />
+                            <path d="M16 20v-7" />
+                            <path d="M22 20V8" />
+                        </svg>
+                        </div>
+
+                        <h3 className="!font-['Montserrat'] text-[1.2rem] font-semibold leading-[1.2em] text-[#0F090B]">
+                        Seguimiento en tiempo real
+                        </h3>
+
+                        <p className="mt-2 !font-['Montserrat'] text-[1rem] leading-[1.2em] md:leading-[1.5em] text-neutral-600">
+                        Monitorea el avance de cada miembro con dashboards intuitivos y
+                        reportes automáticos para líderes.
+                        </p>
                     </div>
-                </div>
-            </section>
-            <section className="wrapper ">
-                <div className="container m-auto pt-14 xl:pt-7 lg:pt-7 pb-[4.5rem] xl:pb-24 lg:pb-24 md:pb-24">
-                    <div className="flex flex-wrap">
-                        <div className="lg:w-11/12 xl:w-11/12 xxl:w-8/12 w-full flex-[0_0_auto] !px-[15px] max-w-full !mx-auto !text-center">
-                            <h2 className="text-[#F6F4EF] text-5xl font-normal font-[Lora] w-full italic">Reserva una demostración empresarial</h2>
-                            <p className="text-[#F6F4EF] text-lg justify my-8">Decenas de organizaciones ya han potenciado las habilidades de sus equipos y han visto un crecimiento significativo en sus negocios con nuestras soluciones educativas.
-                            <br></br><b>Haz la prueba de Top Education para equipos y agenda una demostración personalizada ahora mismo.</b></p>
-                            <a className="btn py-2 px-4 md:px-8  rounded-full btn-col-2 text-[1rem] md:text-[1.5rem] font-semibold" href="https://meetings.hubspot.com/top-education-master">Reserva una demostración empresarial</a>
+
+                    <div className="rounded-[18px] border border-black/10 bg-white p-8 shadow-[0_18px_50px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(0,0,0,0.08)]">
+                        <div className="mb-3 grid h-[58px] w-[58px] place-items-center rounded-[16px] bg-[#5CC781]/10 text-[#5CC781]">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="28"
+                            height="28"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <path d="m12 3 8 4-8 4-8-4 8-4Z" />
+                            <path d="m4 11 8 4 8-4" />
+                            <path d="m4 15 8 4 8-4" />
+                        </svg>
                         </div>
+
+                        <h3 className="!font-['Montserrat'] text-[1.2rem] font-semibold leading-[1.2em] text-[#0F090B]">
+                        Rutas personalizadas
+                        </h3>
+
+                        <p className="mt-2 !font-['Montserrat'] text-[1rem] leading-[1.2em] md:leading-[1.5em] text-neutral-600">
+                        Asigna programas de formación adaptados al rol, nivel y objetivos de
+                        cada persona en tu equipo.
+                        </p>
                     </div>
-                </div>
-            </section>
-            <section className="wrapper ">
-                <div className="container m-auto pt-14 xl:pt-7 lg:pt-7 pb-[4.5rem] xl:pb-24 lg:pb-24 md:pb-24 relative">
-                    <span class="w-5/15 lg:w-5/15 aspect-square bg-gradient-to-tr from-[#034694] to-[#034694] absolute z-10 top-150 lg:left-0 rounded-full skew-y-0 blur-2xl opacity-60 skew-x-12 rotate-90" data-astro-source-loc="99:5"></span>
-                    <div className="flex flex-wrap mx-[-15px] relative z-15">
-                        <div className="lg:w-11/12 xl:w-11/12 xxl:w-8/12 w-full flex-[0_0_auto] !px-[15px] max-w-full !mx-auto !text-center">
-                            <h2 className="text-[#F6F4EF] text-[2.3rem] md:text-[4.8] font-normal leading-[1.1em] font-[Lora] w-full">Fomenta las habilidades blandas <br></br><span className="italic text-[3rem]"> de tu equipo</span> </h2>
-                            <p className="text-[#F6F4EF] text-lg justify my-8">Más de 200 instructores reconocidos, incluyendo figuras como <b>Richard Branson, George W. Bush, Mark Cuban, Malala Yousafzai</b> y <b>James Clear</b>, comparten su conocimiento en nuestra plataforma.</p>
+
+                    <div className="rounded-[18px] border border-black/10 bg-white p-8 shadow-[0_18px_50px_rgba(0,0,0,0.03)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(0,0,0,0.08)]">
+                        <div className="mb-3 grid h-[58px] w-[58px] place-items-center rounded-[16px] bg-[#F5B942]/10 text-[#F5B942]">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="28"
+                            height="28"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <path d="M22 10 12 5 2 10l10 5 10-5Z" />
+                            <path d="M6 12v5c3 2 9 2 12 0v-5" />
+                            <path d="M22 10v6" />
+                        </svg>
                         </div>
-                        <div class="grid grid-cols-5 gap-4 md:grid-cols-8 max-w-4xl m-auto">
-                            <div class="grid content-center gap-4">
-                                <div>
-                                    <img
-                                        class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/content/banners/TE-IMG-G001.png"
-                                        alt="gallery-photo"
-                                    />
-                                </div>
-                                <div>
-                                    <img
-                                        class="h-auto max-w-full rounded-lg object-cover object-center "
-                                        src="/assets/content/banners/TE-IMG-G002.png"
-                                        alt="gallery-photo"
-                                    />
-                                </div>
-                            </div>
-                            <div class="grid content-center col-span-2 gap-4">
-                                <div>
-                                    <img
-                                        class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/content/banners/TE-IMG-G003.png"
-                                        alt="gallery-photo"
-                                    />
-                                </div>
-                                <div>
-                                    <img
-                                        class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/content/banners/TE-IMG-G004.png"
-                                        alt="gallery-photo"
-                                    />
-                                </div>
-                            </div>
-                            <div class="grid content-center col-span-2 gap-4 ">
-                                <div>
-                                    <img
-                                        class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/content/banners/TE-IMG-G005.png"
-                                        alt="gallery-photo"
-                                    />
-                                </div>
-                                <div>
-                                    <img
-                                        class="h-auto max-w-full rounded-lg object-cover object-center "
-                                        src="/assets/content/banners/TE-IMG-G006.png"
-                                        alt="gallery-photo"
-                                    />
-                                </div>
-                                <div>
-                                    <img
-                                        class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/content/banners/TE-IMG-G007.png"
-                                        alt="gallery-photo"
-                                    />
-                                </div>
-                            </div>
-                            <div class="grid content-center col-span-2 gap-4 hidden md:block">
-                                <div>
-                                    <img
-                                        class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/content/banners/TE-IMG-G008.png"
-                                        alt="gallery-photo"
-                                    />
-                                </div>
-                                <div>
-                                    <img
-                                        class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/content/banners/TE-IMG-G009.png"
-                                        alt="gallery-photo"
-                                    />
-                                </div>
-                            </div>
-                            <div class="grid content-center gap-4 hidden md:block">
-                                <div>
-                                    <img
-                                        class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/content/banners/TE-IMG-G010.png"
-                                        alt="gallery-photo"
-                                    />
-                                </div>
-                                <div>
-                                    <img
-                                        class="h-auto max-w-full rounded-lg object-cover object-center"
-                                        src="/assets/content/banners/TE-IMG-G011.png"
-                                        alt="gallery-photo"
-                                    />
-                                </div>
-                            </div>
-                        </div>
+
+                        <h3 className="!font-['Montserrat'] text-[1.2rem] font-semibold leading-[1.2em] text-[#0F090B]">
+                        Certificaciones globales
+                        </h3>
+
+                        <p className="mt-2 !font-['Montserrat'] text-[1rem] leading-[1.2em] md:leading-[1.5em] text-neutral-600">
+                        Accede a certificaciones de MIT, Yale, Stanford y más. Validadas
+                        internacionalmente en tu industria.
+                        </p>
+                    </div>
                     </div>
                 </div>
             </section>
-            <Flags direction="left" logos={logos} />
+            <section className="relative overflow-hidden bg-[#F8F7F4] px-4 py-20 md:py-28">
+                <div className="mx-auto max-w-[1200px]">
+                    {/* HEADER */}
+                    <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-[1fr_auto]">
+                    <div>
+                        <span className="mb-1 block font-['Montserrat'] text-[13px] font-bold uppercase tracking-[0.18em] text-neutral-500">
+                        Alianzas globales
+                        </span>
+
+                        <h2 className="max-w-[760px] !font-[Montserrat] font-semibold text-[2rem] leading-[1.08em] text-[#0F090B] md:text-[2.8rem]">
+                        Forma a tu equipo ejecutivo con las mejores instituciones
+                        </h2>
+                    </div>
+
+                    {/* PILLS */}
+                    <div className="flex flex-wrap items-center gap-3 lg:pb-4">
+                        <span className="rounded-full bg-[#062529] px-6 py-3 font-['Montserrat'] text-[15px] font-bold text-white">
+                        edX
+                        </span>
+
+                        <span className="rounded-full bg-[#2F5BD6] px-6 py-3 font-['Montserrat'] text-[15px] font-bold text-white">
+                        Coursera
+                        </span>
+
+                        <span className="rounded-full bg-[#111111] px-6 py-3 font-['Montserrat'] text-[15px] font-bold text-white">
+                        MasterClass
+                        </span>
+                    </div>
+                    </div>
+
+                    {/* SLIDER EXISTENTE */}
+                    <div className="mt-3">
+                    <ImageSlider3D images={flagsTeams} />
+                    </div>
+                </div>
+            </section>
+            <section className="relative overflow-hidden bg-white px-4 py-20 md:py-28">
+                <div className="mx-auto max-w-[980px] text-center">
+                    <span className="mb-2 block font-['Montserrat'] text-[13px] font-bold uppercase tracking-[0.18em] text-neutral-500">
+                    Sin compromiso
+                    </span>
+
+                    <h2 className="!font-[Montserrat] text-[2rem] font-semibold leading-[1.05em] text-[#0F090B] md:text-[2.8rem]">
+                    <span className="font-te-it !text-[2.5rem]">Reserva</span> una<br />demostración empresarial
+                    </h2>
+
+                    <p className="mx-auto mt-4 max-w-[720px] font-['Montserrat'] text-[1rem] leading-[1.5em] text-neutral-600">
+                    Muéstrale a tu equipo lo que top.education puede hacer. Una sesión
+                    personalizada de 30 minutos con nuestro equipo de éxito empresarial.
+                    </p>
+
+                    <div className="mt-5 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                    <a
+                        href="https://meetings.hubspot.com/top-education-master"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex min-w-[280px] items-center justify-center rounded-full bg-[#2563EB] px-8 py-5 font-['Montserrat'] text-[16px] font-bold text-white shadow-[0_18px_45px_rgba(25,65,207,0.30)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#1941CF] "
+                    >
+                        Agendar demo gratuita
+                    </a>
+
+                    <a
+                        href="#precios"
+                        className="inline-flex min-w-[180px] items-center justify-center rounded-full border border-black/15 bg-white px-8 py-5 font-['Montserrat'] text-[16px] font-bold text-[#0F090B] transition-all duration-300 hover:-translate-y-1 hover:border-black/30 hover:bg-[#F8F7F4] "
+                    >
+                        Ver precios
+                    </a>
+                    </div>
+
+                    <p className="mt-7 font-['Montserrat'] text-[14px] text-neutral-400">
+                    Sin tarjeta de crédito · Respuesta en menos de 24h
+                    </p>
+                </div>
+            </section>
+            <section className="relative overflow-hidden bg-[#F8F7F4] px-4 py-20 md:py-28">
+                <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-14 lg:grid-cols-[1fr_0.95fr]">
+                    {/* TEXT */}
+                    <div>
+                    <span className="mb-3 block font-['Montserrat'] text-[13px] font-bold uppercase tracking-[0.18em] text-neutral-500">
+                        Soft skills
+                    </span>
+
+                    <h2 className="!font-[Montserrat] text-[2rem] font-semibold leading-[1.05em] text-[#0F090B] md:text-[2.8rem]">
+                        Potencia las habilidades
+                        <br />
+                        <span className="font-te-it">blandas</span> de tu equipo
+                    </h2>
+
+                    <p className="mt-2 max-w-[600px] font-['Montserrat'] text-[1.12rem] leading-[1.5em] text-neutral-600">
+                        Complementa el conocimiento técnico con las habilidades que realmente
+                        diferencian a los líderes: comunicación, liderazgo, pensamiento crítico
+                        y más.
+                    </p>
+
+                    {/* TAGS */}
+                    <div className="mt-10 flex max-w-[720px] flex-wrap gap-3">
+                        <span className="rounded-full border border-[#2563EB]/25 bg-[#2563EB]/10 px-5 py-2 font-['Montserrat'] text-[14px] font-bold text-[#2563EB]">
+                        Liderazgo
+                        </span>
+
+                        <span className="rounded-full border border-[#5CC781]/25 bg-[#5CC781]/10 px-5 py-2 font-['Montserrat'] text-[14px] font-bold text-[#5CC781]">
+                        Comunicación
+                        </span>
+
+                        <span className="rounded-full border border-[#F5B942]/30 bg-[#F5B942]/10 px-5 py-2 font-['Montserrat'] text-[14px] font-bold text-[#F5B942]">
+                        Pensamiento crítico
+                        </span>
+
+                        <span className="rounded-full border border-[#D33B3E]/25 bg-[#D33B3E]/10 px-5 py-2 font-['Montserrat'] text-[14px] font-bold text-[#D33B3E]">
+                        Trabajo en equipo
+                        </span>
+
+                        <span className="rounded-full border border-[#034694]/25 bg-[#034694]/10 px-5 py-2 font-['Montserrat'] text-[14px] font-bold text-[#034694]">
+                        Adaptabilidad
+                        </span>
+
+                        <span className="rounded-full border border-[#7C72FF]/25 bg-[#7C72FF]/10 px-5 py-2 font-['Montserrat'] text-[14px] font-bold text-[#7C72FF]">
+                        Resolución de conflictos
+                        </span>
+                    </div>
+
+                    <a
+                        href="/explora"
+                        className="mt-12 inline-flex items-center justify-center rounded-full bg-[#2563EB] px-8 py-4 font-['Montserrat'] text-[16px] font-bold text-white shadow-[0_18px_45px_rgba(25,65,207,0.30)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#1941CF] "
+                    >
+                        Explorar habilidades
+                    </a>
+                    </div>
+
+                    {/* ICON GRID */}
+                    <div className="grid grid-cols-3 gap-4 md:gap-5">
+                    <div className="col-span-2 row-span-2 grid min-h-[280px] place-items-center rounded-[18px] bg-[#D9D7F1] md:min-h-[360px]">
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="46"
+                        height="46"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#7C72FF"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        >
+                        <path d="M12 5a3 3 0 0 0-3 3v1H8a3 3 0 0 0 0 6h1v1a3 3 0 0 0 6 0v-1h1a3 3 0 0 0 0-6h-1V8a3 3 0 0 0-3-3Z" />
+                        <path d="M9 9h6" />
+                        <path d="M9 15h6" />
+                        <path d="M12 5v14" />
+                        </svg>
+                    </div>
+
+                    <div className="grid min-h-[140px] place-items-center rounded-[18px] bg-[#E6F0E2] md:min-h-[170px]">
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="34"
+                        height="34"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#7ACF8E"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        >
+                        <path d="M16 11a4 4 0 1 0-8 0" />
+                        <path d="M3 21a7 7 0 0 1 14 0" />
+                        <path d="M19 8v6" />
+                        <path d="M22 11h-6" />
+                        </svg>
+                    </div>
+
+                    <div className="grid min-h-[140px] place-items-center rounded-[18px] bg-[#F6EEDB] md:min-h-[170px]">
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="34"
+                        height="34"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#F5B942"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        >
+                        <path d="M12 3v10" />
+                        <path d="M8 7a4 4 0 1 1 8 0" />
+                        <path d="M8 13a4 4 0 0 0 8 0" />
+                        <path d="M12 17v4" />
+                        <path d="M8 21h8" />
+                        </svg>
+                    </div>
+
+                    <div className="grid min-h-[140px] place-items-center rounded-[18px] bg-[#F3DDD8] md:min-h-[170px]">
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="34"
+                        height="34"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#FF9B98"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        >
+                        <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
+                        </svg>
+                    </div>
+
+                    <div className="grid min-h-[140px] place-items-center rounded-[18px] bg-[#DCE2EE] md:min-h-[170px]">
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="34"
+                        height="34"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#6F92DD"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        >
+                        <path d="M9 18h6" />
+                        <path d="M10 22h4" />
+                        <path d="M8 14a6 6 0 1 1 8 0c-.8.7-1 1.3-1 2H9c0-.7-.2-1.3-1-2Z" />
+                        </svg>
+                    </div>
+
+                    <div className="grid min-h-[140px] place-items-center rounded-[18px] bg-[#E8DFF1] md:min-h-[170px]">
+                        <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="34"
+                        height="34"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#AA83F5"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        >
+                        <path d="m12 2 2.9 6.1 6.7.9-4.8 4.7 1.1 6.6L12 17.2 6.1 20.3l1.1-6.6L2.4 9l6.7-.9L12 2z" />
+                        </svg>
+                    </div>
+                    </div>
+                </div>
+                </section>
+            <section className="bg-[#0F090B]">
+                <Flags direction="left" logos={logos} />
+            </section>
+            
         </>
 
     );

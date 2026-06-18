@@ -12,12 +12,13 @@ import {
   FaChevronRight,
   FaAnglesLeft,
   FaAnglesRight,
+  FaChevronDown,
 } from "react-icons/fa6";
 import axios from "axios";
 import endpoints from "../config/api";
 
 const DEFAULT_SELECTED_TAGS = {
-  idioma: ["es", "en"],
+  idioma: ["es"],
 };
 
 function LibraryPage({ showRoutes = true }) {
@@ -27,10 +28,21 @@ function LibraryPage({ showRoutes = true }) {
   const [certifications, setCertifications] = useState([]);
   const [selectedTags, setSelectedTags] = useState(DEFAULT_SELECTED_TAGS);
   const [skillsCatalog, setSkillsCatalog] = useState([]);
+  const [filterCatalogs, setFilterCatalogs] = useState({
+    universidades: [],
+    empresas: [],
+    plataforma: [],
+    aliados: [],
+  });
+
   const [loading, setLoading] = useState(true);
   const [isReady, setIsReady] = useState(false);
   const [debouncedSelectedTags] = useDebounce(selectedTags, 350);
-  const lastHydratedSearchRef = useRef("");
+
+  const certificationsRef = useRef(null);
+  const isHydratingFromUrlRef = useRef(false);
+  const firstLoadDoneRef = useRef(false);
+  const requestSeqRef = useRef(0);
 
   const [pagination, setPagination] = useState({
     count: 0,
@@ -41,26 +53,49 @@ function LibraryPage({ showRoutes = true }) {
     has_previous: false,
   });
 
-  const certificationsRef = useRef(null);
-  const isHydratingFromUrlRef = useRef(false);
-  const firstLoadDoneRef = useRef(false);
-  const requestSeqRef = useRef(0);
+  const flattenUniversitiesByRegion = (data) => {
+    if (Array.isArray(data)) return data;
+
+    if (!data || typeof data !== "object") return [];
+
+    return Object.values(data).flatMap((items) =>
+      Array.isArray(items) ? items : []
+    );
+  };
 
   function normalizeCategoryKey(key) {
     const map = {
       Plataforma: "plataforma",
+      plataforma: "plataforma",
+      plataforma_id: "plataforma",
+
       Empresas: "empresas",
       Empresa: "empresas",
+      empresas: "empresas",
+      empresa_id: "empresas",
+
       Universidad: "universidades",
       Universidades: "universidades",
+      universidades: "universidades",
+      universidad_id: "universidades",
+
+      Aliado: "aliados",
+      Aliados: "aliados",
+      aliados: "aliados",
+      aliado_id: "aliados",
+
       Temas: "temas",
       Tema: "temas",
+      temas: "temas",
+      tema_id: "temas",
+
+      Habilidad: "habilidades",
+      Habilidades: "habilidades",
+      habilidades: "habilidades",
+      habilidad_id: "habilidades",
+
       Idioma: "idioma",
       idioma: "idioma",
-      plataforma: "plataforma",
-      empresas: "empresas",
-      universidades: "universidades",
-      temas: "temas",
     };
 
     return map[key] || String(key).toLowerCase();
@@ -71,40 +106,139 @@ function LibraryPage({ showRoutes = true }) {
 
     const normalizedCategory = normalizeCategoryKey(category);
 
-    if (normalizedCategory === "temas") {
-      if (typeof tag === "object") return tag.slug || "";
-      return String(tag).trim();
-    }
-
     if (normalizedCategory === "idioma") {
       return typeof tag === "string" ? tag.trim() : "";
     }
 
     if (typeof tag === "object") {
-      return tag.slug || tag.nombre || "";
+      return tag.id || tag.slug || tag.nombre || tag.name || "";
     }
 
     return String(tag).trim();
   };
 
-  const getTagLabel = (tag) => {
-    if (!tag) return "";
-    if (typeof tag === "string" || typeof tag === "number") return String(tag);
-    return tag.translate || tag.nombre || tag.slug || "";
-  };
-
-  const getQueryKey = (category) => {
+  const getQueryKey = (category, tag = null) => {
     const normalizedCategory = normalizeCategoryKey(category);
+    const hasId = tag && typeof tag === "object" && tag.id;
+
+    if (hasId) {
+      const idMap = {
+        temas: "tema_id",
+        habilidades: "habilidad_id",
+        universidades: "universidad_id",
+        empresas: "empresa_id",
+        aliados: "aliado_id",
+        plataforma: "plataforma_id",
+      };
+
+      if (idMap[normalizedCategory]) return idMap[normalizedCategory];
+    }
 
     const map = {
       temas: "Tema",
+      habilidades: "Habilidad",
       universidades: "Universidad",
       empresas: "Empresa",
+      aliados: "Aliado",
       plataforma: "Plataforma",
       idioma: "idioma",
     };
 
     return map[normalizedCategory] || category;
+  };
+
+  const languageLabel = (code) => {
+    const value = String(code || "").trim();
+
+    const manualMap = {
+      es: "Español",
+      en: "Inglés",
+      ar: "Árabe",
+      ca: "Catalán",
+      de: "Alemán",
+      ms: "Malayo",
+      fr: "Francés",
+      he: "Hebreo",
+      hi: "Hindi",
+      it: "Italiano",
+      pt: "Portugués",
+      zh: "Chino",
+      ja: "Japonés",
+      ko: "Coreano",
+      ru: "Ruso",
+      nl: "Neerlandés",
+      tr: "Turco",
+      pl: "Polaco",
+      sv: "Sueco",
+      da: "Danés",
+      no: "Noruego",
+      fi: "Finés",
+      id: "Indonesio",
+      th: "Tailandés",
+      vi: "Vietnamita",
+      el: "Griego",
+      uk: "Ucraniano",
+      cs: "Checo",
+      ro: "Rumano",
+      hu: "Húngaro",
+    };
+
+    if (manualMap[value]) return manualMap[value];
+
+    try {
+      const displayNames = new Intl.DisplayNames(["es"], {
+        type: "language",
+      });
+
+      return displayNames.of(value) || value;
+    } catch {
+      return value;
+    }
+  };
+
+  const getObjectLabel = (tag) => {
+    if (!tag || typeof tag !== "object") return "";
+
+    return (
+      tag.translate ||
+      tag.nombre ||
+      tag.name ||
+      tag.titulo ||
+      tag.title ||
+      tag.slug ||
+      tag.id ||
+      ""
+    );
+  };
+
+  const getTagLabel = (category, tag) => {
+    if (!tag) return "";
+
+    const normalizedCategory = normalizeCategoryKey(category);
+
+    if (normalizedCategory === "idioma") {
+      return languageLabel(tag);
+    }
+
+    if (typeof tag === "object") {
+      return getObjectLabel(tag);
+    }
+
+    const value = String(tag).trim();
+
+    const readableMaps = {
+      plataforma: {
+        "1": "edX",
+        "2": "Coursera",
+        "3": "MasterClass",
+        Coursera: "Coursera",
+        EdX: "edX",
+        edX: "edX",
+        MasterClass: "MasterClass",
+      },
+    };
+
+    return readableMaps[normalizedCategory]?.[value] || value;
   };
 
   const areTagsEqual = (category, a, b) => {
@@ -115,12 +249,20 @@ function LibraryPage({ showRoutes = true }) {
     }
 
     if (typeof a === "object" && typeof b === "object") {
-      if (a?.slug && b?.slug) return a.slug === b.slug;
       if (a?.id && b?.id) return String(a.id) === String(b.id);
+      if (a?.slug && b?.slug) return String(a.slug) === String(b.slug);
       return JSON.stringify(a) === JSON.stringify(b);
     }
 
-    return a === b;
+    if (typeof a === "object" && typeof b !== "object") {
+      return String(a?.id || a?.slug || "").trim() === String(b).trim();
+    }
+
+    if (typeof a !== "object" && typeof b === "object") {
+      return String(a).trim() === String(b?.id || b?.slug || "").trim();
+    }
+
+    return String(a).trim() === String(b).trim();
   };
 
   function parseQueryParams(queryString) {
@@ -128,12 +270,22 @@ function LibraryPage({ showRoutes = true }) {
     const tags = {};
 
     for (const [key, value] of params.entries()) {
-      if (["page", "page_size", "latest"].includes(key)) continue;
+      if (["page", "page_size", "latest", "clear"].includes(key)) continue;
 
       const normalizedKey = normalizeCategoryKey(key);
+
       if (!tags[normalizedKey]) tags[normalizedKey] = [];
 
-      if (normalizedKey === "temas") {
+      if (key.endsWith("_id")) {
+        tags[normalizedKey].push({
+          id: value,
+          nombre: "",
+          translate: "",
+        });
+      } else if (
+        normalizedKey === "temas" ||
+        normalizedKey === "habilidades"
+      ) {
         tags[normalizedKey].push({
           slug: value,
           nombre: "",
@@ -151,56 +303,10 @@ function LibraryPage({ showRoutes = true }) {
     return tags;
   }
 
-  const normalizeTagsForCompare = useCallback((tags) => {
-    const result = {};
-
-    Object.entries(tags || {}).forEach(([category, values]) => {
-      const normalizedCategory = normalizeCategoryKey(category);
-      const normalizedValues = (values || [])
-        .map((tag) => getTagUrlValue(normalizedCategory, tag))
-        .filter(Boolean)
-        .map((val) => String(val).trim())
-        .sort();
-
-      if (normalizedValues.length > 0) {
-        result[normalizedCategory] = normalizedValues;
-      }
-    });
-
-    return result;
-  }, []);
-
-  const areTagMapsEqualByUrlValues = useCallback(
-    (a, b) => {
-      const normA = normalizeTagsForCompare(a);
-      const normB = normalizeTagsForCompare(b);
-
-      const keysA = Object.keys(normA).sort();
-      const keysB = Object.keys(normB).sort();
-
-      if (keysA.length !== keysB.length) return false;
-
-      for (let i = 0; i < keysA.length; i++) {
-        if (keysA[i] !== keysB[i]) return false;
-
-        const arrA = normA[keysA[i]] || [];
-        const arrB = normB[keysA[i]] || [];
-
-        if (arrA.length !== arrB.length) return false;
-
-        for (let j = 0; j < arrA.length; j++) {
-          if (arrA[j] !== arrB[j]) return false;
-        }
-      }
-
-      return true;
-    },
-    [normalizeTagsForCompare]
-  );
-
   const loadSkillsCatalog = useCallback(async () => {
     try {
-      const response = await axios.get(endpoints.skills);
+      const response = await axios.get(endpoints.filterSkills);
+
       const safeData = Array.isArray(response.data)
         ? response.data
         : Array.isArray(response.data?.results)
@@ -208,7 +314,10 @@ function LibraryPage({ showRoutes = true }) {
         : [];
 
       const activeSkills = safeData.filter(
-        (item) => item?.estado === true || item?.estado === 1 || item?.estado === "1"
+        (item) =>
+          item?.estado === true ||
+          item?.estado === 1 ||
+          item?.estado === "1"
       );
 
       setSkillsCatalog(activeSkills);
@@ -219,43 +328,192 @@ function LibraryPage({ showRoutes = true }) {
     }
   }, []);
 
-  const hydrateTagsFromCatalog = useCallback((tags, catalog) => {
-    if (!tags) return { ...DEFAULT_SELECTED_TAGS };
+  const fetchOptionalCatalog = async (possibleEndpoints = []) => {
+    const url = possibleEndpoints.find(Boolean);
 
-    const hydrated = {};
+    if (!url) return [];
 
-    Object.entries(tags).forEach(([category, values]) => {
-      const normalizedCategory = normalizeCategoryKey(category);
+    try {
+      const response = await axios.get(url);
+      return response.data;
+    } catch {
+      return [];
+    }
+  };
 
-      hydrated[normalizedCategory] = (values || []).map((tag) => {
-        if (normalizedCategory !== "temas") return tag;
+  const loadFilterCatalogs = useCallback(async () => {
+    const [universidadesRaw, empresas, plataforma, aliados] = await Promise.all([
+      fetchOptionalCatalog([
+        endpoints.filterUniversitiesRegion
+      ]),
+      fetchOptionalCatalog([
+        endpoints.filterCompanies
+      ]),
+      fetchOptionalCatalog([
+        endpoints.filterPlatforms
+      ]),
+    ]);
 
-        const slug = typeof tag === "object" ? tag.slug : String(tag).trim();
+    const catalogs = {
+      universidades: flattenUniversitiesByRegion(universidadesRaw),
+      empresas,
+      plataforma,
+      aliados,
+    };
 
-        const matchedSkill = catalog.find((skill) => {
-          const skillType = String(skill.skill_type || "").trim().toLowerCase();
-          return skillType === "tema" && String(skill.slug || "").trim() === slug;
-        });
+    setFilterCatalogs(catalogs);
 
-        if (!matchedSkill) {
-          return typeof tag === "object"
-            ? tag
-            : { slug, nombre: "", translate: "" };
-        }
-
-        return {
-          id: matchedSkill.id,
-          nombre: matchedSkill.nombre,
-          translate: matchedSkill.translate,
-          slug: matchedSkill.slug,
-          skill_type: matchedSkill.skill_type,
-          parent: matchedSkill.parent ?? null,
-        };
-      });
-    });
-
-    return hydrated;
+    return catalogs;
   }, []);
+
+  const findCatalogMatch = (catalog, rawTag) => {
+    if (!Array.isArray(catalog) || catalog.length === 0) return null;
+
+    const value =
+      typeof rawTag === "object"
+        ? String(rawTag.id || rawTag.slug || rawTag.nombre || "").trim()
+        : String(rawTag).trim();
+
+    if (!value) return null;
+
+    return catalog.find((item) => {
+      const itemId = String(item.id || item.pk || "").trim();
+      const itemSlug = String(item.slug || "").trim();
+      const itemName = String(
+        item.nombre ||
+          item.name ||
+          item.univ_nombre ||
+          item.empr_nombre ||
+          item.plataforma_nombre ||
+          ""
+      ).trim();
+
+      return itemId === value || itemSlug === value || itemName === value;
+    });
+  };
+
+  const normalizeCatalogItem = (item, fallback = {}) => {
+    if (!item) return fallback;
+
+    const label =
+      item.nombre ||
+      item.name ||
+      item.titulo ||
+      item.title ||
+      item.univ_nombre ||
+      item.empr_nombre ||
+      item.plataforma_nombre ||
+      item.nombre_universidad ||
+      item.nombre_empresa ||
+      fallback.nombre ||
+      fallback.name ||
+      "";
+
+    return {
+      ...item,
+      id: item.id || item.pk || fallback.id,
+      nombre: label,
+      translate: item.translate || fallback.translate || "",
+      slug: item.slug || fallback.slug || "",
+    };
+  };
+
+  const hydrateTagsFromCatalogs = useCallback(
+    async (tags) => {
+      if (!tags) return { ...DEFAULT_SELECTED_TAGS };
+
+      const needsSkills =
+      (Array.isArray(tags.temas) && tags.temas.length > 0) ||
+      (Array.isArray(tags.habilidades) &&
+        tags.habilidades.length > 0);
+
+      const needsExtraCatalogs = [
+        "universidades",
+        "empresas",
+        "plataforma",
+        "aliados",
+      ].some((key) => Array.isArray(tags[key]) && tags[key].length > 0);
+
+      const skills =
+        needsSkills && skillsCatalog.length === 0
+          ? await loadSkillsCatalog()
+          : skillsCatalog;
+
+      const catalogs =
+        needsExtraCatalogs &&
+        Object.values(filterCatalogs).every((list) => list.length === 0)
+          ? await loadFilterCatalogs()
+          : filterCatalogs;
+
+      const hydrated = {};
+
+      Object.entries(tags).forEach(([category, values]) => {
+        const normalizedCategory = normalizeCategoryKey(category);
+
+        hydrated[normalizedCategory] = (values || []).map((tag) => {
+          if (normalizedCategory === "idioma") return tag;
+
+          if (
+            normalizedCategory === "temas" ||
+            normalizedCategory === "habilidades"
+          ) {
+            const id = typeof tag === "object" ? tag.id : "";
+            const slug =
+              typeof tag === "object"
+                ? tag.slug
+                : String(tag).trim();
+
+            const expectedType =
+              normalizedCategory === "habilidades"
+                ? "habilidad"
+                : "tema";
+
+            const matchedSkill = skills.find((skill) => {
+              const skillType = String(skill.skill_type || "")
+                .trim()
+                .toLowerCase();
+
+              const matchType =
+                skillType === expectedType ||
+                skillType === "";
+
+              const matchId =
+                id &&
+                String(skill.id || "").trim() ===
+                  String(id).trim();
+
+              const matchSlug =
+                slug &&
+                String(skill.slug || "").trim() ===
+                  String(slug).trim();
+
+              return matchType && (matchId || matchSlug);
+            });
+
+            if (!matchedSkill) return tag;
+
+            return {
+              id: matchedSkill.id,
+              nombre: matchedSkill.nombre,
+              translate: matchedSkill.translate,
+              slug: matchedSkill.slug,
+              skill_type: matchedSkill.skill_type,
+              parent: matchedSkill.parent ?? null,
+            };
+          }
+
+          const matched = findCatalogMatch(catalogs[normalizedCategory], tag);
+
+          if (!matched) return tag;
+
+          return normalizeCatalogItem(matched, tag);
+        });
+      });
+
+      return hydrated;
+    },
+    [skillsCatalog, filterCatalogs, loadSkillsCatalog, loadFilterCatalogs]
+  );
 
   const buildUrlFromTags = useCallback(
     (tags, page = 1, pageSize = 16, pathname = location.pathname) => {
@@ -265,7 +523,7 @@ function LibraryPage({ showRoutes = true }) {
         if (!Array.isArray(values)) return;
 
         values.forEach((val) => {
-          const queryKey = getQueryKey(key);
+          const queryKey = getQueryKey(key, val);
           const queryValue = getTagUrlValue(key, val);
 
           if (queryValue) {
@@ -291,6 +549,7 @@ function LibraryPage({ showRoutes = true }) {
 
       setSelectedTags({});
       setCertifications(rows);
+
       setPagination({
         count: rows.length,
         current_page: 1,
@@ -321,6 +580,7 @@ function LibraryPage({ showRoutes = true }) {
 
       if (fetchData && Array.isArray(fetchData.results)) {
         setCertifications(fetchData.results);
+
         setPagination({
           count: fetchData.count ?? 0,
           current_page: fetchData.current_page || page,
@@ -331,6 +591,7 @@ function LibraryPage({ showRoutes = true }) {
         });
       } else {
         setCertifications([]);
+
         setPagination({
           count: 0,
           current_page: 1,
@@ -350,77 +611,38 @@ function LibraryPage({ showRoutes = true }) {
     }
   }, []);
 
-  const addTag = useCallback((category, tag) => {
-    const normalizedCategory = normalizeCategoryKey(category);
+  const addTagAndNavigate = useCallback(
+    (category, tag) => {
+      const normalizedCategory = normalizeCategoryKey(category);
 
-    setSelectedTags((prevTags) => {
-      const currentTags = prevTags[normalizedCategory] || [];
-      const exists = currentTags.some((oldTag) =>
-        areTagsEqual(normalizedCategory, oldTag, tag)
-      );
+      setSelectedTags((prevTags) => {
+        const currentTags = prevTags[normalizedCategory] || [];
 
-      if (exists) return prevTags;
+        const exists = currentTags.some((oldTag) =>
+          areTagsEqual(normalizedCategory, oldTag, tag)
+        );
 
-      return {
-        ...prevTags,
-        [normalizedCategory]: [...currentTags, tag],
-      };
-    });
-  }, []);
+        const updatedTags = exists
+          ? prevTags
+          : {
+              ...prevTags,
+              [normalizedCategory]: [...currentTags, tag],
+            };
 
-  const removeTag = useCallback((category, tagToRemove) => {
-    const normalizedCategory = normalizeCategoryKey(category);
+        const nextUrl = buildUrlFromTags(
+          updatedTags,
+          1,
+          16,
+          location.pathname
+        );
 
-    setSelectedTags((prevTags) => {
-      const updatedTags = { ...prevTags };
-      const currentTags = updatedTags[normalizedCategory] || [];
+        navigate(nextUrl, { replace: false });
 
-      const filtered = currentTags.filter(
-        (tag) => !areTagsEqual(normalizedCategory, tag, tagToRemove)
-      );
-
-      if (filtered.length === 0) {
-        if (normalizedCategory === "idioma") {
-          updatedTags[normalizedCategory] = [];
-        } else {
-          delete updatedTags[normalizedCategory];
-        }
-      } else {
-        updatedTags[normalizedCategory] = filtered;
-      }
-
-      return updatedTags;
-    });
-  }, []);
-
-  const toggleTag = useCallback((category, tag) => {
-    const normalizedCategory = normalizeCategoryKey(category);
-
-    setSelectedTags((prevTags) => {
-      const currentTags = prevTags[normalizedCategory] || [];
-      const exists = currentTags.some((oldTag) =>
-        areTagsEqual(normalizedCategory, oldTag, tag)
-      );
-
-      const nextValues = exists
-        ? currentTags.filter((oldTag) => !areTagsEqual(normalizedCategory, oldTag, tag))
-        : [...currentTags, tag];
-
-      const updatedTags = { ...prevTags };
-
-      if (nextValues.length === 0) {
-        if (normalizedCategory === "idioma") {
-          updatedTags[normalizedCategory] = [];
-        } else {
-          delete updatedTags[normalizedCategory];
-        }
-      } else {
-        updatedTags[normalizedCategory] = nextValues;
-      }
-
-      return updatedTags;
-    });
-  }, []);
+        return updatedTags;
+      });
+    },
+    [buildUrlFromTags, location.pathname, navigate]
+  );
 
   const clearAllTags = useCallback(() => {
     if (!isReady) return;
@@ -446,12 +668,90 @@ function LibraryPage({ showRoutes = true }) {
       return;
     }
 
-    addTag(category, tag);
+    addTagAndNavigate(category, tag);
+  };
+
+  const handleTagSelect = (category, tag) => {
+    if (!isReady) return;
+
+    const normalizedCategory = normalizeCategoryKey(category);
+
+    setSelectedTags((prevTags) => {
+      const currentTags = prevTags[normalizedCategory] || [];
+
+      const exists = currentTags.some((oldTag) =>
+        areTagsEqual(normalizedCategory, oldTag, tag)
+      );
+
+      const nextValues = exists
+        ? currentTags.filter(
+            (oldTag) => !areTagsEqual(normalizedCategory, oldTag, tag)
+          )
+        : [...currentTags, tag];
+
+      const updatedTags = { ...prevTags };
+
+      if (nextValues.length === 0) {
+        if (normalizedCategory === "idioma") {
+          updatedTags[normalizedCategory] = [];
+        } else {
+          delete updatedTags[normalizedCategory];
+        }
+      } else {
+        updatedTags[normalizedCategory] = nextValues;
+      }
+
+      const nextUrl = buildUrlFromTags(
+        updatedTags,
+        1,
+        16,
+        location.pathname
+      );
+
+      navigate(nextUrl, { replace: false });
+
+      return updatedTags;
+    });
+  };
+
+  const removeSelectedTag = (category, tag) => {
+    if (!isReady) return;
+
+    const normalizedCategory = normalizeCategoryKey(category);
+
+    setSelectedTags((prevTags) => {
+      const updatedTags = { ...prevTags };
+      const currentTags = updatedTags[normalizedCategory] || [];
+
+      const filtered = currentTags.filter(
+        (oldTag) => !areTagsEqual(normalizedCategory, oldTag, tag)
+      );
+
+      if (filtered.length === 0) {
+        if (normalizedCategory === "idioma") {
+          updatedTags[normalizedCategory] = [];
+        } else {
+          delete updatedTags[normalizedCategory];
+        }
+      } else {
+        updatedTags[normalizedCategory] = filtered;
+      }
+
+      const nextUrl = buildUrlFromTags(
+        updatedTags,
+        1,
+        16,
+        location.pathname
+      );
+
+      navigate(nextUrl, { replace: false });
+
+      return updatedTags;
+    });
   };
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const currentSearch = location.search;
 
     if (params.get("latest") === "1") return;
 
@@ -459,7 +759,7 @@ function LibraryPage({ showRoutes = true }) {
 
     if (params.getAll("idioma").length === 0) {
       params.append("idioma", "es");
-      params.append("idioma", "en");
+      //params.append("idioma", "en");
       changed = true;
     }
 
@@ -474,7 +774,9 @@ function LibraryPage({ showRoutes = true }) {
     }
 
     if (changed) {
-      navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+      navigate(`${location.pathname}?${params.toString()}`, {
+        replace: true,
+      });
     }
   }, [location.pathname, location.search, navigate]);
 
@@ -487,7 +789,7 @@ function LibraryPage({ showRoutes = true }) {
 
       if (params.get("latest") === "1") {
         await loadLatestCertifications();
-        lastHydratedSearchRef.current = currentSearch;
+
         isHydratingFromUrlRef.current = false;
         firstLoadDoneRef.current = true;
         setIsReady(true);
@@ -500,24 +802,11 @@ function LibraryPage({ showRoutes = true }) {
       const pageFromURL = parseInt(params.get("page"), 10) || 1;
       const pageSizeFromURL = parseInt(params.get("page_size"), 10) || 16;
 
-      const hasSkillFilters =
-        Array.isArray(filtersFromURL.temas) && filtersFromURL.temas.length > 0;
-
-      let hydratedFilters = filtersFromURL;
-
-      if (hasSkillFilters) {
-        const catalog =
-          skillsCatalog.length > 0 ? skillsCatalog : await loadSkillsCatalog();
-
-        hydratedFilters = hydrateTagsFromCatalog(filtersFromURL, catalog);
-      }
+      const hydratedFilters = await hydrateTagsFromCatalogs(filtersFromURL);
 
       setSelectedTags(hydratedFilters);
-      await loadCertifications(pageFromURL, pageSizeFromURL, hydratedFilters);
 
-      if (!hasSkillFilters && skillsCatalog.length === 0) {
-        loadSkillsCatalog();
-      }
+      await loadCertifications(pageFromURL, pageSizeFromURL, hydratedFilters);
 
       isHydratingFromUrlRef.current = false;
       firstLoadDoneRef.current = true;
@@ -527,41 +816,17 @@ function LibraryPage({ showRoutes = true }) {
     run();
   }, [location.pathname, location.search]);
 
-  /*useEffect(() => {
-    if (!firstLoadDoneRef.current) return;
-    if (isHydratingFromUrlRef.current) return;
-    if (!isReady) return;
-    if (lastHydratedSearchRef.current !== location.search) return;
-
-    const params = new URLSearchParams(location.search);
-    if (params.get("latest") === "1" || params.get("clear") === "1") return;
-
-    const tagsFromUrl = parseQueryParams(location.search);
-
-    if (areTagMapsEqualByUrlValues(debouncedSelectedTags, tagsFromUrl)) {
-      return;
-    }
-
-    const nextUrl = buildUrlFromTags(debouncedSelectedTags, 1, 16, location.pathname);
-    const currentUrl = `${location.pathname}${location.search}`;
-
-    if (nextUrl !== currentUrl) {
-      navigate(nextUrl, { replace: false });
-    }
-  }, [
-    debouncedSelectedTags,
-    isReady,
-    location.pathname,
-    location.search,
-    areTagMapsEqualByUrlValues,
-    buildUrlFromTags,
-    navigate,
-  ]);*/
-
   const handlePageChange = (newPage) => {
     if (!isReady || loading) return;
+    if (newPage < 1 || newPage > pagination.total_pages) return;
 
-    const nextUrl = buildUrlFromTags(debouncedSelectedTags, newPage, 16, location.pathname);
+    const nextUrl = buildUrlFromTags(
+      debouncedSelectedTags,
+      newPage,
+      16,
+      location.pathname
+    );
+
     navigate(nextUrl, { replace: false });
 
     certificationsRef.current?.scrollIntoView({
@@ -574,81 +839,85 @@ function LibraryPage({ showRoutes = true }) {
     const { current_page, total_pages } = pagination;
 
     const getVisiblePages = () => {
-      const pages = [];
-      let start = Math.max(current_page - 2, 1);
-      let end = Math.min(current_page + 2, total_pages || 1);
+      const maxVisible = 5;
 
-      if (current_page <= 3) end = Math.min(5, total_pages || 1);
-      if (current_page >= (total_pages || 1) - 2) {
-        start = Math.max((total_pages || 1) - 4, 1);
+      let start = Math.max(1, current_page - 2);
+      let end = Math.min(total_pages, start + maxVisible - 1);
+
+      if (end - start < maxVisible - 1) {
+        start = Math.max(1, end - maxVisible + 1);
       }
 
-      for (let i = start; i <= end; i++) pages.push(i);
-      return pages;
+      return Array.from({ length: end - start + 1 }, (_, i) => start + i);
     };
 
-    if (loading) {
-      return (
-        <div className="container-buttons-pagination gap-1">
-          <span className="ml-2 text-neutral-700">Cargando...</span>
-        </div>
-      );
-    }
+    if (total_pages <= 1) return null;
 
     const pages = getVisiblePages();
 
     return (
-      <div className="container-buttons-pagination gap-1">
-        <button
-          onClick={() => handlePageChange(1)}
-          disabled={current_page === 1 || !isReady}
-          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-2 md:px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <FaAnglesLeft />
-        </button>
-
-        <button
-          onClick={() => handlePageChange(current_page - 1)}
-          disabled={current_page === 1 || !isReady}
-          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-2 md:px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <FaChevronLeft />
-        </button>
-
-        {pages[0] > 1 && <span className="px-0">...</span>}
-
-        {pages.map((page) => (
+      <div className="flex justify-center py-10">
+        <div className="flex items-center justify-center gap-1 rounded-full border border-black/10 bg-white px-2 py-2 shadow-[0_12px_40px_rgba(0,0,0,0.06)]">
           <button
-            key={page}
-            onClick={() => handlePageChange(page)}
-            disabled={!isReady}
-            className={`${
-              page === current_page
-                ? "bg-neutral-700 text-white"
-                : "bg-neutral-50 text-neutral-700 hover:bg-neutral-200"
-            } font-bold py-2 px-3 rounded-full`}
+            type="button"
+            onClick={() => handlePageChange(1)}
+            disabled={current_page === 1 || !isReady || loading}
+            className="flex h-10 w-8 md:w-10 items-center justify-center rounded-full bg-neutral-50 text-neutral-900 transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {page}
+            <FaAnglesLeft />
           </button>
-        ))}
 
-        {pages[pages.length - 1] < total_pages && <span className="px-0">...</span>}
+          <button
+            type="button"
+            onClick={() => handlePageChange(current_page - 1)}
+            disabled={current_page === 1 || !isReady || loading}
+            className="flex h-10 w-8 md:w-10 items-center justify-center rounded-full bg-neutral-50 text-neutral-900 transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <FaChevronLeft />
+          </button>
 
-        <button
-          onClick={() => handlePageChange(current_page + 1)}
-          disabled={current_page === total_pages || !isReady}
-          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-2 md:px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <FaChevronRight />
-        </button>
+          {pages[0] > 1 && (
+            <span className="px-2 text-neutral-400">...</span>
+          )}
 
-        <button
-          onClick={() => handlePageChange(total_pages)}
-          disabled={current_page === total_pages || !isReady}
-          className="bg-neutral-50 hover:bg-neutral-200 text-neutral-900 font-bold py-2 px-2 md:px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <FaAnglesRight />
-        </button>
+          {pages.map((page) => (
+            <button
+              type="button"
+              key={page}
+              onClick={() => handlePageChange(page)}
+              disabled={!isReady || loading}
+              className={`flex h-10 w-8 md:w-10 items-center justify-center rounded-full px-3 text-sm font-bold transition ${
+                page === current_page
+                  ? "bg-[#111111] text-white shadow-[0_10px_30px_rgba(0,0,0,0.18)]"
+                  : "bg-neutral-50 text-neutral-700 hover:bg-neutral-200"
+              } disabled:cursor-not-allowed disabled:opacity-40`}
+            >
+              {page}
+            </button>
+          ))}
+
+          {pages[pages.length - 1] < total_pages && (
+            <span className="px-2 text-neutral-400">...</span>
+          )}
+
+          <button
+            type="button"
+            onClick={() => handlePageChange(current_page + 1)}
+            disabled={current_page === total_pages || !isReady || loading}
+            className="flex h-10 w-8 md:w-10 items-center justify-center rounded-full bg-neutral-50 text-neutral-900 transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <FaChevronRight />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handlePageChange(total_pages)}
+            disabled={current_page === total_pages || !isReady || loading}
+            className="flex h-10 w-8 md:w-10 items-center justify-center rounded-full bg-neutral-50 text-neutral-900 transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <FaAnglesRight />
+          </button>
+        </div>
       </div>
     );
   };
@@ -659,236 +928,171 @@ function LibraryPage({ showRoutes = true }) {
         <title>Certificaciones | Top Education</title>
       </Helmet>
 
-      <div className="w-full">
-        <div className="wrapper-logo-platforms">
-          <div className="wrapper-logos flex justify-between">
-            <div className="flex gap-3">
-              <div
-                className="container-logo !bg-[#e3e1dce6]"
-                onClick={() => handleBannerClick("plataforma", "Coursera")}
-                style={{
-                  opacity: !isReady ? 0.5 : 1,
-                  cursor: !isReady ? "not-allowed" : "pointer",
-                  pointerEvents: !isReady ? "none" : "auto",
-                }}
-              >
-                <img src="/assets/platforms/coursera-logo.png" alt="Coursera" />
-              </div>
-
-              <div
-                className="container-logo !bg-[#e3e1dce6]"
-                onClick={() => handleBannerClick("plataforma", "EdX")}
-                style={{
-                  opacity: !isReady ? 0.5 : 1,
-                  cursor: !isReady ? "not-allowed" : "pointer",
-                  pointerEvents: !isReady ? "none" : "auto",
-                }}
-              >
-                <img src="/assets/platforms/edx-logo.png" alt="EdX" />
-              </div>
-
-              <div
-                className="container-logo !bg-[#e3e1dce6]"
-                onClick={() => handleBannerClick("plataforma", "MasterClass")}
-                style={{
-                  opacity: !isReady ? 0.5 : 1,
-                  cursor: !isReady ? "not-allowed" : "pointer",
-                  pointerEvents: !isReady ? "none" : "auto",
-                }}
-              >
-                <img
-                  src="/assets/platforms/masterclass-logo.png"
-                  alt="MasterClass"
-                />
-              </div>
+      <div className="w-full pt-18 bg-[#FFFFFF]">
+        <div className="border-b border-black/10 bg-white">
+          <div className="container mx-auto flex max-w-[1200px] items-center justify-between gap-4 px-2 md:px-4 py-3">
+            <div className="flex flex-wrap items-center gap-2 md:gap-4">
+              {[
+                {
+                  name: "Coursera",
+                  img: "/assets/platforms/coursera-logo.png",
+                },
+                {
+                  name: "EdX",
+                  img: "/assets/platforms/edx-logo.png",
+                },
+                {
+                  name: "MasterClass",
+                  img: "/assets/platforms/masterclass-logo.png",
+                },
+              ].map((platform) => (
+                <button
+                  type="button"
+                  key={platform.name}
+                  onClick={() =>
+                    handleBannerClick("plataforma", platform.name)
+                  }
+                  disabled={!isReady}
+                  className="flex h-8 py-1 items-center rounded-[25px] bg-[#F5F3EE] px-4 md:px-4 transition hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.12)] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <img
+                    src={platform.img}
+                    alt={platform.name}
+                    className="max-h-[20px] max-w-[120px] md:max-w-[150px] object-contain"
+                  />
+                </button>
+              ))}
             </div>
 
-            <div
-              className="container-logo !bg-[#e3e1dce6]"
+            <button
+              type="button"
               onClick={() =>
                 handleBannerClick("plataforma", "Nuevo en Top.education")
               }
-              style={{
-                opacity: !isReady ? 0.5 : 1,
-                cursor: !isReady ? "not-allowed" : "pointer",
-                pointerEvents: !isReady ? "none" : "auto",
-              }}
+              disabled={!isReady}
+              className="hidden rounded-full bg-[#2563EB] px-5 py-2 text-sm font-bold text-white transition hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(25,65,207,0.28)] disabled:cursor-not-allowed disabled:opacity-50 md:block"
             >
-              Nuevo en<span id="top">top.</span>
-              <span id="education">education</span>
+              Nuevo en top.education
+            </button>
+          </div>
+        </div>
+
+        <div className="border-b border-black/10 bg-[#F5F3EE]">
+          <div className="container mx-auto max-w-[1200px] px-4 py-4">
+            <div className="rounded-[25px] bg-white shadow-[0_12px_40px_rgba(0,0,0,0.04)]">
+              <SearchBar selectedTags={selectedTags} />
             </div>
           </div>
         </div>
 
-        <div className="cont-explora px-0 lg:px-10">
-          <IndexCategories
-            onTagSelect={(category, tag) => {
-              if (!isReady) return;
-
-              const normalizedCategory = normalizeCategoryKey(category);
-
-              setSelectedTags((prevTags) => {
-                const currentTags = prevTags[normalizedCategory] || [];
-
-                const exists = currentTags.some((oldTag) =>
-                  areTagsEqual(normalizedCategory, oldTag, tag)
-                );
-
-                const nextValues = exists
-                  ? currentTags.filter(
-                      (oldTag) => !areTagsEqual(normalizedCategory, oldTag, tag)
-                    )
-                  : [...currentTags, tag];
-
-                const updatedTags = { ...prevTags };
-
-                if (nextValues.length === 0) {
-                  if (normalizedCategory === "idioma") {
-                    updatedTags[normalizedCategory] = [];
-                  } else {
-                    delete updatedTags[normalizedCategory];
-                  }
-                } else {
-                  updatedTags[normalizedCategory] = nextValues;
-                }
-
-                const nextUrl = buildUrlFromTags(updatedTags, 1, 16, location.pathname);
-                navigate(nextUrl, { replace: false });
-
-                return updatedTags;
-              });
-            }}
-            selectedTags={selectedTags}
-            disabled={!isReady}
-          />
-
-          <div className="cont-filter">
-            <div className="flex flex-wrap justify-between items-center gap-2 relative">
-              <div className="container-tags w-full md:!w-[74%]">
-                {Object.keys(selectedTags).length === 0 ||
-                Object.values(selectedTags).every(
-                  (tags) => !tags || tags.length === 0
-                ) ? (
-                  <p>Aún no has seleccionado tags</p>
-                ) : (
-                  Object.entries(selectedTags).map(([category, tags]) =>
-                    tags.map((tag, tagIndex) => (
-                      <div
-                        key={`${category}-${tagIndex}-${getTagUrlValue(
-                          category,
-                          tag
-                        )}`}
-                        className="tag"
-                      >
-                        <span>{getTagLabel(tag)}</span>
-                        <button
-                          onClick={() => {
-                            if (!isReady) return;
-
-                            const normalizedCategory = normalizeCategoryKey(category);
-
-                            setSelectedTags((prevTags) => {
-                              const updatedTags = { ...prevTags };
-                              const currentTags = updatedTags[normalizedCategory] || [];
-
-                              const filtered = currentTags.filter(
-                                (oldTag) => !areTagsEqual(normalizedCategory, oldTag, tag)
-                              );
-
-                              if (filtered.length === 0) {
-                                if (normalizedCategory === "idioma") {
-                                  updatedTags[normalizedCategory] = [];
-                                } else {
-                                  delete updatedTags[normalizedCategory];
-                                }
-                              } else {
-                                updatedTags[normalizedCategory] = filtered;
-                              }
-
-                              const nextUrl = buildUrlFromTags(updatedTags, 1, 16, location.pathname);
-                              navigate(nextUrl, { replace: false });
-
-                              return updatedTags;
-                            });
-                          }}
-                          className="remove-tag-button"
-                          disabled={!isReady}
-                          style={{
-                            opacity: !isReady ? 0.5 : 1,
-                            cursor: !isReady ? "not-allowed" : "pointer",
-                          }}
-                        >
-                          x
-                        </button>
-                      </div>
-                    ))
-                  )
-                )}
+        <div className="container mx-auto py-4 min-h-[70vh]">
+          <div className="grid grid-cols-1 gap-2 lg:grid-cols-[220px_1fr]">
+            <aside className="relative z-20 rounded-[15px] lg:sticky lg:top-24 lg:h-fit">
+              <div className="max-h-[calc(100vh-190px)]  pr-2">
+                <IndexCategories
+                  onTagSelect={handleTagSelect}
+                  selectedTags={selectedTags}
+                  disabled={!isReady}
+                />
               </div>
 
-              {/*<button
-                type="button"
-                onClick={clearAllTags}
-                disabled={!isReady || loading}
-                className="bg-neutral-950 hover:bg-neutral-800 text-white font-bold py-2 px-4 rounded-full disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Limpiar filtros
-              </button>*/}
+              <div className="hidden md:block pointer-events-none absolute bottom-0 left-0 right-0 flex h-14 items-end justify-center rounded-b-[24px] bg-gradient-to-t from-white via-white/90 to-transparent pb-3">
+                <FaChevronDown className="animate-bounce text-[14px] text-neutral-400" />
+              </div>
+            </aside>
 
-              <SearchBar selectedTags={selectedTags} />
-            </div>
+            <main className="min-w-0 px-2 md:px-0">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-4">
+                <div className="flex min-h-[30px] flex-wrap gap-2">
+                  {Object.keys(selectedTags).length === 0 ||
+                  Object.values(selectedTags).every(
+                    (tags) => !tags || tags.length === 0
+                  ) ? (
+                    <p className="text-sm text-neutral-500">
+                      Aún no has seleccionado filtros
+                    </p>
+                  ) : (
+                    Object.entries(selectedTags).map(([category, tags]) =>
+                      tags.map((tag, tagIndex) => (
+                        <div
+                          key={`${category}-${tagIndex}-${getTagUrlValue(
+                            category,
+                            tag
+                          )}`}
+                          className="flex items-center gap-2 rounded-full border border-black/10 bg-[#F5F3EE] pl-4 pr-2 py-1 text-sm font-medium text-neutral-800 shadow-sm"
+                        >
+                          <span>{getTagLabel(category, tag)}</span>
 
-            <div ref={certificationsRef} className="certifications-container">
-              {loading ? (
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 p-2">
-                  {Array.from({ length: 8 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="w-full overflow-hidden rounded-[15px] bg-[#F6F4EF] border border-[#ECE7DE] animate-pulse"
+                          <button
+                            type="button"
+                            onClick={() => removeSelectedTag(category, tag)}
+                            disabled={!isReady}
+                            className="flex h-5 w-5 items-center justify-center leading-[.8em] rounded-full bg-neutral-100 text-xs text-neutral-500 transition hover:bg-neutral-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))
+                    )
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={clearAllTags}
+                  disabled={!isReady || loading}
+                  className="rounded-full bg-[#111111] px-5 py-2 text-sm font-bold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  Limpiar filtros
+                </button>
+              </div>
+
+              <div ref={certificationsRef}>
+                {loading ? (
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-full animate-pulse rounded-[18px] border border-black/10 bg-white"
+                      >
+                        <div className="h-[140px] rounded-t-[18px] bg-neutral-200" />
+
+                        <div className="space-y-2 px-4 py-3">
+                          <div className="h-4 w-[45%] rounded-full bg-neutral-200" />
+                          <div className="h-4 w-[90%] rounded bg-neutral-200" />
+                          <div className="h-3 w-[70%] rounded bg-neutral-200" />
+                          <div className="h-4 w-[45%] rounded-full bg-neutral-200" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : certifications.length === 0 ? (
+                  <div className="rounded-[24px] bg-white px-6 py-14 text-center shadow-[0_16px_50px_rgba(0,0,0,0.04)]">
+                    <h3 className="text-lg font-semibold text-black">
+                      No se encontraron certificaciones
+                    </h3>
+
+                    <p className="text-neutral-500">
+                      No hay resultados que coincidan con los filtros
+                      seleccionados.
+                    </p>
+
+                    <button
+                      type="button"
+                      onClick={clearAllTags}
+                      className="mt-6 rounded-full bg-neutral-950 px-5 py-2 text-sm font-bold text-white transition hover:bg-neutral-800"
+                      disabled={!isReady}
                     >
-                      <div className="relative h-[200px] w-full rounded-xl bg-[linear-gradient(135deg,#d6d0c8_0%,#f0ece6_45%,#cfc7bc_100%)]">
-                        <div className="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.7),transparent_35%),radial-gradient(circle_at_70%_40%,rgba(255,255,255,0.5),transparent_30%),radial-gradient(circle_at_50%_80%,rgba(255,255,255,0.35),transparent_25%)]"></div>
-                        <div className="absolute top-1 right-0 h-5 w-24 rounded-[25px_0px_0px_25px] bg-white shadow-sm"></div>
-                      </div>
+                      Limpiar filtros
+                    </button>
+                  </div>
+                ) : (
+                  <CertificationsList certifications={certifications} />
+                )}
 
-                      <div className="relative px-4 pb-4 pt-4">
-                        <div className="absolute -top-2 left-1/2 h-5 w-[150px] -translate-x-1/2 rounded-full bg-[#C4C4C4]"></div>
-
-                        <div className="mt-4 flex flex-col items-center gap-1">
-                          <div className="h-4 w-[85%] rounded bg-neutral-300"></div>
-                          <div className="h-4 w-[78%] rounded bg-neutral-300"></div>
-                        </div>
-
-                        <div className="mt-2 flex items-center justify-between">
-                          <div className="h-6 w-20 rounded bg-neutral-300"></div>
-                          <div className="h-6 w-28 rounded-full bg-neutral-300"></div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : certifications.length === 0 ? (
-                <div className="no-results-container text-center py-10">
-                  <h3 className="text-lg font-semibold text-black mb-0">
-                    No se encontraron certificaciones en la búsqueda
-                  </h3>
-                  <p className="text-neutral-900 mt-[-10px]">
-                    No hay resultados que coincidan con los filtros seleccionados.
-                  </p>
-                  <button
-                    onClick={clearAllTags}
-                    className="mt-4 bg-neutral-950 hover:bg-neutral-900 text-white font-bold py-2 px-4 rounded-full"
-                    disabled={!isReady}
-                  >
-                    Limpiar filtros
-                  </button>
-                </div>
-              ) : (
-                <CertificationsList certifications={certifications} />
-              )}
-
-              <PaginationControls />
-            </div>
+                <PaginationControls />
+              </div>
+            </main>
           </div>
         </div>
       </div>

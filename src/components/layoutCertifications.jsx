@@ -4,43 +4,63 @@ import { useNavigate } from "react-router-dom";
 const CertificationsList = memo(({ certifications }) => {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
+  const [hiddenImages, setHiddenImages] = useState({});
 
   function navigateWithTransition(path) {
     if (document.startViewTransition) {
-      document.startViewTransition(() => {
-        navigate(path);
-      });
+      document.startViewTransition(() => navigate(path));
     } else {
       navigate(path);
     }
   }
 
-  const handleImageError = (e) => {
-    console.error("Error loading image:", e.target.src);
-    e.target.style.opacity = "0.5";
-    e.target.style.backgroundColor = "#f0f0f0";
-  };
-
   const handleCertificationClick = (certification) => {
     try {
-      if (!certification) {
-        throw new Error("No certification data provided");
-      }
+      if (!certification) throw new Error("No certification data provided");
 
       const plataformaSlug =
-        certification?.plataforma_certificacion?.nombre?.toLowerCase() || "certificacion";
+        certification?.plataforma_certificacion?.nombre?.toLowerCase() ||
+        "certificacion";
 
-      const path = `/certificacion/${plataformaSlug}/${certification.slug}`;
-      navigateWithTransition(path);
+      navigateWithTransition(`/certificacion/${plataformaSlug}/${certification.slug}`);
     } catch (err) {
       console.error("Navigation error:", err);
       setError("Error al navegar a la certificación");
     }
   };
 
-  const getImageUrl = (url) => {
-    if (!url) return null;
-    return url;
+  const hideImage = (key) => {
+    setHiddenImages((prev) => ({
+      ...prev,
+      [key]: true,
+    }));
+  };
+
+  const isValidValue = (value) => {
+    if (!value) return false;
+
+    const clean = String(value).trim().toLowerCase();
+
+    return clean !== "none" && clean !== "null" && clean !== "undefined";
+  };
+
+  const isValidImage = (url) => {
+    if (!isValidValue(url)) return false;
+    return true;
+  };
+
+  const shouldShowBadge = (value) => {
+    if (!isValidValue(value)) return false;
+
+    const clean = String(value).trim().toLowerCase();
+
+    return clean !== "none" && clean !== "uncategorized";
+  };
+
+  const getCertificationTypeLabel = (tipo) => {
+    if (!shouldShowBadge(tipo)) return null;
+    if (tipo === "Curso") return "Certificación";
+    return tipo;
   };
 
   const getPrimaryTheme = (certification) => {
@@ -48,36 +68,90 @@ const CertificationsList = memo(({ certifications }) => {
     if (!theme) return null;
 
     const label = theme?.translate || theme?.nombre;
-    if (!label) return null;
+    if (!shouldShowBadge(label)) return null;
 
     return theme;
   };
 
   const getPrimarySkill = (certification) => {
     const skill = certification?.primary_skill;
-    if (skill && (skill?.translate || skill?.nombre)) {
+
+    if (skill && shouldShowBadge(skill?.translate || skill?.nombre)) {
       return skill;
     }
 
     if (Array.isArray(certification?.skills) && certification.skills.length > 0) {
-      const firstSkill = certification.skills[0];
-      if (firstSkill && (firstSkill?.translate || firstSkill?.nombre)) {
-        return firstSkill;
-      }
+      const firstSkill = certification.skills.find((item) =>
+        shouldShowBadge(item?.translate || item?.nombre)
+      );
+
+      if (firstSkill) return firstSkill;
     }
 
     return null;
   };
 
+  const getPlatformInitial = (certification) => {
+    const name = certification?.plataforma_certificacion?.nombre || "";
+    return name.charAt(0).toUpperCase();
+  };
+
+  const getCardVisualColor = (certification) => {
+    const platformName = certification?.plataforma_certificacion?.nombre
+      ?.toLowerCase()
+      ?.trim();
+
+    if (platformName?.includes("coursera")) return "bg-[#1E4264]";
+    if (platformName?.includes("edx")) return "bg-[#994B13]";
+    if (platformName?.includes("masterclass")) return "bg-[#6B4CE6]";
+
+    const colors = [
+      "bg-[#1B1A31]",
+      "bg-[#27551B]",
+      "bg-[#EF443A]",
+      "bg-[#0E1F2E]",
+      "bg-[#6B4CE6]",
+    ];
+
+    return colors[certification?.id % colors.length];
+  };
+
+  const getWatermarkText = (certification) => {
+    return (
+      certification?.plataforma_certificacion?.nombre ||
+      certification?.empresa_certificacion?.nombre ||
+      certification?.universidad_certificacion?.nombre ||
+      "top"
+    );
+  };
+
+  const tagColorClass = (color) => {
+    const map = {
+      "tag-verde": "bg-[#5CC781]",
+      "tag-azul": "bg-[#034694]",
+      "tag-rojo": "bg-[#D33B3E]",
+    };
+
+    return map[color] || "bg-[#5CC781]";
+  };
+
   if (!Array.isArray(certifications)) {
-    return <div className="error-message">Error: No se pudieron cargar las certificaciones</div>;
+    return (
+      <div className="rounded-2xl bg-white p-6 text-center text-red-500">
+        Error: No se pudieron cargar las certificaciones
+      </div>
+    );
   }
 
   return (
     <>
-      {error && <div className="error-message">{error}</div>}
+      {error && (
+        <div className="mb-4 rounded-2xl bg-red-50 p-4 text-center text-sm text-red-600">
+          {error}
+        </div>
+      )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 mt-2">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-2 xl:grid-cols-4">
         {certifications.map((certification) => {
           const primaryTheme = getPrimaryTheme(certification);
           const primarySkill = getPrimarySkill(certification);
@@ -88,144 +162,221 @@ const CertificationsList = memo(({ certifications }) => {
             certification.empresa_certificacion?.empr_img;
 
           const institutionImage =
+            certification.universidad_certificacion?.univ_ico ||
             certification.universidad_certificacion?.univ_img ||
+            certification.empresa_certificacion?.empr_ico ||
             certification.empresa_certificacion?.empr_img;
 
-          const platformImage = certification.plataforma_certificacion?.plat_img;
+          const platformImage =
+            certification.plataforma_certificacion?.plat_ico ||
+            certification.plataforma_certificacion?.plat_img;
 
-          if (certification.plataforma_certificacion_id === 3) {
-            return (
+          const typeLabel = getCertificationTypeLabel(
+            certification.tipo_certificacion
+          );
+
+          const skillLabel =
+            primarySkill?.translate ||
+            primarySkill?.nombre ||
+            primaryTheme?.translate ||
+            primaryTheme?.nombre;
+
+          const skillColor =
+            primarySkill?.skill_col || primaryTheme?.tem_col || "tag-verde";
+
+          const imageKey = `cert-${certification.id}`;
+          const institutionKey = `inst-${certification.id}`;
+          const platformKey = `platform-${certification.id}`;
+
+          const showMainImage =
+            isValidImage(certificationImage) && !hiddenImages[imageKey];
+
+          const showInstitutionImage =
+            isValidImage(institutionImage) && !hiddenImages[institutionKey];
+
+          const showPlatformImage =
+            isValidImage(platformImage) && !hiddenImages[platformKey];
+
+          return (
+            <article
+              key={certification.id}
+              onClick={() => handleCertificationClick(certification)}
+              className="
+                group
+                cursor-pointer
+                overflow-hidden
+                rounded-[18px]
+                border
+                border-black/10
+                bg-white
+                shadow-[0_12px_35px_rgba(0,0,0,0.04)]
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:shadow-[0_24px_60px_rgba(0,0,0,0.12)]
+              "
+            >
               <div
-                onClick={() => handleCertificationClick(certification)}
-                key={certification.id}
-                className="certification-card grid grid-cols-1 content-between bg-[#e3e1dce6] rounded-xl cursor-pointer overflow-hidden"
+                className={`
+                  relative
+                  h-[145px]
+                  overflow-hidden
+                  ${getCardVisualColor(certification)}
+                `}
               >
-                <div className="container-img-card">
+                {showMainImage ? (
                   <img
-                    src={getImageUrl(certificationImage)}
-                    alt={certification.nombre || "imagen-certificacion"}
-                    onError={handleImageError}
+                    className="
+                      h-full
+                      w-full
+                      object-cover
+                      transition-transform
+                      duration-500
+                      group-hover:scale-[1.06]
+                    "
+                    src={certificationImage}
+                    alt={certification.nombre || "certificación"}
+                    onError={() => hideImage(imageKey)}
                     loading="lazy"
                     decoding="async"
                   />
-                </div>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span
+                      className="
+                        select-none
+                        text-[3.4rem]
+                        font-semibold
+                        font-te-it
+                        leading-none
+                        text-white/20
+                      "
+                    >
+                      {getWatermarkText(certification)}
+                    </span>
+                  </div>
+                )}
 
-                <div className="tags-card flex flex-wrap gap-2 p-3 pb-0">
-                  {primarySkill ? (
-                    <div className={`tag-category ${primarySkill?.skill_col || "tag-verde"}`}>
-                      {primarySkill.translate || primarySkill.nombre}
-                    </div>
-                  ) : primaryTheme ? (
-                    <div className={`tag-category ${primaryTheme?.tem_col || "tag-verde"}`}>
-                      {primaryTheme?.translate || primaryTheme?.nombre}
-                    </div>
-                  ) : null}
-                </div>
+                <div className="absolute inset-0 bg-black/0 transition duration-300 group-hover:bg-black/5" />
 
-                <div className="title-certification p-3">
-                  <h3>{certification.nombre}</h3>
-                  <p className="masterclass-description">
-                    {certification.descripcion || ""}
-                  </p>
-                </div>
 
-                <div className="flex justify-between items-center px-3 pb-3 gap-2">
-                  <div className="tag-uem">
-                    {institutionImage && (
+                {typeLabel && (
+                  <span
+                    className="
+                      absolute
+                      right-2
+                      top-3
+                      z-10
+                      max-w-[110px]
+                      truncate
+                      rounded-full
+                      bg-[#1941cf]
+                      px-3
+                      py-1
+                      text-[11px]
+                      font-bold
+                      leading-none
+                      text-white
+                    "
+                    title={typeLabel}
+                  >
+                    {typeLabel}
+                  </span>
+                )}
+              </div>
+                <div className="pt-2 pb-1 min-h-[40px] px-4">
+                  {skillLabel && shouldShowBadge(skillLabel) && (
+                    <span
+                      className={`
+                        relative
+                        w-auto
+                        truncate
+                        rounded-full
+                        px-3
+                        py-1
+                        text-[10px]
+                        font-bold
+                        leading-none
+                        text-white
+                        ${tagColorClass(skillColor)}
+                      `}
+                      title={skillLabel}
+                    >
+                      {skillLabel}
+                    </span>
+                  )}
+                </div>
+              <div className="flex min-h-[80px] flex-col justify-between pb-3 px-4">
+                
+                <h3
+                  className="
+                    line-clamp-2
+                    !font-[Montserrat]
+                    text-[15px]
+                    font-medium
+                    leading-[1.1em]
+                    tracking-[-0.01em]
+                    text-black
+                    transition-colors
+                    duration-300
+                    group-hover:text-[#1941cf]
+                  "
+                >
+                  {certification.nombre}
+                </h3>
+                
+                <div className="mt-1 flex items-end justify-between gap-3">
+                  <div className="flex min-h-[28px] items-center">
+                    {showInstitutionImage && (
                       <img
-                        src={getImageUrl(institutionImage)}
-                        alt="institucion"
-                        onError={handleImageError}
+                        className="
+                          max-h-[26px]
+                          max-w-[105px]
+                          object-contain
+                          mix-blend-multiply
+                        "
+                        src={institutionImage}
+                        alt="institución"
+                        onError={() => hideImage(institutionKey)}
                         loading="lazy"
                         decoding="async"
                       />
                     )}
                   </div>
 
-                  <div className="tag-platform">
-                    {platformImage && (
+                  <div
+                    className="
+                      flex
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-[#F3F1EC]
+                      
+                      ring-1
+                      ring-black/5
+                    "
+                  >
+                    {showPlatformImage ? (
                       <img
+                        className="max-h-[25px] max-w-[54px] object-contain"
                         src={platformImage}
-                        alt={certification.plataforma_certificacion?.nombre || "plataforma"}
-                        onError={handleImageError}
+                        alt={
+                          certification.plataforma_certificacion?.nombre ||
+                          "plataforma"
+                        }
+                        onError={() => hideImage(platformKey)}
                         loading="lazy"
                         decoding="async"
                       />
+                    ) : (
+                      <span className="text-xs font-bold text-neutral-500">
+                        {getPlatformInitial(certification)}
+                      </span>
                     )}
                   </div>
                 </div>
               </div>
-            );
-          }
-
-          return (
-            <div
-              onClick={() => handleCertificationClick(certification)}
-              key={certification.id}
-              className="certification-card grid grid-cols-1 content-between inset-shadow-xs bg-[#F2F0E8] hover:bg-[#e3e1dce6] hover:shadow-md border-1 border-[#e3e1dce6] rounded-[15px] rounded-xl cursor-pointer overflow-hidden"
-            >
-              <div>
-              <div className="container-img-card !rounded-xl min-h-[200px] !max-h-[200px] overflow-hidden relative">
-                <img
-                  className="w-full h-full object-cover"
-                  src={getImageUrl(certificationImage)}
-                  alt={certification.nombre || "imagen-certificacion"}
-                  onError={handleImageError}
-                  loading="lazy"
-                  decoding="async"
-                />
-                <div className="absolute top-1 right-0 rounded-[25px_0px_0px_25px] text-[14px] font-bold text-black bg-[#F6F4EF] px-2 py-0.5 text-xs">
-                  {certification.tipo_certificacion === "Curso"
-                    ? "Certificación"
-                    : certification.tipo_certificacion}
-                </div>
-              </div>
-
-              <div className="tags-card relative flex flex-wrap gap-2 py-1 px-3 pb-0">
-                {primarySkill ? (
-                  <div className={`tag-category  ${primarySkill?.skill_col || "tag-verde"}`}>
-                    {primarySkill.translate || primarySkill.nombre}
-                  </div>
-                ) : primaryTheme ? (
-                  <div className={`tag-category  ${primaryTheme?.tem_col || "tag-verde"}`}>
-                    {primaryTheme?.translate || primaryTheme?.nombre}
-                  </div>
-                ) : null}
-              </div>
-              </div>
-
-              <div className="title-certification p-3">
-                <h3>{certification.nombre}</h3>
-              </div>
-
-              <div className="flex justify-between w-full items-end px-3 pb-3 gap-2">
-                <div className="w-auto  flex items-center rounded-xl max-h-[30px]">
-                  {institutionImage && (
-                    <img
-                      className="max-w-[120px] max-h-[35px] w-full !brightness-100 !mix-blend-multiply"
-                      src={getImageUrl(institutionImage)}
-                      alt="institucion"
-                      onError={handleImageError}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  )}
-                </div>
-
-                <div className="w-auto !bg-[#e3e1dce6] rounded-xl px-3 py-2">
-                  {platformImage && (
-                    <img
-                      className="max-w-[80px] max-h-[20px]"
-                      src={platformImage}
-                      alt={certification.plataforma_certificacion?.nombre || "plataforma"}
-                      onError={handleImageError}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
+            </article>
           );
         })}
       </div>

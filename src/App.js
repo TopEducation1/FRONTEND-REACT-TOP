@@ -6,12 +6,13 @@ import {
   Navigate,
   
 } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import CertificationPage from "./pages/certificationPage";
 import LibraryPage from "./pages/library";
 import CertificationPageCafam from "./pages/cafam/certificationPageCafam";
 import HomePage from "./pages/home";
-import HomePage2 from "./pages/home-2";
 import HomeCafam from "./pages/cafam/homeCafam.jsx";
 import Blog from "./pages/blog.jsx";
 import TopEducationLayout from "./layouts/topeducation/topEducationLayout.js";
@@ -58,7 +59,6 @@ function App() {
         {/* Rutas principales */}
         <Route element={<TopEducationLayout />}>
           <Route path="/" element={<HomePage />} />
-          <Route path="/home" element={<HomePage2 />} />
           <Route path="/explora" element={<LibraryPage />} />
           <Route path="/explora/filter" element={<LibraryPage />} />
           <Route path="/recursos/:slug" element={<BlogDetailPage />} />
@@ -93,6 +93,10 @@ function App() {
         {/* Ruta por defecto */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+      />
     </Router>
   );
 }

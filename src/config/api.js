@@ -22,6 +22,7 @@ export const endpoints = {
   blogs : `${BASE_URL}/blogs/`,
   blog_detail: (slug) => `${BASE_URL}/blog/${slug}/`,
   masterclassGrid: `${BASE_URL}/masterclass-certificaciones-grid/`,
+  suggestedCertificationsGrid: `${BASE_URL}/certificaciones/suggested-grid/`,
   empresas: `${BASE_URL}/api/companies/`,
   topics: `${BASE_URL}/api/topics/`,
   skills: `${BASE_URL}/api/skills/`,
@@ -31,8 +32,18 @@ export const endpoints = {
   universities: `${BASE_URL}/api/universities/`,
   latest_certifications: `${BASE_URL}/api/latest-certifications/`,
   original_detail: (slug) => `${BASE_URL}/originals/${slug}/`,
+  originalsSlider: `${BASE_URL}/originals/slider/`,
+  personalizedRecommendations: `${BASE_URL}/api/recommendations/`,
+  relatedCertificationsGrid: (slug) => `${BASE_URL}/certificaciones/${slug}/related-grid/`,
   ranking_detail: (slug) => `${BASE_URL}/ranking/${slug}/`,
+  ranking_preview: (slug) => `${BASE_URL}/api/rankings/${slug}/preview/`,
   rankings: `${BASE_URL}/api/rankings/`,
+  filterSkills: `${BASE_URL}/api/filters/skills/`,
+  filterCompanies: `${BASE_URL}/api/filters/companies/`,
+  filterPlatforms: `${BASE_URL}/api/filters/platforms/`,
+  filterUniversitiesRegion: `${BASE_URL}/api/filters/universities-by-region/`,
+  learningRouteCompleteSignup: `${BASE_URL}/api/learning-route/complete-signup/`,
+  learningRouteRecommendations: `${API_URL}/api/learning-route/recommendations/`,
 };
 
 export default endpoints;

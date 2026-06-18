@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import TopicSelector from "../components/TopicSelector";
 import PlatformsSelector from "../components/PlatformsSelector";
@@ -11,11 +11,39 @@ import FinisherHeaderComponent from "../components/FinisherHeaderComponent";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import TopicGrid from "../components/TopicGrid";
 import endpoints from "../config/api";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import { ArrowRight } from "lucide-react";
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaAnglesLeft,
+  FaAnglesRight,
+} from "react-icons/fa6";
+
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 function HomePage() {
   const [topics, setTopics] = useState([]);
   const [topicsLoading, setTopicsLoading] = useState(true);
   const [topicsError, setTopicsError] = useState("");
+
+  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+
+  const handleStartNow = (e) => {
+    e.preventDefault();
+
+    if (!email.trim()) {
+      return;
+    }
+
+    navigate(
+      `/empieza-ahora?email=${encodeURIComponent(email.trim())}`
+    );
+  };
   useEffect(() => {
   let cancelled = false;
 
@@ -415,7 +443,7 @@ function HomePage() {
   const background = useTransform(
     scrollYProgress,
     [0, 0.5, 1],
-    ["#0F090B", "#F6F4EF", "#0F090B"]
+    ["#F6F4EF", "#F6F4EF", "#F6F4EF"]
   );
 
   const [statePopUp, setStatePopUp] = useState(false);
@@ -445,44 +473,278 @@ function HomePage() {
         <meta name="author" content="Top Education" />
         <meta name="robots" content="index, follow" />
       </Helmet>
+      <style jsx>{`
+        .home-swiper-prev,
+        .home-swiper-next {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 40;
 
-      <FinisherHeaderComponent className="sect-1" />
+          width: 64px;
+          height: 64px;
+          border-radius: 9999px;
 
-      <section className="h-[20vh] bg-gradient-to-t from-[#0F090B] to-transparent relative"></section>
-      <section className="h-[20vh] bg-gradient-to-t from-transparent to-[#0F090B] relative"></section>
+          display: flex;
+          align-items: center;
+          justify-content: center;
 
-      <section className="wrapper relative section z-10">
-        <div className="absolute inset-0 -z-20 bg-[#0F090B]/5 " />
+          backdrop-filter: blur(14px);
+          -webkit-backdrop-filter: blur(14px);
 
-        <div className="container m-auto px-2 lg:px-4 justify-center-safe gap-2 relative">
-          <TopicGrid topics={topics} columns={5} withBackground={false} />
+          background: rgba(255, 255, 255, 0.08);
+
+          border: 1px solid rgba(255, 255, 255, 0.14);
+
+          color: rgba(255, 255, 255, 0.9);
+
+          font-size: 1.5rem;
+          font-weight: 300;
+
+          transition: all 0.35s ease;
+
+          box-shadow:
+            0 10px 40px rgba(0,0,0,0.22),
+            inset 0 1px 1px rgba(255,255,255,0.06);
+        }
+
+        .home-swiper-prev:hover,
+        .home-swiper-next:hover {
+          transform: translateY(-50%) scale(1.06);
+
+          background: rgba(255,255,255,0.14);
+
+          box-shadow:
+            0 18px 50px rgba(87,80,255,0.22),
+            inset 0 1px 1px rgba(255,255,255,0.08);
+        }
+
+        .home-swiper-prev {
+          left: 48px;
+        }
+
+        .home-swiper-next {
+          right: 48px;
+        }
+
+        .home-main-swiper .swiper-pagination {
+          bottom: 32px !important;
+        }
+
+        .home-main-swiper .swiper-pagination-bullet {
+          width: 8px;
+          height: 8px;
+          background: rgba(255,255,255,0.3);
+          opacity: 1;
+          transition: all 0.3s ease;
+        }
+
+        .home-main-swiper .swiper-pagination-bullet-active {
+          width: 42px;
+          border-radius: 999px;
+          background: #5CC781;
+        }
+
+        @media (max-width: 1024px) {
+          .home-swiper-prev,
+          .home-swiper-next {
+            width: 52px;
+            height: 52px;
+            font-size: 1.2rem;
+          }
+
+          .home-swiper-prev {
+            left: 16px;
+          }
+
+          .home-swiper-next {
+            right: 16px;
+          }
+        }
+      `}</style>
+      <FinisherHeaderComponent />
+
+      <section className="relative py-12 lg:py-20 overflow-hidden bg-gradient-to-b from-transparent via-[#F5F3EE] to-[#F5F3EE] -mt-20 !z-5">
+
+        <div className="relative z-10 max-w-[1400px] mx-auto px-4 lg:px-8">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <span className="uppercase tracking-[0.35em] text-[11px] text-[#7B6E63] font-medium">
+              Explora
+            </span>
+
+            <h2
+              className="mt-3 text-[#0F090B] font-light leading-none
+                text-[2.5rem] md:text-[3.8rem] lg:text-[4.2rem]
+                font-te"
+            >
+              ¿Qué quieres aprender hoy?
+            </h2>
+
+            <p className="mt-3 max-w-2xl mx-auto text-[#6D6258] text-[1rem] md:text-[1.3rem] leading-[1.3em]">
+              Haz clic en una categoría para explorar las instituciones
+              que ofrecen certificaciones
+            </p>
+          </div>
+
+          {/* Grid */}
+          <div className="relative">
+            <TopicGrid topics={topics} columns={5} />
+          </div>
+
+          {/* Footer CTA */}
+          <div className="flex justify-center mt-14">
+            <button
+              type="button"
+              className="group inline-flex items-center gap-3 text-[#0F090B]
+              transition-all duration-300 hover:text-[#1941cf]"
+            >
+              <span className="text-[1rem] font-medium">
+                Ver todas las categorías
+              </span>
+
+              <span className="transition-transform duration-300 group-hover:translate-x-1">
+                <ArrowRight
+                  size={16}
+                  strokeWidth={2}
+                  className="translate-y-[1px]"
+                />
+              </span>
+            </button>
+          </div>
         </div>
       </section>
 
-      <section className="wrapper w-screen h-full bg-[#0F090B] relative flex-shrink-0 flex items-center justify-center">
-        <div className="container m-auto py-30 max-w-[90vw] text-center">
-          <h2 className="text-white text-4xl lg:text-6xl font-normal top-italic leading-[1.2em] mb-5">
-            Aprende con las universidades <br />
-            líderes del mundo
-          </h2>
+      <section className="wrapper w-screen bg-[#F5F3EE] relative flex-shrink-0 flex items-center justify-center">
+        <div className="container m-auto py-20 max-w-[90vw] text-center">
+          <div className="mx-auto max-w-[820px] text-center">
+            <span className="uppercase tracking-[0.35em] text-[11px] text-[#7B6E63] font-medium">
+              Universidades líderes
+            </span>
+
+            <h2 className="mt-3 text-[#0F090B] font-light leading-none
+                text-[2.5rem] md:text-[3.8rem] lg:text-[4.2rem]
+                font-te">
+              Aprende con las universidades<br></br> líderes del mundo
+            </h2>
+
+            <p className="mt-3 max-w-2xl mx-auto text-[#6D6258] text-[1rem] md:text-[1.3rem] leading-[1.3em]">
+              Explora certificaciones creadas por instituciones reconocidas
+              globalmente y encuentra nuevas rutas para tu crecimiento profesional.
+            </p>
+          </div>
           <ImageSlider3D images={flagsImages} action="explora" />
         </div>
       </section>
+              
+      <section className="w-screen h-full flex-shrink-0 bg-[#0F090B]">
+        <Swiper
+          modules={[Navigation, Pagination]}
+          navigation={{
+            nextEl: ".home-swiper-next",
+            prevEl: ".home-swiper-prev",
+          }}
+          pagination={{
+            clickable: true,
+          }}
+          spaceBetween={0}
+          slidesPerView={1}
+          preventClicks={false}
+          preventClicksPropagation={false}
+          noSwiping={true}
+          noSwipingSelector=".flags-no-swiping"
+          className="home-main-swiper w-full h-full"
+        >
+          <button className="home-swiper-prev">
+            <FaChevronLeft />
+          </button>
 
-      <section className="w-screen h-full flex-shrink-0">
-        <HorizontalScroll>
-          <section className="w-screen h-full bg-[#0F090B] flex-shrink-0 flex items-center justify-center px-5">
-            <div className="container m-auto">
-              <PlatformsSelector platforms={platforms} />
-            </div>
-          </section>
-          <Flags logos={logos} />
-        </HorizontalScroll>
+          <button className="home-swiper-next">
+            <FaChevronRight />
+          </button>
+          {/* Slide 1 */}
+          <SwiperSlide>
+            <PlatformsSelector platforms={platforms} />
+          </SwiperSlide>
+
+          {/* Slide 2 */}
+          <SwiperSlide>
+            <Flags logos={logos} />
+          </SwiperSlide>
+        </Swiper>
       </section>
 
-      <section className="w-screen bg-[#0F090B] relative h-full flex-shrink-0 flex items-center justify-center section sect-6">
+      <section className="w-screen bg-[#F6F4EF] relative flex-shrink-0 flex items-center justify-center">
         <div className="container m-auto">
           <HeroSlider />
+        </div>
+      </section>
+      <section className="bg-[#F5F3EE] px-4 py-16 md:py-24">
+        <div className="mx-auto max-w-[920px]">
+          <div className="relative overflow-hidden rounded-[28px] bg-[#1941cf] px-6 py-16 text-center shadow-[0_28px_80px_rgba(87,80,255,0.22)] md:rounded-[32px] md:px-12 md:py-15">
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08)_0%,transparent_45%,rgba(0,0,0,0.08)_100%)]" />
+
+            <div className="relative z-10 mx-auto max-w-[850px]">
+              <h2 className="font-te text-[2.5rem] !font-['Montserrat'] font-medium leading-[1.08em] text-white md:text-[2.8rem] " >
+                Descubre tu ruta de aprendizaje
+              </h2>
+
+              <p className="mx-auto max-w-[760px] font-['Montserrat'] text-[1rem] font-medium leading-[1.7em] text-white/80 md:text-[1.15rem] ">
+                Únete a miles de personas que ya aprenden con los mejores del mundo.
+              </p>
+              <form
+                /*onSubmit={handleStartNow}*/
+                className="mx-auto mt-10 flex w-full max-w-[620px] flex-col gap-3 sm:flex-row sm:items-center sm:justify-center"
+              >
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Tu correo electrónico"
+                  className="
+                    h-[56px]
+                    w-full
+                    rounded-full
+                    border
+                    border-white/20
+                    bg-white
+                    px-6
+                    font-['Montserrat']
+                    text-[15px]
+                    text-neutral-800
+                    outline-none
+                    placeholder:text-neutral-400
+                    focus:ring-4
+                    focus:ring-white/20
+                    sm:flex-1
+                  "
+                  required
+                />
+
+                <button
+                  type="submit"
+                  className="
+                    h-[56px]
+                    rounded-full
+                    bg-[#0F090D]
+                    px-8
+                    font-['Montserrat']
+                    text-[15px]
+                    font-bold
+                    text-white
+                    transition-all
+                    duration-300
+                    hover:-translate-y-1
+                    hover:bg-black
+                    hover:shadow-[0_18px_45px_rgba(0,0,0,0.22)]
+                    sm:w-auto
+                  "
+                >
+                  Empieza ahora
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
       </section>
     </>

@@ -330,7 +330,7 @@ const TopicSelector = ({ topics }) => {
                           setHoveredNodeId(null);
                         }}
                       >
-                        <div className="flex flex-col items-center bg-[#0F090B]/80 shadow-[0_0_30px_15px_#0F090B] backdrop-blur-xs rounded-full justify-center w-full h-full text-center">
+                        <div className="flex flex-col items-center bg-[#F6F4EF]/80 shadow-[0_0_30px_15px_#0F090B] backdrop-blur-xs rounded-full justify-center w-full h-full text-center">
                           <div className="relative w-full h-full bg-center bg-cover bg-no-repeat bg-[url(./assets/category/animate-hth-top.svg)] mx-auto">
                             {topic.universities?.map((uni, u) => {
                               const radius = 50;

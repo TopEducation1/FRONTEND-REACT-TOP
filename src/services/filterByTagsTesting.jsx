@@ -18,6 +18,7 @@ class TagFilterService {
       Plataforma: "Plataforma",
       plataforma: "Plataforma",
       Aliados: "Plataforma",
+      aliados: "Plataforma",
 
       Empresa: "Empresa",
       Empresas: "Empresa",
@@ -34,6 +35,19 @@ class TagFilterService {
     return map[category] || category;
   }
 
+  getParamName(category, tag) {
+    const normalizedCategory = this.normalizeCategoryKey(category);
+    const hasId = tag && typeof tag === "object" && tag.id;
+
+    if (hasId) {
+      if (normalizedCategory === "Plataforma") return "plataforma_id";
+      if (normalizedCategory === "Empresa") return "empresa_id";
+      if (normalizedCategory === "Universidad") return "universidad_id";
+    }
+
+    return normalizedCategory;
+  }
+
   getTagValue(category, tag) {
     if (tag == null) return "";
 
@@ -43,6 +57,7 @@ class TagFilterService {
       if (typeof tag === "object") {
         return tag.slug || "";
       }
+
       return String(tag).trim();
     }
 
@@ -51,7 +66,15 @@ class TagFilterService {
     }
 
     if (typeof tag === "object") {
-      return tag.nombre || tag.translate || tag.slug || "";
+      if (
+        normalizedCategory === "Plataforma" ||
+        normalizedCategory === "Empresa" ||
+        normalizedCategory === "Universidad"
+      ) {
+        return tag.id || tag.value || tag.nombre || "";
+      }
+
+      return tag.slug || tag.nombre || tag.translate || "";
     }
 
     return String(tag).trim();
@@ -60,19 +83,18 @@ class TagFilterService {
   buildQueryString(tags, page = 1, pageSize = 16) {
     const searchParams = new URLSearchParams();
 
-    searchParams.set("page", page);
-    searchParams.set("page_size", pageSize);
+    searchParams.set("page", String(page));
+    searchParams.set("page_size", String(pageSize));
 
     Object.entries(tags || {}).forEach(([category, tagList]) => {
       if (!Array.isArray(tagList) || !tagList.length) return;
 
-      const categoryParam = this.normalizeCategoryKey(category);
-
       tagList.forEach((tag) => {
+        const paramName = this.getParamName(category, tag);
         const value = this.getTagValue(category, tag);
 
         if (value) {
-          searchParams.append(categoryParam, value);
+          searchParams.append(paramName, String(value));
         }
       });
     });

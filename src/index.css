@@ -92,7 +92,7 @@ body {
   /*overscroll-behavior: none;*/
   margin: 0;
   padding: 0;
-  background: var(--negro);
+  background: var(--blanco);
   overflow: hidden;
 }
 
@@ -106,7 +106,7 @@ body {
   align-items: center; /* Centramos horizontalmente */
   justify-content: center; /* Centramos verticalmente */
   font-size: 2em; /* Tamaño de fuente grande */
-  color: var(--blanco); /* Texto en blanco */
+  color: var(--negro); /* Texto en blanco */
   view-timeline: --scroll;
 }
 .cert-video{
@@ -246,7 +246,7 @@ header {
   align-items: center;
 }
 /*MENU DE NAVEGACIÓN*/
-.nav-main {
+/*.nav-main {
   display: flex;
   top: 15px;
   flex-direction: row;
@@ -269,14 +269,15 @@ header {
 .menu {
   display: flex;
   gap: 0;
+  margin: 5px 0px;
   position: relative;
   align-items: center;
   vertical-align: top;
 }
 
 .menu-item {
-  padding: 1rem .5rem;
-  border-radius: 5px;
+  padding: .5rem .8rem;
+  border-radius: 25px;
   text-decoration: none;
   text-align: left;
   font-family: 'Montserrat';
@@ -292,6 +293,8 @@ header {
 .menu-item.active {
   color: var(--blanco);
   pointer-events: none;
+  background: rgba(246,244,239,.1);
+  border-radius: 25px;
 }
 /*.item-empezar.active{
   color: var(--negro);
@@ -310,7 +313,7 @@ header {
   z-index: 0;
   background: #1c1c1c;
   backdrop-filter: blur(10px);
-  top: 50px;
+  top: 45px;
   left: -7vw;
   padding: 0;
   width: 80vw;
@@ -385,7 +388,7 @@ header {
 }
 .submenu-item a{
   display: flex;
-  font-size: 16px;
+  font-size: 12px;
   align-items: center;
 }
 
@@ -394,9 +397,9 @@ header {
 }
 
 .submenu-item .item-ico {
-  width: 30px;
-  height: 30px;
-  margin-right: 10px;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
   object-fit: cover;
   border-radius: 4px;
 }
@@ -410,8 +413,8 @@ header {
   justify-content: center;
 }
 .section-Plataforma .submenu-items .submenu-item .item-ico{
-  width: 100px;
-  height: 100px;
+  width: 70px;
+  height: 70px;
   margin: 0px;
   display: flex;
   flex-wrap: wrap;
@@ -456,7 +459,7 @@ header {
   }
 }
 
-.wrapper-logo-nav {
+/*.wrapper-logo-nav {
   display: flex;
   z-index: 2;
   padding: 5px 0px;
@@ -467,16 +470,16 @@ header {
 }
 
 .logo-nav {
-  /*filter: invert(100%);*/
+  /*filter: invert(100%);
   width: 100%;
   max-width: 180px;
   margin: 0;
-}
+}*/
 .btn-atras{
   display: none;
 }
 .page-recursos .btn-atras, .page-certificacion .btn-atras{
-  display: block;
+  display: flex;
 }
 .page-certificacion h1{
   font-family: 'Montserrat';
@@ -490,6 +493,21 @@ header {
   margin-right: auto;
   padding: 8px 10px;
   border-radius: 25px;
+}
+@keyframes topoWave {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.32;
+  }
+
+  70% {
+    opacity: 0.12;
+  }
+
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
 }
 
 /*.wrapper-logo-platforms::after{
@@ -871,7 +889,7 @@ header {
   margin-right: -50%;
   transform: translate(-50%, -50%);
   padding: 1px;
-  border-radius: var(--esquinaSm);
+  border-radius: 32px;
   box-shadow: 0 5px 15px rgba(var(--negroRGB),0.3);
 }
 
@@ -1351,7 +1369,7 @@ header {
   align-items: end;
   align-content: end;
   width: 33.3%;
-  color: var(--blanco);
+  color: var(--negro);
   font-family: 'Montserrat';
 }
 .section-logo{
@@ -1393,8 +1411,11 @@ header {
   width: 45px;
 }
 /*ESPECIFICO PAGINAS*/
-.sect-h-pequ h1{
-  font-family: 'That That New Regular';
+.font-te{
+  font-family: 'That That New Regular' !important;
+}
+.font-te-it{
+  font-family: 'That That New Italic' !important;
 }
 
 /*DISEÑO DEL BLOG*/
@@ -2294,10 +2315,9 @@ header {
   box-sizing: border-box;
 }
 
-.container-burguer-button{
+/*.container-burguer-button{
   display: none;
-}
-
+}*/
 /*RESPONSIVE INTEGRACIÓN BYCODE*/
 
 @media(max-width: 1920px) {
@@ -2311,9 +2331,9 @@ header {
 
 /*RESPONSIVE desktop: 1280px*/
 @media(max-width: 1280px) {
-  .nav-main{
+  /*.nav-main{
     width: 85%;
-  }
+  }*/
   .block-circles{
     gap: 5px;
   }
@@ -2324,7 +2344,7 @@ header {
   .wrapper-search-bar{
     right: 11%;
     top: 80px;
-  }
+  }/*
   .wrapper-logo-nav{
     width: 30%;
   }
@@ -2334,7 +2354,7 @@ header {
   }
   .wrapper-logos .container-logo img{
     height: 15px;
-  }
+  }*/
   .cloud-container {
     position: relative;
     width: 90vh;
@@ -2386,7 +2406,7 @@ header {
     width: 100%;
     padding: 0 10px;
   }
-  .container-burguer-button {
+  /*.container-burguer-button {
     display: block;
     padding: 5px;
     height: 35px;
@@ -2467,7 +2487,7 @@ header {
     width: 100%;
     height: auto;
     padding: .5rem;
-  }
+  }*/
 
   .navigation-menu .submenu .submenu-section{
     width: 100%;
@@ -2544,7 +2564,7 @@ header {
 
 }
 
-/*RESPONSIVE laptop: 850px*/
+/*RESPONSIVE laptop: 850px
 @media(max-width: 850px){
   .navigation-menu.open{
     top: 47px;
@@ -2556,7 +2576,7 @@ header {
     box-sizing: border-box;
   }
 
-}
+}*/
 
 /*RESPONSIVE tablet: 768px*/
 @media(max-width: 768px){
@@ -2569,7 +2589,7 @@ header {
   .topic-circle span{
     font-size: 14px;
   }
-  .container-burguer-button {
+  /*.container-burguer-button {
     display: flex;
     height: 60px;
   }
@@ -2584,7 +2604,7 @@ header {
   .navigation-menu{
     padding: 20px 15px;
     height: auto;
-  }
+  }*/
   .unfold-list .submenu{
     width: 100%;
   }
@@ -2627,14 +2647,14 @@ header {
     top: inherit;
     height: 100%;
   }
-  .wrapper-logo-nav{
+  /*.wrapper-logo-nav{
     width: 40%;
     justify-content: start;
   }
   .wrapper-logo-nav img{
     max-width: 180px;
     min-width: 100px;
-  }
+  }*/
   .wrapper-logos .container-logo{
     padding: 3px 5px;
     margin-right: 5px;
@@ -2701,14 +2721,14 @@ header {
   .video-container video{
     max-width: 100%;
   }
-  .wrapper-logo-nav{
+  /*.wrapper-logo-nav{
     width: 40%;
   }
   .wrapper-logo-nav img{
     max-width: 150px;
     min-width: 100px;
-  }
-  .container-burguer-button {
+  }*/
+  /*.container-burguer-button {
     height: 50px;
   }
   .container-burguer-button .burguer-bar{
@@ -2728,7 +2748,7 @@ header {
   }
   .open ~ .container-burguer-button .burguer-bar::after{
     transform: rotate(90deg) translateY(0px) translateX(-12px);
-  }
+  }*/
   .topic-circle span{
     font-size: 14px;
   }

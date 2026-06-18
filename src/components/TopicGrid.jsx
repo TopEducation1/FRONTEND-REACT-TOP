@@ -1,9 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useSpring,
+} from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 const GRID_COL_CLASSES =
-  "relative overflow-visible grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-0";
+  "relative overflow-visible grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 lg:gap-3";
 
 export default function TopicGrid({ topics = [], columns = 5 }) {
   const navigate = useNavigate();
@@ -15,6 +21,7 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
   });
 
   const [colCount, setColCount] = useState(5);
+  const [touch, setTouch] = useState(false);
 
   useEffect(() => {
     const computeCols = () => {
@@ -32,10 +39,13 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
 
     computeCols();
 
-    if (typeof window !== "undefined") {
-      window.addEventListener("resize", computeCols);
-      return () => window.removeEventListener("resize", computeCols);
-    }
+    setTouch(
+      typeof window !== "undefined" &&
+        ("ontouchstart" in window || navigator.maxTouchPoints > 0)
+    );
+
+    window.addEventListener("resize", computeCols);
+    return () => window.removeEventListener("resize", computeCols);
   }, [columns]);
 
   function navigateWithTransition(path) {
@@ -46,55 +56,20 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
     }
   }
 
-  const normalizeFilterKey = (key) => {
-    const map = {
-      Temas: "Tema",
-      Tema: "Tema",
-      Habilidades: "Tema",
-      Habilidad: "Tema",
-      Universidades: "Universidad",
-      Universidad: "Universidad",
-      Empresas: "Empresa",
-      Empresa: "Empresa",
-      Plataformas: "Plataforma",
-      Plataforma: "Plataforma",
-    };
-
-    return map[key] || key;
-  };
-
   const handleItemMenuClick = (filtersObject) => {
     const queryParams = new URLSearchParams();
 
-    // filtros por defecto
-    queryParams.append("idioma", "es");
-    queryParams.append("idioma", "en");
-
-    for (const [key, value] of Object.entries(filtersObject || {})) {
-      if (value === undefined || value === null || value === "") continue;
-
-      const normalizedKey = normalizeFilterKey(key);
-
-      if (Array.isArray(value)) {
-        value.forEach((v) => {
-          if (v !== undefined && v !== null && v !== "") {
-            queryParams.append(normalizedKey, v);
-          }
-        });
-      } else {
-        queryParams.append(normalizedKey, value);
-      }
-    }
-
+    queryParams.set("idioma", "es");
     queryParams.set("page", "1");
     queryParams.set("page_size", "16");
 
-    navigateWithTransition(`/explora/filter?${queryParams.toString()}`);
-  };
+    Object.entries(filtersObject || {}).forEach(([key, value]) => {
+      if (value === undefined || value === null || value === "") return;
+      queryParams.set(key, value);
+    });
 
-  const isTouchDevice = () =>
-    typeof window !== "undefined" &&
-    ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+    navigateWithTransition(`/explora/filter?idioma=en&${queryParams.toString()}`);
+  };
 
   const colClass = useMemo(() => {
     if (!columns || columns === 5) return GRID_COL_CLASSES;
@@ -108,8 +83,6 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
 
     return map[columns] || GRID_COL_CLASSES;
   }, [columns]);
-
-  const touch = isTouchDevice();
 
   return (
     <div ref={containerRef} className={colClass}>
@@ -140,45 +113,31 @@ function TopicCard({
 }) {
   const [isActive, setIsActive] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+
+  const trackRef = useRef(null);
+
+  const relatedItems = useMemo(
+    () => topic?.items || topic?.universities || [],
+    [topic]
+  );
+
   const isElevated = isTouch ? isActive : isHovered;
+  const showOverlay = isElevated;
 
   const evenColumn = colCount > 0 ? (idx % colCount) % 2 === 0 : true;
 
-  const yRaw = useTransform(scrollYProgress, [0, 1], evenColumn ? [8, -25] : [-25, 8]);
-  const y = useSpring(yRaw, { stiffness: 60, damping: 20, mass: 0.2 });
+  const yRaw = useTransform(
+    scrollYProgress,
+    [0, 1],
+    evenColumn ? [8, -25] : [-25, 8]
+  );
 
-  const showOverlay = isElevated;
+  const y = useSpring(yRaw, {
+    stiffness: 60,
+    damping: 20,
+    mass: 0.2,
+  });
 
-  const cardVariants = {
-    initial: { opacity: 0, y: 12 },
-    in: { opacity: 1, y: 0 },
-  };
-
-  const overlaySlide = {
-    hidden: { y: "100%", opacity: 0.9 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { type: "spring", stiffness: 260, damping: 26, mass: 0.6 },
-    },
-    exit: {
-      y: "100%",
-      opacity: 0.9,
-      transition: { duration: 0.2, ease: "easeInOut" },
-    },
-  };
-
-  const contentStagger = {
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.04, delayChildren: 0.05 } },
-  };
-
-  const itemUp = {
-    hidden: { opacity: 0, y: 24 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.22, ease: "easeOut" } },
-  };
-
-  const trackRef = useRef(null);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(true);
 
@@ -193,19 +152,23 @@ function TopicCard({
     setCanNext(!atEnd);
   };
 
+  useEffect(() => {
+    updateButtons();
+  }, [relatedItems.length]);
+
   const scrollByAmount = (dir) => {
     const el = trackRef.current;
     if (!el) return;
 
-    const amount = Math.round(el.clientWidth * 1) * dir;
-    el.scrollBy({ left: amount, behavior: "smooth" });
+    const amount = Math.round(el.clientWidth) * dir;
+
+    el.scrollBy({
+      left: amount,
+      behavior: "smooth",
+    });
 
     setTimeout(updateButtons, 220);
   };
-
-  useEffect(() => {
-    updateButtons();
-  }, [topic?.universities?.length]);
 
   const handleTopicClick = () => {
     if (isTouch) {
@@ -213,14 +176,90 @@ function TopicCard({
       return;
     }
 
-    if (topic?.type === "search") {
-      onFilter({ search: topic.name });
+    if (topic?.filter) {
+      onFilter(topic.filter);
       return;
     }
 
-    if (topic?.type && topic?.name) {
-      onFilter({ [topic.type]: topic.slug || topic.name });
+    if (topic?.id) {
+      onFilter({ tema_id: topic.id });
     }
+  };
+
+  const handleRelatedClick = (item) => {
+    if (item?.type === "certification" && item?.link) {
+      navigateWithTransition(item.link);
+      return;
+    }
+
+    if (item?.filter) {
+      onFilter(item.filter);
+      return;
+    }
+
+    if (item?.type === "university" && item?.id) {
+      onFilter({
+        tema_id: topic.id,
+        universidad_id: item.id,
+      });
+      return;
+    }
+
+    if (item?.type === "company" && item?.id) {
+      onFilter({
+        tema_id: topic.id,
+        empresa_id: item.id,
+      });
+    }
+  };
+
+  const cardVariants = {
+    initial: { opacity: 0, y: 12 },
+    in: { opacity: 1, y: 0 },
+  };
+
+  const overlaySlide = {
+    hidden: { y: "100%", opacity: 0.9 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 260,
+        damping: 26,
+        mass: 0.6,
+      },
+    },
+    exit: {
+      y: "100%",
+      opacity: 0.9,
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut",
+      },
+    },
+  };
+
+  const contentStagger = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.04,
+        delayChildren: 0.05,
+      },
+    },
+  };
+
+  const itemUp = {
+    hidden: { opacity: 0, y: 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.22,
+        ease: "easeOut",
+      },
+    },
   };
 
   return (
@@ -230,7 +269,13 @@ function TopicCard({
       initial="initial"
       animate="in"
       transition={{ duration: 0.35, ease: "easeOut" }}
-      className="group relative bg-[#1c1c1c]/80 ring-1 ring-white/5 hover:ring-white/10 shadow-sm"
+      className="
+        group relative rounded-[28px] bg-white
+        border border-black/5
+        shadow-[0_10px_40px_rgba(0,0,0,0.04)]
+        hover:shadow-[0_18px_60px_rgba(0,0,0,0.08)]
+        transition-all duration-500
+      "
       style={{
         y,
         zIndex: isElevated ? 9999 : 1,
@@ -248,27 +293,69 @@ function TopicCard({
         onClick={handleTopicClick}
         aria-label={`Abrir ${topic.name}`}
       >
-        <div className="w-full aspect-[4/3] flex items-center justify-center p-6 transition-transform duration-300 group-hover:scale-[1.03] will-change-transform transform-gpu">
+        <div
+          className="
+            relative w-full min-h-[150px]
+            flex flex-col items-center justify-center
+            px-6 pt-8 pb-5
+            transition-transform duration-300
+            group-hover:scale-[1.03]
+            will-change-transform transform-gpu
+          "
+        >
           {topic.img ? (
-            <img
-              src={topic.img}
-              alt={topic.name}
-              className="h-full w-full object-contain"
+            <div
+              className="w-[72px] h-[72px] rounded-2xl flex items-center justify-center mb-5"
               style={{
-                filter: `drop-shadow(0 0 30px ${topic.color || "#ffffff"})`,
+                backgroundColor: `${topic.color || "#5CC781"}22`,
               }}
-              loading="lazy"
-            />
+            >
+              <div
+                className="w-12 h-12 rounded-full flex justify-center items-center"
+                style={{
+                  backgroundColor: topic.color || "#5CC781",
+                }}
+              >
+                <img
+                  src={topic.img}
+                  alt={topic.name}
+                  className="w-10 h-10 object-contain"
+                  
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              </div>
+            </div>
           ) : (
-            <div className="h-full w-full grid place-items-center text-white/60 text-sm">
-              Sin imagen
+            <div
+              className="w-[72px] h-[72px] rounded-2xl flex items-center justify-center mb-5"
+              style={{
+                backgroundColor: `${topic.color || "#5CC781"}22`,
+              }}
+            >
+              <div
+                className="w-12 h-12 rounded-full flex justify-center items-center text-white !font-[Montserrat] font-semibold"
+                style={{
+                  backgroundColor: topic.color || "#5CC781",
+                }}
+              >
+                {(topic?.name || "T").charAt(0).toUpperCase()}
+              </div>
             </div>
           )}
         </div>
       </button>
 
       <div className="px-5 pb-5 pt-0">
-        <h3 className="text-center text-[1.2rem] font-semibold font-monts leading-tight text-[#F6F4EF]">
+        <h3
+          className="
+            text-center !font-[Montserrat]
+            text-[#0F090B] font-semibold
+            leading-[1.2] text-[1rem] md:text-[1rem] px-4
+          "
+        >
           {topic.name}
         </h3>
       </div>
@@ -286,13 +373,20 @@ function TopicCard({
           >
             <motion.div
               variants={contentStagger}
-              className="relative w-full rounded-t-2xl bg-white/80 shadow-[0_-8px_30px_-10px_rgba(0,0,0,0.25)] pt-4 pb-20 px-3 flex flex-col items-center"
+              className="
+                relative w-full rounded-t-[28px]
+                bg-[#F6F4EF]/95 backdrop-blur-xl
+                border-t border-black/5
+                shadow-[0_-8px_30px_-10px_rgba(0,0,0,0.25)]
+                pt-4 pb-20 px-3 flex flex-col items-center
+              "
             >
               <div className="mb-2 h-1.5 w-12 rounded-full bg-black/10" />
 
               <motion.h4
                 variants={itemUp}
-                className="text-[1rem] leading-5 font-semibold text-[#0F090B] text-center mb-1"
+                className="text-[1rem] !font-[Montserrat] leading-5 font-semibold text-[#0F090B] text-center mb-1 cursor-pointer"
+                onClick={handleTopicClick}
               >
                 {topic.name}
               </motion.h4>
@@ -315,9 +409,13 @@ function TopicCard({
                     type="button"
                     onClick={() => scrollByAmount(-1)}
                     disabled={!canPrev}
-                    className="pointer-events-auto absolute left-[-10px] top-1/2 -translate-y-1/2 z-20 grid place-items-center
-                               w-9 h-9 rounded-full backdrop-blur-md shadow ring-white/5 !flex items-center justify-center leading-[1em]
-                               hover:bg-white hover:text-black disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="
+                      pointer-events-auto absolute left-[-10px] top-1/2 -translate-y-1/2 z-20
+                      w-9 h-9 rounded-full backdrop-blur-md shadow ring-white/5
+                      !flex items-center justify-center leading-[1em]
+                      hover:bg-white hover:text-black
+                      disabled:opacity-40 disabled:cursor-not-allowed
+                    "
                     aria-label="Anterior"
                   >
                     <span className="leading-0 flex mt-[-10px]">‹</span>
@@ -327,9 +425,13 @@ function TopicCard({
                     type="button"
                     onClick={() => scrollByAmount(1)}
                     disabled={!canNext}
-                    className="pointer-events-auto absolute right-[-10px] top-1/2 -translate-y-1/2 z-20 grid place-items-center
-                               w-9 h-9 rounded-full backdrop-blur-md shadow ring-white/5 !flex items-center justify-center leading-[1em]
-                               hover:bg-white hover:text-black disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="
+                      pointer-events-auto absolute right-[-10px] top-1/2 -translate-y-1/2 z-20
+                      w-9 h-9 rounded-full backdrop-blur-md shadow ring-white/5
+                      !flex items-center justify-center leading-[1em]
+                      hover:bg-white hover:text-black
+                      disabled:opacity-40 disabled:cursor-not-allowed
+                    "
                     aria-label="Siguiente"
                   >
                     <span className="leading-0 flex mt-[-10px]">›</span>
@@ -338,78 +440,83 @@ function TopicCard({
                   <div
                     ref={trackRef}
                     onScroll={updateButtons}
-                    className="pointer-events-auto overflow-x-auto scroll-smooth px-4 pb-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden rounded-2xl"
+                    className="
+                      pointer-events-auto overflow-x-auto scroll-smooth px-4 pb-2
+                      snap-x snap-mandatory
+                      [&::-webkit-scrollbar]:hidden rounded-2xl
+                    "
                     style={{ scrollbarWidth: "none" }}
                   >
                     <ul className="flex gap-3 items-center pt-5 min-w-full">
-                      {(topic.universities || []).map((uni, u) => {
-                        const uniKey = `${topic.id ?? topic.name}-${u}`;
-
-                        const click = () => {
-                          if (uni?.type === "Certificacion" && uni?.link) {
-                            navigateWithTransition(uni.link);
-                            return;
-                          }
-
-                          if (uni?.type === "search") {
-                            onFilter({
-                              search: uni.name,
-                              ...(topic?.type === "search"
-                                ? {}
-                                : topic?.type && topic?.name
-                                ? { [topic.type]: topic.slug || topic.name }
-                                : {}),
-                            });
-                            return;
-                          }
-
-                          if (uni?.type && uni?.name) {
-                            const filters = {
-                              [uni.type]: uni.name,
-                            };
-
-                            if (topic?.type === "search") {
-                              filters.search = topic.name;
-                            } else if (topic?.type && topic?.name) {
-                              filters[topic.type] = topic.slug || topic.name;
-                            }
-
-                            onFilter(filters);
-                          }
-                        };
+                      {relatedItems.map((item, u) => {
+                        const itemKey = `${topic.id ?? topic.name}-${item.id ?? u}`;
 
                         return (
-                          <li key={uniKey} className="snap-start shrink-0">
+                          <li key={itemKey} className="snap-start shrink-0">
                             <motion.button
                               whileHover={{ y: -8, scale: 1.05 }}
-                              transition={{ type: "spring", stiffness: 250, damping: 18 }}
-                              onClick={click}
+                              transition={{
+                                type: "spring",
+                                stiffness: 250,
+                                damping: 18,
+                              }}
+                              onClick={() => handleRelatedClick(item)}
                               type="button"
-                              className="group/uni relative grid place-items-center rounded-2xl bg-white/90 shadow-sm hover:shadow-md ring-1 ring-black/5 
-                                         w-[72px] h-[72px]"
-                              title={uni?.name}
-                              aria-label={uni?.name}
+                              className="
+                                group/uni relative grid place-items-center
+                                rounded-2xl bg-white border border-black/5
+                                shadow-sm hover:shadow-lg
+                                transition-all duration-300
+                                w-[78px] h-[78px]
+                              "
+                              title={item?.name}
+                              aria-label={item?.name}
                             >
-                              {uni?.img ? (
+                              {item?.img ? (
                                 <img
-                                  src={uni.img}
-                                  alt={uni?.name}
+                                  src={item.img}
+                                  alt={item?.name}
                                   className="max-w-[80%] max-h-[80%] rounded-sm object-contain"
                                   loading="lazy"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = "none";
+
+                                    const fallback =
+                                      e.currentTarget.nextElementSibling;
+
+                                    if (fallback) {
+                                      fallback.style.display = "grid";
+                                    }
+                                  }}
                                 />
-                              ) : (
-                                <span className="px-2 text-[10px] font-medium text-[#0F090B] truncate">
-                                  {uni?.name || "Universidad"}
-                                </span>
-                              )}
+                              ) : null}
 
                               <span
-                                className="pointer-events-none absolute top-[60px] left-1/2 -translate-x-1/2 w-[128%]
-                                           rounded-md bg-[#0F090B] text-white text-[8px] leading-[1em] px-1 py-1 shadow
-                                           opacity-0 scale-95 transition-all duration-200 z-100
-                                           group-hover/uni:opacity-100 group-hover/uni:scale-100"
+                                style={{
+                                  display: item?.img ? "none" : "grid",
+                                }}
+                                className="
+                                  h-11 w-11 place-items-center rounded-full
+                                  bg-[#2563EB] text-sm font-semibold text-white
+                                  !font-[Montserrat]
+                                "
                               >
-                                {uni?.name}
+                                {(item?.initial || item?.name || "T")
+                                  .charAt(0)
+                                  .toUpperCase()}
+                              </span>
+
+                              <span
+                                className="
+                                  pointer-events-none absolute top-[60px] left-1/2 -translate-x-1/2
+                                  w-[128%] rounded-md bg-[#F6F4EF]
+                                  text-black text-[8px] leading-[1em]
+                                  px-1 py-1 shadow opacity-0 scale-95
+                                  transition-all duration-200 z-100
+                                  group-hover/uni:opacity-100 group-hover/uni:scale-100
+                                "
+                              >
+                                {item?.name}
                               </span>
                             </motion.button>
                           </li>

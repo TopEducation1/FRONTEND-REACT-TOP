@@ -1,245 +1,1206 @@
 // src/pages/StartNow.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
-import { useNavigate, useLocation } from "react-router-dom";
-
-/**
- * StartNow.jsx
- * - UI Heygen-style (toggle mensual/anual en una sola card)
- * - ✅ Bloquea checkout si NO hay sesión: redirige a /login
- * - ✅ Guarda intención (from + checkoutPlan) y al volver intenta el checkout automáticamente
- */
+import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Elements,
+  CardElement,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import endpoints from "../config/api";
 
 async function postJSON(url, body, { withCredentials = true } = {}) {
-  let res;
-  try {
-    res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(body || {}),
-      ...(withCredentials ? { credentials: "include" } : {}),
-    });
-  } catch (e) {
-    throw Object.assign(new Error(`Failed to fetch: ${e?.message || e}`), {
-      code: "network",
-    });
-  }
-
-  const ct = (res.headers.get("content-type") || "").toLowerCase();
-  const text = await res.text();
-
-  // Si el backend devuelve HTML (login page / 404 / redirect)
-  if (!ct.includes("application/json")) {
-    const preview = (text || "").slice(0, 200);
-    throw Object.assign(
-      new Error(
-        `No es JSON. Status ${res.status}. Probable HTML/redirect/404.\nPrimeros caracteres:\n${preview}`
-      ),
-      { code: "not_json", status: res.status, preview: text }
-    );
-  }
-
-  let data = null;
-  try {
-    data = text ? JSON.parse(text) : null;
-  } catch {
-    throw Object.assign(
-      new Error(
-        `JSON inválido. Status ${res.status}.\nBody:\n${(text || "").slice(
-          0,
-          200
-        )}`
-      ),
-      { code: "bad_json", status: res.status }
-    );
-  }
-
-  // backend marca no-auth (a veces con 200)
-  if (data?.error === "not_authenticated") {
-    throw Object.assign(new Error("not_authenticated"), {
-      code: "not_authenticated",
-      status: res.status,
-      data,
-    });
-  }
-  if (res.status === 401) {
-    throw Object.assign(new Error("not_authenticated"), {
-      code: "not_authenticated",
-      status: 401,
-      data,
-    });
-  }
-
-  if (!res.ok) {
-    throw Object.assign(
-      new Error(
-        data?.detail ||
-          data?.error ||
-          `HTTP ${res.status} (sin detail). Respuesta: ${JSON.stringify(data).slice(
-            0,
-            200
-          )}`
-      ),
-      { code: "http_error", status: res.status, data }
-    );
-  }
-
-  return data;
-}
-
-async function getJSON(url) {
   const res = await fetch(url, {
-    credentials: "include",
-    headers: { Accept: "application/json" },
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(body || {}),
+    ...(withCredentials ? { credentials: "include" } : {}),
   });
 
-  const ct = (res.headers.get("content-type") || "").toLowerCase();
   const text = await res.text();
+  let data = {};
 
-  if (!ct.includes("application/json")) {
-    throw Object.assign(new Error("not_json"), {
-      code: "not_json",
-      status: res.status,
-      preview: text,
-    });
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    data = {};
   }
-
-  const data = text ? JSON.parse(text) : null;
 
   if (data?.error === "not_authenticated" || res.status === 401) {
     throw Object.assign(new Error("not_authenticated"), {
       code: "not_authenticated",
-      status: res.status,
-      data,
     });
   }
 
-  if (!res.ok) {
-    throw Object.assign(new Error(data?.error || data?.detail || `HTTP_${res.status}`), {
-      code: "http_error",
-      status: res.status,
-      data,
-    });
+  if (!res.ok || data?.ok === false) {
+    const detail =
+      data?.detail ||
+      data?.message ||
+      data?.error ||
+      data?.errorCode ||
+      `HTTP ${res.status}`;
+
+    throw new Error(detail);
   }
 
   return data;
 }
 
-function StartNow() {
+const normalizeLevelItems = (levelData) => {
+  if (Array.isArray(levelData)) return levelData;
+  if (Array.isArray(levelData?.items)) return levelData.items;
+  return [];
+};
+
+const ArrowIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+    <path
+      d="M5 12h14"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+    <path
+      d="m13 5 7 7-7 7"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const StarLogo = ({ size = "lg" }) => {
+  const isSmall = size === "sm";
+
+  return (
+    <div
+      className={`relative grid place-items-center ${
+        isSmall ? "h-16 w-16" : "h-32 w-32"
+      }`}
+    >
+      <span className="absolute h-full w-full animate-[topoWave_2.4s_ease-out_infinite] rounded-full bg-[#2563EB]/10" />
+      <span className="absolute h-full w-full animate-[topoWave_2.4s_ease-out_infinite_0.8s] rounded-full bg-[#2563EB]/10" />
+
+      <div
+        className={`relative z-10 grid place-items-center rounded-full bg-[linear-gradient(135deg,#2563EB_0%,#2563EB_45%,#165C5B_100%)] text-white shadow-[0_18px_55px_rgba(25,65,207,0.35)] ${
+          isSmall ? "h-14 w-14 text-2xl" : "h-24 w-24 text-5xl"
+        }`}
+      >
+        ★
+      </div>
+    </div>
+  );
+};
+
+const StepProgress = ({ current }) => (
+  <div className="mb-5">
+    <span className="!font-['Montserrat'] text-[13px] font-semibold uppercase text-neutral-600">
+      Paso {current} de 3
+    </span>
+
+    <div className="mt-2 h-1 overflow-hidden rounded-full bg-black/10">
+      <div
+        className="h-full rounded-full bg-[#2563EB] transition-all duration-300"
+        style={{ width: `${(current / 3) * 100}%` }}
+      />
+    </div>
+  </div>
+);
+
+const FormInput = ({
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+  required = false,
+  rightAction = null,
+  readOnly = false,
+}) => (
+  <label className="block !font-['Montserrat'] text-[18px] font-semibold text-[#111111]">
+    {label} {required && <span className="text-[#2563EB]">*</span>}
+
+    <div className="relative mt-1">
+      <input
+        type={type}
+        value={value || ""}
+        onChange={onChange}
+        placeholder={placeholder}
+        readOnly={readOnly}
+        className="w-full rounded-[25px] border border-black/10 bg-white px-7 py-3 pr-20 text-[18px] font-normal text-[#111111] outline-none transition-all duration-300 placeholder:text-neutral-300 focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/15 read-only:bg-neutral-50"
+      />
+
+      {rightAction}
+    </div>
+  </label>
+);
+
+const FormSelect = ({
+  label,
+  value,
+  onChange,
+  placeholder,
+  required = false,
+  children,
+}) => (
+  <label className="block !font-['Montserrat'] text-[18px] font-semibold text-[#111111]">
+    {label} {required && <span className="text-[#2563EB]">*</span>}
+
+    <select
+      value={value || ""}
+      onChange={onChange}
+      className="mt-1 w-full rounded-[25px] border border-black/10 bg-white px-7 py-4 text-[18px] font-normal text-[#111111] outline-none transition-all duration-300 focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/15"
+    >
+      <option value="">{placeholder}</option>
+      {children}
+    </select>
+  </label>
+);
+
+const CheckIcon = () => (
+  <svg width="54" height="54" viewBox="0 0 54 54" fill="none">
+    <circle cx="27" cy="27" r="18" stroke="currentColor" strokeWidth="4" />
+    <path
+      d="M18 27.5L24.5 34L37 21"
+      stroke="currentColor"
+      strokeWidth="4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const LockIcon = () => (
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+    <path
+      d="M7 10V8a5 5 0 0 1 10 0v2"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+    <path
+      d="M6 10h12v10H6V10Z"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M12 15v2"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+const countries = [
+  "Colombia",
+  "México",
+  "Perú",
+  "Chile",
+  "Argentina",
+  "Ecuador",
+  "Estados Unidos",
+  "España",
+  "Otro",
+];
+
+const getPasswordChecks = (password = "") => ({
+  length: password.length >= 8,
+  uppercase: /[A-ZÁÉÍÓÚÑ]/.test(password),
+  number: /\d/.test(password),
+  special: /[^A-Za-zÁÉÍÓÚÑáéíóúñ0-9]/.test(password),
+});
+
+const getPasswordScore = (password = "") => {
+  const checks = getPasswordChecks(password);
+  return Object.values(checks).filter(Boolean).length;
+};
+
+const PasswordStrength = ({ password }) => {
+  const checks = getPasswordChecks(password);
+  const score = getPasswordScore(password);
+  const label =
+    score >= 4
+      ? "Fuerte"
+      : score >= 3
+      ? "Buena"
+      : score >= 2
+      ? "Media"
+      : password
+      ? "Débil"
+      : "";
+
+  return (
+    <div className="mt-3">
+      <div className="grid grid-cols-4 gap-1">
+        {[1, 2, 3, 4].map((item) => (
+          <div
+            key={item}
+            className={`h-1.5 rounded-full ${
+              score >= item ? "bg-[#5CC781]" : "bg-neutral-200"
+            }`}
+          />
+        ))}
+      </div>
+
+      <div className="mt-1 grid grid-cols-2 gap-x-4 gap-y-1 !font-['Montserrat'] !text-[10px] text-[13px] md:grid-cols-4">
+        <span className={checks.length ? "text-[#5CC781]" : "text-neutral-400"}>
+          {checks.length ? "⌁" : "○"} 8 caracteres mínimo
+        </span>
+        <span
+          className={checks.uppercase ? "text-[#5CC781]" : "text-neutral-400"}
+        >
+          {checks.uppercase ? "⌁" : "○"} Una mayúscula
+        </span>
+        <span className={checks.number ? "text-[#5CC781]" : "text-neutral-400"}>
+          {checks.number ? "⌁" : "○"} Un número
+        </span>
+        <span
+          className={checks.special ? "text-[#5CC781]" : "text-neutral-400"}
+        >
+          {checks.special ? "⌁" : "○"} Un carácter especial
+        </span>
+      </div>
+
+      <p className="mt-1 text-right !font-['Montserrat'] text-sm font-bold text-[#5CC781]">
+        {label}
+      </p>
+    </div>
+  );
+};
+
+const SuccessToast = ({ message }) => (
+  <div className="fixed left-1/2 top-5 z-[9999] w-[calc(100vw-32px)] max-w-[560px] -translate-x-1/2 rounded-[18px] bg-[#6EC982] p-5 text-white shadow-[0_22px_55px_rgba(49,151,85,0.35)]">
+    <div className="flex items-center gap-4">
+      <span className="grid h-12 w-12 place-items-center rounded-full bg-white/20 text-white">
+        <CheckIcon />
+      </span>
+      <div>
+        <h3 className="!font-['Montserrat'] text-xl font-black">
+          ¡Cuenta creada exitosamente!
+        </h3>
+        <p className="!font-['Montserrat'] text-white/90">
+          {message || "Tu cuenta está lista. Redirigiendo al dashboard..."}
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
+const CourseCard = ({ course }) => (
+  <article className="group overflow-hidden rounded-[20px] border border-black/10 bg-white shadow-[0_14px_40px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(0,0,0,0.10)]">
+    <div className="relative h-[150px] overflow-hidden bg-neutral-100">
+      <img
+        src={course.image}
+        alt={course.title}
+        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        onError={(e) => {
+          e.currentTarget.style.display = "none";
+        }}
+      />
+
+      <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
+
+      <span className="absolute right-3 top-3 rounded-full bg-white px-3 py-1 !font-['Montserrat'] text-[11px] font-bold text-[#2563EB] shadow-sm">
+        {course.level}
+      </span>
+
+      {course.platformLogo && (
+        <span className="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white shadow-sm">
+          <img
+            src={course.platformLogo}
+            alt={course.provider || "Proveedor"}
+            className="max-h-8 max-w-8 object-contain"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+            }}
+          />
+        </span>
+      )}
+    </div>
+
+    <div className="p-4">
+      <div className="flex items-center justify-between gap-3">
+        <p className="line-clamp-1 !font-['Montserrat'] text-sm font-bold text-neutral-500">
+          {course.institution}
+        </p>
+
+        {course.provider && (
+          <span className="shrink-0 rounded-full bg-[#F5F3EE] px-3 py-1 !font-['Montserrat'] text-[11px] font-bold text-neutral-600">
+            {course.provider}
+          </span>
+        )}
+      </div>
+
+      <h4 className="mt-2 line-clamp-2 !font-['Montserrat'] text-[1rem] font-bold leading-tight text-[#111111]">
+        {course.title}
+      </h4>
+
+      {course.mainSkill && (
+        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-[#E8EEFF] px-3 py-1 !font-['Montserrat'] text-[12px] font-bold text-[#2563EB]">
+          {course.mainSkillIcon && (
+            <img
+              src={course.mainSkillIcon}
+              alt={course.mainSkill}
+              className="h-4 w-4 rounded-full object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          )}
+          {course.mainSkill}
+        </div>
+      )}
+
+      <div className="mt-4 flex items-center justify-between border-t border-black/10 pt-3 !font-['Montserrat'] text-sm text-neutral-500">
+        <span>⏱ {course.hours}</span>
+
+        {course.idInterno && (
+          <span className="text-[11px] text-neutral-400">
+            ID MX
+          </span>
+        )}
+      </div>
+    </div>
+  </article>
+);
+
+const cardElementOptions = {
+  hidePostalCode: true,
+  style: {
+    base: {
+      fontSize: "17px",
+      color: "#111111",
+      fontFamily: "Montserrat, Arial, sans-serif",
+      "::placeholder": {
+        color: "#A3A3A3",
+      },
+    },
+    invalid: {
+      color: "#D33B3E",
+    },
+  },
+};
+
+function StartNowContent() {
   const navigate = useNavigate();
-  const location = useLocation();
+  const stripe = useStripe();
+  const elements = useElements();
+  const [searchParams] = useSearchParams();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  const initialEmail = searchParams.get("email") || "";
 
-  // ✅ Backend base URL:
+  const [step, setStep] = useState("welcome");
+  const [routeId, setRouteId] = useState(null);
+  const [progress, setProgress] = useState(0);
+  const [selectedPlan, setSelectedPlan] = useState("");
+  const [selectedPaidPlan, setSelectedPaidPlan] = useState("monthly_x");
+  const [showPass, setShowPass] = useState(false);
+  const [showPass2, setShowPass2] = useState(false);
+  const [showProPass, setShowProPass] = useState(false);
+  const [showProPass2, setShowProPass2] = useState(false);
+  const [paidSubscriptionData, setPaidSubscriptionData] = useState(null);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [cardComplete, setCardComplete] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [billingCycle, setBillingCycle] = useState("monthly");
+
+  const [isBuildingRoute, setIsBuildingRoute] = useState(false);
+
+  const [recommendedByLevel, setRecommendedByLevel] = useState({
+    level_1: [],
+    level_2: [],
+    level_3: [],
+  });
+
+  const [form, setForm] = useState({
+    first_name: "",
+    last_name: "",
+    email: initialEmail,
+    age: "",
+    gender: "",
+    country: "",
+    topics: [],
+    goal: "",
+    password: "",
+    confirm_password: "",
+    pro_password: "",
+    pro_confirm_password: "",
+  });
+
   const backendBaseUrl = useMemo(() => {
     const fromEnv = process.env.REACT_APP_API_URL;
     return (fromEnv || "http://127.0.0.1:8000").replace(/\/+$/, "");
   }, []);
 
-  const CREATE_SESSION_URL = useMemo(() => {
-    return `${backendBaseUrl}/api/stripe/create-checkout-session/`;
-  }, [backendBaseUrl]);
+  const LEARNING_ROUTE_CREATE_URL =
+    endpoints.learningRouteCreate ||
+    `${backendBaseUrl}/api/learning-route/create/`;
 
-  const ME_URL = useMemo(() => {
-    return `${backendBaseUrl}/api/account/me/`;
-  }, [backendBaseUrl]);
+  const LEARNING_ROUTE_RECOMMENDATIONS_URL =
+    endpoints.learningRouteRecommendations ||
+    `${backendBaseUrl}/api/learning-route/recommendations/`;
 
-  const [loadingPlan, setLoadingPlan] = useState(null); // "monthly" | "yearly" | null
-  const [errorMsg, setErrorMsg] = useState("");
+  const LEARNING_ROUTE_COMPLETE_SIGNUP_URL =
+    endpoints.learningRouteCompleteSignup ||
+    `${backendBaseUrl}/api/learning-route/complete-signup/`;
 
-  // ✅ Toggle: false => mensual, true => anual
-  const [isYearly, setIsYearly] = useState(true);
+  const LEARNING_ROUTE_FREE_SIGNUP_URL = LEARNING_ROUTE_COMPLETE_SIGNUP_URL;
 
-  // ✅ Precios
-  const PRICING = useMemo(() => {
-    const monthly = { label: "Plan mensual", plan: "monthly", price: 59, unit: "/Mes" };
-    const yearly = { label: "Plan anual", plan: "yearly", price: 599, unit: "/Año" };
+  const BILLING_SETUP_INTENT_URL =
+    endpoints.billingSetupIntent || `${backendBaseUrl}/api/billing/setup-intent/`;
 
-    const yearlyFromMonthly = monthly.price * 12; // 708
-    const savingsUsd = Math.max(0, Math.round(yearlyFromMonthly - yearly.price)); // 109
-    const discountPct = Math.max(0, Math.round((savingsUsd / yearlyFromMonthly) * 100)); // 15%
+  const BILLING_PAYMENT_METHOD_CREATE_URL =
+    endpoints.billingPaymentMethodsCreate ||
+    `${backendBaseUrl}/api/billing/payment-methods/create/`;
 
-    return { monthly, yearly, savingsUsd, discountPct };
-  }, []);
+  const BILLING_SUBSCRIPTION_CREATE_URL =
+    endpoints.billingSubscriptionCreate ||
+    `${backendBaseUrl}/api/billing/subscriptions/create/`;
 
-  const selected = isYearly ? PRICING.yearly : PRICING.monthly;
+  const isAnnual = billingCycle === "yearly";
 
-  const FEATURES = useMemo(
-    () => [
-      "Acceso a todas las certificaciones",
-      "Obtén un certificado respaldado por tecnología blockchain",
-      "Accede a contenido de Coursera, edX y MasterClass",
-      "Contenido actualizado",
-      "Cancela tu membresía cuando quieras",
-      "Acceso a más de 15,000 certificaciones",
-    ],
-    []
+  const planXPrice = isAnnual ? "$25" : "$29";
+  const planPlusPrice = isAnnual ? "$42" : "$49";
+
+  const planXSubcopy = isAnnual ? (
+    <>
+      $299 USD al año ·{" "}
+      <span className="font-black text-[#5CC781]">Ahorras $49</span>
+    </>
+  ) : (
+    "o $299 USD al año"
   );
 
-  async function goCheckout(plan) {
+  const planPlusSubcopy = isAnnual ? (
+    <>
+      $499 USD al año ·{" "}
+      <span className="font-black text-[#5CC781]">Ahorras $89</span>
+    </>
+  ) : (
+    "o $499 USD al año"
+  );
+
+  const topicOptions = [
+    ["🎯", "Inteligencia Artificial"],
+    ["🎯", "Liderazgo"],
+    ["📈", "Productividad"],
+    ["📈", "Marketing"],
+    ["🎯", "Ventas"],
+    ["🎨", "Diseño UX/UI"],
+    ["💻", "Desarrollo de Software"],
+    ["📊", "Análisis de Datos"],
+    ["📋", "Gestión de Proyectos"],
+    ["💰", "Finanzas"],
+    ["💬", "Comunicación"],
+    ["🚀", "Innovación"],
+    ["👥", "Recursos Humanos"],
+    ["⭐", "Éxito del Cliente"],
+  ];
+
+  const goals = [
+    ["📈", "Obtener un ascenso"],
+    ["🚀", "Cambiar de carrera"],
+    ["🧠", "Aprender nuevas habilidades"],
+    ["👥", "Liderar equipos"],
+    ["🎓", "Obtener certificaciones"],
+    ["▥", "Mejorar mi desempeño actual"],
+    ["💼", "Prepararme para una nueva oportunidad laboral"],
+  ];
+
+  const normalizeLevelLabel = (value) => {
+    const level = String(value || "").toUpperCase();
+
+    if (level === "BEGINNER") return "Principiante";
+    if (level === "INTERMEDIATE") return "Intermedio";
+    if (level === "ADVANCED") return "Avanzado";
+
+    return value || "Recomendado";
+  };
+
+  const normalizeProviderName = (course) =>
+    course.provider ||
+    course.plataforma_nombre ||
+    course.plataforma ||
+    course.platform ||
+    course.source_provider ||
+    "";
+
+  const normalizeCourseForCard = (course) => ({
+    id: course.id,
+    idInterno: course.id_interno || course.idInterno || "",
+    colombiaCertificationId: course.colombiaCertificationId || course.id,
+    title: course.nombre || course.title || "Certificación recomendada",
+    level: normalizeLevelLabel(course.nivel_certificacion || course.level),
+    hours: course.tiempo_certificacion || course.hours || "Flexible",
+    institution:
+      course.universidad_nombre ||
+      course.empresa_nombre ||
+      course.institution ||
+      normalizeProviderName(course) ||
+      "Top Education",
+    provider: normalizeProviderName(course),
+    platformLogo:
+      course.platform_logo ||
+      course.plat_ico ||
+      course.plataforma_ico ||
+      course.provider_logo ||
+      "",
+    mainSkill:
+      course.main_skill ||
+      course.skill_principal ||
+      course.primary_skill ||
+      "",
+    mainSkillIcon:
+      course.main_skill_icon ||
+      course.skill_principal_icon ||
+      course.primary_skill_icon ||
+      "",
+    image:
+      course.imagen_final ||
+      course.image ||
+      course.imagen ||
+      "/assets/content/courses/course-1.jpg",
+  });
+
+  const allRecommendedCourses = useMemo(
+    () => [
+      ...recommendedByLevel.level_1,
+      ...recommendedByLevel.level_2,
+      ...recommendedByLevel.level_3,
+    ],
+    [recommendedByLevel]
+  );
+
+  const learningRouteState = useMemo(
+    () => ({
+      route_id: routeId,
+      name: `${form.first_name} ${form.last_name}`.trim(),
+      email: form.email,
+      age: form.age,
+      gender: form.gender,
+      country: form.country,
+      goal: form.goal,
+      topics: form.topics,
+      selected_plan: selectedPlan,
+      selected_paid_plan: selectedPaidPlan,
+      status: selectedPlan === "free" ? "free_active" : "pro_trialing",
+      recommended_courses: allRecommendedCourses,
+    }),
+    [form, routeId, selectedPlan, selectedPaidPlan, allRecommendedCourses]
+  );
+
+  const activePlanName = selectedPaidPlan.includes("plus")
+    ? "Top Education Plus"
+    : "Top Education X";
+
+  const activePlanPrice = selectedPaidPlan.includes("plus")
+    ? planPlusPrice
+    : planXPrice;
+
+  const activePlanInterval = selectedPaidPlan.includes("yearly") ? "año" : "mes";
+
+  const activePlanDescription = selectedPaidPlan.includes("plus")
+    ? "Obtén 7 días gratis de Top Education Plus. Cancela cuando quieras."
+    : "Obtén 7 días gratis de Top Education X con MasterClass y Coursera. Cancela cuando quieras.";
+
+  const trialEndDate = paidSubscriptionData?.trial_end
+    ? new Date(paidSubscriptionData.trial_end).toLocaleDateString("es-CO", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : "al finalizar el período de prueba";
+
+  const canContinueInfo =
+    form.first_name.trim() &&
+    form.last_name.trim() &&
+    form.email.trim() &&
+    form.age &&
+    form.gender &&
+    form.country;
+
+  const pushClientifyEvent = (eventName, extra = {}) => {
+    const payload = {
+      event: eventName,
+      source: "startNow",
+      route_id: routeId,
+      step,
+      email: form.email,
+      first_name: form.first_name,
+      last_name: form.last_name,
+      age: form.age,
+      gender: form.gender,
+      country: form.country,
+      topics: form.topics,
+      goal: form.goal,
+      selected_plan: selectedPlan,
+      selected_paid_plan: selectedPaidPlan,
+      billing_cycle: billingCycle,
+      ...extra,
+    };
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(payload);
+
+    window.topEducationLead = payload;
+  };
+
+  const trackClientifyPlanInterest = (plan) => {
+    pushClientifyEvent("startnow_plan_selected", {
+      plan,
+      selected_paid_plan: plan,
+      recommended_courses: allRecommendedCourses.map((course, index) => ({
+        idInterno: course.idInterno,
+        colombiaCertificationId: course.colombiaCertificationId || course.id,
+        title: course.title,
+        provider: course.provider,
+        level: course.level,
+        order: index + 1,
+      })),
+    });
+  };
+
+  const persistLearningRoute = (override = {}) => {
+    const payload = {
+      ...learningRouteState,
+      ...override,
+    };
+
+    localStorage.setItem("learningRoute", JSON.stringify(payload));
+
+    return payload;
+  };
+
+  const toggleTopic = (topic) => {
+    setForm((prev) => {
+      const exists = prev.topics.includes(topic);
+
+      if (!exists && prev.topics.length >= 3) return prev;
+
+      return {
+        ...prev,
+        topics: exists
+          ? prev.topics.filter((item) => item !== topic)
+          : [...prev.topics, topic],
+      };
+    });
+  };
+
+  const getPackageCode = (
+    planValue = selectedPaidPlan,
+    finalPlan = selectedPlan
+  ) => {
+    if (finalPlan === "free") return "TOP_EDUCATION_FREE";
+    if (planValue === "monthly_x") return "TOP_EDUCATION_X_MONTHLY";
+    if (planValue === "yearly_x") return "TOP_EDUCATION_X_ANNUAL";
+    if (planValue === "monthly_plus") return "TOP_EDUCATION_PLUS_MONTHLY";
+    if (planValue === "yearly_plus") return "TOP_EDUCATION_PLUS_ANNUAL";
+
+    return "TOP_EDUCATION_FREE";
+  };
+
+  const getTier = (packageCode) => {
+    if (packageCode.includes("PLUS")) return "PLUS";
+    if (packageCode.includes("_X_")) return "X";
+    return "FREE";
+  };
+
+  const getBillingPeriod = (packageCode) => {
+    if (packageCode.includes("MONTHLY")) return "MONTHLY";
+    if (packageCode.includes("ANNUAL")) return "ANNUAL";
+    return null;
+  };
+
+  const getRouteLevelByCourse = (course) => {
+    if (recommendedByLevel.level_1.some((item) => item.id === course.id)) return 1;
+    if (recommendedByLevel.level_2.some((item) => item.id === course.id)) return 2;
+    return 3;
+  };
+
+  const buildMxPayload = ({ finalPlan, subscriptionData = {} }) => {
+    const packageCode = getPackageCode(selectedPaidPlan, finalPlan);
+    const isFree = finalPlan === "free";
+
+    return {
+      schemaVersion: "1.0",
+      eventType: "USER_ACCESS_PROVISION",
+      traceId: `col-startnow-${routeId || Date.now()}`,
+      customer: {
+        email: form.email,
+        emailNormalized: form.email.trim().toLowerCase(),
+        name: form.first_name,
+        lastName: form.last_name,
+        age: form.age ? Number(form.age) : null,
+        gender: form.gender,
+        country: form.country,
+      },
+      learningProfile: {
+        topics: form.topics.map((topic, index) => ({
+          id: null,
+          name: topic,
+          order: index + 1,
+        })),
+        goal: form.goal,
+      },
+      recommendedCourses: allRecommendedCourses.map((course, index) => ({
+        idInterno: course.idInterno,
+        colombiaCertificationId: course.colombiaCertificationId || course.id,
+        title: course.title,
+        level: course.level,
+        provider: course.provider,
+        order: index + 1,
+        routeLevel: getRouteLevelByCourse(course),
+      })),
+      plan: {
+        packageCode,
+        tier: getTier(packageCode),
+        billingPeriod: getBillingPeriod(packageCode),
+        accessStatus: "ALLOWED",
+        lifecycleStatus: isFree ? "FREE" : "TRIALING",
+        pendingAction: "NONE",
+        trial: {
+          isTrial: !isFree,
+          trialStart: subscriptionData?.trial_start || null,
+          trialEnd: subscriptionData?.trial_end || null,
+          trialDays: isFree ? 0 : 7,
+        },
+      },
+      billing: {
+        source: "COLOMBIA",
+        stripeCustomerId: subscriptionData?.stripe_customer_id || null,
+        stripeSubscriptionId: subscriptionData?.stripe_subscription_id || null,
+        stripePaymentMethodId: subscriptionData?.payment_method_id || null,
+        status: isFree ? "free" : subscriptionData?.status || "trialing",
+        currentPeriodEnd: subscriptionData?.current_period_end || null,
+      },
+      redirects: {
+        subscriptionManagementUrl: `${window.location.origin}/account?tab=license`,
+        colombiaAccountUrl: `${window.location.origin}/account`,
+      },
+      metadata: {
+        routeId,
+        selectedPaidPlan,
+        createdFrom: "startNow",
+      },
+    };
+  };
+
+  const getFinalPlanFromPaidPlan = (paidPlan = selectedPaidPlan) => {
+    if (paidPlan.includes("plus")) return "plus";
+    if (paidPlan.includes("basic")) return "basic";
+    if (paidPlan.includes("x")) return "x";
+    return "free";
+  };
+
+  const validatePassword = () => {
+    const score = getPasswordScore(form.password);
+
+    if (score < 4) {
+      setErrorMsg(
+        "La contraseña debe tener mínimo 8 caracteres, una mayúscula, un número y un carácter especial."
+      );
+      return false;
+    }
+
+    if (form.password !== form.confirm_password) {
+      setErrorMsg("Las contraseñas no coinciden.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const createRoute = async () => {
+  setErrorMsg("");
+  setLoading(true);
+  setIsBuildingRoute(true);
+  setStep("building");
+  setProgress(8);
+
+  try {
+    pushClientifyEvent("startnow_generate_route_clicked");
+
+    const recommendationsRes = await postJSON(
+      LEARNING_ROUTE_RECOMMENDATIONS_URL,
+      {
+        topics: form.topics,
+        goal: form.goal,
+        limit_per_level: 3,
+      }
+    );
+
+    const recData = recommendationsRes?.data || recommendationsRes || {};
+
+    const nextRecommendedByLevel = {
+      level_1: normalizeLevelItems(recData.level_1).map(normalizeCourseForCard),
+      level_2: normalizeLevelItems(recData.level_2).map(normalizeCourseForCard),
+      level_3: normalizeLevelItems(recData.level_3).map(normalizeCourseForCard),
+    };
+
+    setRecommendedByLevel(nextRecommendedByLevel);
+
+    const flattenedRecommendations = [
+      ...nextRecommendedByLevel.level_1.map((course, index) => ({
+        ...course,
+        routeLevel: 1,
+        order: index + 1,
+      })),
+      ...nextRecommendedByLevel.level_2.map((course, index) => ({
+        ...course,
+        routeLevel: 2,
+        order: index + 1,
+      })),
+      ...nextRecommendedByLevel.level_3.map((course, index) => ({
+        ...course,
+        routeLevel: 3,
+        order: index + 1,
+      })),
+    ];
+
+    const data = await postJSON(LEARNING_ROUTE_CREATE_URL, {
+      email: form.email,
+      first_name: form.first_name,
+      last_name: form.last_name,
+      age: form.age ? Number(form.age) : null,
+      gender: form.gender,
+      country: form.country,
+      topics: form.topics,
+      goal: form.goal,
+      recommended_certifications: flattenedRecommendations,
+    });
+
+    setRouteId(data?.id || data?.data?.id || null);
+
+    setProgress(100);
+
+    setTimeout(() => {
+      setStep("ready");
+    }, 500);
+  } catch (error) {
+    setErrorMsg(error.message || "No se pudo crear la ruta.");
+    setStep("goal");
+  } finally {
+    setLoading(false);
+    setIsBuildingRoute(false);
+  }
+};
+
+  const startFreeSignup = async () => {
     setErrorMsg("");
-    setLoadingPlan(plan);
+
+    if (!form.password || form.password.length < 8) {
+      setErrorMsg("La contraseña debe tener mínimo 8 caracteres.");
+      return;
+    }
+
+    if (form.password !== form.confirm_password) {
+      setErrorMsg("Las contraseñas no coinciden.");
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      // 1) ✅ Validar sesión
-      try {
-        await getJSON(ME_URL);
-      } catch (e) {
-        if (e?.code === "not_authenticated" || e?.message === "not_authenticated") {
-          // 👉 Redirige a login guardando intención
-          navigate("/login", {
-            replace: true,
-            state: {
-              from: "/start-now",
-              checkoutPlan: plan,
-            },
-          });
-          return;
-        }
-        throw e;
-      }
+      await postJSON(LEARNING_ROUTE_FREE_SIGNUP_URL, {
+        route_id: routeId,
+        email: form.email,
+        password: form.password,
+      });
 
-      // 2) ✅ Crear sesión de checkout (ya autenticado)
-      const data = await postJSON(
-        CREATE_SESSION_URL,
-        { plan }, // "monthly" | "yearly"
-        { withCredentials: true }
-      );
+      const payload = persistLearningRoute({
+        selected_plan: "free",
+        status: "free_active",
+      });
 
-      if (!data?.url) {
-        throw new Error("Respuesta inválida: falta `url` de Stripe Checkout.");
-      }
-
-      window.location.href = data.url;
-    } catch (e) {
-      console.error("Error iniciando pago:", e);
-      setErrorMsg(e?.message || String(e));
+      navigate("/account?tab=cv", {
+        state: {
+          learningRoute: payload,
+        },
+      });
+    } catch (error) {
+      setErrorMsg(error.message || "No se pudo crear la cuenta.");
     } finally {
-      setLoadingPlan(null);
+      setLoading(false);
     }
-  }
+  };
 
-  // ✅ Al volver del login, intenta checkout automático una sola vez
+  const startProSignup = async () => {
+    setErrorMsg("");
+
+    if (!form.pro_password || form.pro_password.length < 8) {
+      setErrorMsg("La contraseña debe tener mínimo 8 caracteres.");
+      return;
+    }
+
+    if (form.pro_password !== form.pro_confirm_password) {
+      setErrorMsg("Las contraseñas no coinciden.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await postJSON(LEARNING_ROUTE_FREE_SIGNUP_URL, {
+        route_id: routeId,
+        email: form.email,
+        password: form.pro_password,
+      });
+
+      setSelectedPlan("x");
+      persistLearningRoute({
+        selected_plan: "pro",
+        status: "pro_account_created",
+      });
+      setStep("proPayment");
+    } catch (error) {
+      setErrorMsg(error.message || "No se pudo crear la cuenta.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const completeSignup = async ({ plan, redirectTo }) => {
+    setErrorMsg("");
+
+    if (!validatePassword()) return;
+
+    setLoading(true);
+
+    try {
+      const finalPlan =
+        plan ||
+        (selectedPlan === "free"
+          ? "free"
+          : selectedPaidPlan.includes("plus")
+          ? "plus"
+          : "x");
+
+      const subscriptionData = paidSubscriptionData || {};
+
+      const mxPayload = buildMxPayload({
+        finalPlan,
+        subscriptionData,
+      });
+
+      const res = await postJSON(LEARNING_ROUTE_COMPLETE_SIGNUP_URL, {
+        route_id: routeId,
+        email: form.email,
+        password: form.password,
+        selected_plan: finalPlan,
+        selected_paid_plan: selectedPaidPlan,
+        stripe_subscription_id: subscriptionData?.stripe_subscription_id,
+        stripe_customer_id: subscriptionData?.stripe_customer_id,
+        route_status: finalPlan === "free" ? "free_active" : "pro_trialing",
+        mx_payload: mxPayload,
+      });
+
+      const mxStatus =
+        res?.mx_status ||
+        res?.data?.mx_status ||
+        res?.data?.status ||
+        res?.status ||
+        "UNKNOWN";
+
+      const validMxStatuses = [
+        "APPLIED",
+        "DUPLICATE",
+        "APPLIED_WITH_REPLACEMENTS",
+        "created",
+        "CREATED",
+      ];
+
+      if (!validMxStatuses.includes(mxStatus)) {
+        throw new Error(
+          res?.mx_message ||
+            res?.message ||
+            `MX no pudo crear/aplicar el acceso. Estado: ${mxStatus}`
+        );
+      }
+
+      const payload = persistLearningRoute({
+        selected_plan: finalPlan,
+        selected_paid_plan: selectedPaidPlan,
+        status: finalPlan === "free" ? "free_active" : "pro_trialing",
+        stripe_subscription_id: subscriptionData?.stripe_subscription_id,
+        trial_start: subscriptionData?.trial_start,
+        trial_end: subscriptionData?.trial_end,
+        mx_status: mxStatus,
+        mx_magic_link:
+          res?.magic_link ||
+          res?.data?.magic_link ||
+          res?.data?.magicLink ||
+          null,
+        mx_response: res?.data || res,
+      });
+
+      pushClientifyEvent("startnow_signup_completed", {
+        final_plan: finalPlan,
+        mx_status: mxStatus,
+      });
+
+      setShowSuccessToast(true);
+
+      setTimeout(() => {
+        navigate(redirectTo, {
+          state: { learningRoute: payload },
+          replace: true,
+        });
+      }, 1300);
+    } catch (error) {
+      setErrorMsg(error.message || "No se pudo crear la cuenta.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startProSubscription = async () => {
+    setErrorMsg("");
+
+    if (!stripe || !elements) {
+      setErrorMsg("Stripe aún está cargando. Intenta nuevamente.");
+      return;
+    }
+
+    const card = elements.getElement(CardElement);
+
+    if (!card) {
+      setErrorMsg("No se encontró el formulario de tarjeta.");
+      return;
+    }
+
+    if (!cardComplete) {
+      setErrorMsg("Completa los datos de tu tarjeta.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      pushClientifyEvent("startnow_payment_submit", {
+        selected_paid_plan: selectedPaidPlan,
+      });
+
+      const setup = await postJSON(BILLING_SETUP_INTENT_URL, {
+        route_id: routeId,
+        email: form.email,
+        name: `${form.first_name} ${form.last_name}`.trim(),
+      });
+
+      const clientSecret = setup?.client_secret || setup?.data?.client_secret;
+
+      if (!clientSecret) {
+        throw new Error("No se pudo generar el SetupIntent de Stripe.");
+      }
+
+      const result = await stripe.confirmCardSetup(clientSecret, {
+        payment_method: {
+          card,
+          billing_details: {
+            name: `${form.first_name} ${form.last_name}`.trim(),
+            email: form.email,
+          },
+        },
+      });
+
+      if (result.error) {
+        throw new Error(
+          result.error.message || "No se pudo validar la tarjeta."
+        );
+      }
+
+      const paymentMethodId = result.setupIntent?.payment_method;
+
+      if (!paymentMethodId) {
+        throw new Error("Stripe no devolvió el método de pago.");
+      }
+
+      const methodRes = await postJSON(BILLING_PAYMENT_METHOD_CREATE_URL, {
+        route_id: routeId,
+        email: form.email,
+        payment_method_id: paymentMethodId,
+      });
+
+      const subscriptionRes = await postJSON(BILLING_SUBSCRIPTION_CREATE_URL, {
+        route_id: routeId,
+        email: form.email,
+        payment_method_id: paymentMethodId,
+        plan: selectedPaidPlan,
+      });
+
+      const subscriptionData = {
+        ...(subscriptionRes?.data || {}),
+        payment_method_id: paymentMethodId,
+      };
+
+      setPaidSubscriptionData(subscriptionData);
+
+      const finalPlan = getFinalPlanFromPaidPlan(selectedPaidPlan);
+      setSelectedPlan(finalPlan);
+
+      persistLearningRoute({
+        selected_plan: finalPlan,
+        selected_paid_plan: selectedPaidPlan,
+        status: subscriptionData?.status || "pro_trialing",
+        stripe_subscription_id: subscriptionData?.stripe_subscription_id,
+        trial_start: subscriptionData?.trial_start,
+        trial_end: subscriptionData?.trial_end,
+        payment_method: methodRes?.data || null,
+      });
+
+      setStep("subscriptionSuccess");
+    } catch (error) {
+      setErrorMsg(error.message || "No se pudo iniciar tu prueba gratuita.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const skipToPlans = () => {
+    document.getElementById("plans")?.scrollIntoView({
+      behavior: "smooth",
+    });
+  };
+
   useEffect(() => {
-    const intendedPlan = location.state?.checkoutPlan;
-    if (!intendedPlan) return;
+    const emailFromUrl = searchParams.get("email") || "";
 
-    // Limpia el state para evitar loops
-    navigate(location.pathname, { replace: true, state: {} });
+    if (emailFromUrl) {
+      setForm((prev) => ({
+        ...prev,
+        email: emailFromUrl,
+      }));
+    }
+  }, [searchParams]);
 
-    // Sincroniza toggle visual con lo que venía
-    setIsYearly(intendedPlan === "yearly");
-
-    // Intenta checkout
-    goCheckout(intendedPlan);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    pushClientifyEvent("startnow_step_view", { step });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [step]);
+
+  useEffect(() => {
+    if (step !== "building") return;
+
+    setProgress(8);
+
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 92) return prev;
+        return Math.min(prev + 7, 92);
+      });
+    }, 420);
+
+    return () => clearInterval(interval);
+  }, [step]);
 
   return (
     <>
@@ -247,273 +1208,1383 @@ function StartNow() {
         <title>Empieza Ahora | Top Education</title>
         <meta
           name="description"
-          content="Potencia tu perfil profesional con una suscripción a Top Education. Accede a +13,000 certificaciones y recursos exclusivos para transformar tu futuro."
+          content="Construye tu ruta personalizada de aprendizaje con Top Education."
         />
-        <meta property="og:title" content="Empieza Ahora" />
-        <meta name="author" content="Top Education" />
-        <meta name="robots" content="index, follow" />
-        <meta
-          property="og:description"
-          content="Potencia tu perfil profesional con una suscripción a Top Education. Accede a +13,000 certificaciones y recursos exclusivos para transformar tu futuro."
-        />
-        <meta property="og:type" content="website" />
       </Helmet>
 
-      {/* ===================== HERO ===================== */}
-      <section className="wrapper ">
-        <div className="container m-auto h-screen mx-auto px-4 flex justify-center items-center gap-2 sect-h-pequ">
-          <span className="w-5/15 lg:w-5/15 aspect-square bg-gradient-to-tr from-green-500 to-green-900 absolute top-30 lg:left-50 rounded-full skew-y-0 blur-2xl opacity-40 skew-x-12 rotate-90"></span>
-          <div className="m-auto max-w-[100vw] lg:max-w-[50vw]">
-            <h1 className="text-[#F6F4EF] text-[3.3rem] font-normal font-[Lora] text-center leading-[1.5em] z-10 relative sm:text-5xl md:text-5xl lg:text-5xl xl:text-6xl">
-              Desarrolla todo tu <br />
-              <span className="text-[5rem] top-italic sm:text-[120px]">potencial</span>
-            </h1>
-            <p className="mt-5 text-[1.125rem] text-[#a8a8a8] text-center z-10 relative">
-              En un mundo laboral altamente competitivo, <span id="top">top</span>
-              <span id="education">.education</span> te ofrece acceso a contenido de alto nivel para que desarrolles nuevas
-              habilidades y avances en tu trayectoria profesional. Aprende con expertos de talla mundial y obtén
-              certificaciones reconocidas internacionalmente.
+      <style>
+        {`
+          @keyframes topoWave {
+            0% { transform: scale(0.6); opacity: 0.32; }
+            70% { opacity: 0.12; }
+            100% { transform: scale(1.8); opacity: 0; }
+          }
+
+          .route-dot-grid {
+            background-image: radial-gradient(#2563EB 1px, transparent 1px);
+            background-size: 22px 22px;
+          }
+        `}
+      </style>
+
+      {showSuccessToast && <SuccessToast />}
+
+      <main className="min-h-screen bg-[#F6F4EF] text-[#080808]">
+        {step === "welcome" && (
+          <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-20 text-center">
+            <div className="route-dot-grid absolute inset-0 opacity-[0.14]" />
+            <div className="pointer-events-none absolute left-1/2 top-[18%] h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[#2563EB]/10 blur-[120px]" />
+
+            <div className="relative z-10 mx-auto max-w-[850px]">
+              <div className="flex justify-center">
+                <StarLogo />
+              </div>
+
+              <h1 className="mt-10 !font-['Montserrat'] text-[2rem] font-semibold leading-[1.08em] text-[#111111] md:text-[3.5rem]">
+                Descubre tu ruta de aprendizaje ideal
+              </h1>
+
+              <p className="mx-auto mt-5 max-w-[650px] !font-['Montserrat'] text-[1rem] leading-[1.3em] text-neutral-600 md:text-[1.1rem]">
+                Cuéntanos sobre tus intereses y metas. Crearemos un viaje de
+                aprendizaje personalizado diseñado para tu crecimiento
+                profesional.
+              </p>
+
+              <div className="mt-12 flex flex-col items-center justify-center gap-5 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={() => setStep("info")}
+                  className="inline-flex items-center gap-3 rounded-full bg-[#2563EB] px-4 py-2 md:px-10 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_55px_rgba(25,65,207,0.30)] transition hover:-translate-y-1 hover:bg-[#1941CF]"
+                >
+                  Crear mi ruta de aprendizaje <ArrowIcon />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={skipToPlans}
+                  className="rounded-full px-4 py-2 md:px-8 md:py-4 !font-['Montserrat'] text-lg font-medium text-neutral-600 hover:text-black"
+                >
+                  Conocer Más
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={skipToPlans}
+                className="mt-10 !font-['Montserrat'] text-neutral-400 hover:text-neutral-700"
+              >
+                Saltar por ahora
+              </button>
+            </div>
+          </section>
+        )}
+
+        {step === "info" && (
+          <section className="mx-auto min-h-screen max-w-[720px] px-5 py-20 md:py-24">
+            <StepProgress current={1} />
+
+            <h2 className="!font-['Montserrat'] text-[1.6rem] md:text-[2.5rem] font-semibold text-[#111111]">
+              Conozcámonos
+            </h2>
+
+            <p className="mt-0 !font-['Montserrat'] text-[1rem] md:text-[1.1rem] text-neutral-600">
+              Usaremos esta información para personalizar tu experiencia.
             </p>
-          </div>
-        </div>
-      </section>
 
-      {/* ===================== MENSAJE DE ERROR ===================== */}
-      {errorMsg ? (
-        <div className="container m-auto px-4 -mt-16 mb-8">
-          <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-200">
-            <div className="font-semibold mb-1">Error iniciando pago</div>
-            <pre className="text-xs whitespace-pre-wrap break-words">{errorMsg}</pre>
-          </div>
-        </div>
-      ) : null}
+            <div className="mt-5 space-y-3">
+              <FormInput
+                label="Nombre"
+                required
+                value={form.first_name}
+                onChange={(e) =>
+                  setForm({ ...form, first_name: e.target.value })
+                }
+                placeholder="Ingresa tu nombre"
+              />
 
-      {/* ===================== SECCIONES INTERMEDIAS (TU MISMO CONTENIDO) ===================== */}
-      <section className="wrapper ">
-        <div className="container m-auto py-[1rem] xl:!py-10 lg:!py-6 md:!py-3">
-          <div className="flex flex-wrap mx-[-15px] xl:mx-[-35px] lg:mx-[-20px] !mt-[-30px] !mb-[4.5rem] items-center">
-            <div className="xl:w-7/12 lg:w-7/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px] !mt-[25px] max-w-full">
-              <h2 className="text-[#F6F4EF] text-[2.5rem] leading-[1.2em] font-normal font-[Lora] w-full">
-                ¿Por que <span id="top">top</span>
-                <span id="education">.education</span> es la mejor opción de educación en linea?
+              <FormInput
+                label="Apellido"
+                required
+                value={form.last_name}
+                onChange={(e) =>
+                  setForm({ ...form, last_name: e.target.value })
+                }
+                placeholder="Ingresa tu apellido"
+              />
+
+              <FormInput
+                label="Correo Electrónico"
+                required
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="Ingresa tu correo electrónico"
+              />
+
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <FormInput
+                  label="Edad"
+                  required
+                  type="number"
+                  value={form.age}
+                  onChange={(e) => setForm({ ...form, age: e.target.value })}
+                  placeholder="Tu edad"
+                />
+
+                <FormSelect
+                  label="Género"
+                  required
+                  value={form.gender}
+                  onChange={(e) =>
+                    setForm({ ...form, gender: e.target.value })
+                  }
+                  placeholder="Selecciona"
+                >
+                  <option value="female">Femenino</option>
+                  <option value="male">Masculino</option>
+                  <option value="non_binary">No binario</option>
+                  <option value="prefer_not_to_say">Prefiero no decirlo</option>
+                  <option value="other">Otro</option>
+                </FormSelect>
+              </div>
+
+              <FormSelect
+                label="País"
+                required
+                value={form.country}
+                onChange={(e) => setForm({ ...form, country: e.target.value })}
+                placeholder="Selecciona tu país"
+              >
+                {countries.map((country) => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                ))}
+              </FormSelect>
+            </div>
+
+            <div className="mt-10 flex items-center gap-6">
+              <button
+                type="button"
+                onClick={() => setStep("welcome")}
+                className="px-7 py-4 !font-['Montserrat'] text-lg font-medium text-neutral-600"
+              >
+                Atrás
+              </button>
+
+              <button
+                type="button"
+                disabled={!canContinueInfo}
+                onClick={() => setStep("topics")}
+                className="flex flex-1 items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Continuar <ArrowIcon />
+              </button>
+            </div>
+          </section>
+        )}
+
+        {step === "topics" && (
+          <section className="mx-auto min-h-screen max-w-[980px] px-5 py-20 md:py-24">
+            <StepProgress current={2} />
+
+            <h2 className="!font-['Montserrat'] text-[1.6rem] leading-[1.2em] md:text-[2.5rem] font-semibold text-[#111111]">
+              ¿Qué te gustaría aprender?
+            </h2>
+
+            <p className="mt-0 !font-['Montserrat'] text-[1rem] md:text-[1.05rem] text-neutral-600">
+              Selecciona hasta 3 temas que te interesen.
+            </p>
+
+            <div className="mt-3 flex items-center gap-3 !font-['Montserrat'] text-sm text-neutral-600">
+              {[1, 2, 3].map((num) => (
+                <span
+                  key={num}
+                  className={`grid h-9 w-9 place-items-center rounded-xl font-semibold ${
+                    form.topics.length >= num
+                      ? "bg-[#2563EB] text-white"
+                      : "bg-black/5 text-neutral-400"
+                  }`}
+                >
+                  {num}
+                </span>
+              ))}
+
+              <span>
+                {form.topics.length === 0
+                  ? "Selecciona al menos 1 tema"
+                  : `${form.topics.length} temas seleccionados`}
+              </span>
+            </div>
+
+            <div className="mt-8 grid grid-cols-3 gap-3 md:grid-cols-5">
+              {topicOptions.map(([icon, topic]) => {
+                const active = form.topics.includes(topic);
+
+                return (
+                  <button
+                    key={topic}
+                    type="button"
+                    onClick={() => toggleTopic(topic)}
+                    className={`min-h-[120px] rounded-[16px] border bg-white p-3 md:p-4 text-center transition-all hover:-translate-y-1 ${
+                      active
+                        ? "border-[#2563EB] shadow-[0_20px_45px_rgba(25,65,207,0.16)]"
+                        : "border-black/10 shadow-sm"
+                    }`}
+                  >
+                    <span className="mx-auto grid h-12 w-12 place-items-center rounded-[14px] bg-[#ECE9FF] text-2xl">
+                      {icon}
+                    </span>
+
+                    <span className="mt-2 block !font-['Montserrat'] text-[.7rem] md:text-[.9rem] font-semibold leading-tight text-[#111111]">
+                      {topic}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-10 flex items-center gap-6">
+              <button
+                type="button"
+                onClick={() => setStep("info")}
+                className="px-7 py-4 !font-['Montserrat'] text-lg font-medium text-neutral-600"
+              >
+                ‹ Atrás
+              </button>
+
+              <button
+                type="button"
+                disabled={form.topics.length === 0}
+                onClick={() => setStep("goal")}
+                className="flex flex-1 items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Continuar <ArrowIcon />
+              </button>
+            </div>
+          </section>
+        )}
+
+        {step === "goal" && (
+          <section className="mx-auto min-h-screen max-w-[900px] px-5 py-20 md:py-24">
+            <StepProgress current={3} />
+
+            <h2 className="!font-['Montserrat'] text-[1.6rem] md:text-[2.5rem] font-semibold text-[#111111]">
+              ¿Cuál es tu meta principal?
+            </h2>
+
+            <p className="mt-0 !font-['Montserrat'] text-[1rem] md:text-[1.05rem] text-neutral-600">
+              Esto nos ayudará a personalizar tu ruta de aprendizaje.
+            </p>
+
+            <div className="mt-3 grid grid-cols-1 gap-2 md:gap-3 md:grid-cols-2">
+              {goals.map(([icon, goal]) => {
+                const active = form.goal === goal;
+
+                return (
+                  <button
+                    key={goal}
+                    type="button"
+                    onClick={() => setForm({ ...form, goal })}
+                    className={`flex min-h-[60px] md:min-h-[80px] items-center gap-3 rounded-[16px] border bg-white p-3 text-left transition-all hover:-translate-y-1 ${
+                      active
+                        ? "border-[#2563EB] shadow-[0_20px_45px_rgba(25,65,207,0.16)]"
+                        : "border-black/10 shadow-sm"
+                    }`}
+                  >
+                    <span className="grid h-10 w-10 md:h-14 md:w-14 place-items-center rounded-[14px] bg-[#ECE9FF] text-2xl">
+                      {icon}
+                    </span>
+
+                    <span className="!font-['Montserrat'] text-[16px] md:text-[18px] font-semibold leading-tight text-[#111111]">
+                      {goal}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {errorMsg && (
+              <div className="mt-6 rounded-[16px] border border-red-100 bg-red-50 px-5 py-4 !font-['Montserrat'] text-sm font-semibold text-red-600">
+                {errorMsg}
+              </div>
+            )}
+
+            <div className="mt-10 flex items-center gap-6">
+              <button
+                type="button"
+                onClick={() => setStep("topics")}
+                className="px-7 py-4 !font-['Montserrat'] text-lg font-medium text-neutral-600"
+              >
+                ‹ Atrás
+              </button>
+
+              <button
+                type="button"
+                disabled={!form.goal || loading}
+                onClick={createRoute}
+                className="flex flex-1 items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {loading ? "Generando..." : "Generar Mi Ruta"} <ArrowIcon />
+              </button>
+            </div>
+          </section>
+        )}
+
+        {step === "building" && (
+          <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-20 text-center">
+            <div className="route-dot-grid absolute inset-0 opacity-[0.14]" />
+
+            <div className="relative z-10 mx-auto max-w-[620px]">
+              <div className="flex justify-center">
+                <StarLogo size="sm" />
+              </div>
+
+              <h2 className="mt-10 !font-['Montserrat'] text-[2.4rem] font-semibold leading-tight tracking-[-0.05em] text-[#111111]">
+                Construyendo tu ruta de aprendizaje personalizada...
               </h2>
-              <p className="text-[1.125rem] text-[#a8a8a8] mt-5 mb-5 text-left z-10 relative">
-                Top Education te ofrece uno de los catálogos de formación online mas grandes en el mercado: más de 14,500
-                certificaciones en diversas disciplinas, junto con acceso exclusivo a los contenidos de Masterclass,
-                Coursera y edX, todo por un precio que supera significativamente el valor de cada plataforma por separado.
+
+              <p className="mt-5 !font-['Montserrat'] text-lg text-neutral-600">
+                Seleccionando contenido relevante.
+              </p>
+
+              <div className="mt-10 h-2 overflow-hidden rounded-full bg-black/10">
+                <div
+                  className="h-full rounded-full bg-[linear-gradient(90deg,#2563EB,#5CC781)] transition-all"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+
+              <p className="mt-5 !font-['Montserrat'] text-neutral-400">
+                {progress}%
+              </p>
+            </div>
+          </section>
+        )}
+
+        {step === "ready" && (
+          <section className="mx-auto max-w-[1280px] px-2 md:px-5 py-20 md:py-24">
+            <div className="text-center">
+              <h2 className="!font-['Montserrat'] text-[2rem] leading-[1.2em] font-semibold text-[#111111] md:text-[3rem]">
+                Tu ruta de aprendizaje está lista
+              </h2>
+
+              <p className="mx-auto max-w-[760px] !font-['Montserrat'] text-[1rem] leading-[1.3em] text-neutral-600 md:text-[1.25rem]">
+                Basándonos en tus intereses, hemos diseñado una experiencia
+                personalizada para ayudarte a alcanzar tus objetivos
+                profesionales.
               </p>
             </div>
 
-            {/* Card comparativa */}
-            <div className="xl:w-5/12 lg:w-5/12 w-full flex-[0_0_auto] xl:!px-[35px] lg:!px-[20px] !px-[15px]  max-w-full !relative">
-              <div className="pricing-wrapper !relative">
-                <div className="flex flex-wrap justify-center mx-[-15px] !mt-3 xl:!mt-5 lg:!mt-5 md:!mt-5">
-                  <div className="sm:w-10/12 lg:w-10/12 xl:w-10/12 w-full p-[15px] flex-[0_0_auto] !px-[15px] max-w-full">
-                    <div className="pricing card !text-left rounded-lg bg-neutral-900 p-[15px] !shadow-[0_0.25rem_1.75rem_rgba(30,34,40,0.07)]">
-                      <div className="card-body flex-[1_1_auto]  xl:!p-[1rem_1.5rem_1.5rem] lg:!p-[1rem_1.5rem_1.5rem] md:!p-[1rem_1.5rem_1.25rem]">
-                        <h3 className="card-title text-[#F6F4EF] text-5xl md:text-5xl lg:text-4xl">
-                          Plataformas
-                        </h3>
-                        <h3 className="card-title text-[#F6F4EF] text-4xl md:text-3xl lg:text-2xl">
-                          por separado
-                        </h3>
-                        <ul className="pl-0 list-none bullet-bg bullet-soft-primary mt-4 text-left text-[#F6F4EF]">
-                          <li className="relative flex justify-between text-justify">
-                            <span className="text-justify flex items-center gap-2 w-full">
-                              <span>MasterClass</span>
-                              <span className=" flex w-full border-b-2 border-dashed"></span>
-                              <span className="block w-[135px] text-right">USD 180</span>
-                            </span>
-                          </li>
-                          <li className="relative flex justify-between text-justify">
-                            <span className="text-justify flex items-center gap-2 w-full">
-                              <span className="w-[245px]">Coursera Plus</span>
-                              <span className=" flex w-full border-b-2 border-dashed"></span>
-                              <span className="block text-right !w-[150px]">USD 399</span>
-                            </span>
-                          </li>
-                          <li className="relative flex justify-between text-justify">
-                            <span className="text-justify flex items-center gap-2 w-full">
-                              <span>EdX</span>
-                              <span className=" flex w-full border-b-2 border-dashed"></span>
-                              <span className="block !w-[100px] text-right">USD 394</span>
-                            </span>
-                          </li>
-                        </ul>
-                        <div className="prices !text-[#D33B3E] flex w-full justify-center">
-                          <div className="price price-hide price-hidden flex items-stretch mt-1">
-                            <span className="price-currency self-start text-[1.5rem]">PAGO TOTAL $</span>
-                            <span className="price-value text-4xl self-end">928</span>
-                            <span className="price-duration self-end ml-1 text-[1rem]"> USD /Anual</span>
-                          </div>
-                        </div>
+            <section className="mt-8 rounded-[24px] bg-[#1941cf] px-8 py-9 text-white shadow-[0_22px_55px_rgba(47,91,219,0.22)] md:px-12">
+              <div className="grid grid-cols-2 gap-8 text-center md:grid-cols-4">
+                {[
+                  [String(allRecommendedCourses.length || 0), "Cursos recomendados"],
+                  ["3", "Certificaciones potenciales"],
+                  ["~6", "Meses estimados"],
+                  [String(form.topics.length || 0), "Habilidades principales"],
+                ].map(([value, label]) => (
+                  <div key={label}>
+                    <strong className="block !font-['Montserrat'] text-[3.4rem] font-black leading-none">
+                      {value}
+                    </strong>
+                    <span className="mt-3 block !font-['Montserrat'] leading-[1.2em] text-[.8rem] md:text-[1rem] text-white/90">
+                      {label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-5 border-t border-white/20 pt-7 text-center">
+                <span className="!font-['Montserrat'] text-white/90">
+                  Proveedores incluidos:
+                </span>
+                <span className="ml-4 inline-flex items-center gap-3 align-middle">
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-white text-[13px] font-black text-[#2563EB]">
+                    <img
+                      className="h-6 w-6"
+                      src="/assets/platforms/icons/icon-coursera.png"
+                      alt=""
+                    />
+                  </span>
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-white text-[13px] font-black text-[#D33B3E]">
+                    <img
+                      className="h-6 w-6"
+                      src="/assets/platforms/icons/icon-masterclass.png"
+                      alt=""
+                    />
+                  </span>
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-[#003A3A] text-[11px] font-black text-white">
+                    <img
+                      className="h-6 w-6"
+                      src="/assets/platforms/icons/icon-edx.png"
+                      alt=""
+                    />
+                  </span>
+                </span>
+              </div>
+            </section>
+
+            <div className="mt-10 rounded-[26px] border border-black/10 bg-white p-5 md:p-7 shadow-[0_20px_60px_rgba(0,0,0,0.05)] md:p-9">
+              <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <h3 className="!font-['Montserrat'] text-[1.6rem] leading-[1.2em] font-semibold text-[#111111]">
+                  Tu Hoja de Ruta de Aprendizaje
+                </h3>
+
+                <span className="w-fit rounded-full bg-neutral-100 px-5 py-2 !font-['Montserrat'] text-sm text-neutral-500">
+                  Tu acceso dependerá del plan seleccionado
+                </span>
+              </div>
+
+              <div className="space-y-12">
+                {[
+                  [
+                    "Nivel 1",
+                    "Fundamentos",
+                    "DISPONIBLE",
+                    recommendedByLevel.level_1,
+                  ],
+                  [
+                    "Nivel 2",
+                    "Especialización",
+                    "PLAN X / PLUS",
+                    recommendedByLevel.level_2,
+                  ],
+                  [
+                    "Nivel 3",
+                    "Certificación",
+                    "PLAN PLUS",
+                    recommendedByLevel.level_3,
+                  ],
+                ].map(([level, subtitle, badge, courses], index) => (
+                  <div key={level} className="grid grid-cols-[48px_1fr] gap-4">
+                    <div className="grid h-12 w-12 place-items-center rounded-full bg-[#E8EEFF] font-black text-[#2563EB]">
+                      ✓
+                    </div>
+
+                    <div>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <h4 className="!font-['Montserrat'] text-2xl font-black text-[#111111]">
+                          {level}
+                        </h4>
+                        <span
+                          className={`rounded-full px-3 py-1 !font-['Montserrat'] text-xs font-black ${
+                            index === 0
+                              ? "bg-[#5CC781]/12 text-[#5CC781]"
+                              : "bg-[#2563EB]/10 text-[#2563EB]"
+                          }`}
+                        >
+                          {badge}
+                        </span>
+                      </div>
+
+                      <p className="!font-['Montserrat'] text-neutral-500">
+                        {subtitle}
+                      </p>
+
+                      <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-3">
+                        {courses.length > 0 ? (
+                          courses.map((course) => (
+                            <CourseCard
+                              key={`${level}-${course.id || course.title}`}
+                              course={course}
+                            />
+                          ))
+                        ) : (
+                          <p className="rounded-[16px] bg-neutral-50 p-5 !font-['Montserrat'] text-sm text-neutral-400">
+                            No encontramos recomendaciones para este nivel.
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
             </div>
 
-          </div>
-        </div>
-      </section>
+            <section id="plans" className="mt-16">
+              <div className="text-center">
+                <h3 className="!font-['Montserrat'] text-[2.7rem] font-black tracking-[-0.05em] text-[#111111] md:text-[3.2rem]">
+                  ¿Cómo quieres comenzar?
+                </h3>
 
-      <section className="wrapper">
-        <div className="container m-auto pt-[1rem] pb-80 xl:pt-10 lg:pt-10 md:pt-28 xl:pb-100 lg:pb-100 md:pb-100 !text-center">
-          <div className="flex flex-wrap mx-[-15px]">
-            <div className="lg:w-10/12 xl:w-9/12 xxl:w-8/12 w-full flex-[0_0_auto] !px-[15px] max-w-full !mx-auto">
-              <h3 className="!text-[calc(2rem_+_0.66vw)] text-[#F6F4EF] font-bold xl:!text-[2.8rem] !leading-[1.3] !mb-[1rem] xl:!mb-6 lg:!mb-6 md:!mb-6 lg:!px-10 xl:!px-10">
-                ¿Por que Top Education es la mejor opción de educación en linea?
-              </h3>
-              <p className="text-[#F6F4EF]">
-                Top Education te ofrece uno de los catálogos de formación online mas grandes en el mercado: más de 14,500
-                certificaciones en diversas disciplinas, junto con acceso exclusivo a los contenidos de Masterclass,
-                Coursera y edX, todo por un precio que supera significativamente el valor de cada plataforma por separado.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===================== PRICING (HEYGEN STYLE) ===================== */}
-      <section className="wrapper bg-gradient-to-t from-transparent to-neutral-800">
-        <div className="container m-auto py-[4.5rem] xl:!py-24 lg:!py-24 md:!py-24">
-          <div className="pricing-wrapper !relative !mt-[-15rem] xl:!mt-[-30rem] lg:!mt-[-30rem] md:!mt-[-30rem]">
-            <div className="flex flex-col items-center justify-center mx-auto max-w-[980px] px-4">
-
-              {/* Header pricing */}
-              <div className="w-full text-center">
-                <h2 className="text-[#F6F4EF] text-[2.2rem] md:text-[2.6rem] font-[Lora]">
-                  Elige tu plan
-                </h2>
-                <p className="text-[#a8a8a8] mt-2">
-                  Un solo plan con todo incluido. Cambia entre mensual o anual para ahorrar.
+                <p className="mt-3 !font-['Montserrat'] text-[1.1rem] text-neutral-600">
+                  Elige la experiencia de aprendizaje que mejor se adapte a tus
+                  objetivos.
                 </p>
               </div>
 
-              {/* Toggle mensual/anual */}
-              <div className="mt-6 flex items-center gap-3 bg-neutral-900/70 border border-neutral-700 rounded-full px-4 py-3">
-                <span className={`text-sm ${!isYearly ? "text-[#F6F4EF]" : "text-[#a8a8a8]"}`}>
+              {errorMsg && (
+                <div className="mx-auto mt-6 max-w-[720px] rounded-[16px] border border-red-100 bg-red-50 px-5 py-4 !font-['Montserrat'] text-sm font-semibold text-red-600">
+                  {errorMsg}
+                </div>
+              )}
+
+              <div className="mt-8 flex items-center justify-center gap-4 !font-['Montserrat']">
+                <span
+                  className={
+                    !isAnnual
+                      ? "font-black text-[#111111]"
+                      : "font-semibold text-neutral-500"
+                  }
+                >
                   Mensual
                 </span>
 
                 <button
                   type="button"
-                  onClick={() => setIsYearly((v) => !v)}
-                  className={`relative inline-flex h-7 w-14 items-center rounded-full transition ${
-                    isYearly ? "bg-blue-600" : "bg-neutral-700"
+                  onClick={() =>
+                    setBillingCycle((prev) =>
+                      prev === "monthly" ? "yearly" : "monthly"
+                    )
+                  }
+                  className={`relative h-10 w-[72px] rounded-full p-1 transition ${
+                    isAnnual ? "bg-[#1941cf]" : "bg-neutral-300"
                   }`}
-                  aria-label="Cambiar a plan anual"
                 >
                   <span
-                    className={`inline-block h-6 w-6 transform rounded-full bg-white transition ${
-                      isYearly ? "translate-x-7" : "translate-x-1"
+                    className={`block h-8 w-8 rounded-full bg-white shadow transition ${
+                      isAnnual ? "translate-x-8" : "translate-x-0"
                     }`}
                   />
                 </button>
 
-                <span className={`text-sm ${isYearly ? "text-[#F6F4EF]" : "text-[#a8a8a8]"}`}>
+                <span
+                  className={
+                    isAnnual
+                      ? "font-black text-[#111111]"
+                      : "font-semibold text-neutral-500"
+                  }
+                >
                   Anual
                 </span>
 
-                {PRICING.discountPct > 0 && (
-                  <span className="ml-2 text-xs font-semibold text-blue-200 bg-blue-600/20 border border-blue-500/30 px-2 py-1 rounded-full">
-                    Ahorras {PRICING.discountPct}%
-                  </span>
-                )}
+                <span className="rounded-full bg-[#5CC781] px-3 py-1 text-xs font-black text-white">
+                  Ahorra 14%
+                </span>
               </div>
 
-              {/* Card única */}
-              <div className="mt-8 w-full rounded-2xl border border-neutral-700 bg-[#F6F4EF] shadow-[0_0.25rem_1.75rem_rgba(30,34,40,0.07)] overflow-hidden">
-                <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="mt-10 grid grid-cols-1 gap-3 lg:grid-cols-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    trackClientifyPlanInterest("free");
+                    setSelectedPlan("free");
+                    setStep("createPassword");
+                  }}
+                  className="flex min-h-[420px] mt-4 mb-4 flex-col rounded-[24px] border border-black/10 bg-white px-5 py-8 text-left shadow-[0_16px_45px_rgba(0,0,0,0.05)] transition hover:-translate-y-1"
+                >
+                  <span className="!font-['Montserrat'] text-sm font-black uppercase text-[#5CC781]">
+                    Comenzar gratis
+                  </span>
+                  <h4 className="mt-0 !font-['Montserrat'] text-[1.8rem] font-black text-[#111111]">
+                    Top Education Free
+                  </h4>
+                  <div className="mt-2 !font-['Montserrat'] text-[3.2rem] font-black leading-none text-[#111111]">
+                    $0
+                  </div>
+                  <p className="mt-3 !font-['Montserrat'] text-neutral-600">
+                    Explora la plataforma y descubre tu potencial.
+                  </p>
 
-                  {/* Left: price */}
-                  <div className="text-left">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className="text-3xl md:text-4xl text-[#1c1c1c] font-semibold">
-                          {selected.label}
-                        </h3>
-                        <p className="mt-1 text-[#4A4949]">
-                          Acceso total a Top Education.
-                        </p>
-                      </div>
-
-                      {isYearly && (
-                        <div className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-600 text-white">
-                          Recomendado
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="mt-6 flex items-end gap-2">
-                      <span className="text-2xl text-[#1c1c1c]">USD</span>
-                      <span className="text-6xl md:text-7xl text-[#1c1c1c] font-bold leading-none">
-                        {selected.price}
+                  <span className="mt-5 !font-['Montserrat'] font-black uppercase text-[#111111]">
+                    Incluye:
+                  </span>
+                  <ul className="mt-2 space-y-3 !font-['Montserrat'] text-neutral-700">
+                    <li className="text-[#5CC781]">
+                      ✓{" "}
+                      <span className="text-neutral-700">
+                        Acceso al Nivel 1 de tu ruta
                       </span>
-                      <span className="text-lg text-[#4A4949] mb-2">{selected.unit}</span>
-                    </div>
+                    </li>
+                    <li className="text-[#5CC781]">
+                      ✓{" "}
+                      <span className="text-neutral-700">
+                        3 cursos seleccionados por Top Education
+                      </span>
+                    </li>
+                    <li className="text-[#5CC781]">
+                      ✓{" "}
+                      <span className="text-neutral-700">
+                        Dashboard de aprendizaje
+                      </span>
+                    </li>
+                    <li className="text-[#5CC781]">
+                      ✓{" "}
+                      <span className="text-neutral-700">
+                        Recomendaciones básicas
+                      </span>
+                    </li>
+                    <li className="text-neutral-300">
+                      × <span className="text-neutral-400">Certificaciones</span>
+                    </li>
+                    <li className="text-neutral-300">
+                      ×{" "}
+                      <span className="text-neutral-400">
+                        Acceso completo a la ruta
+                      </span>
+                    </li>
+                    <li className="text-neutral-300">
+                      ×{" "}
+                      <span className="text-neutral-400">
+                        Seguimiento avanzado
+                      </span>
+                    </li>
+                    <li className="text-neutral-300">
+                      × <span className="text-neutral-400">IA personalizada</span>
+                    </li>
+                  </ul>
 
-                    {isYearly && PRICING.savingsUsd > 0 && (
-                      <div className="mt-3 text-sm text-blue-700 font-semibold">
-                        Ahorras ${PRICING.savingsUsd} USD vs pagar mensual
-                      </div>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => goCheckout(selected.plan)}
-                      disabled={loadingPlan !== null}
-                      className="mt-6 w-full md:w-auto px-8 py-3 rounded-full bg-blue-600 text-white font-semibold hover:opacity-95 disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      {loadingPlan === selected.plan ? "Redirigiendo..." : "Empieza ahora"}
-                    </button>
-
-                    <div className="mt-4 text-xs text-[#666]">
-                      {isYearly ? "Facturado anualmente. Cancela cuando quieras." : "Facturado mensualmente. Cancela cuando quieras."}
-                    </div>
+                  <div className="mt-auto rounded-[16px] border border-black/10 bg-[#F6F4EF] px-6 py-4 text-center !font-['Montserrat'] font-bold text-[#111111]">
+                    Comenzar Gratis
                   </div>
+                </button>
 
-                  {/* Right: features */}
-                  <div className="rounded-xl bg-neutral-100 px-6 py-6">
-                    <div className="text-[#000000] font-semibold text-lg mb-4">
-                      Incluye:
-                    </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const plan = isAnnual ? "yearly_x" : "monthly_x";
+                    trackClientifyPlanInterest(plan);
+                    setSelectedPlan("x");
+                    setSelectedPaidPlan(plan);
+                    setStep("proPayment");
+                  }}
+                  disabled={loading}
+                  className="relative flex min-h-[560px] flex-col rounded-[24px] bg-[#1941cf] px-5 py-8 text-left text-white shadow-[0_26px_70px_rgba(47,91,219,0.28)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <span className="absolute left-1/2 top-[-18px] -translate-x-1/2 rounded-full bg-[#FDBA3B] px-5 py-2 !font-['Montserrat'] text-sm font-black text-white shadow-[0_14px_35px_rgba(253,186,59,0.28)]">
+                    ⭐ MÁS POPULAR
+                  </span>
 
-                    <ul className="space-y-3 text-[#000000]">
-                      {FEATURES.map((t) => (
-                        <li key={t} className="flex items-start gap-3">
-                          <span className="mt-1 inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-600/85 border border-blue-500/30 text-blue-200 text-xs">
-                            ✓
-                          </span>
-                          <span className="text-sm leading-relaxed">{t}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <button
-                      type="button"
-                      disabled
-                      onClick={() => setIsYearly(true)}
-                      className="mt-6 w-full px-4 py-2 rounded-full border border-neutral-700 bg-neutral-200 text-neutral-900 hover:bg-neutral-300"
-                    >
-                      {isYearly ? "Plan anual seleccionado" : "Cambiate a anual y ahorra"}
-                    </button>
+                  <h4 className="mt-6 !font-['Montserrat'] text-[2rem] font-black">
+                    Top Education X
+                  </h4>
+                  <div className="mt-2 !font-['Montserrat'] text-[3.2rem] font-black leading-none">
+                    {planXPrice}{" "}
+                    <span className="text-lg font-medium text-white/75">
+                      USD / mes
+                    </span>
                   </div>
+                  <p className="mt-2 !font-['Montserrat'] text-white/70">
+                    {planXSubcopy}
+                  </p>
+                  <p className="mt-4 !font-['Montserrat'] text-lg font-semibold leading-[1.45em] text-white">
+                    La mejor combinación para acelerar tu crecimiento
+                    profesional.
+                  </p>
+
+                  <span className="mt-5 !font-['Montserrat'] font-black uppercase">
+                    Incluye:
+                  </span>
+                  <ul className="my-2 space-y-2 !font-['Montserrat'] text-white">
+                    <li>✓ Elige Coursera + MasterClass o edX + MasterClass</li>
+                    <li>✓ Acceso a toda tu ruta personalizada</li>
+                    <li>✓ Certificaciones disponibles</li>
+                    <li>✓ Seguimiento de progreso</li>
+                    <li>✓ Recomendaciones inteligentes</li>
+                    <li>✓ Nuevas rutas personalizadas</li>
+                    <li>✓ Actualización continua de habilidades</li>
+                    <li>✓ Prueba gratuita de 7 días</li>
+                  </ul>
+
+                  <div className="mt-auto rounded-[16px] bg-white px-6 py-4 text-center !font-['Montserrat'] font-black text-[#1941cf]">
+                    Comenzar prueba gratuita →
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const plan = isAnnual ? "yearly_plus" : "monthly_plus";
+                    trackClientifyPlanInterest(plan);
+                    setSelectedPlan("plus");
+                    setSelectedPaidPlan(plan);
+                    setStep("proPayment");
+                  }}
+                  disabled={loading}
+                  className="flex min-h-[420px] my-4 flex-col rounded-[24px] border border-black/10 bg-white p-7 text-left shadow-[0_16px_45px_rgba(0,0,0,0.05)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <h4 className="mt-3 !font-['Montserrat'] text-[1.8rem] font-black text-[#111111]">
+                    Top Education Plus
+                  </h4>
+                  <div className="mt-2 !font-['Montserrat'] text-[3.2rem] font-black leading-none text-[#111111]">
+                    {planPlusPrice}{" "}
+                    <span className="text-lg font-medium text-neutral-500">
+                      USD / mes
+                    </span>
+                  </div>
+                  <p className="mt-2 !font-['Montserrat'] text-neutral-500">
+                    {planPlusSubcopy}
+                  </p>
+                  <p className="mt-4 !font-['Montserrat'] leading-[1.55em] text-neutral-600">
+                    La experiencia completa para quienes buscan maximizar su
+                    aprendizaje.
+                  </p>
+
+                  <span className="mt-5 !font-['Montserrat'] font-black uppercase text-[#111111]">
+                    Incluye:
+                  </span>
+                  <ul className="my-2 space-y-2 !font-['Montserrat'] text-neutral-700">
+                    <li className="text-[#2563EB]">
+                      ✓ <span className="text-neutral-700">Coursera</span>
+                    </li>
+                    <li className="text-[#2563EB]">
+                      ✓ <span className="text-neutral-700">edX</span>
+                    </li>
+                    <li className="text-[#2563EB]">
+                      ✓ <span className="text-neutral-700">MasterClass</span>
+                    </li>
+                    <li className="text-[#2563EB]">
+                      ✓{" "}
+                      <span className="text-neutral-700">
+                        Todas las certificaciones disponibles
+                      </span>
+                    </li>
+                    <li className="text-[#2563EB]">
+                      ✓ <span className="text-neutral-700">Ruta completa</span>
+                    </li>
+                    <li className="text-[#2563EB]">
+                      ✓ <span className="text-neutral-700">IA avanzada</span>
+                    </li>
+                    <li className="text-[#2563EB]">
+                      ✓{" "}
+                      <span className="text-neutral-700">
+                        Recomendaciones premium
+                      </span>
+                    </li>
+                    <li className="text-[#2563EB]">
+                      ✓{" "}
+                      <span className="text-neutral-700">
+                        Acceso prioritario a nuevas experiencias
+                      </span>
+                    </li>
+                    <li className="text-[#2563EB]">
+                      ✓{" "}
+                      <span className="text-neutral-700">
+                        Prueba gratuita de 7 días
+                      </span>
+                    </li>
+                  </ul>
+
+                  <div className="mt-auto rounded-[16px] bg-[#1941cf] px-6 py-4 text-center !font-['Montserrat'] font-black text-white">
+                    Comenzar prueba gratuita →
+                  </div>
+                </button>
+              </div>
+            </section>
+
+            <section className="mt-16 rounded-[28px] border border-black/10 bg-white p-7 shadow-[0_18px_50px_rgba(0,0,0,0.05)] md:p-10">
+              <h3 className="text-center !font-['Montserrat'] text-2xl font-black text-[#111111]">
+                Comparativa rápida
+              </h3>
+
+              <div className="mt-8 overflow-x-auto">
+                <table className="min-w-full !font-['Montserrat'] text-left text-[15px]">
+                  <thead>
+                    <tr className="border-b border-black/10 text-neutral-600">
+                      <th className="px-5 py-4">Característica</th>
+                      <th className="px-5 py-4 text-center">Free</th>
+                      <th className="bg-[#F4F6FB] px-5 py-4 text-center text-[#2563EB]">
+                        X
+                      </th>
+                      <th className="px-5 py-4 text-center">Plus</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      ["Cursos recomendados", "✓", "✓", "✓"],
+                      ["Ruta completa", "×", "✓", "✓"],
+                      ["MasterClass", "×", "✓", "✓"],
+                      ["Coursera", "×", "Opcional", "✓"],
+                      ["edX", "×", "Opcional", "✓"],
+                      ["Certificaciones", "×", "✓", "✓"],
+                      ["IA Top Education", "Básica", "Completa", "Premium"],
+                    ].map(([feature, free, x, plus]) => (
+                      <tr key={feature} className="border-b border-black/5">
+                        <td className="px-5 py-4 text-[#111111]">{feature}</td>
+                        <td
+                          className={`px-5 py-4 text-center ${
+                            free === "✓"
+                              ? "text-[#5CC781]"
+                              : free === "×"
+                              ? "text-neutral-300"
+                              : "text-neutral-500"
+                          }`}
+                        >
+                          {free}
+                        </td>
+                        <td className="bg-[#F4F6FB] px-5 py-4 text-center font-bold text-[#2563EB]">
+                          {x}
+                        </td>
+                        <td
+                          className={`px-5 py-4 text-center ${
+                            plus === "✓"
+                              ? "text-[#2563EB]"
+                              : "text-neutral-500"
+                          }`}
+                        >
+                          {plus}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <div className="mt-12 text-center">
+              <h3 className="!font-['Montserrat'] text-xl font-black text-[#111111]">
+                Más de 24,500 certificaciones emitidas a través de nuestros
+                proveedores educativos.
+              </h3>
+              <p className="mt-3 !font-['Montserrat'] text-neutral-500">
+                Comienza gratis o desbloquea toda tu ruta personalizada hoy.
+              </p>
+            </div>
+          </section>
+        )}
+
+        {step === "freeSignup" && (
+          <section className="mx-auto flex min-h-screen max-w-[590px] flex-col items-center justify-center px-5 py-16 md:py-24">
+            <div className="grid h-16 w-16 place-items-center rounded-[18px] bg-[#5CC781]/10 text-3xl text-[#5CC781]">
+              ♙
+            </div>
+
+            <span className="mt-6 !font-['Montserrat'] font-semibold uppercase text-[#5CC781]">
+              Plan explorador
+            </span>
+
+            <h2 className="mt-2 text-center !font-['Montserrat'] text-3xl font-semibold text-[#111111]">
+              Crea tu cuenta gratis
+            </h2>
+
+            <p className="mt-2 text-center !font-['Montserrat'] text-neutral-600">
+              Accede a cursos seleccionados y explora todo el catálogo sin
+              costo.
+            </p>
+
+            <div className="mt-4 w-full rounded-[20px] border border-[#5CC781]/30 bg-[#5CC781]/10 p-4">
+              <h3 className="!font-['Montserrat'] font-semibold text-[#111111]">
+                Tu plan incluye:
+              </h3>
+
+              <ul className="mt-1 flex flex-wrap space-y-1 !font-['Montserrat'] text-[14px] text-neutral-700">
+                <li className="w-[50%]">✓ Cursos seleccionados gratis</li>
+                <li className="w-[50%]">✓ Explorar todas las categorías</li>
+                <li className="w-[50%]">✓ Perfil de aprendizaje básico</li>
+                <li className="w-[50%]">✓ Recomendaciones iniciales</li>
+              </ul>
+            </div>
+
+            <div className="mt-8 w-full space-y-3">
+              <FormInput
+                label="Correo Electrónico"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="Correo electrónico"
+              />
+
+              <FormInput
+                label="Contraseña"
+                value={form.password}
+                onChange={(e) =>
+                  setForm({ ...form, password: e.target.value })
+                }
+                placeholder="Crea una contraseña segura"
+                type={showPass ? "text" : "password"}
+                rightAction={
+                  <button
+                    type="button"
+                    onClick={() => setShowPass((prev) => !prev)}
+                    className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#2563EB]"
+                  >
+                    {showPass ? "Ocultar" : "Ver"}
+                  </button>
+                }
+              />
+
+              <FormInput
+                label="Confirmar Contraseña"
+                value={form.confirm_password}
+                onChange={(e) =>
+                  setForm({ ...form, confirm_password: e.target.value })
+                }
+                placeholder="Confirma tu contraseña"
+                type={showPass2 ? "text" : "password"}
+                rightAction={
+                  <button
+                    type="button"
+                    onClick={() => setShowPass2((prev) => !prev)}
+                    className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#2563EB]"
+                  >
+                    {showPass2 ? "Ocultar" : "Ver"}
+                  </button>
+                }
+              />
+            </div>
+
+            {errorMsg && (
+              <div className="mt-6 w-full rounded-[16px] border border-red-100 bg-red-50 px-5 py-4 !font-['Montserrat'] text-sm font-semibold text-red-600">
+                {errorMsg}
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={startFreeSignup}
+              disabled={loading}
+              className="mt-7 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {loading ? "Creando cuenta..." : "Crear cuenta gratis"}{" "}
+              <ArrowIcon />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setStep("ready")}
+              className="mt-5 !font-['Montserrat'] text-sm font-medium text-neutral-500 hover:text-[#111111]"
+            >
+              Volver a planes
+            </button>
+          </section>
+        )}
+
+        {step === "proSignup" && (
+          <section className="mx-auto flex min-h-screen max-w-[620px] flex-col items-center justify-center px-5 py-16 md:py-24">
+            <div className="grid h-16 w-16 place-items-center rounded-[18px] bg-[#2563EB]/10 text-3xl text-[#2563EB]">
+              ✦
+            </div>
+
+            <span className="mt-6 !font-['Montserrat'] font-semibold uppercase text-[#2563EB]">
+              {activePlanName}
+            </span>
+
+            <h2 className="mt-2 text-center !font-['Montserrat'] text-3xl font-semibold text-[#111111]">
+              Crea tu cuenta para iniciar tu prueba
+            </h2>
+
+            <p className="mt-2 text-center !font-['Montserrat'] text-neutral-600">
+              Guardaremos tu ruta y luego podrás agregar tu tarjeta para activar
+              los 7 días gratis.
+            </p>
+
+            <div className="mt-6 w-full rounded-[20px] border border-[#2563EB]/20 bg-white p-5 shadow-[0_16px_45px_rgba(0,0,0,0.04)]">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="!font-['Montserrat'] text-sm text-neutral-500">
+                    Cuenta
+                  </p>
+                  <p className="!font-['Montserrat'] text-lg font-semibold text-[#111111]">
+                    {form.email}
+                  </p>
+                </div>
+
+                <span className="rounded-full bg-[#2563EB]/10 px-4 py-2 !font-['Montserrat'] text-sm font-semibold text-[#2563EB]">
+                  7 días gratis
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-8 w-full space-y-3">
+              <FormInput
+                label="Correo Electrónico"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="Correo electrónico"
+                readOnly
+              />
+
+              <FormInput
+                label="Contraseña"
+                value={form.pro_password}
+                onChange={(e) =>
+                  setForm({ ...form, pro_password: e.target.value })
+                }
+                placeholder="Crea una contraseña segura"
+                type={showProPass ? "text" : "password"}
+                rightAction={
+                  <button
+                    type="button"
+                    onClick={() => setShowProPass((prev) => !prev)}
+                    className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#2563EB]"
+                  >
+                    {showProPass ? "Ocultar" : "Ver"}
+                  </button>
+                }
+              />
+
+              <FormInput
+                label="Confirmar Contraseña"
+                value={form.pro_confirm_password}
+                onChange={(e) =>
+                  setForm({ ...form, pro_confirm_password: e.target.value })
+                }
+                placeholder="Confirma tu contraseña"
+                type={showProPass2 ? "text" : "password"}
+                rightAction={
+                  <button
+                    type="button"
+                    onClick={() => setShowProPass2((prev) => !prev)}
+                    className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#2563EB]"
+                  >
+                    {showProPass2 ? "Ocultar" : "Ver"}
+                  </button>
+                }
+              />
+            </div>
+
+            {errorMsg && (
+              <div className="mt-6 w-full rounded-[16px] border border-red-100 bg-red-50 px-5 py-4 !font-['Montserrat'] text-sm font-semibold text-red-600">
+                {errorMsg}
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={startProSignup}
+              disabled={loading}
+              className="mt-7 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {loading ? "Creando cuenta..." : "Continuar a pago seguro"}{" "}
+              <ArrowIcon />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setStep("ready")}
+              className="mt-5 !font-['Montserrat'] text-sm font-medium text-neutral-500 hover:text-[#111111]"
+            >
+              Volver a planes
+            </button>
+          </section>
+        )}
+
+        {step === "proPayment" && (
+          <section className="mx-auto flex min-h-screen max-w-[820px] flex-col items-center px-5 py-16 md:py-24">
+            <div className="grid h-16 w-16 place-items-center rounded-[18px] bg-[#2563EB]/10 text-3xl text-[#2563EB]">
+              ▬
+            </div>
+
+            <span className="mt-6 !font-['Montserrat'] font-black uppercase tracking-[0.12em] text-[#1941cf]">
+              Empieza tu prueba gratis
+            </span>
+
+            <h2 className="mt-2 text-center !font-['Montserrat'] text-[2rem] font-black text-[#111111]">
+              Completa tu suscripción
+            </h2>
+
+            <p className="mt-3 max-w-[650px] text-center !font-['Montserrat'] text-[1.1rem] leading-[1.45em] text-neutral-600">
+              {activePlanDescription}
+            </p>
+
+            <div className="mt-10 w-full rounded-[22px] bg-[#1941cf] p-6 text-white shadow-[0_22px_60px_rgba(37,58,207,0.22)]">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="!font-['Montserrat'] text-[15px] font-semibold text-white/90">
+                    {activePlanName}
+                  </p>
+
+                  <div className="mt-2 flex items-end gap-2">
+                    <span className="!font-['Montserrat'] text-[2.4rem] font-black leading-none">
+                      {activePlanPrice}
+                    </span>
+
+                    <span className="mb-1 !font-['Montserrat'] text-lg text-white/75">
+                      /{activePlanInterval}
+                    </span>
+                  </div>
+                </div>
+
+                <span className="mt-4 rounded-full bg-[#6EC982] px-5 py-2 !font-['Montserrat'] text-sm font-black text-white">
+                  7 días gratis
+                </span>
+              </div>
+
+              <div className="mt-6 border-t border-white/20 pt-5">
+                <p className="!font-['Montserrat'] text-sm text-white/90">
+                  <strong>Hoy:</strong> $0.00 ·{" "}
+                  <strong>{trialEndDate}:</strong>{" "}
+                  {activePlanPrice.replace("$", "$")}
+                  {activePlanInterval === "año" ? " anual" : ".00"}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-8 w-full rounded-[24px] bg-white p-7 shadow-[0_24px_70px_rgba(0,0,0,0.08)]">
+              <div className="space-y-5">
+                <FormInput
+                  label="Correo electrónico"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  placeholder="correo@ejemplo.com"
+                  readOnly
+                />
+
+                <label className="block !font-['Montserrat'] text-[16px] font-semibold text-[#111111]">
+                  Número de tarjeta
+
+                  <div className="mt-2 rounded-[18px] border border-black/10 bg-white px-5 py-4 transition-all focus-within:border-[#1941cf] focus-within:ring-4 focus-within:ring-[#1941cf]/15">
+                    <CardElement
+                      options={cardElementOptions}
+                      onChange={(event) => {
+                        setCardComplete(event.complete);
+
+                        if (event.error) {
+                          setErrorMsg(event.error.message);
+                        } else {
+                          setErrorMsg("");
+                        }
+                      }}
+                    />
+                  </div>
+                </label>
+
+                <FormInput
+                  label="Nombre del titular"
+                  value={`${form.first_name} ${form.last_name}`.trim()}
+                  onChange={() => {}}
+                  placeholder="Como aparece en la tarjeta"
+                  readOnly
+                />
+
+                <FormSelect
+                  label="País"
+                  value={form.country || "Colombia"}
+                  onChange={(e) =>
+                    setForm({ ...form, country: e.target.value })
+                  }
+                  placeholder="Selecciona tu país"
+                >
+                  {countries.map((country) => (
+                    <option key={country} value={country}>
+                      {country}
+                    </option>
+                  ))}
+                </FormSelect>
+              </div>
+
+              {errorMsg && (
+                <div className="mt-6 rounded-[16px] border border-red-100 bg-red-50 px-5 py-4 !font-['Montserrat'] text-sm font-semibold text-red-600">
+                  {errorMsg}
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={startProSubscription}
+                disabled={loading || !stripe}
+                className="mt-7 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#1941cf] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-black text-white shadow-[0_22px_50px_rgba(37,58,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loading ? "Activando prueba..." : "Comenzar prueba gratis"}{" "}
+                <ArrowIcon />
+              </button>
+
+              <p className="mt-7 text-center !font-['Montserrat'] text-sm leading-[1.45em] text-neutral-400">
+                Al continuar, aceptas los términos de servicio y la política de
+                privacidad. Tu suscripción se renovará automáticamente después
+                del período de prueba.
+              </p>
+            </div>
+
+            <div className="mt-7 flex items-center justify-center gap-8 !font-['Montserrat'] text-sm text-neutral-500">
+              <span>▢ Pago seguro</span>
+              <span>✓ Cancela cuando quieras</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setStep("ready")}
+              className="mt-6 !font-['Montserrat'] text-sm font-medium text-neutral-500 hover:text-[#111111]"
+            >
+              Volver
+            </button>
+          </section>
+        )}
+
+        {step === "subscriptionSuccess" && (
+          <section className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 px-5 backdrop-blur-sm">
+            <div className="w-full max-w-[740px] mt-15 rounded-[34px] bg-white p-4 text-center shadow-[0_25px_80px_rgba(0,0,0,0.25)] md:p-10">
+              <div className="mx-auto grid h-18 w-18 place-items-center rounded-full bg-[#1941cf] text-white">
+                <CheckIcon />
+              </div>
+
+              <h2 className="mt-5 !font-['Montserrat'] text-[1.5rem] font-black tracking-[-0.04em] text-[#111111]">
+                ¡Bienvenido a {activePlanName}!
+              </h2>
+
+              <p className="mt-0 !font-['Montserrat'] text-md text-neutral-500">
+                Tu suscripción ha sido activada exitosamente.
+              </p>
+
+              <div className="mt-5 rounded-[22px] bg-[#E9ECFF] p-4 text-left">
+                <div className="flex items-center justify-between gap-4">
+                  <h3 className="!font-['Montserrat'] text-xl font-black text-[#111111]">
+                    Período de prueba
+                  </h3>
+                  <span className="rounded-full bg-[#6EC982] px-4 py-2 !font-['Montserrat'] text-xs font-black uppercase text-white">
+                    7 días gratis
+                  </span>
+                </div>
+
+                <p className="mt-2 !font-['Montserrat'] text-sm leading-[1.5em] text-neutral-600">
+                  Tienes <strong>7 días</strong> para explorar todas las
+                  funciones premium sin costo. El primer cobro se realizará el{" "}
+                  <strong>{trialEndDate}</strong>.
+                </p>
+
+                <div className="mt-3 border-t border-black/10 pt-3">
+                  <ul className="space-y-2 !font-['Montserrat'] text-[xs] text-[#111111]">
+                    <li className="text-[#6EC982]">
+                      ✓{" "}
+                      <span className="text-[#111111]">
+                        Acceso a MasterClass y Coursera
+                      </span>
+                    </li>
+                    <li className="text-[#6EC982]">
+                      ✓{" "}
+                      <span className="text-[#111111]">
+                        9,000+ cursos disponibles
+                      </span>
+                    </li>
+                    <li className="text-[#6EC982]">
+                      ✓{" "}
+                      <span className="text-[#111111]">Ruta personalizada</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
 
-              {/* mini nota */}
-              <div className="mt-6 text-center text-xs text-slate-400 max-w-[760px]">
-                Al continuar aceptas los términos. Los pagos se procesan de forma segura con Stripe.
+              <div className="mt-3 rounded-[18px] border border-[#FDBA3B]/25 bg-[#FFF8EA] p-4 text-left">
+                <h3 className="!font-['Montserrat'] text-md font-black text-[#111111]">
+                  Siguiente paso
+                </h3>
+                <p className="mt-0 !font-['Montserrat'] text-[14px] text-neutral-500">
+                  Crea una contraseña segura para proteger tu cuenta y comenzar
+                  tu aprendizaje.
+                </p>
               </div>
 
+              <button
+                type="button"
+                onClick={() => setStep("createPassword")}
+                className="mt-3 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#1941cf] px-5 py-3 !font-['Montserrat'] text-lg font-black text-white shadow-[0_20px_45px_rgba(37,58,207,0.25)]"
+              >
+                Crear contraseña <ArrowIcon />
+              </button>
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
+        )}
+
+        {step === "createPassword" && (
+          <section className="mx-auto flex min-h-screen max-w-[620px] flex-col items-center justify-center px-5 py-16 md:py-24">
+            <div className="grid h-16 w-16 place-items-center rounded-[18px] bg-[#5CC781]/10 text-[#5CC781]">
+              <LockIcon />
+            </div>
+            <span className="mt-3 !font-['Montserrat'] font-black uppercase tracking-[0.12em] text-[#5CC781]">
+              Acceso verificado ✓
+            </span>
+            <h2 className="mt-1 text-center !font-['Montserrat'] text-3xl font-black text-[#111111]">
+              Crea tu contraseña
+            </h2>
+            <p className="mt-0 max-w-[720px] text-center !font-['Montserrat'] text-lg text-neutral-600">
+              Por seguridad, crea una contraseña personal antes de continuar.
+            </p>
+
+            <div className="mt-5 w-full rounded-[24px] bg-white p-7 shadow-[0_18px_55px_rgba(0,0,0,0.06)]">
+              <FormInput
+                label="Nueva contraseña"
+                value={form.password}
+                onChange={(e) =>
+                  setForm({ ...form, password: e.target.value })
+                }
+                placeholder="Crea una contraseña segura"
+                type={showPass ? "text" : "password"}
+                rightAction={
+                  <button
+                    type="button"
+                    onClick={() => setShowPass((prev) => !prev)}
+                    className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#2563EB]"
+                  >
+                    {showPass ? "Ocultar" : "Ver"}
+                  </button>
+                }
+              />
+
+              <PasswordStrength password={form.password} />
+
+              <div className="mt-3">
+                <FormInput
+                  label="Confirmar contraseña"
+                  value={form.confirm_password}
+                  onChange={(e) =>
+                    setForm({ ...form, confirm_password: e.target.value })
+                  }
+                  placeholder="Confirma tu contraseña"
+                  type={showPass2 ? "text" : "password"}
+                  rightAction={
+                    <button
+                      type="button"
+                      onClick={() => setShowPass2((prev) => !prev)}
+                      className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#2563EB]"
+                    >
+                      {showPass2 ? "Ocultar" : "Ver"}
+                    </button>
+                  }
+                />
+              </div>
+
+              {errorMsg && (
+                <div className="mt-6 rounded-[16px] border border-red-100 bg-red-50 px-5 py-4 !font-['Montserrat'] text-sm font-semibold text-red-600">
+                  {errorMsg}
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={() =>
+                  completeSignup({
+                    plan:
+                      selectedPlan === "free"
+                        ? "free"
+                        : getFinalPlanFromPaidPlan(selectedPaidPlan),
+                    redirectTo:
+                      selectedPlan === "free"
+                        ? "/account?tab=cv"
+                        : "/account?tab=license",
+                  })
+                }
+                disabled={loading}
+                className="mt-3 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#1941cf] px-5 py-3 !font-['Montserrat'] text-lg font-black text-white shadow-[0_22px_50px_rgba(37,58,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loading ? "Creando cuenta..." : "Guardar y entrar"}{" "}
+                <ArrowIcon />
+              </button>
+
+              <p className="mt-3 text-center !font-['Montserrat'] text-sm text-neutral-300">
+                Tu contraseña se cifra de forma segura. Nunca la compartiremos.
+              </p>
+            </div>
+          </section>
+        )}
+      </main>
     </>
   );
 }
 
-export default StartNow;
+export default function StartNow() {
+  const stripePromise = useMemo(() => {
+    const key = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
+
+    if (!key) {
+      console.warn("Falta REACT_APP_STRIPE_PUBLISHABLE_KEY");
+      return null;
+    }
+
+    return loadStripe(key);
+  }, []);
+
+  return (
+    <Elements stripe={stripePromise}>
+      <StartNowContent />
+    </Elements>
+  );
+}

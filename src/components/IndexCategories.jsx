@@ -1,45 +1,92 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
-import { Link } from "react-router-dom";
 import endpoints from "../config/api";
 
 const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
   const [openSection, setOpenSection] = useState(null);
   const [openChildMenu, setOpenChildMenu] = useState(null);
+
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [mobileOpenSection, setMobileOpenSection] = useState(null);
   const [mobileOpenChild, setMobileOpenChild] = useState(null);
 
-  const [temas, setTemas] = useState([]);
+  const [skills, setSkills] = useState([]);
   const [empresas, setEmpresas] = useState([]);
   const [plataformas, setPlataformas] = useState([]);
   const [idiomas, setIdiomas] = useState([]);
   const [universidadesPorRegion, setUniversidadesPorRegion] = useState({});
+
   const indexRef = useRef(null);
 
   const normalizeSkillType = (value) => {
     const v = (value || "").toString().trim().toLowerCase();
-    if (["tema", "category", "principal"].includes(v)) return "tema";
-    if (["habilidad", "skill", "subskill", "secondary"].includes(v)) return "habilidad";
+
+    if (["tema", "temas", "category", "principal"].includes(v)) return "tema";
+    if (["habilidad", "habilidades", "skill", "subskill", "secondary"].includes(v)) {
+      return "habilidad";
+    }
+
     return "";
   };
-
+  
   const isSkillActive = (item) =>
     item?.estado === true || item?.estado === 1 || item?.estado === "1";
 
   const getSkillLabel = (item) =>
-    item?.translate && item.translate.trim() !== "" ? item.translate : item?.nombre || "";
+    item?.translate && item.translate.trim() !== ""
+      ? item.translate
+      : item?.nombre || "";
 
   const getParentId = (item) => {
+    if (item?.parent_id) return item.parent_id;
+
     if (!item?.parent) return null;
-    if (typeof item.parent === "object") return item.parent.id || null;
+
+    if (typeof item.parent === "object") {
+      return item.parent.id || item.parent_id || null;
+    }
+
     return item.parent;
   };
+
+  const hasValidValue = (value) =>
+    value &&
+    typeof value === "string" &&
+    value.trim() !== "" &&
+    value !== "null" &&
+    value !== "undefined";
+
+  const hasParentIcon = (item) =>
+    hasValidValue(item?.skill_ico) || hasValidValue(item?.skill_img);
+
+  const getPlatformLabel = (item) =>
+    item?.nombre ||
+    item?.name ||
+    item?.plataforma_nombre ||
+    item?.title ||
+    item?.slug ||
+    "";
+
+  const getCompanyLabel = (item) =>
+    item?.nombre ||
+    item?.name ||
+    item?.empr_nombre ||
+    item?.title ||
+    item?.slug ||
+    "";
+
+  const getUniversityLabel = (item) =>
+    item?.nombre ||
+    item?.name ||
+    item?.univ_nombre ||
+    item?.title ||
+    item?.slug ||
+    "";
 
   const isLanguageSelected = (code) =>
     Array.isArray(selectedTags?.idioma) && selectedTags.idioma.includes(code);
 
   useEffect(() => {
-    fetch(endpoints.skills)
+    fetch(endpoints.filterSkills)
       .then((res) => res.json())
       .then((data) => {
         const safeData = Array.isArray(data)
@@ -48,49 +95,87 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
           ? data.results
           : [];
 
-        const activeSkills = safeData.filter((item) => isSkillActive(item));
-
-        setTemas(
-          activeSkills.filter(
-            (item) => normalizeSkillType(item.skill_type) === "tema"
-          )
-        );
+        setSkills(safeData.filter((item) => isSkillActive(item)));
       })
-      .catch(() => setTemas([]));
+      .catch(() => setSkills([]));
 
-    fetch(endpoints.empresas)
+    fetch(endpoints.filterCompanies)
       .then((res) => res.json())
       .then((data) => {
-        const safeData = Array.isArray(data) ? data : [];
-        setEmpresas(
-          safeData.filter(
-            (item) => item.empr_est === "enabled" || item.estado === true
-          )
-        );
+        const safeData = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.results)
+          ? data.results
+          : [];
+
+        setEmpresas(safeData);
       })
       .catch(() => setEmpresas([]));
 
-    fetch(endpoints.platforms)
+    fetch(endpoints.filterPlatforms)
       .then((res) => res.json())
-      .then((data) => setPlataformas(Array.isArray(data) ? data : []))
+      .then((data) => {
+        const safeData = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.results)
+          ? data.results
+          : [];
+
+        setPlataformas(safeData);
+      })
       .catch(() => setPlataformas([]));
 
-    fetch(endpoints.universities_region)
+    fetch(endpoints.filterUniversitiesRegion)
       .then((res) => res.json())
       .then((data) => setUniversidadesPorRegion(data || {}))
       .catch(() => setUniversidadesPorRegion({}));
 
     fetch(endpoints.certification_languages)
       .then((res) => res.json())
-      .then((data) => setIdiomas(Array.isArray(data) ? data : []))
+      .then((data) => {
+        const safeData = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.results)
+          ? data.results
+          : [];
+
+        setIdiomas(safeData);
+      })
       .catch(() => setIdiomas([]));
   }, []);
 
-  const isSectionDisabled = () => false;
+  const hasIcon = (item) => {
+    const icon = item?.skill_ico || item?.skill_img;
+    return (
+      icon &&
+      typeof icon === "string" &&
+      icon.trim() !== "" &&
+      icon !== "NULL" &&
+      icon !== "null" &&
+      icon !== "undefined"
+    );
+  };
+
+  const temasItems = useMemo(
+    () =>
+      skills.filter(
+        (item) => normalizeSkillType(item.skill_type) === "tema"
+      ),
+    [skills]
+  );
+
+  const habilidadesItems = useMemo(
+    () =>
+      skills.filter(
+        (item) => normalizeSkillType(item.skill_type) === "habilidad"
+      ),
+    [skills]
+  );
 
   const buildSkillTree = (items) => {
     const parentItems = items
       .filter((item) => !getParentId(item))
+      .filter((item) => hasIcon(item))
       .sort((a, b) => getSkillLabel(a).localeCompare(getSkillLabel(b)));
 
     return parentItems.map((parent) => ({
@@ -101,7 +186,12 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
     }));
   };
 
-  const temasTree = useMemo(() => buildSkillTree(temas), [temas]);
+  const temasTree = useMemo(() => buildSkillTree(temasItems), [temasItems]);
+
+  const habilidadesTree = useMemo(
+    () => buildSkillTree(habilidadesItems),
+    [habilidadesItems]
+  );
 
   const closeMobileFilters = () => {
     setMobileFiltersOpen(false);
@@ -127,15 +217,120 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
     if (closeMobile) closeMobileFilters();
   };
 
+  const handleUniversitySelect = (uni, closeMobile = false) => {
+    if (disabled) return;
+
+    onTagSelect("universidades", {
+      id: uni.id,
+      nombre: getUniversityLabel(uni),
+      slug: uni.slug || "",
+      univ_ico: uni.univ_ico || "",
+      univ_img: uni.univ_img || "",
+    });
+
+    setOpenSection(null);
+
+    if (closeMobile) closeMobileFilters();
+  };
+
+  const handleCompanySelect = (empr, closeMobile = false) => {
+    if (disabled) return;
+
+    onTagSelect("empresas", {
+      id: empr.id,
+      nombre: getCompanyLabel(empr),
+      slug: empr.slug || "",
+      empr_ico: empr.empr_ico || "",
+      empr_img: empr.empr_img || "",
+    });
+
+    setOpenSection(null);
+
+    if (closeMobile) closeMobileFilters();
+  };
+
+  const handlePlatformSelect = (platform, closeMobile = false) => {
+    if (disabled) return;
+
+    onTagSelect("plataforma", {
+      id: platform.id,
+      nombre: getPlatformLabel(platform),
+      slug: platform.slug || "",
+      plat_ico: platform.plat_ico || platform.icon || "",
+    });
+
+    setOpenSection(null);
+
+    if (closeMobile) closeMobileFilters();
+  };
+
   const handleLanguageToggle = (code) => {
     if (disabled) return;
     onTagSelect("idioma", code);
   };
 
-  const renderSkillTreeDesktop = (category, treeItems) => {
-    return treeItems.map((parent) => {
-      const hasChildren = Array.isArray(parent.children) && parent.children.length > 0;
-      const sectionDisabled = disabled || isSectionDisabled(category);
+  const getIconSrc = (item, fallbackName = "") =>
+    item?.skill_ico ||
+    item?.skill_img ||
+    item?.empr_ico ||
+    item?.empr_img ||
+    item?.univ_ico ||
+    item?.univ_img ||
+    item?.plat_ico ||
+    item?.icon ||
+    `/assets/category/${fallbackName || item?.nombre || item?.name}.png`;
+
+  const getInitial = (label = "") => {
+    const clean = label.toString().trim();
+    return clean ? clean.charAt(0).toUpperCase() : "?";
+  };
+
+  const ImageWithInitial = ({ src, label, size = "sm" }) => {
+    const [hasError, setHasError] = useState(false);
+
+    const sizeClass =
+      size === "md" ? "h-7 w-7 text-[12px]" : "h-5 w-5 text-[10px]";
+
+    const imgSizeClass =
+      size === "md" ? "max-h-6 max-w-6" : "max-h-5 max-w-5";
+
+    if (!src || hasError) {
+      return (
+        <span
+          className={`grid ${sizeClass} shrink-0 place-items-center rounded-full bg-[#F5F3EE] font-bold text-[#0F090B] ring-1 ring-black/10`}
+          title={label}
+        >
+          {getInitial(label)}
+        </span>
+      );
+    }
+
+    return (
+      <span
+        className={`grid ${sizeClass} shrink-0 place-items-center overflow-hidden rounded-full bg-white ring-1 ring-black/10`}
+      >
+        <img
+          className={`${imgSizeClass} object-contain`}
+          src={src}
+          alt={label}
+          loading="lazy"
+          onError={() => setHasError(true)}
+        />
+      </span>
+    );
+  };
+
+  const itemBaseClass =
+    "group flex w-full items-center gap-3 rounded-xl px-3 py-1 text-left text-[15px] leading-tight text-neutral-700 transition-all duration-200 hover:bg-neutral-100 hover:text-black";
+
+  const smallItemBaseClass =
+    "group flex w-full items-center gap-2 rounded-xl px-3 py-1 text-left text-sm leading-tight text-neutral-700 transition-all duration-200 hover:bg-neutral-100 hover:text-black";
+
+  const renderSkillTreeDesktop = (category, treeItems) =>
+    treeItems.map((parent) => {
+      const hasChildren =
+        Array.isArray(parent.children) && parent.children.length > 0;
+
       const isHovered =
         openChildMenu &&
         openChildMenu.category === category &&
@@ -144,98 +339,92 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
       return (
         <div
           key={parent.id}
-          className="item-category relative"
+          className="relative"
           onMouseEnter={() => {
-            if (hasChildren && !sectionDisabled) {
+            if (hasChildren && !disabled) {
               setOpenChildMenu({ category, parentId: parent.id });
             }
           }}
           onMouseLeave={() => hasChildren && setOpenChildMenu(null)}
         >
-          <Link
-            to="#"
-            onClick={(e) => {
-              e.preventDefault();
-              handleSkillSelect(category, parent);
-            }}
-            style={{
-              pointerEvents: sectionDisabled ? "none" : "auto",
-              opacity: sectionDisabled ? 0.5 : 1,
-            }}
-            className="flex items-center justify-between gap-2"
+          <button
+            type="button"
+            onClick={() => handleSkillSelect(category, parent)}
+            disabled={disabled}
+            className={`${itemBaseClass} disabled:pointer-events-none disabled:opacity-50`}
           >
-            <span className="flex items-center gap-2">
-              <img
-                className="sect-ico"
-                src={parent.skill_ico || parent.skill_img || `/assets/category/${parent.nombre}.png`}
-                alt={parent.nombre}
+            <span className="flex min-w-0 flex-1 items-center gap-3">
+              <ImageWithInitial
+                src={getIconSrc(parent, parent.nombre)}
+                label={getSkillLabel(parent)}
               />
-              {getSkillLabel(parent)}
+
+              <span className="line-clamp-2">{getSkillLabel(parent)}</span>
             </span>
 
-            {hasChildren && <span className="opacity-70">›</span>}
-          </Link>
+            {hasChildren && (
+              <span className="text-lg text-neutral-400 transition-transform duration-200 group-hover:translate-x-1">
+                ›
+              </span>
+            )}
+          </button>
 
           {hasChildren && isHovered && (
             <div
-              className="absolute left-full top-0 z-50 min-w-[280px] rounded-2xl border border-neutral-300 shadow-2xl overflow-hidden"
+              className="absolute left-full top-0 z-[999] ml-0 w-[310px] rounded-[15px] border border-black/10 bg-white p-2 shadow-[0_24px_70px_rgba(0,0,0,0.18)]"
               data-lenis-prevent
             >
-              <div className="subsub-item p-3">
-                <div className="mb-1 border-b border-neutral-400 pb-1 text-sm font-semibold text-black">
-                  {getSkillLabel(parent)}
-                </div>
+              <div className="mb-2 border-b border-neutral-100 px-3 pb-2 text-sm font-bold text-black">
+                {getSkillLabel(parent)}
+              </div>
 
-                <div className="flex flex-col gap-1">
-                  {parent.children.map((child) => (
-                    <div key={child.id} className="item-category">
-                      <Link
-                        to="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleSkillSelect(category, child);
-                        }}
-                        className="flex items-center !text-black"
-                      >
-                        {getSkillLabel(child)}
-                      </Link>
-                    </div>
-                  ))}
-                </div>
+              <div className="max-h-[60vh] overflow-y-auto pr-1">
+                {parent.children.map((child) => (
+                  <button
+                    key={child.id}
+                    type="button"
+                    onClick={() => handleSkillSelect(category, child)}
+                    disabled={disabled}
+                    className={`${smallItemBaseClass} disabled:pointer-events-none disabled:opacity-50`}
+                  >
+                    {getSkillLabel(child)}
+                  </button>
+                ))}
               </div>
             </div>
           )}
         </div>
       );
     });
-  };
 
-  const renderSkillTreeMobile = (category, treeItems) => {
-    return treeItems.map((parent) => {
-      const hasChildren = Array.isArray(parent.children) && parent.children.length > 0;
+  const renderSkillTreeMobile = (category, treeItems) =>
+    treeItems.map((parent) => {
+      const hasChildren =
+        Array.isArray(parent.children) && parent.children.length > 0;
+
       const isOpen = mobileOpenChild === `${category}-${parent.id}`;
 
       return (
-        <div key={parent.id} className="border-b border-neutral-200 last:border-b-0">
-          <div className="flex items-center gap-2 py-2">
+        <div key={parent.id} className="border-b border-neutral-100 last:border-b-0">
+          <div className="flex items-center gap-1 py-1">
             <button
               type="button"
-              className="flex flex-1 items-center gap-2 text-left text-sm font-medium text-black"
+              className={`${itemBaseClass} flex-1 disabled:pointer-events-none disabled:opacity-50`}
               onClick={() => handleSkillSelect(category, parent, true)}
               disabled={disabled}
             >
-              <img
-                className="h-6 w-6 rounded-full object-contain"
-                src={parent.skill_ico || parent.skill_img || `/assets/category/${parent.nombre}.png`}
-                alt={parent.nombre}
+              <ImageWithInitial
+                src={getIconSrc(parent, parent.nombre)}
+                label={getSkillLabel(parent)}
               />
-              {getSkillLabel(parent)}
+
+              <span>{getSkillLabel(parent)}</span>
             </button>
 
             {hasChildren && (
               <button
                 type="button"
-                className={`grid h-8 w-8 place-items-center rounded-full bg-neutral-100 transition-transform duration-300 ${
+                className={`grid h-9 w-9 shrink-0 place-items-center rounded-full bg-neutral-100 text-lg transition-transform duration-300 ${
                   isOpen ? "rotate-90" : ""
                 }`}
                 onClick={() =>
@@ -248,16 +437,16 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
           </div>
 
           <div
-            className={`overflow-hidden transition-all duration-300 ease-out ${
-              isOpen ? "max-h-[420px] opacity-100" : "max-h-0 opacity-0"
+            className={`transition-all duration-300 ease-out ${
+              isOpen ? "max-h-[460px] opacity-100" : "max-h-0 opacity-0"
             }`}
           >
-            <div className="ml-8 flex flex-col gap-1 pb-3">
+            <div className="ml-0 flex flex-col gap-1 pb-3">
               {parent.children.map((child) => (
                 <button
                   key={child.id}
                   type="button"
-                  className="rounded-xl px-3 py-2 text-left text-sm text-neutral-700 hover:bg-neutral-100"
+                  className={`${smallItemBaseClass} disabled:pointer-events-none disabled:opacity-50`}
                   onClick={() => handleSkillSelect(category, child, true)}
                   disabled={disabled}
                 >
@@ -269,236 +458,248 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
         </div>
       );
     });
-  };
 
-  const renderItems = (category, items, isMobile = false) => {
-    return items.map((item) => (
-      <div key={item.id} className={isMobile ? "" : "item-category"}>
-        <Link
-          to="#"
-          onClick={(e) => {
-            e.preventDefault();
-            if (disabled) return;
-            onTagSelect(category, item.nombre);
-            setOpenSection(null);
-            if (isMobile) closeMobileFilters();
-          }}
-          style={{
-            pointerEvents: disabled || isSectionDisabled(category) ? "none" : "auto",
-            opacity: disabled || isSectionDisabled(category) ? 0.5 : 1,
-          }}
-          className={
-            isMobile
-              ? "flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-black hover:bg-neutral-100"
-              : ""
-          }
-        >
-          <img
-            className={isMobile ? "h-7 w-7 rounded-full object-contain" : "sect-ico"}
-            src={
-              item.skill_ico ||
-              item.empr_ico ||
-              item.univ_ico ||
-              item.plat_ico ||
-              `/assets/category/${item.nombre}.png`
-            }
-            alt={item.nombre}
-          />
-          {item?.translate && item.translate.trim() !== "" ? item.translate : item.nombre}
-        </Link>
-      </div>
-    ));
-  };
+  const renderUniversitiesDesktop = () => (
+    <div
+      className="absolute left-full top-0 z-[999] ml-0 w-[50vw] rounded-[15px] border border-black/10 bg-white p-2 shadow-[0_24px_70px_rgba(0,0,0,0.18)]"
+      data-lenis-prevent
+    >
+      <div className="max-h-[68vh] overflow-y-auto pr-2">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-1">
+          {Object.entries(universidadesPorRegion).map(
+            ([region, universidades]) => (
+              <div key={region}>
+                <h3 className="sticky top-0 z-10 mb-0 rounded-xl bg-white px-3 py-2 text-sm font-bold text-black">
+                  {region}
+                </h3>
 
-  const renderLanguages = (isMobile = false) => {
-    return (
-      <div className={isMobile ? "language-checklist" : "language-checklist mb-5"}>
-        <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-black">Idioma</h3>
-        </div>
-
-        <div
-          data-lenis-prevent
-          className={`flex flex-col gap-0 overflow-y-auto ${
-            isMobile ? "max-h-[300px] pb-3" : "max-h-[250px] pb-6 mb-10"
-          }`}
-        >
-          {idiomas.map((lang) => {
-            const checked = isLanguageSelected(lang.code);
-
-            return (
-              <label
-                key={lang.code}
-                className="flex items-center justify-between gap-3 cursor-pointer rounded-lg px-2 py-1 hover:bg-neutral-100"
-                style={{
-                  opacity: disabled ? 0.5 : 1,
-                  pointerEvents: disabled ? "none" : "auto",
-                }}
-              >
-                <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => handleLanguageToggle(lang.code)}
-                    className="h-4 w-4 rounded-xl accent-black"
-                    disabled={disabled}
-                  />
-                  <span className="text-sm text-black">{lang.label}</span>
-                </div>
-
-                <span className="text-xs text-neutral-500">{lang.count}</span>
-              </label>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
-  const sections = [
-    {
-      title: "Tema",
-      key: "temas",
-      renderDesktop: () => renderSkillTreeDesktop("temas", temasTree),
-      renderMobile: () => renderSkillTreeMobile("temas", temasTree),
-    },
-    {
-      title: "Universidad",
-      key: "universidades",
-      renderDesktop: () => (
-        <div className="submenu overflow-y-auto max-h-[65vh] pr-2" data-lenis-prevent>
-          {Object.entries(universidadesPorRegion).map(([region, universidades]) => (
-            <div key={region} className="mb-4">
-              <h3 className="!text-black sticky top-0 bg-[#F6F4EF] z-10 py-1">{region}</h3>
-              <div className={`unfold-list list-${region}`}>
-                {universidades.map((uni) => (
-                  <div key={uni.id} className="subitem">
-                    <Link
-                      to="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (disabled) return;
-                        onTagSelect("universidades", uni.nombre);
-                        setOpenSection(null);
-                      }}
-                      className="!text-black"
+                <div className="grid grid-cols-1 gap-0 md:grid-cols-3">
+                  {(universidades || []).map((uni) => (
+                    <button
+                      key={uni.id}
+                      type="button"
+                      onClick={() => handleUniversitySelect(uni)}
+                      disabled={disabled}
+                      className={`${smallItemBaseClass} disabled:pointer-events-none disabled:opacity-50`}
                     >
-                      {uni?.univ_img && uni.univ_img !== "None" && uni.univ_img.trim() !== "" && (
-                        <div className="bg-white rounded-full overflow-hidden flex justify-center items-center h-[30px] w-[30px] mr-1">
-                          <img src={uni.univ_ico || uni.univ_img} alt={uni.nombre} />
-                        </div>
-                      )}
-                      {uni.nombre}
-                    </Link>
-                  </div>
-                ))}
+                      <ImageWithInitial
+                        src={uni.univ_ico || uni.univ_img}
+                        label={getUniversityLabel(uni)}
+                      />
+                      <span className="line-clamp-2">
+                        {getUniversityLabel(uni)}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          )}
         </div>
-      ),
-      renderMobile: () => (
-        <div className="flex flex-col gap-4">
-          {Object.entries(universidadesPorRegion).map(([region, universidades]) => (
-            <div key={region}>
-              <h3 className="sticky top-0 z-10 bg-[#F6F4EF] px-3 py-2 rounded-xl text-sm font-bold text-black">
-                {region}
-              </h3>
-              <div className="flex flex-col gap-1">
-                {universidades.map((uni) => (
-                  <button
-                    key={uni.id}
-                    type="button"
-                    onClick={() => {
-                      if (disabled) return;
-                      onTagSelect("universidades", uni.nombre);
-                      closeMobileFilters();
-                    }}
-                    className="flex items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-black hover:bg-neutral-100"
-                  >
-                    {(uni?.univ_ico || uni?.univ_img) && (
-                      <div className="grid h-7 w-7 place-items-center overflow-hidden rounded-full bg-white">
-                        <img
-                          className="max-h-6 max-w-6 object-contain"
-                          src={uni.univ_ico || uni.univ_img}
-                          alt={uni.nombre}
-                        />
-                      </div>
-                    )}
-                    {uni.nombre}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-    {
-      title: "Empresa",
-      key: "empresas",
-      renderDesktop: () => (
-        <div className="submenu">
-          <div
-            className="unfold-list grid grid-cols-1 md:grid-cols-3 gap-0 overflow-y-auto max-h-[65vh]"
-            data-lenis-prevent
-          >
-            {empresas.map((empr) => (
-              <div key={empr.id} className="subitem">
-                <Link
-                  to="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (disabled) return;
-                    onTagSelect("empresas", empr.nombre);
-                    setOpenSection(null);
-                  }}
-                >
-                  {empr?.empr_ico && empr.empr_ico !== "None" && empr.empr_ico.trim() !== "" && (
-                    <div className="bg-white rounded-full overflow-hidden flex justify-center items-center h-[30px] w-[30px] mr-1">
-                      <img src={empr.empr_ico || empr.empr_img} alt={empr.nombre} />
-                    </div>
-                  )}
-                  {empr.nombre}
-                </Link>
-              </div>
+      </div>
+    </div>
+  );
+
+  const renderUniversitiesMobile = () => (
+    <div className="flex flex-col gap-4">
+      {Object.entries(universidadesPorRegion).map(([region, universidades]) => (
+        <div key={region}>
+          <h3 className="sticky top-0 z-10 mb-2 rounded-xl bg-white px-3 py-2 text-sm font-bold text-black">
+            {region}
+          </h3>
+
+          <div className="flex flex-col gap-1">
+            {(universidades || []).map((uni) => (
+              <button
+                key={uni.id}
+                type="button"
+                onClick={() => handleUniversitySelect(uni, true)}
+                disabled={disabled}
+                className={`${smallItemBaseClass} disabled:pointer-events-none disabled:opacity-50`}
+              >
+                <ImageWithInitial
+                  src={uni.univ_ico || uni.univ_img}
+                  label={getUniversityLabel(uni)}
+                  size="md"
+                />
+
+                <span>{getUniversityLabel(uni)}</span>
+              </button>
             ))}
           </div>
         </div>
-      ),
-      renderMobile: () => (
-        <div className="flex flex-col gap-1">
+      ))}
+    </div>
+  );
+
+  const renderCompaniesDesktop = () => (
+    <div
+      className="absolute left-full top-0 z-[999] ml-0 w-[50vw] rounded-[15px] border border-black/10 bg-white p-2 shadow-[0_24px_70px_rgba(0,0,0,0.18)]"
+      data-lenis-prevent
+    >
+      <div className="max-h-[68vh] overflow-y-auto pr-2">
+        <div className="grid grid-cols-1 gap-0 md:grid-cols-3">
           {empresas.map((empr) => (
             <button
               key={empr.id}
               type="button"
-              onClick={() => {
-                if (disabled) return;
-                onTagSelect("empresas", empr.nombre);
-                closeMobileFilters();
-              }}
-              className="flex items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-black hover:bg-neutral-100"
+              onClick={() => handleCompanySelect(empr)}
+              disabled={disabled}
+              className={`${smallItemBaseClass} disabled:pointer-events-none disabled:opacity-50`}
             >
-              {(empr?.empr_ico || empr?.empr_img) && (
-                <div className="grid h-7 w-7 place-items-center overflow-hidden rounded-full bg-white">
-                  <img
-                    className="max-h-6 max-w-6 object-contain"
-                    src={empr.empr_ico || empr.empr_img}
-                    alt={empr.nombre}
-                  />
-                </div>
-              )}
-              {empr.nombre}
+              <ImageWithInitial
+                src={empr.empr_ico || empr.empr_img}
+                label={getCompanyLabel(empr)}
+              />
+
+              <span className="line-clamp-2">{getCompanyLabel(empr)}</span>
             </button>
           ))}
         </div>
-      ),
+      </div>
+    </div>
+  );
+
+  const renderCompaniesMobile = () => (
+    <div className="flex flex-col gap-1">
+      {empresas.map((empr) => (
+        <button
+          key={empr.id}
+          type="button"
+          onClick={() => handleCompanySelect(empr, true)}
+          disabled={disabled}
+          className={`${smallItemBaseClass} disabled:pointer-events-none disabled:opacity-50`}
+        >
+          <ImageWithInitial
+            src={empr.empr_ico || empr.empr_img}
+            label={getCompanyLabel(empr)}
+            size="md"
+          />
+
+          <span>{getCompanyLabel(empr)}</span>
+        </button>
+      ))}
+    </div>
+  );
+
+  const renderPlatforms = (isMobile = false) => (
+    <div className="flex flex-col gap-1">
+      {plataformas.map((platform) => (
+        <button
+          key={platform.id}
+          type="button"
+          onClick={() => handlePlatformSelect(platform, isMobile)}
+          disabled={disabled}
+          className={`${smallItemBaseClass} disabled:pointer-events-none disabled:opacity-50`}
+        >
+          <ImageWithInitial
+            src={platform.plat_ico || platform.icon}
+            label={getPlatformLabel(platform)}
+            size="md"
+          />
+
+          <span>{getPlatformLabel(platform)}</span>
+        </button>
+      ))}
+    </div>
+  );
+
+  const renderLanguages = (isMobile = false) => (
+    <div className="relative">
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-[13px] !font-[Montserrat] font-bold tracking-[0.08em] text-black">
+          Idioma
+        </h3>
+      </div>
+
+      <div
+        data-lenis-prevent
+        className={`flex flex-col gap-0 overflow-y-auto pr-1 ${
+          isMobile ? "max-h-[300px] pb-8" : "max-h-[250px] pb-8"
+        }`}
+      >
+        {idiomas.map((lang) => {
+          const checked = isLanguageSelected(lang.code);
+
+          return (
+            <label
+              key={lang.code}
+              className="flex cursor-pointer items-center gap-3 rounded-xl px-1 py-1 transition hover:bg-neutral-100"
+            >
+              <span className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => handleLanguageToggle(lang.code)}
+                  disabled={disabled}
+                  className="relative h-[16px] w-[16px] shrink-0 cursor-pointer appearance-none [-webkit-appearance:none] [-moz-appearance:none] rounded-full border-2 border-[#BDBDBD] bg-white outline-none transition-all duration-200 checked:border-[#1941cf] checked:bg-white before:absolute before:left-1/2 before:top-1/2 before:z-2 before:h-[5px] before:w-[5px] before:-translate-x-1/2 before:-translate-y-1/2 before:rounded-full before:bg-[#ffffff] before:opacity-0 before:transition-opacity before:duration-200 after:absolute after:left-1/2 after:top-1/2 after:z-1 after:h-[15px] after:w-[15px] after:-translate-x-1/2 after:-translate-y-1/2 after:rounded-full after:bg-[#2563EB] after:opacity-0 after:transition-opacity after:duration-200 checked:before:opacity-100 checked:after:opacity-100"
+                />
+
+                <span className="text-[14px] leading-none text-neutral-700">
+                  {lang.label}
+                </span>
+              </span>
+
+              {typeof lang.count !== "undefined" && (
+                <span className="text-xs text-neutral-400">{lang.count}</span>
+              )}
+            </label>
+          );
+        })}
+      </div>
+
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex h-10 items-end justify-center bg-gradient-to-t from-white via-white/90 to-transparent pb-1">
+        <span className="animate-bounce text-xs text-neutral-400">⌄</span>
+      </div>
+    </div>
+  );
+
+  const sections = [
+    {
+  title: "Tema",
+  key: "temas",
+  renderDesktop: () => (
+    <div className="absolute left-full top-0 z-[999] ml-0 w-[330px] rounded-[15px] border border-black/10 bg-white p-2 shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
+      <div className="max-h-[68vh] pr-1">
+        {renderSkillTreeDesktop("temas", temasTree)}
+      </div>
+    </div>
+  ),
+  renderMobile: () => renderSkillTreeMobile("temas", temasTree),
+},
+{
+  title: "Habilidad",
+  key: "habilidad",
+  renderDesktop: () => (
+    <div className="absolute left-full top-0 z-[999] ml-0 w-[330px] rounded-[15px] border border-black/10 bg-white p-2 shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
+      <div className="max-h-[68vh] pr-1">
+        {renderSkillTreeDesktop("habilidad_id", habilidadesTree)}
+      </div>
+    </div>
+  ),
+  renderMobile: () => renderSkillTreeMobile("habilidad_id", habilidadesTree),
+},
+    {
+      title: "Universidad",
+      key: "universidades",
+      renderDesktop: renderUniversitiesDesktop,
+      renderMobile: renderUniversitiesMobile,
+    },
+    {
+      title: "Empresa",
+      key: "empresas",
+      renderDesktop: renderCompaniesDesktop,
+      renderMobile: renderCompaniesMobile,
     },
     {
       title: "Aliados",
       key: "plataforma",
-      renderDesktop: () => renderItems("plataforma", plataformas),
-      renderMobile: () => renderItems("plataforma", plataformas, true),
+      renderDesktop: () => (
+        <div className="absolute left-full top-0 z-[999] ml-0 w-[310px] rounded-[15px] border border-black/10 bg-white p-2 shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
+          {renderPlatforms(false)}
+        </div>
+      ),
+      renderMobile: () => renderPlatforms(true),
     },
     {
       title: "Idioma",
@@ -509,46 +710,52 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
   ];
 
   return (
-    <div ref={indexRef} className="cont-menu-categ">
-      {/* MOBILE */}
-      <div className="lg:hidden mb-1 px-2">
+    <div ref={indexRef} className="relative w-full">
+      <div className="mb-1 lg:hidden">
         <button
           type="button"
           onClick={() => setMobileFiltersOpen((prev) => !prev)}
           disabled={disabled}
-          className="w-full text-left  font-bold flex items-center justify-between  disabled:opacity-50"
-        > <h1 className="text-3xl text-black leading-[1em]">Biblioteca</h1>
-        <div className="flex justify-between gap-2 items-center  rounded-3xl bg-black px-4 py-2 text-white shadow-sm">
-          <span className="text-sm">{mobileFiltersOpen ? "Ocultar filtros" : "Ver filtros"}</span>
-          <span
-            className={`text-xl transition-transform duration-300 ${
-              mobileFiltersOpen ? "rotate-45" : ""
-            }`}
-          >
-            +
+          className="flex w-full items-center justify-between gap-4 rounded-[24px] bg-white p-4 text-left shadow-[0_16px_50px_rgba(0,0,0,0.04)] disabled:opacity-50"
+        >
+          <h2 className="text-2xl !font-[Montserrat] font-bold leading-none text-black">
+            Biblioteca
+          </h2>
+
+          <span className="flex items-center gap-2 rounded-full bg-black px-4 py-2 text-sm font-semibold text-white">
+            {mobileFiltersOpen ? "Ocultar filtros" : "Ver filtros"}
+
+            <span
+              className={`text-lg transition-transform duration-300 ${
+                mobileFiltersOpen ? "rotate-45" : ""
+              }`}
+            >
+              +
+            </span>
           </span>
-          </div>
         </button>
 
         <div
-          className={`overflow-hidden transition-all duration-500 ease-out ${
-            mobileFiltersOpen ? "max-h-[78vh] opacity-100 mt-3" : "max-h-0 opacity-0"
+          className={`transition-all duration-500 ease-out ${
+            mobileFiltersOpen
+              ? "mt-3 max-h-[78vh] opacity-100"
+              : "max-h-0 overflow-hidden opacity-0"
           }`}
         >
-          <div
-            className="rounded-3xl border border-[#E3E0D6] bg-[#F6F4EF] overflow-hidden"
-            data-lenis-prevent
-          >
+          <div className="rounded-[28px] border border-black/10 bg-white p-3 shadow-[0_16px_50px_rgba(0,0,0,0.06)]">
             <div
-              className="max-h-[75vh] overflow-y-auto overscroll-contain p-3"
+              className="max-h-[72vh] overflow-y-auto overscroll-contain p-2"
               data-lenis-prevent
             >
               <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-black">Filtros</h2>
+                <h3 className="text-lg !font-[Montserrat] font-semibold text-black">
+                  Filtros
+                </h3>
+
                 <button
                   type="button"
                   onClick={closeMobileFilters}
-                  className="grid h-9 w-9 place-items-center rounded-full bg-white text-black"
+                  className="grid h-9 w-9 place-items-center rounded-full bg-neutral-100 text-black"
                 >
                   ×
                 </button>
@@ -558,17 +765,21 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
                 const isOpen = mobileOpenSection === section.key;
 
                 return (
-                  <div key={section.key} className="border-t border-neutral-200 first:border-t-0">
+                  <div
+                    key={section.key}
+                    className="border-t border-neutral-100 first:border-t-0"
+                  >
                     <button
                       type="button"
                       onClick={() =>
                         setMobileOpenSection(isOpen ? null : section.key)
                       }
-                      className="flex w-full items-center justify-between py-3 text-left font-bold text-black"
+                      className="flex !font-[Montserrat] w-full items-center justify-between py-3 text-left font-semibold text-black"
                     >
                       {section.title}
+
                       <span
-                        className={`transition-transform duration-300 ${
+                        className={`text-lg transition-transform duration-300 ${
                           isOpen ? "rotate-90" : ""
                         }`}
                       >
@@ -578,18 +789,24 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
 
                     <div
                       className={`overflow-hidden transition-all duration-300 ease-out ${
-                        isOpen ? "max-h-[520px] opacity-100 pb-3" : "max-h-0 opacity-0"
+                        isOpen
+                          ? "max-h-[560px] opacity-100"
+                          : "max-h-0 opacity-0"
                       }`}
                     >
                       <div
-                        className={`rounded-2xl bg-white/60 p-2 ${
-                          ["temas", "universidades", "empresas"].includes(section.key)
-                            ? "max-h-[52vh] overflow-y-auto overscroll-contain pr-1"
+                        className={`rounded-[20px] bg-[#F8F7F4] p-2 ${
+                          [
+                            "temas",
+                            "habilidades",
+                            "universidades",
+                            "empresas",
+                            "idioma",
+                          ].includes(section.key)
+                            ? "max-h-[52vh] overflow-y-auto overscroll-contain"
                             : ""
                         }`}
                         data-lenis-prevent
-                        onTouchMove={(e) => e.stopPropagation()}
-                        onWheel={(e) => e.stopPropagation()}
                       >
                         {section.renderMobile()}
                       </div>
@@ -602,55 +819,56 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
         </div>
       </div>
 
-      {/* DESKTOP */}
       <div className="hidden lg:block">
-        <div className="category-wrapper">
-          <h2>Biblioteca</h2>
+        <div className="relative rounded-[24px] pb-2 px-2">
+          <h2 className="mb-3 !font-[Montserrat] text-base font-bold text-black">
+            Biblioteca
+          </h2>
 
-          {sections
-            .filter((section) => section.key !== "idioma")
-            .map((section, index) => {
-              const isOpen = openSection === index;
-              const sectionDisabled = disabled || isSectionDisabled(section.key);
+          <div className="relative flex flex-col gap-0">
+            {sections
+              .filter((section) => section.key !== "idioma")
+              .map((section) => {
+                const isOpen = openSection === section.key;
 
-              return (
-                <div
-                  key={section.key}
-                  className={`category-item item-${section.key} ${isOpen ? "open" : ""}`}
-                  onMouseEnter={() => (sectionDisabled ? null : setOpenSection(index))}
-                  onMouseLeave={() => {
-                    if (openSection === index) {
-                      setOpenSection(null);
-                      setOpenChildMenu(null);
-                    }
-                  }}
-                >
-                  <button
-                    type="button"
-                    className="unfold-category-button"
-                    disabled={sectionDisabled}
-                    style={{
-                      opacity: sectionDisabled ? 0.5 : 1,
-                      cursor: sectionDisabled ? "not-allowed" : "pointer",
+                return (
+                  <div
+                    key={section.key}
+                    className="relative"
+                    onMouseEnter={() => !disabled && setOpenSection(section.key)}
+                    onMouseLeave={() => {
+                      if (openSection === section.key) {
+                        setOpenSection(null);
+                        setOpenChildMenu(null);
+                      }
                     }}
                   >
-                    <span className={isOpen ? "rotate transition-transform duration-300" : "transition-transform duration-300"}>
-                      ›
-                    </span>
-                    <span>{section.title}</span>
-                  </button>
+                    <button
+                      type="button"
+                      disabled={disabled}
+                      className="group flex w-full items-center justify-between gap-3 rounded-xl px-3 py-1 text-left !font-[Montserrat] text-[15px] font-medium text-neutral-700 transition-all duration-200 hover:bg-neutral-100 active:bg-neutral-100 hover:text-black hover:rounded-[15px] disabled:pointer-events-none disabled:opacity-50"
+                    >
+                      <span className="flex items-center gap-3">
+                        <span
+                          className={`text-lg text-neutral-400 transition-transform duration-300 ${
+                            isOpen ? "rotate-90 text-black" : ""
+                          }`}
+                        >
+                          ›
+                        </span>
 
-                  {isOpen && (
-                    <div className="unfold-list subprimery relative" data-lenis-prevent>
-                      {section.renderDesktop()}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                        {section.title}
+                      </span>
+                    </button>
 
-          <div className="mt-4 border-t border-neutral-200 pt-4">
-            {renderLanguages()}
+                    {isOpen && section.renderDesktop()}
+                  </div>
+                );
+              })}
+          </div>
+
+          <div className="mt-3 border-t border-neutral-100 pt-4">
+            {renderLanguages(false)}
           </div>
         </div>
       </div>

@@ -28,7 +28,7 @@ const MenuTop = ({ toggleMenu }) => {
     { name: "Lo más Top", path: "/lo-mas-top", classItem: "item-mastop" },
     { name: "Recursos", path: "/recursos", classItem: "item-recursos" },
     { name: "Para equipos", path: "/para-equipos", classItem: "item-equipos" },
-    { name: "Empieza ahora", path: "/empieza-ahora", classItem: "item-empezar" },
+    /*{ name: "Empieza ahora", path: "/empieza-ahora", classItem: "item-empezar" },*/
   ];
 
   const exploraSubmenu = {
@@ -53,7 +53,6 @@ const MenuTop = ({ toggleMenu }) => {
     ],
 
     Universidades: [
-      // Norteamérica
       { img: "/assets/universities/icons/ico-Harvard.webp", text: "Harvard University", type: "Universidad", tag: "Harvard University" },
       { img: "/assets/universities/icons/ico-Stanford-University.webp", text: "Stanford University", type: "Universidad", tag: "Stanford University" },
       { img: "/assets/universities/icons/ico-Massachusetts-Institute.webp", text: "Massachusetts Institute of Technology", type: "Universidad", tag: "Massachusetts Institute of Technology" },
@@ -63,21 +62,15 @@ const MenuTop = ({ toggleMenu }) => {
       { img: "/assets/universities/icons/ico-University-of-Illinois-Urbana-Champaign.webp", text: "University of Illinois Urbana-Champaign", type: "Universidad", tag: "University of Illinois Urbana-Champaign" },
       { img: "/assets/universities/icons/ico-University-of-Pennsylvania.webp", text: "University of Pennsylvania", type: "Universidad", tag: "University of Pennsylvania" },
       { img: "/assets/universities/icons/ico-The-University-of-Chicago.webp", text: "The University of Chicago", type: "Universidad", tag: "The University of Chicago" },
-
-      // Latinoamérica
       { img: "/assets/universities/icons/ico-Universidad-de-los-Andes.webp", text: "Universidad de los Andes", type: "Universidad", tag: "Universidad de los Andes" },
       { img: "/assets/universities/icons/ico-Universidad-nacional-de-colombia.webp", text: "Universidad Nacional de Colombia", type: "Universidad", tag: "Universidad Nacional de Colombia" },
       { img: "/assets/universities/icons/ico-Tecnologico-de-Monterrey.webp", text: "Tecnológico de Monterrey", type: "Universidad", tag: "Tecnológico de Monterrey" },
       { img: "/assets/universities/icons/ico-Pontificia-Universidad-Catolica-de-Chile.webp", text: "Pontificia Universidad Católica de Chile", type: "Universidad", tag: "Pontificia Universidad Catolica de Chile" },
       { img: "/assets/universities/icons/ico-Pontificia-Universidad-Catolica-del-Peru.webp", text: "Pontificia Universidad Católica del Perú", type: "Universidad", tag: "Pontificia Universidad Catolica de Peru" },
       { img: "/assets/universities/icons/ico-Universidad-del-Rosario.webp", text: "Universidad del Rosario", type: "Universidad", tag: "Universidad del Rosario" },
-
-      // Europa
       { img: "/assets/universities/icons/ico-IE-Business-school.webp", text: "IE Business School", type: "Universidad", tag: "IE Business School" },
       { img: "/assets/universities/icons/ico-Universidad-Tecnologica-de-Delft.webp", text: "Universidad Tecnológica de Delft", type: "Universidad", tag: "Universidad Tecnológica de Delft" },
       { img: "/assets/universities/icons/ico-Imperial-College-de-Londres.webp", text: "Imperial College de Londres", type: "Universidad", tag: "Imperial College de Londres" },
-
-      // Asia / Oriente
       { img: "/assets/universities/icons/ico-Peking-University.webp", text: "Peking University", type: "Universidad", tag: "Peking University" },
       { img: "/assets/universities/icons/ico-National_University_of_Singapore.webp", text: "National University of Singapore", type: "Universidad", tag: "National University of Singapore" },
       { img: "/assets/universities/icons/ico-Waseda.webp", text: "Universidad de Waseda", type: "Universidad", tag: "Universidad de Waseda" },
@@ -118,7 +111,6 @@ const MenuTop = ({ toggleMenu }) => {
     const params = new URLSearchParams();
 
     params.append("idioma", "es");
-    params.append("idioma", "en");
 
     const normalizedValue =
       category === "Tema"
@@ -138,44 +130,57 @@ const MenuTop = ({ toggleMenu }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    navigateWithTransition("/explora?idioma=es&idioma=en&page=1&page_size=16");
+    navigateWithTransition("/explora?idioma=es&page=1&page_size=16");
     closeMenuIfMobile();
     setShowSubmenu(false);
   };
 
+  const handleMainItemClick = (item) => {
+    if (item.isDropdown) {
+      navigateWithTransition("/explora?idioma=es&page=1&page_size=16");
+      closeMenuIfMobile();
+      return;
+    }
+
+    if (!isActive(item.path)) {
+      navigateWithTransition(item.path);
+      closeMenuIfMobile();
+    }
+  };
+
   return (
-    <div className="menu">
+    <div className="menu max-md:flex max-md:w-full max-md:flex-col max-md:gap-2 md:flex md:items-center">
       {menuItems.map((item) =>
         item.isDropdown ? (
           <div
             key={item.name}
-            className={`menu-item dropdown ${item.classItem} ${
-              isActive(item.path) ? "active" : ""
-            }`}
-            onClick={() => {
-              if (window.innerWidth < 768) {
-                navigateWithTransition("/explora?idioma=es&idioma=en&page=1&page_size=16");
-                closeMenuIfMobile();
-                return;
-              }
+            className={`
+              menu-item dropdown relative ${item.classItem}
+              ${isActive(item.path) ? "active" : ""}
 
-              if (!isActive(item.path)) {
-                navigateWithTransition("/explora?idioma=es&idioma=en&page=1&page_size=16");
-                closeMenuIfMobile();
-              }
-            }}
+              max-md:flex max-md:h-11 max-md:w-full max-md:cursor-pointer
+              max-md:items-center max-md:justify-between max-md:rounded-xl
+              max-md:px-4 max-md:text-left max-md:text-sm max-md:font-semibold
+              max-md:text-[#D7D1CF]
+            `}
+            onClick={() => handleMainItemClick(item)}
             onMouseEnter={() => window.innerWidth >= 768 && setShowSubmenu(true)}
             onMouseLeave={() => window.innerWidth >= 768 && setShowSubmenu(false)}
           >
             <span>{item.name}</span>
 
+            <FaChevronRight className="hidden max-md:block text-xs opacity-50" />
+
             <div
-              className={`submenu ${showSubmenu ? "visible" : ""}`}
+              className={`
+                submenu ${showSubmenu ? "visible" : ""}
+                max-md:hidden
+              `}
               onClick={(e) => e.stopPropagation()}
             >
               {Object.entries(exploraSubmenu).map(([section, items]) => (
                 <div key={section} className={`submenu-section section-${section}`}>
-                  <h4 className="section-tit text-[#F6F4EF]">
+                  <h4 className="text-sm text-[#F6F4EF]">
                     {section === "Plataforma" ? "Aliados" : section}
                   </h4>
 
@@ -211,7 +216,7 @@ const MenuTop = ({ toggleMenu }) => {
 
               <button
                 onClick={handleGoExplore}
-                className="absolute right-5 bottom-5 flex gap-2 items-center bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full"
+                className="absolute text-sm right-5 bottom-4 flex gap-2 items-center bg-[#F6F4EF] !text-[#1c1c1c] z-[11] !py-2 !px-5 !rounded-full"
               >
                 Ver más certificaciones <FaChevronRight />
               </button>
@@ -220,17 +225,35 @@ const MenuTop = ({ toggleMenu }) => {
         ) : (
           <button
             key={item.name}
-            className={`menu-item transition duration-300 hover:text-shadow-[0_35px_35px_rgb(255_255_255_/_0.25)] ${
-              item.classItem
-            } ${isActive(item.path) ? "active" : ""}`}
-            onClick={() => {
-              if (!isActive(item.path)) {
-                navigateWithTransition(item.path);
-                closeMenuIfMobile();
+            className={`
+              menu-item transition duration-300 hover:text-shadow-[0_35px_35px_rgb(255_255_255_/_0.25)]
+              ${item.classItem}
+              ${isActive(item.path) ? "active" : ""}
+
+              max-md:flex max-md:h-11 max-md:w-full max-md:items-center
+              max-md:justify-between max-md:rounded-xl max-md:px-4
+              max-md:text-left max-md:text-sm max-md:font-semibold
+              max-md:text-[#D7D1CF]
+
+              ${
+                item.classItem === "item-empezar"
+                  ? "max-md:mt-5 max-md:justify-center max-md:rounded-full max-md:bg-[#78C889] max-md:!text-white"
+                  : ""
               }
-            }}
+
+              ${
+                isActive(item.path) && item.classItem !== "item-empezar"
+                  ? "max-md:bg-[#241D20] max-md:text-[#F6F4EF]"
+                  : ""
+              }
+            `}
+            onClick={() => handleMainItemClick(item)}
           >
-            {item.name}
+            <span>{item.name}</span>
+
+            {item.classItem !== "item-empezar" && (
+              <FaChevronRight className="hidden max-md:block text-xs opacity-50" />
+            )}
           </button>
         )
       )}
