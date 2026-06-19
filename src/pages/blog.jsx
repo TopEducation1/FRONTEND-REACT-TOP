@@ -175,19 +175,17 @@ function BlogPage() {
               semanal.
             </p>
 
-            <div
-              id="clientify-form"
-              className="mt-10 w-full max-w-[560px] min-h-[160px]"
-              dangerouslySetInnerHTML={{
-                __html: `
-                  <script 
-                    type="text/javascript" 
-                    src="https://api.clientify.net/web-marketing/superforms/script/288488.js" 
-                    async>
-                  </script>
-                `,
+            <div className="mt-10 w-full max-w-[560px] overflow-hidden rounded-[24px] bg-white shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
+            <iframe
+              src="https://apps.clientify.net/forms/simpleembed/#/forms/embedform/288488/132837"
+              title="Newsletter Top Education"
+              className="block w-full border-0"
+              style={{
+                minHeight: "520px",
+                background: "white",
               }}
             />
+          </div>
           </div>
         </div>
       </section>
