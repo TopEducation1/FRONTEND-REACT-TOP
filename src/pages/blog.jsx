@@ -10,17 +10,29 @@ function BlogPage() {
   }, []);
 
   useEffect(() => {
-    const script = document.createElement("script");
+    const container = document.getElementById("clientify-form");
+    if (!container) return;
 
+    container.innerHTML = "";
+
+    const script = document.createElement("script");
+    script.type = "text/javascript";
     script.src =
       "https://api.clientify.net/web-marketing/superforms/script/288488.js";
-
     script.async = true;
 
-    document.body.appendChild(script);
+    script.onload = () => {
+      console.log("Clientify script cargado");
+    };
+
+    script.onerror = () => {
+      console.error("No se pudo cargar Clientify");
+    };
+
+    container.appendChild(script);
 
     return () => {
-      document.body.removeChild(script);
+      container.innerHTML = "";
     };
   }, []);
 
@@ -192,6 +204,7 @@ function BlogPage() {
 
             <div
               id="clientify-form"
+              ref={clientifyRef}
               className="mt-10 w-full max-w-[560px] min-h-[160px]"
             />
           </div>
