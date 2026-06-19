@@ -97,7 +97,7 @@ export default function Login() {
           Inicia sesión
         </h1>
 
-        <p className="mt-4 max-w-[390px] text-center font-['Montserrat'] text-[1.05rem] leading-[1.35em] text-neutral-600">
+        {/*<p className="mt-4 max-w-[390px] text-center font-['Montserrat'] text-[1.05rem] leading-[1.35em] text-neutral-600">
           Usa la contraseña temporal que recibiste al completar tu onboarding.
         </p>
 
@@ -116,7 +116,7 @@ export default function Login() {
               </p>
             </div>
           </div>
-        </div>
+        </div>*/}
 
         <form
           onSubmit={onSubmit}
