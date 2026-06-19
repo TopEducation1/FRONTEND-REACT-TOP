@@ -1230,6 +1230,25 @@ function StartNowContent() {
       {showSuccessToast && <SuccessToast />}
 
       <main className="min-h-screen bg-[#F6F4EF] text-[#080808]">
+        <form
+          id="clientify-startnow-form"
+          name="clientify-startnow-form"
+          className="absolute left-[-9999px] top-[-9999px] opacity-0"
+        >
+          <input type="text" name="first_name" value={form.first_name} readOnly />
+          <input type="text" name="last_name" value={form.last_name} readOnly />
+          <input type="email" name="email" value={form.email} readOnly />
+          <input type="text" name="age" value={form.age} readOnly />
+          <input type="text" name="gender" value={form.gender} readOnly />
+          <input type="text" name="country" value={form.country} readOnly />
+          <input type="text" name="topics" value={form.topics.join(", ")} readOnly />
+          <input type="text" name="goal" value={form.goal} readOnly />
+          <input type="text" name="selected_plan" value={selectedPlan} readOnly />
+          <input type="text" name="selected_paid_plan" value={selectedPaidPlan} readOnly />
+          <input type="text" name="billing_cycle" value={billingCycle} readOnly />
+          <input type="text" name="route_id" value={routeId || ""} readOnly />
+          <button type="submit">Enviar</button>
+        </form>
         {step === "welcome" && (
           <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-20 text-center">
             <div className="route-dot-grid absolute inset-0 opacity-[0.14]" />
