@@ -2101,7 +2101,7 @@ export default function Account() {
 
   const backendBaseUrl = useMemo(() => {
     const fromEnv = process.env.REACT_APP_API_URL || "";
-    return (fromEnv || "http://localhost:8000").replace(/\/+$/, "");
+    return (fromEnv).replace(/\/+$/, "");
   }, []);
 
   const ME_URL = `${backendBaseUrl}/api/account/me/`;

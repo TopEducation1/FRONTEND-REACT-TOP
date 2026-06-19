@@ -20,7 +20,7 @@ export default function Login() {
 
   const API = useMemo(() => {
     const fromEnv = process.env.REACT_APP_API_URL || "";
-    return (fromEnv || "http://localhost:8000").replace(/\/+$/, "");
+    return (fromEnv).replace(/\/+$/, "");
   }, []);
 
   const [email, setEmail] = useState("");

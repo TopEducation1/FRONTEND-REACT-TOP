@@ -4,7 +4,7 @@ import MenuTop from "./MenuTop";
 import { FaChevronLeft } from "react-icons/fa6";
 import { FaUserCircle, FaChevronDown } from "react-icons/fa";
 
-const API = (process.env.REACT_APP_API_URL || "http://localhost:8000").replace(/\/+$/, "");
+const API = (process.env.REACT_APP_API_URL).replace(/\/+$/, "");
 
 const Header = ({
   toggleMenu,
