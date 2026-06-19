@@ -1169,19 +1169,7 @@ function StartNowContent() {
       behavior: "smooth",
     });
   };
-
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src =
-      "https://api.clientify.net/web-marketing/webforms/external/script/291529.js";
-    script.async = true;
-
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+  
 
   useEffect(() => {
     const emailFromUrl = searchParams.get("email") || "";
