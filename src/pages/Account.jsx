@@ -808,18 +808,18 @@ function CareerTab({ learningRoute }) {
 
   return (
     <>
-      <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+      <div className="mb-3 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="!font-['Montserrat'] text-[2rem] font-bold tracking-[-0.04em] text-[#111111]">Plan de Carrera</h1>
-          <p className="mt-1 !font-['Montserrat'] text-neutral-500">Tu hoja de ruta profesional personalizada.</p>
+          <p className="!font-['Montserrat'] text-neutral-500">Tu hoja de ruta profesional personalizada.</p>
         </div>
         <span className="w-fit rounded-full bg-[#2563EB]/10 px-4 py-2 !font-['Montserrat'] text-sm font-bold text-[#2563EB]">✦ Generado para ti</span>
       </div>
 
-      <section className="rounded-[24px] border border-black/10 bg-white p-7 shadow-[0_12px_35px_rgba(0,0,0,0.05)]">
+      <section className="rounded-[24px] border border-black/10 bg-white p-5 shadow-[0_12px_35px_rgba(0,0,0,0.05)]">
         <span className="!font-['Montserrat'] text-xs font-black uppercase tracking-[0.16em] text-neutral-500">Ruta de competencias</span>
 
-        <div className="mt-7 space-y-8">
+        <div className="mt-3 space-y-6">
           {steps.map((step, index) => (
             <div key={step.title} className="relative grid grid-cols-[48px_1fr] gap-5">
               {index !== steps.length - 1 && <span className={`absolute left-[23px] top-[48px] h-[62px] w-[2px] ${step.done ? "bg-[#5CC781]" : "bg-neutral-200"}`} />}
@@ -1289,20 +1289,21 @@ function ProfileTab({ me }) {
 
   return (
     <>
-      <h1 className="mb-8 !font-['Montserrat'] text-[2rem] font-bold tracking-[-0.04em] text-[#111111]">Mi perfil</h1>
+      <div className="mb-5 flex flex-wrap w-full justify-between items-center">
+        <h1 className="!font-['Montserrat'] text-[2rem] font-bold tracking-[-0.04em] text-[#111111]">Mi perfil</h1>
 
-      <div className="mb-8 flex max-w-[610px] rounded-[18px] border border-black/10 bg-white p-1 shadow-sm">
-        {[["basic", "Información básica"], ["progress", "Progreso"], ["certs", "Certificaciones"]].map(([key, label]) => (
-          <button key={key} type="button" onClick={() => setProfileTab(key)} className={`flex-1 rounded-[14px] px-4 py-3 !font-['Montserrat'] text-sm font-semibold transition ${profileTab === key ? "bg-[#100A0D] text-white" : "text-neutral-600 hover:bg-[#F6F4EF]"}`}>
-            {label}
-          </button>
-        ))}
+        <div className="flex max-w-[610px] w-full rounded-[18px] border border-black/10 bg-white p-1 shadow-sm">
+          {[["basic", "Información básica"], ["progress", "Progreso"], ["certs", "Certificaciones"]].map(([key, label]) => (
+            <button key={key} type="button" onClick={() => setProfileTab(key)} className={`flex-1 rounded-[14px] px-4 py-3 !font-['Montserrat'] text-sm font-semibold transition ${profileTab === key ? "bg-[#100A0D] text-white" : "text-neutral-600 hover:bg-[#F6F4EF]"}`}>
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
-
       {profileTab === "basic" ? (
-        <section className="max-w-[760px] rounded-[24px] border border-black/10 bg-white p-8 shadow-[0_12px_35px_rgba(0,0,0,0.05)]">
+        <section className="max-w-[760px] rounded-[24px] border border-black/10 bg-white p-5 shadow-[0_12px_35px_rgba(0,0,0,0.05)]">
           <span className="!font-['Montserrat'] text-xs font-black uppercase tracking-[0.16em] text-neutral-500">Información básica</span>
-          <div className="mt-8 space-y-5">
+          <div className="mt-3 space-y-3">
             {[["Nombre completo", me?.full_name || me?.name || "Usuario top.education"], ["Correo electrónico", me?.email || "—"], ["País", me?.country || "Colombia"], ["Idioma", me?.language || "Español"]].map(([label, value]) => (
               <label key={label} className="block !font-['Montserrat'] text-sm text-neutral-600">
                 {label}
