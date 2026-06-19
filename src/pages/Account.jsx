@@ -542,28 +542,30 @@ function DashboardWelcomeModal({ open, onClose, defaultTab }) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/55 px-4 backdrop-blur-sm">
-      <div className="w-full max-w-[760px] rounded-[28px] bg-white p-8 shadow-[0_35px_100px_rgba(0,0,0,0.25)]">
+    <div className="fixed inset-0 z-[90] flex items-center pt-20 justify-center bg-black/55 px-4 backdrop-blur-sm">
+      <div className="w-full max-w-[820px] rounded-[28px] bg-white p-8 shadow-[0_35px_100px_rgba(0,0,0,0.25)]">
         <div className="text-center">
-          <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#1941CF] text-white">
-            <Star size={44} strokeWidth={2.2} />
+          <div className="mx-auto grid h-18 w-18 place-items-center rounded-full bg-[#1941CF] text-white">
+            <Star size={40} strokeWidth={2.2} />
           </div>
 
-          <h2 className="mt-3 !font-['Montserrat'] text-[1.9rem] font-black text-[#111111]">¡Bienvenido a tu dashboard!</h2>
+          <h2 className="mt-2 !font-['Montserrat'] text-[1.9rem] font-black text-[#111111]">¡Bienvenido a tu dashboard!</h2>
           <p className="!font-['Montserrat'] text-neutral-500">Te mostraremos rápidamente las funciones principales.</p>
         </div>
 
-        <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
           {[
             ["career", <TrendingUp size={28} />, "Plan de Carrera", "Visualiza tu ruta personalizada con cursos recomendados según tus intereses."],
             ["cv", <FileText size={28} />, "Mi CV", "Sube tu CV y recibe análisis detallados con recomendaciones para mejorar tu perfil profesional."],
             ["profile", <User size={28} />, "Perfil", "Gestiona tu información, revisa tu progreso y accede a tus certificaciones obtenidas."],
             ["license", <Star size={28} />, "Licencia", "Administra tu plan, métodos de pago y beneficios de tu suscripción."],
           ].map(([key, icon, title, text]) => (
-            <div key={key} className={`rounded-[18px] border p-5 ${defaultTab === key ? "border-[#1941CF]" : "border-black/10"}`}>
-              <div className="grid h-12 w-12 place-items-center rounded-[14px] bg-[#1941CF]/10 text-[#1941CF]">{icon}</div>
-              <h3 className="mt-1 !font-['Montserrat'] text-lg font-black text-[#111111]">{title}</h3>
-              <p className="!font-['Montserrat'] text-[14px] leading-[1.2em] text-neutral-500">{text}</p>
+            <div key={key} className={`rounded-[18px] flex gap-2 border p-4 ${defaultTab === key ? "border-[#1941CF]" : "border-black/10"}`}>
+              <div className="grid !h-12 !w-12 place-items-center rounded-[14px] bg-[#1941CF]/10 text-[#1941CF]">{icon}</div>
+              <div className="w-full">
+                <h3 className="!font-['Montserrat'] text-lg font-black text-[#111111]">{title}</h3>
+                <p className="!font-['Montserrat'] text-[12px] leading-[1.2em] text-neutral-500">{text}</p>
+              </div>
             </div>
           ))}
         </div>
