@@ -9,33 +9,6 @@ function BlogPage() {
     window.scrollTo(0, 0);
   }, []);
 
-  useEffect(() => {
-    const container = document.getElementById("clientify-form");
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    const script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src =
-      "https://api.clientify.net/web-marketing/superforms/script/288488.js";
-    script.async = true;
-
-    script.onload = () => {
-      console.log("Clientify script cargado");
-    };
-
-    script.onerror = () => {
-      console.error("No se pudo cargar Clientify");
-    };
-
-    container.appendChild(script);
-
-    return () => {
-      container.innerHTML = "";
-    };
-  }, []);
-
   return (
     <>
       <Helmet>
@@ -204,8 +177,16 @@ function BlogPage() {
 
             <div
               id="clientify-form"
-              ref={clientifyRef}
               className="mt-10 w-full max-w-[560px] min-h-[160px]"
+              dangerouslySetInnerHTML={{
+                __html: `
+                  <script 
+                    type="text/javascript" 
+                    src="https://api.clientify.net/web-marketing/superforms/script/288488.js" 
+                    async>
+                  </script>
+                `,
+              }}
             />
           </div>
         </div>
