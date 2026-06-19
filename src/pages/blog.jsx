@@ -180,6 +180,7 @@ function BlogPage() {
               src="https://apps.clientify.net/forms/simpleembed/#/forms/embedform/288488/132837"
               title="Newsletter Top Education"
               className="block w-full border-0"
+              id="form-clientify"
               style={{
                 minHeight: "520px",
                 background: "white",

@@ -96,6 +96,12 @@ body {
   overflow: hidden;
 }
 
+#form-clientify .main-container .container{
+  padding: 0px !important;
+}
+#form-clientify .main-container .container .formpreview{
+  margin: 0px !important;
+}
 .no-scroll {
   overflow: hidden !important;
 }
