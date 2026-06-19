@@ -23,6 +23,7 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
   const [colCount, setColCount] = useState(5);
   const [touch, setTouch] = useState(false);
 
+  
   useEffect(() => {
     const computeCols = () => {
       const w = typeof window !== "undefined" ? window.innerWidth : 1920;
@@ -262,6 +263,13 @@ function TopicCard({
     },
   };
 
+  const imageUrl = topic.img
+  ? topic.img.replace(
+      "https://app.top.education",
+      "https://top.education"
+    )
+  : null;
+
   return (
     <motion.article
       layout
@@ -317,7 +325,7 @@ function TopicCard({
                 }}
               >
                 <img
-                  src={topic.img}
+                  src={imageUrl}
                   alt={topic.name}
                   className="w-10 h-10 object-contain"
                   
