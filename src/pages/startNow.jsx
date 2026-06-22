@@ -628,6 +628,36 @@ function StartNowContent() {
     form.gender &&
     form.country;
 
+  const syncClientifyHiddenForm = (payload = {}) => {
+    const formEl = document.getElementById("clientify-startnow-form");
+    if (!formEl) return;
+
+    Object.entries(payload).forEach(([key, value]) => {
+      const input = formEl.querySelector(`[name="${key}"]`);
+      if (!input) return;
+
+      input.value = Array.isArray(value) ? value.join(", ") : value || "";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  };
+
+  const PasswordMatchMessage = ({ password, confirmPassword }) => {
+    if (!confirmPassword) return null;
+
+    const match = password === confirmPassword;
+
+    return (
+      <p
+        className={`mt-2 !font-['Montserrat'] text-sm font-semibold ${
+          match ? "text-[#5CC781]" : "text-red-500"
+        }`}
+      >
+        {match ? "✓ Las contraseñas coinciden" : "Las contraseñas aún no coinciden"}
+      </p>
+    );
+  };
+
   const pushClientifyEvent = (eventName, extra = {}) => {
     const payload = {
       event: eventName,
@@ -642,22 +672,35 @@ function StartNowContent() {
       country: form.country,
       topics: form.topics,
       goal: form.goal,
-      selected_plan: selectedPlan,
-      selected_paid_plan: selectedPaidPlan,
-      billing_cycle: billingCycle,
+      selected_plan: extra.selected_plan ?? selectedPlan,
+      selected_paid_plan: extra.selected_paid_plan ?? selectedPaidPlan,
+      billing_cycle: extra.billing_cycle ?? billingCycle,
+      package_code: extra.package_code,
       ...extra,
     };
 
+    syncClientifyHiddenForm(payload);
+
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(payload);
-
     window.topEducationLead = payload;
+
+    window.dispatchEvent(
+      new CustomEvent("topeducation:startnow", {
+        detail: payload,
+      })
+    );
   };
 
-  const trackClientifyPlanInterest = (plan) => {
+  const trackClientifyPlanInterest = (planValue) => {
+    const finalPlan = getFinalPlanFromPaidPlan(planValue);
+    const packageCode = getPackageCode(planValue, finalPlan);
+
     pushClientifyEvent("startnow_plan_selected", {
-      plan,
-      selected_paid_plan: plan,
+      selected_plan: finalPlan,
+      selected_paid_plan: planValue,
+      billing_cycle: planValue.includes("yearly") ? "yearly" : "monthly",
+      package_code: packageCode,
       recommended_courses: allRecommendedCourses.map((course, index) => ({
         idInterno: course.idInterno,
         colombiaCertificationId: course.colombiaCertificationId || course.id,
@@ -986,35 +1029,29 @@ function StartNowContent() {
 
       const subscriptionData = paidSubscriptionData || {};
 
-      const mxPayload = buildMxPayload({
-        finalPlan,
-        subscriptionData,
-      });
-
       const res = await postJSON(LEARNING_ROUTE_COMPLETE_SIGNUP_URL, {
         route_id: routeId,
         email: form.email,
         password: form.password,
         selected_plan: finalPlan,
-        selected_paid_plan: selectedPaidPlan,
+        selected_paid_plan: finalPlan === "free" ? "free" : selectedPaidPlan,
         stripe_subscription_id: subscriptionData?.stripe_subscription_id,
         stripe_customer_id: subscriptionData?.stripe_customer_id,
         route_status: finalPlan === "free" ? "free_active" : "pro_trialing",
-        mx_payload: mxPayload,
       });
 
-      const mxStatus =
+      const mxStatusRaw =
         res?.mx_status ||
         res?.data?.mx_status ||
         res?.data?.status ||
         res?.status ||
-        "UNKNOWN";
+        "";
+
+      const mxStatus = String(mxStatusRaw).toUpperCase();
 
       const validMxStatuses = [
         "APPLIED",
         "DUPLICATE",
-        "APPLIED_WITH_REPLACEMENTS",
-        "created",
         "CREATED",
       ];
 
@@ -1022,7 +1059,7 @@ function StartNowContent() {
         throw new Error(
           res?.mx_message ||
             res?.message ||
-            `MX no pudo crear/aplicar el acceso. Estado: ${mxStatus}`
+            `MX no pudo crear/aplicar el acceso. Estado: ${mxStatus || "UNKNOWN"}`
         );
       }
 
@@ -1828,6 +1865,7 @@ function StartNowContent() {
                         Dashboard de aprendizaje
                       </span>
                     </li>
+                    <li>✓ Análisis de tu CV cotejado con tu ruta</li>
                     <li className="text-[#5CC781]">
                       ✓{" "}
                       <span className="text-neutral-700">
@@ -1863,9 +1901,9 @@ function StartNowContent() {
                   type="button"
                   onClick={() => {
                     const plan = isAnnual ? "yearly_x" : "monthly_x";
-                    trackClientifyPlanInterest(plan);
                     setSelectedPlan("x");
                     setSelectedPaidPlan(plan);
+                    trackClientifyPlanInterest(plan);
                     setStep("proPayment");
                   }}
                   disabled={loading}
@@ -1896,7 +1934,10 @@ function StartNowContent() {
                     Incluye:
                   </span>
                   <ul className="my-2 space-y-2 !font-['Montserrat'] text-white">
-                    <li>✓ Elige Coursera + MasterClass o edX + MasterClass</li>
+                    <li>✓ Coursera + MasterClass</li>
+                    <li>✓ Certificaciones disponibles en tus 3 cursos</li>
+                    <li>✓ Acceso a toda tu ruta personalizada</li>
+                    <li>✓ IA Topo: recomendaciones inteligentes</li>
                     <li>✓ Acceso a toda tu ruta personalizada</li>
                     <li>✓ Certificaciones disponibles</li>
                     <li>✓ Seguimiento de progreso</li>
@@ -1915,9 +1956,9 @@ function StartNowContent() {
                   type="button"
                   onClick={() => {
                     const plan = isAnnual ? "yearly_plus" : "monthly_plus";
-                    trackClientifyPlanInterest(plan);
                     setSelectedPlan("plus");
                     setSelectedPaidPlan(plan);
+                    trackClientifyPlanInterest(plan);
                     setStep("proPayment");
                   }}
                   disabled={loading}
@@ -2015,7 +2056,7 @@ function StartNowContent() {
                       ["Ruta completa", "×", "✓", "✓"],
                       ["MasterClass", "×", "✓", "✓"],
                       ["Coursera", "×", "Opcional", "✓"],
-                      ["edX", "×", "Opcional", "✓"],
+                      ["edX", "×", "×", "✓"],
                       ["Certificaciones", "×", "✓", "✓"],
                       ["IA Top Education", "Básica", "Completa", "Premium"],
                     ].map(([feature, free, x, plus]) => (
@@ -2500,7 +2541,7 @@ function StartNowContent() {
               <LockIcon />
             </div>
             <span className="mt-3 !font-['Montserrat'] font-black uppercase tracking-[0.12em] text-[#5CC781]">
-              Acceso verificado ✓
+              Acceso verificado
             </span>
             <h2 className="mt-1 text-center !font-['Montserrat'] text-3xl font-black text-[#111111]">
               Crea tu contraseña
@@ -2550,6 +2591,10 @@ function StartNowContent() {
                     </button>
                   }
                 />
+                <PasswordMatchMessage
+                  password={form.password}
+                  confirmPassword={form.confirm_password}
+                />
               </div>
 
               {errorMsg && (
@@ -2572,7 +2617,11 @@ function StartNowContent() {
                         : "/account?tab=license",
                   })
                 }
-                disabled={loading}
+                disabled={
+                  loading ||
+                  getPasswordScore(form.password) < 4 ||
+                  form.password !== form.confirm_password
+                }
                 className="mt-3 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#1941cf] px-5 py-3 !font-['Montserrat'] text-lg font-black text-white shadow-[0_22px_50px_rgba(37,58,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading ? "Creando cuenta..." : "Guardar y entrar"}{" "}
