@@ -29,10 +29,17 @@ function HomePage() {
   const [topics, setTopics] = useState([]);
   const [topicsLoading, setTopicsLoading] = useState(true);
   const [topicsError, setTopicsError] = useState("");
-
+  
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
+  function navigateWithTransition(path) {
+    if (document.startViewTransition) {
+      document.startViewTransition(() => navigate(path));
+    } else {
+      navigate(path);
+    }
+  }
   const handleStartNow = (e) => {
     e.preventDefault();
 
@@ -461,6 +468,14 @@ function HomePage() {
     }
   }, [statePopUp]);
 
+  const topicItems = topics.filter(
+    (item) => item.skill_type?.trim().toLowerCase() === "tema"
+  );
+
+  const skillItems = topics.filter(
+    (item) => item.skill_type?.trim().toLowerCase() === "habilidad"
+  );
+
   return (
     <>
       <Helmet>
@@ -565,50 +580,34 @@ function HomePage() {
       <FinisherHeaderComponent />
 
       <section className="relative py-12 lg:py-20 overflow-hidden bg-gradient-to-b from-transparent via-[#F5F3EE] to-[#F5F3EE] -mt-20 !z-5">
-
         <div className="relative z-10 max-w-[1400px] mx-auto px-4 lg:px-8">
-          {/* Header */}
           <div className="text-center mb-16">
             <span className="uppercase tracking-[0.35em] text-[11px] text-[#7B6E63] font-medium">
               Explora
             </span>
 
-            <h2
-              className="mt-3 text-[#0F090B] font-light leading-none
-                text-[2.5rem] md:text-[3.8rem] lg:text-[4.2rem]
-                font-te"
-            >
+            <h2 className="mt-3 text-[#0F090B] font-light leading-none text-[2.5rem] md:text-[3.8rem] lg:text-[4.2rem] font-te">
               ¿Qué quieres aprender hoy?
             </h2>
 
-            <p className="mt-3 max-w-2xl mx-auto text-[#6D6258] text-[1rem] md:text-[1.3rem] leading-[1.3em]">
-              Haz clic en una categoría para explorar las instituciones
-              que ofrecen certificaciones
+            <p className="mt-3 max-w-2xl mx-auto text-[#6D6258] text-[1rem] md:text-[1.2rem] leading-[1.3em]">
+              Haz clic en una categoría para explorar las instituciones que ofrecen certificaciones
             </p>
           </div>
 
-          {/* Grid */}
           <div className="relative">
-            <TopicGrid topics={topics} columns={5} />
+            <TopicGrid topics={topicItems} columns={5} />
           </div>
 
-          {/* Footer CTA */}
           <div className="flex justify-center mt-14">
             <button
               type="button"
-              className="group inline-flex items-center gap-3 text-[#0F090B]
-              transition-all duration-300 hover:text-[#1941cf]"
+              onClick={() => navigateWithTransition("/explora")}
+              className="group inline-flex items-center gap-3 text-[#0F090B] transition-all duration-300 hover:text-[#1941cf]"
             >
-              <span className="text-[1rem] font-medium">
-                Ver todas las categorías
-              </span>
-
+              <span className="text-[1rem] font-medium">Ver todas las categorías</span>
               <span className="transition-transform duration-300 group-hover:translate-x-1">
-                <ArrowRight
-                  size={16}
-                  strokeWidth={2}
-                  className="translate-y-[1px]"
-                />
+                <ArrowRight size={16} strokeWidth={2} className="translate-y-[1px]" />
               </span>
             </button>
           </div>
@@ -617,7 +616,7 @@ function HomePage() {
 
       <section className="wrapper w-screen bg-[#F5F3EE] relative flex-shrink-0 flex items-center justify-center">
         <div className="container m-auto py-20 max-w-[90vw] text-center">
-          <div className="mx-auto max-w-[820px] text-center">
+          <div className="mx-auto max-w-[920px] text-center">
             <span className="uppercase tracking-[0.35em] text-[11px] text-[#7B6E63] font-medium">
               Universidades líderes
             </span>
@@ -628,12 +627,47 @@ function HomePage() {
               Aprende con las universidades<br></br> líderes del mundo
             </h2>
 
-            <p className="mt-3 max-w-2xl mx-auto text-[#6D6258] text-[1rem] md:text-[1.3rem] leading-[1.3em]">
+            <p className="mt-3 max-w-3xl mx-auto text-[#6D6258] text-[1rem] md:text-[1.2rem] leading-[1.3em]">
               Explora certificaciones creadas por instituciones reconocidas
               globalmente y encuentra nuevas rutas para tu crecimiento profesional.
             </p>
           </div>
           <ImageSlider3D images={flagsImages} action="explora" />
+        </div>
+      </section>
+
+      <section className="relative py-12 lg:py-20 overflow-hidden bg-[#F5F3EE] !z-5">
+        <div className="relative z-10 max-w-[1400px] mx-auto px-4 lg:px-8">
+          <div className="text-center mb-16">
+            <span className="uppercase tracking-[0.35em] text-[11px] text-[#7B6E63] font-medium">
+              Top habilidades
+            </span>
+
+            <h2 className="mt-3 text-[#0F090B] font-light leading-none text-[2.5rem] md:text-[3.8rem] lg:text-[4.2rem] font-te">
+              Habilidades que impulsan tu futuro
+            </h2>
+
+            <p className="mt-3 max-w-2xl mx-auto text-[#6D6258] text-[1rem] md:text-[1.2rem] leading-[1.3em]">
+              Explora las habilidades más relevantes para crecer profesionalmente y encuentra certificaciones alineadas con tus objetivos.
+            </p>
+          </div>
+
+          <div className="relative">
+            <TopicGrid topics={skillItems} columns={5} />
+          </div>
+
+          <div className="flex justify-center mt-14">
+            <button
+              type="button"
+              onClick={() => navigateWithTransition("/explora")}
+              className="group inline-flex items-center gap-3 text-[#0F090B] transition-all duration-300 hover:text-[#1941cf]"
+            >
+              <span className="text-[1rem] font-medium">Ver todas las habilidades</span>
+              <span className="transition-transform duration-300 group-hover:translate-x-1">
+                <ArrowRight size={16} strokeWidth={2} className="translate-y-[1px]" />
+              </span>
+            </button>
+          </div>
         </div>
       </section>
               
@@ -701,44 +735,13 @@ function HomePage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Tu correo electrónico"
-                  className="
-                    h-[56px]
-                    w-full
-                    rounded-full
-                    border
-                    border-white/20
-                    bg-white
-                    px-6
-                    font-['Montserrat']
-                    text-[15px]
-                    text-neutral-800
-                    outline-none
-                    placeholder:text-neutral-400
-                    focus:ring-4
-                    focus:ring-white/20
-                    sm:flex-1
-                  "
+                  className="h-[56px] w-full rounded-full border border-white/20 bg-white px-6 font-['Montserrat'] text-[15px] text-neutral-800 outline-none placeholder:text-neutral-400 focus:ring-4 focus:ring-white/20 sm:flex-1"
                   required
                 />
 
                 <button
                   type="submit"
-                  className="
-                    h-[56px]
-                    rounded-full
-                    bg-[#0F090D]
-                    px-8
-                    font-['Montserrat']
-                    text-[15px]
-                    font-bold
-                    text-white
-                    transition-all
-                    duration-300
-                    hover:-translate-y-1
-                    hover:bg-black
-                    hover:shadow-[0_18px_45px_rgba(0,0,0,0.22)]
-                    sm:w-auto
-                  "
+                  className="h-[56px] rounded-full bg-[#0F090D] px-8 font-['Montserrat'] text-[15px] font-bold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-black hover:shadow-[0_18px_45px_rgba(0,0,0,0.22)] sm:w-auto"
                 >
                   Empieza ahora
                 </button>
