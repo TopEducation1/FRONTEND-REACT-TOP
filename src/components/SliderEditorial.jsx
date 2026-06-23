@@ -17,7 +17,10 @@ const SliderEditorial = () => {
     const handleScroll = (direction) => {
         if (!containerRef.current) return;
 
-        const cards = containerRef.current.querySelectorAll('.card-product');
+        const container = containerRef.current;
+        if (!container) return;
+
+        const cards = container.querySelectorAll(".card-product");
         if (cards.length === 0) return;
 
         const card = cards[0];

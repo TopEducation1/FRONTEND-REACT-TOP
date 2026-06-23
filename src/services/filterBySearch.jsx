@@ -1,4 +1,4 @@
-import { endpoints } from "../config/api";
+import endpoints from "../config/api";
 
 let currentController = null;
 const searchCache = new Map();
@@ -28,11 +28,7 @@ const FilterBySearch = {
         return { results: [], count: 0 };
       }
 
-      const cacheKey = JSON.stringify({
-        query,
-        limit,
-        filters,
-      });
+      const cacheKey = JSON.stringify({ query, limit, filters });
 
       if (searchCache.has(cacheKey)) {
         return searchCache.get(cacheKey);
@@ -48,6 +44,7 @@ const FilterBySearch = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
         cache: "no-store",
         signal: currentController.signal,
@@ -58,14 +55,14 @@ const FilterBySearch = {
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        console.error("Error al consultar búsqueda:", response.status);
+        console.error("Error al consultar búsqueda:", response.status, data);
         return { results: [], count: 0 };
       }
 
-      const data = await response.json();
       const normalized = normalizeResponse(data);
-
       searchCache.set(cacheKey, normalized);
 
       return normalized;
