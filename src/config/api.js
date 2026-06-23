@@ -11,6 +11,7 @@ export const endpoints = {
   certificaciones_sitemap: `${BASE_URL}/sitemap/certificaciones/`,
   certificaciones_filter: `${BASE_URL}/certificaciones/filter/`,
   certificaciones_busqueda: `${BASE_URL}/certificaciones/busqueda/`,
+  certificaciones_busqueda_rapida: `${API_URL}/certificaciones/busqueda-rapida/`,
   certificaciones_id: (slug) => `${BASE_URL}/certificacion/${slug}/`,
   certificaciones_by_name: (slug) => `${BASE_URL}/certificacion/${slug}/`,
   certification_languages: `${BASE_URL}/certificaciones/languages/`,
