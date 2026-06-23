@@ -21,7 +21,8 @@ const RightPop = () => {
         </p>
 
         <a
-          href="/empieza-ahora"
+          /*href="/empieza-ahora"*/
+          href="/"
           className="mt-6 flex w-full items-center justify-center rounded-full bg-[#111111] px-5 py-3 font-['Montserrat'] text-sm font-bold text-white transition-all duration-300 hover:bg-black hover:shadow-[0_18px_45px_rgba(0,0,0,0.18)]"
         >
           ¡Haz la prueba ahora!

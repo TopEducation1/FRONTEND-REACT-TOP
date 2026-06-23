@@ -691,6 +691,22 @@ function StartNowContent() {
       })
     );
   };
+  useEffect(() => {
+    syncClientifyHiddenForm({
+      first_name: form.first_name,
+      last_name: form.last_name,
+      email: form.email,
+      age: form.age,
+      gender: form.gender,
+      country: form.country,
+      topics: form.topics,
+      goal: form.goal,
+      selected_plan: selectedPlan,
+      selected_paid_plan: selectedPaidPlan,
+      billing_cycle: billingCycle,
+      route_id: routeId || "",
+    });
+  }, [form, selectedPlan, selectedPaidPlan, billingCycle, routeId]);
 
   const trackClientifyPlanInterest = (planValue) => {
     const finalPlan = getFinalPlanFromPaidPlan(planValue);
@@ -1271,7 +1287,8 @@ function StartNowContent() {
         <form
           id="clientify-startnow-form"
           name="clientify-startnow-form"
-          className="absolute left-[-9999px] top-[-9999px] opacity-0"
+          data-clientify-form="startnow"
+          className="fixed bottom-0 right-0 h-[1px] w-[1px] overflow-hidden opacity-[0.01] pointer-events-none"
         >
           <input type="text" name="first_name" value={form.first_name} readOnly />
           <input type="text" name="last_name" value={form.last_name} readOnly />
@@ -1431,7 +1448,10 @@ function StartNowContent() {
               <button
                 type="button"
                 disabled={!canContinueInfo}
-                onClick={() => setStep("topics")}
+                onClick={() => {
+                  pushClientifyEvent("startnow_info_completed");
+                  setStep("topics");
+                }}
                 className="flex flex-1 items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Continuar <ArrowIcon />
@@ -1512,7 +1532,10 @@ function StartNowContent() {
               <button
                 type="button"
                 disabled={form.topics.length === 0}
-                onClick={() => setStep("goal")}
+                onClick={() => {
+                  pushClientifyEvent("startnow_topics_completed");
+                  setStep("goal");
+                }}
                 className="flex flex-1 items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Continuar <ArrowIcon />
@@ -1578,7 +1601,10 @@ function StartNowContent() {
               <button
                 type="button"
                 disabled={!form.goal || loading}
-                onClick={createRoute}
+                onClick={() => {
+                  pushClientifyEvent("startnow_goal_completed");
+                  createRoute();
+                }}
                 className="flex flex-1 items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {loading ? "Generando..." : "Generar Mi Ruta"} <ArrowIcon />
