@@ -273,7 +273,7 @@ export default function LoMasTop() {
       <section className="h-full w-screen flex-shrink-0 bg-gradient-to-t from-transparent to-[#1c1c1c]">
         <HorizontalScroll>
           <div className="flex w-[100vw] items-center justify-center px-5">
-            <div className="m-auto flex max-w-[100vw] flex-wrap lg:max-w-[60vw]">
+            <div className="m-auto flex max-w-[100vw] flex-wrap lg:max-w-[1080px]">
               <h1 className="relative z-10 block w-full text-center font-[Lora] text-[4rem] font-normal leading-[1.5em] text-[#F6F4EF] sm:text-[5rem] md:text-[5rem] lg:w-[30%] lg:text-left lg:text-[5rem] xl:text-[6rem]">
                 Lo más <br />
                 <span className="font-te-it text-[8rem] lg:text-[10rem]">

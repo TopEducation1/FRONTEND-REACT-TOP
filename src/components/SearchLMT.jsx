@@ -205,7 +205,7 @@ export default function SearchLMT() {
       {isActive && !isSearching && Array.isArray(results) && results.length > 0 && (
         <div
           className="
-            absolute left-2 top-[45px] z-50 mt-2 max-h-[300px] w-[97%]
+            absolute left-2 top-[45px] z-50 mt-2 max-h-[330px] w-[97%]
             overflow-y-auto rounded-[24px] border border-black/10 bg-white/95
             p-2 text-left shadow-[0_24px_80px_rgba(0,0,0,0.18)]
             backdrop-blur-xl
