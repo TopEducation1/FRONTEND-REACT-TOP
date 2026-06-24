@@ -1449,7 +1449,15 @@ function StartNowContent() {
                 type="button"
                 disabled={!canContinueInfo}
                 onClick={() => {
-                  pushClientifyEvent("startnow_info_completed");
+                  pushClientifyEvent("startnow_info_completed", {
+                    first_name: form.first_name,
+                    last_name: form.last_name,
+                    email: form.email,
+                    age: form.age,
+                    gender: form.gender,
+                    country: form.country,
+                  });
+
                   setStep("topics");
                 }}
                 className="flex flex-1 items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40"
@@ -1533,7 +1541,10 @@ function StartNowContent() {
                 type="button"
                 disabled={form.topics.length === 0}
                 onClick={() => {
-                  pushClientifyEvent("startnow_topics_completed");
+                  pushClientifyEvent("startnow_topics_completed", {
+                    topics: form.topics,
+                  });
+
                   setStep("goal");
                 }}
                 className="flex flex-1 items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40"
@@ -1602,7 +1613,11 @@ function StartNowContent() {
                 type="button"
                 disabled={!form.goal || loading}
                 onClick={() => {
-                  pushClientifyEvent("startnow_goal_completed");
+                  pushClientifyEvent("startnow_goal_completed", {
+                    goal: form.goal,
+                    topics: form.topics,
+                  });
+
                   createRoute();
                 }}
                 className="flex flex-1 items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40"
