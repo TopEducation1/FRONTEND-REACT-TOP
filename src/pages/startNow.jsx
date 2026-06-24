@@ -658,6 +658,23 @@ function StartNowContent() {
     );
   };
 
+  const submitClientifyHiddenForm = () => {
+    const formEl = document.getElementById("clientify-startnow-form");
+    if (!formEl) return;
+
+    const emailInput = formEl.querySelector('[name="email"]');
+
+    if (!emailInput?.value) return;
+
+    formEl.dispatchEvent(
+      new Event("submit", {
+        bubbles: true,
+        cancelable: true,
+      })
+    );
+  };
+
+
   const pushClientifyEvent = (eventName, extra = {}) => {
     const payload = {
       event: eventName,
@@ -680,6 +697,7 @@ function StartNowContent() {
     };
 
     syncClientifyHiddenForm(payload);
+    submitClientifyHiddenForm();
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(payload);
@@ -1115,6 +1133,7 @@ function StartNowContent() {
     }
   };
 
+  
   const startProSubscription = async () => {
     setErrorMsg("");
 
@@ -1289,6 +1308,7 @@ function StartNowContent() {
           name="clientify-startnow-form"
           data-clientify-form="startnow"
           className="fixed bottom-0 right-0 h-[1px] w-[1px] overflow-hidden opacity-[0.01] pointer-events-none"
+          onSubmit={(e) => e.preventDefault()}
         >
           <input type="text" name="first_name" value={form.first_name} readOnly />
           <input type="text" name="last_name" value={form.last_name} readOnly />
@@ -1302,7 +1322,9 @@ function StartNowContent() {
           <input type="text" name="selected_paid_plan" value={selectedPaidPlan} readOnly />
           <input type="text" name="billing_cycle" value={billingCycle} readOnly />
           <input type="text" name="route_id" value={routeId || ""} readOnly />
-          <button type="submit">Enviar</button>
+          <button type="submit" tabIndex={-1}>
+            Enviar
+          </button>
         </form>
         {step === "welcome" && (
           <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-20 text-center">
