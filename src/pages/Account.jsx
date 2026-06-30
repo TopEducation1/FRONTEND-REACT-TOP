@@ -23,6 +23,40 @@ import { toast } from "react-toastify";
 const stripePublishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
+function hasActiveMxAccess(me, learningRoute) {
+  const accessStatus = String(
+    me?.mx_access_status ||
+    me?.access_status ||
+    me?.plan?.accessStatus ||
+    learningRoute?.access_status ||
+    "ALLOWED"
+  ).toUpperCase();
+
+  const lifecycle = String(
+    me?.lifecycle_status ||
+    me?.plan?.lifecycleStatus ||
+    me?.subscription_status ||
+    learningRoute?.lifecycle_status ||
+    ""
+  ).toUpperCase();
+
+  return (
+    accessStatus === "ALLOWED" &&
+    !["CANCELLED", "EXPIRED", "PAST_DUE", "UNPAID", "CANCELED"].includes(lifecycle)
+  );
+}
+
+function getMxMagicLink(me, learningRoute) {
+  return (
+    me?.mx_magic_link ||
+    me?.magic_link ||
+    me?.mx?.magicLink ||
+    learningRoute?.mx_magic_link ||
+    learningRoute?.magicLink ||
+    ""
+  );
+}
+
 async function getJSON(url) {
   const res = await fetch(url, {
     credentials: "include",
@@ -351,7 +385,9 @@ function getPlanDetails(me, learningRoute) {
     me?.billing_period === "yearly" ||
     me?.billing_period === "annual" ||
     me?.subscription?.billing_period === "yearly";
-
+  const isBasic =
+  planRaw.includes("basic") ||
+  paidPlanRaw.includes("basic");
   const isPlus =
     planRaw.includes("plus") ||
     paidPlanRaw.includes("plus");
@@ -367,6 +403,7 @@ function getPlanDetails(me, learningRoute) {
 
   if (isPlus) plan = PLAN_CATALOG.plus;
   else if (isX) plan = PLAN_CATALOG.x;
+  else if (isBasic) plan = PLAN_CATALOG.basic;
 
   return {
     ...plan,
@@ -430,10 +467,25 @@ function TopBar({ email, initial }) {
   );
 }
 
-function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl }) {
+function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl, learningRoute }) {
   const navigate = useNavigate();
   const initial = (me?.email || me?.username || "U").charAt(0).toUpperCase();
+  const mxMagicLink = getMxMagicLink(me, learningRoute);
+  const mxAccessActive = hasActiveMxAccess(me, learningRoute);
 
+  const goToMxApp = () => {
+    if (!mxAccessActive) {
+      toast.error("Tu acceso está inactivo o suspendido. Actualiza tu membresía para ingresar a la app.");
+      return;
+    }
+
+    if (!mxMagicLink) {
+      toast.error("Aún no tenemos un enlace de acceso disponible. Intenta nuevamente en unos minutos.");
+      return;
+    }
+
+    window.open(mxMagicLink, "_blank", "noopener,noreferrer");
+  };
   const handleLogout = async () => {
     try {
       localStorage.removeItem("token");
@@ -451,6 +503,12 @@ function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl }) {
       navigate("/login");
     }
   };
+  const streakDays = Number(
+    me?.learning_streak_days ||
+    me?.streak_days ||
+    learningRoute?.streak_days ||
+    0
+  );
 
   return (
     <aside className="fixed left-0 top-[66px] hidden h-[calc(100vh-66px)] w-[300px] border-r border-black/10 bg-white lg:flex lg:flex-col">
@@ -498,28 +556,35 @@ function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl }) {
       </nav>
 
       <div className="space-y-3 border-t border-black/10 p-4">
-        <a
-          href="https://certificaciones.top/"
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center justify-between rounded-[18px] bg-[#63BE79] p-3 !font-['Montserrat'] text-white shadow-[0_14px_35px_rgba(92,199,129,0.28)]"
+        <button
+          type="button"
+          onClick={goToMxApp}
+          className={`flex w-full items-center justify-between rounded-[18px] p-3 !font-['Montserrat'] text-white shadow-[0_14px_35px_rgba(92,199,129,0.28)] ${
+            mxAccessActive ? "bg-[#63BE79]" : "bg-neutral-400 cursor-not-allowed"
+          }`}
         >
           <span className="flex items-center gap-3">
             <span className="grid h-9 w-9 place-items-center rounded-[12px] bg-white/18">↗</span>
             <span className="flex flex-wrap items-center">
               <strong className="block">Ir a la App</strong>
-              <span className="text-sm text-white/80">certificaciones.top</span>
+              <span className="text-sm text-white/80">
+                {mxAccessActive ? "Abrir plataforma MX" : "Acceso suspendido"}
+              </span>
             </span>
           </span>
           <span>›</span>
-        </a>
+        </button>
 
         <div className="rounded-[20px] bg-[#100A0D] p-3 text-white">
           <div className="flex items-center gap-2">
             <StarMark small />
             <div>
               <span className="!font-['Montserrat'] text-[13px] font-semibold uppercase  text-[#5CC781]">Consejo</span>
-              <p className="!font-['Montserrat'] text-[11px] leading-[1.3em]">Llevas 3 días seguidos aprendiendo 🔥 ¡Sigue así!</p>
+              <p className="!font-['Montserrat'] text-[11px] leading-[1.3em]">
+                {streakDays > 0
+                  ? `Llevas ${streakDays} días seguidos aprendiendo 🔥 ¡Sigue así!`
+                  : "Aún no tienes racha activa. Ingresa a la app para empezar."}
+              </p>
             </div>
             
           </div>
@@ -2208,7 +2273,7 @@ export default function Account() {
         <TopBar email={me?.email} initial={initial} />
 
         <div className="grid min-h-screen grid-cols-1 pt-[66px] lg:grid-cols-[300px_1fr]">
-          <Sidebar activeTab={activeTab} onTabChange={changeTab} me={me} planLabel={planLabel} backendBaseUrl={backendBaseUrl} />
+          <Sidebar activeTab={activeTab} learningRoute={learningRoute} onTabChange={changeTab} me={me} planLabel={planLabel} backendBaseUrl={backendBaseUrl} />
 
           <main className="box-border px-5 py-10 lg:ml-[300px] lg:w-[calc(100vw-300px)] lg:px-12">
             <div className="mx-auto max-w-[1240px]">

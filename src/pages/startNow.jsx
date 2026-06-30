@@ -420,11 +420,23 @@ function StartNowContent() {
     level_2: [],
     level_3: [],
   });
+  const phoneCodes = [
+    { country: "Colombia", code: "+57" },
+    { country: "México", code: "+52" },
+    { country: "Perú", code: "+51" },
+    { country: "Chile", code: "+56" },
+    { country: "Argentina", code: "+54" },
+    { country: "Ecuador", code: "+593" },
+    { country: "Estados Unidos", code: "+1" },
+    { country: "España", code: "+34" },
+  ];
 
   const [form, setForm] = useState({
     first_name: "",
     last_name: "",
     email: initialEmail,
+    phone_country_code: "+57",
+    phone_number: "",
     age: "",
     gender: "",
     country: "",
@@ -585,6 +597,9 @@ function StartNowContent() {
       route_id: routeId,
       name: `${form.first_name} ${form.last_name}`.trim(),
       email: form.email,
+      phone_country_code: form.phone_country_code,
+      phone_number: form.phone_number,
+      phone_e164: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
       age: form.age,
       gender: form.gender,
       country: form.country,
@@ -624,6 +639,8 @@ function StartNowContent() {
     form.first_name.trim() &&
     form.last_name.trim() &&
     form.email.trim() &&
+    form.phone_country_code &&
+    form.phone_number.trim() &&
     form.age &&
     form.gender &&
     form.country;
@@ -945,6 +962,9 @@ function StartNowContent() {
 
     const data = await postJSON(LEARNING_ROUTE_CREATE_URL, {
       email: form.email,
+      phone_country_code: form.phone_country_code,
+      phone_number: form.phone_number,
+      phone_e164: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
       first_name: form.first_name,
       last_name: form.last_name,
       age: form.age ? Number(form.age) : null,
@@ -1066,6 +1086,9 @@ function StartNowContent() {
       const res = await postJSON(LEARNING_ROUTE_COMPLETE_SIGNUP_URL, {
         route_id: routeId,
         email: form.email,
+        phone_country_code: form.phone_country_code,
+        phone_number: form.phone_number,
+        phone_e164: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
         password: form.password,
         selected_plan: finalPlan,
         selected_paid_plan: finalPlan === "free" ? "free" : selectedPaidPlan,
@@ -1313,6 +1336,14 @@ function StartNowContent() {
           <input type="text" name="first_name" value={form.first_name} readOnly />
           <input type="text" name="last_name" value={form.last_name} readOnly />
           <input type="email" name="email" value={form.email} readOnly />
+          <input type="text" name="phone_country_code" value={form.phone_country_code} readOnly />
+          <input type="text" name="phone_number" value={form.phone_number} readOnly />
+          <input
+            type="text"
+            name="phone_e164"
+            value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`}
+            readOnly
+          />
           <input type="text" name="age" value={form.age} readOnly />
           <input type="text" name="gender" value={form.gender} readOnly />
           <input type="text" name="country" value={form.country} readOnly />
@@ -1415,6 +1446,37 @@ function StartNowContent() {
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder="Ingresa tu correo electrónico"
               />
+              <div className="grid grid-cols-[200px_1fr] gap-4">
+                <FormSelect
+                  label="Indicativo"
+                  required
+                  value={form.phone_country_code}
+                  onChange={(e) =>
+                    setForm({ ...form, phone_country_code: e.target.value })
+                  }
+                  placeholder="+57"
+                >
+                  {phoneCodes.map((item) => (
+                    <option key={`${item.country}-${item.code}`} value={item.code}>
+                      {item.code} {item.country}
+                    </option>
+                  ))}
+                </FormSelect>
+
+                <FormInput
+                  label="Celular"
+                  required
+                  type="tel"
+                  value={form.phone_number}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      phone_number: e.target.value.replace(/[^\d\s]/g, ""),
+                    })
+                  }
+                  placeholder="300 123 4567"
+                />
+              </div>
 
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <FormInput
@@ -1475,6 +1537,9 @@ function StartNowContent() {
                     first_name: form.first_name,
                     last_name: form.last_name,
                     email: form.email,
+                    phone_country_code: form.phone_country_code,
+                    phone_number: form.phone_number,
+                    phone_e164: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
                     age: form.age,
                     gender: form.gender,
                     country: form.country,
