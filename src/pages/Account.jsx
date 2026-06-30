@@ -470,21 +470,32 @@ function TopBar({ email, initial }) {
 function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl, learningRoute }) {
   const navigate = useNavigate();
   const initial = (me?.email || me?.username || "U").charAt(0).toUpperCase();
-  const mxMagicLink = getMxMagicLink(me, learningRoute);
   const mxAccessActive = hasActiveMxAccess(me, learningRoute);
+  const [openingMxApp, setOpeningMxApp] = useState(false);
 
-  const goToMxApp = () => {
+  const goToMxApp = async () => {
     if (!mxAccessActive) {
       toast.error("Tu acceso está inactivo o suspendido. Actualiza tu membresía para ingresar a la app.");
       return;
     }
 
-    if (!mxMagicLink) {
-      toast.error("Aún no tenemos un enlace de acceso disponible. Intenta nuevamente en unos minutos.");
-      return;
-    }
+    setOpeningMxApp(true);
 
-    window.open(mxMagicLink, "_blank", "noopener,noreferrer");
+    try {
+      const res = await postJSON(`${backendBaseUrl}/api/account/mx/magic-link/refresh/`);
+      const magicLink = res?.data?.magic_link || res?.data?.magicLink || res?.magicLink;
+
+      if (!magicLink) {
+        toast.error("No se pudo generar el acceso a la app.");
+        return;
+      }
+
+      window.open(magicLink, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      toast.error(error?.message || "Tu acceso está inactivo o suspendido. Actualiza tu membresía.");
+    } finally {
+      setOpeningMxApp(false);
+    }
   };
   const handleLogout = async () => {
     try {
@@ -509,6 +520,8 @@ function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl, learni
     learningRoute?.streak_days ||
     0
   );
+
+  
 
   return (
     <aside className="fixed left-0 top-[66px] hidden h-[calc(100vh-66px)] w-[300px] border-r border-black/10 bg-white lg:flex lg:flex-col">
@@ -559,16 +572,21 @@ function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl, learni
         <button
           type="button"
           onClick={goToMxApp}
+          disabled={openingMxApp}
           className={`flex w-full items-center justify-between rounded-[18px] p-3 !font-['Montserrat'] text-white shadow-[0_14px_35px_rgba(92,199,129,0.28)] ${
             mxAccessActive ? "bg-[#63BE79]" : "bg-neutral-400 cursor-not-allowed"
-          }`}
+          } ${openingMxApp ? "opacity-70" : ""}`}
         >
           <span className="flex items-center gap-3">
             <span className="grid h-9 w-9 place-items-center rounded-[12px] bg-white/18">↗</span>
             <span className="flex flex-wrap items-center">
               <strong className="block">Ir a la App</strong>
               <span className="text-sm text-white/80">
-                {mxAccessActive ? "Abrir plataforma MX" : "Acceso suspendido"}
+                {openingMxApp
+                  ? "Generando acceso..."
+                  : mxAccessActive
+                  ? "Abrir plataforma MX"
+                  : "Acceso suspendido"}
               </span>
             </span>
           </span>
