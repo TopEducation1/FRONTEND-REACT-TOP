@@ -1391,7 +1391,7 @@ function ProfileTab({ me }) {
   );
 }
 
-function LicenseTab({ me, purchases, paymentMethods, load, backendBaseUrl, learningRoute }) {
+function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBaseUrl, learningRoute }) {
   const [showAddMethod, setShowAddMethod] = useState(false);
   const [planModal, setPlanModal] = useState(null);
   const [planLoading, setPlanLoading] = useState(false);
@@ -1463,6 +1463,18 @@ function LicenseTab({ me, purchases, paymentMethods, load, backendBaseUrl, learn
       return plan.includes.slice(0, 5);
     }
     return [];
+  };
+  const openBillingPortal = async () => {
+    try {
+      const res = await postJSON(`${backendBaseUrl}/api/billing/portal/`);
+      const url = res?.data?.url;
+
+      if (!url) throw new Error("Stripe no devolvió el portal.");
+
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      toast.error(error?.message || "No fue posible abrir el portal de facturación.");
+    }
   };
 
   const confirmCancelSubscription = async () => {
@@ -1930,66 +1942,82 @@ function LicenseTab({ me, purchases, paymentMethods, load, backendBaseUrl, learn
       </div>
 
       <section className="mt-7 rounded-[24px] border border-black/10 bg-white p-7 shadow-[0_12px_35px_rgba(0,0,0,0.05)]">
-        <div>
-          <h2 className="!font-['Montserrat'] text-xl font-semibold text-[#111111]">
-            Facturación y pagos
-          </h2>
-          <p className="!font-['Montserrat'] text-neutral-500">
-            Descarga facturas y consulta tu historial de pagos.
-          </p>
+        <div className="flex flex-wrap justify-between">
+          <div>
+            <h2 className="!font-['Montserrat'] text-xl font-semibold text-[#111111]">
+              Facturación y pagos
+            </h2>
+            <p className="!font-['Montserrat'] text-neutral-500">
+              Descarga facturas y consulta tu historial de pagos.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={openBillingPortal}
+            className="rounded-full bg-[#1941CF] px-5 py-3 !font-['Montserrat'] text-sm font-black text-white"
+          >
+            Gestionar facturación en Stripe
+          </button>
         </div>
-
+        
         <div className="mt-3 overflow-x-auto">
-          {purchases.length ? (
+          {invoices.length ? (
             <table className="min-w-full !font-['Montserrat'] text-sm">
               <thead>
                 <tr className="border-b border-black/10 text-neutral-500">
                   <th className="py-2 pr-4 text-left">Fecha</th>
-                  <th className="py-2 pr-4 text-left">Descripción</th>
+                  <th className="py-2 pr-4 text-left">Factura</th>
                   <th className="py-2 pr-4 text-left">Monto</th>
                   <th className="py-2 pr-4 text-left">Estado</th>
-                  <th className="py-2 pr-4 text-left">Factura</th>
+                  <th className="py-2 pr-4 text-left">Acciones</th>
                 </tr>
               </thead>
+
               <tbody>
-                {purchases.map((p, idx) => (
-                  <tr key={p.id || p.reference || idx} className="border-b border-black/5">
-                    <td className="py-4 pr-4">{fmtDate(p.created_at)}</td>
-                    <td className="py-4 pr-4">{p.description || p.type || planDetails.title}</td>
-                    <td className="py-4 pr-4 font-semibold">{fmtMoney(p.amount, p.currency)}</td>
+                {invoices.map((invoice) => (
+                  <tr key={invoice.id} className="border-b border-black/5">
+                    <td className="py-4 pr-4">{fmtDate(invoice.created_at)}</td>
+                    <td className="py-4 pr-4">{invoice.number || invoice.id}</td>
+                    <td className="py-4 pr-4 font-semibold">
+                      {fmtMoney(invoice.amount, invoice.currency)}
+                    </td>
                     <td className="py-4 pr-4">
                       <span className="rounded-full bg-[#FDBA3B]/10 px-3 py-1 text-xs font-bold text-[#F5A400]">
-                        {p.status}
+                        {invoice.status}
                       </span>
                     </td>
                     <td className="py-4 pr-4">
-                      {p.hosted_invoice_url ? (
-                        <a
-                          href={p.hosted_invoice_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="font-bold text-[#2563EB]"
-                        >
-                          Ver
-                        </a>
-                      ) : (
-                        <span className="text-neutral-400">—</span>
-                      )}
+                      <div className="flex gap-3">
+                        {invoice.hosted_invoice_url && (
+                          <a
+                            href={invoice.hosted_invoice_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-bold text-[#2563EB]"
+                          >
+                            Ver
+                          </a>
+                        )}
+
+                        {invoice.invoice_pdf && (
+                          <a
+                            href={invoice.invoice_pdf}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-bold text-[#2563EB]"
+                          >
+                            PDF
+                          </a>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           ) : (
-            <div className="grid grid-cols-[1fr_auto_auto] items-center gap-5 rounded-[16px] py-2 !font-['Montserrat']">
-              <div>
-                <p className="font-semibold text-[#111111]">Junio 2026</p>
-                <p className="text-sm text-neutral-400">#TRIAL-001</p>
-              </div>
-              <strong>$0.00</strong>
-              <span className="rounded-full bg-[#FDBA3B]/10 px-3 py-1 text-xs font-black text-[#F5A400]">
-                PRUEBA GRATIS
-              </span>
+            <div className="rounded-[16px] bg-[#F6F4EF] p-5 !font-['Montserrat'] text-sm text-neutral-500">
+              Aún no tienes facturas generadas por Stripe.
             </div>
           )}
         </div>
@@ -2166,12 +2194,17 @@ export default function Account() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [invoices, setInvoices] = useState([]);
+
+  
 
   const backendBaseUrl = useMemo(() => {
     const fromEnv = process.env.REACT_APP_API_URL || "";
     return (fromEnv).replace(/\/+$/, "");
   }, []);
 
+  const INVOICES_URL = `${backendBaseUrl}/api/billing/invoices/`;
+  const BILLING_PORTAL_URL = `${backendBaseUrl}/api/billing/portal/`;
   const ME_URL = `${backendBaseUrl}/api/account/me/`;
   const PURCHASES_URL = `${backendBaseUrl}/api/account/purchases/`;
   const PAYMENT_METHODS_URL = `${backendBaseUrl}/api/billing/payment-methods/`;
@@ -2206,15 +2239,19 @@ export default function Account() {
   };
 
   async function load() {
+    
     setErrorMsg("");
     setLoading(true);
 
     try {
-      const [meRes, purchasesRes, paymentMethodsRes] = await Promise.all([
+      const [meRes, purchasesRes, paymentMethodsRes, invoicesRes] = await Promise.all([
         getJSON(ME_URL),
         getJSON(PURCHASES_URL).catch(() => ({ data: [] })),
         getJSON(PAYMENT_METHODS_URL).catch(() => ({ data: [] })),
+        getJSON(INVOICES_URL).catch(() => ({ data: [] })),
       ]);
+
+      setInvoices(invoicesRes?.data || []);
 
       setMe(meRes?.data || meRes);
       setPurchases(normalizePurchases(purchasesRes));
@@ -2298,6 +2335,7 @@ export default function Account() {
                 <LicenseTab
                   me={me}
                   purchases={purchases}
+                  invoices={invoices}
                   paymentMethods={paymentMethods}
                   load={load}
                   backendBaseUrl={backendBaseUrl}
