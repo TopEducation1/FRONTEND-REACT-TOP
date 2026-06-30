@@ -1150,7 +1150,26 @@ function StartNowContent() {
         });
       }, 1300);
     } catch (error) {
-      setErrorMsg(error.message || "No se pudo crear la cuenta.");
+      const message = String(error?.message || "");
+
+      if (
+        message === "email_already_registered" ||
+        message.includes("email_already_registered") ||
+        message.includes("Ya existe una cuenta")
+      ) {
+        setErrorMsg("Ya tienes una cuenta. Inicia sesión para continuar.");
+
+        setTimeout(() => {
+          navigate(`/login?email=${encodeURIComponent(form.email)}`, {
+            replace: true,
+          });
+        }, 900);
+
+        return;
+      }
+
+      setErrorMsg(error.message || "No se pudo crear la ruta.");
+      setStep("goal");
     } finally {
       setLoading(false);
     }
