@@ -1419,6 +1419,10 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
 
   const planDetails = getPlanDetails(me, learningRoute);
 
+  
+
+  const isCancelScheduled = Boolean(me?.cancel_at_period_end);
+
   const [billingCycle, setBillingCycle] = useState(
     planDetails.billingCycle || "monthly"
   );
@@ -1492,6 +1496,16 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
       window.open(url, "_blank", "noopener,noreferrer");
     } catch (error) {
       toast.error(error?.message || "No fue posible abrir el portal de facturación.");
+    }
+  };
+
+  const reactivateSubscription = async () => {
+    try {
+      await postJSON(`${backendBaseUrl}/api/billing/subscription/reactivate/`);
+      await load();
+      toast.success("Tu suscripción fue reactivada correctamente.");
+    } catch (error) {
+      toast.error(error?.message || "No fue posible reactivar la suscripción.");
     }
   };
 
@@ -1592,6 +1606,16 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
         <h1 className="!font-['Montserrat'] text-[2rem] font-semibold tracking-[-0.04em] text-[#111111]">
           Gestionar Membresía
         </h1>
+        {isCancelScheduled && (
+          <div className="mb-5 rounded-[18px] border border-[#FDBA3B]/30 bg-[#FFF7E8] p-5 !font-['Montserrat']">
+            <h3 className="font-black text-[#111111]">
+              Tu suscripción está cancelada
+            </h3>
+            <p className="mt-1 text-sm text-neutral-600">
+              Mantendrás acceso hasta el {fmtDate(me?.current_period_end)}. Después de esa fecha tu acceso será restringido.
+            </p>
+          </div>
+        )}
         <p className="!font-['Montserrat'] text-neutral-500">
           Administra tu plan, beneficios y método de pago desde un solo lugar.
         </p>
@@ -1948,13 +1972,23 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
               Tu acceso continuará hasta finalizar tu período actual.
             </p>
 
-            <button
-              onClick={() => setCancelStep("reason")}
-              disabled={planDetails.key === "free"}
-              className="mt-7 w-full rounded-[14px] border border-red-200 py-4 !font-['Montserrat'] font-semibold text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Cancelar membresía
-            </button>
+            {isCancelScheduled ? (
+              <button
+                type="button"
+                onClick={reactivateSubscription}
+                className="mt-7 w-full rounded-[14px] bg-[#1941CF] py-4 !font-['Montserrat'] font-semibold text-white"
+              >
+                Reactivar suscripción
+              </button>
+            ) : (
+              <button
+                onClick={() => setCancelStep("reason")}
+                disabled={planDetails.key === "free"}
+                className="mt-7 w-full rounded-[14px] border border-red-200 py-4 !font-['Montserrat'] font-semibold text-red-500 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Cancelar membresía
+              </button>
+            )}
           </div>
         </section>
       </div>
