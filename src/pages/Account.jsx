@@ -1794,19 +1794,20 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
         <h1 className="!font-['Montserrat'] text-[2rem] font-semibold leading-[1.1em] text-[#111111]">
           Gestionar Membresía
         </h1>
+        
+        <p className="!font-['Montserrat'] leading-[1.2em] text-neutral-500">
+          Administra tu plan, beneficios y método de pago desde un solo lugar.
+        </p>
         {isCancelScheduled && (
-          <div className="mb-5 rounded-[18px] border border-[#FDBA3B]/30 bg-[#FFF7E8] p-5 !font-['Montserrat']">
-            <h3 className="font-black text-[#111111]">
+          <div className="mb-5 rounded-[18px] border border-[#FDBA3B]/30 bg-[#FFF7E8] p-4 !font-['Montserrat']">
+            <h3 className="font-black !font-['Montserrat'] text-[#111111]">
               Tu suscripción está cancelada
             </h3>
-            <p className="mt-1 text-sm text-neutral-600">
+            <p className="text-sm text-neutral-600">
               Mantendrás acceso hasta el {fmtDate(me?.current_period_end)}. Después de esa fecha tu acceso será restringido.
             </p>
           </div>
         )}
-        <p className="!font-['Montserrat'] leading-[1.2em] text-neutral-500">
-          Administra tu plan, beneficios y método de pago desde un solo lugar.
-        </p>
       </div>
 
       <section className="rounded-[24px] bg-[#1941CF] p-5 text-white shadow-[0_24px_65px_rgba(37,58,207,0.22)]">
