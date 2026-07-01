@@ -2291,26 +2291,30 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
 
       {invoiceModalOpen && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-          <div className="relative h-[88vh] w-full max-w-[980px] overflow-hidden rounded-[24px] bg-white shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
-            <div className="flex items-center justify-between border-b border-black/10 px-5 py-4">
-              <h3 className="!font-['Montserrat'] text-lg font-black text-[#111111]">
-                Vista de factura
-              </h3>
+          <div className="relative w-full max-w-[520px] rounded-[24px] bg-white p-7 text-center shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
+            <button
+              type="button"
+              onClick={() => setInvoiceModalOpen(false)}
+              className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+            >
+              ×
+            </button>
 
-              <button
-                type="button"
-                onClick={() => setInvoiceModalOpen(false)}
-                className="grid h-9 w-9 place-items-center rounded-full bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
-              >
-                ×
-              </button>
-            </div>
+            <h3 className="!font-['Montserrat'] text-xl font-black text-[#111111]">
+              Ver factura en Stripe
+            </h3>
 
-            <iframe
-              src={invoiceModalUrl}
-              title="Factura Stripe"
-              className="h-[calc(88vh-65px)] w-full"
-            />
+            <p className="mt-3 !font-['Montserrat'] text-sm leading-relaxed text-neutral-500">
+              Por seguridad, Stripe no permite mostrar esta factura embebida dentro de la página.
+            </p>
+
+            <button
+              type="button"
+              onClick={() => window.open(invoiceModalUrl, "_blank", "noopener,noreferrer")}
+              className="mt-6 inline-flex rounded-full bg-[#1941CF] px-6 py-3 !font-['Montserrat'] text-sm font-black text-white transition hover:-translate-y-0.5"
+            >
+              Abrir factura
+            </button>
           </div>
         </div>
       )}
