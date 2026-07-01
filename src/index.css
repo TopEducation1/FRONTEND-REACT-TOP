@@ -2783,3 +2783,14 @@ header {
     width: 100% !important;
   }
 }
+
+@keyframes mobileDrawerIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

@@ -701,6 +701,14 @@ function StartNowContent() {
       email: form.email,
       first_name: form.first_name,
       last_name: form.last_name,
+
+      phone_country_code: form.phone_country_code,
+      phone_number: form.phone_number,
+      phone_e164: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
+      phone: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
+      mobile_phone: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
+      telefono: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
+
       age: form.age,
       gender: form.gender,
       country: form.country,
@@ -731,6 +739,12 @@ function StartNowContent() {
       first_name: form.first_name,
       last_name: form.last_name,
       email: form.email,
+      phone_country_code: form.phone_country_code,
+      phone_number: form.phone_number,
+      phone_e164: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
+      phone: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
+      mobile_phone: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
+      telefono: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
       age: form.age,
       gender: form.gender,
       country: form.country,
@@ -1360,6 +1374,24 @@ function StartNowContent() {
           <input
             type="text"
             name="phone_e164"
+            value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`}
+            readOnly
+          />
+          <input
+            type="text"
+            name="phone"
+            value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`}
+            readOnly
+          />
+          <input
+            type="text"
+            name="mobile_phone"
+            value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`}
+            readOnly
+          />
+          <input
+            type="text"
+            name="telefono"
             value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`}
             readOnly
           />

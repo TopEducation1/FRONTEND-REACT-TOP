@@ -15,6 +15,7 @@ import {
   Star,
   TrendingUp,
   X,
+  Menu,
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
@@ -432,7 +433,7 @@ function StarMark({ small = false }) {
   );
 }
 
-function TopBar({ email, initial }) {
+function TopBar({ email, initial, onOpenMobileMenu }) {
   const navigate = useNavigate();
 
   const navigateWithTransition = (url) => {
@@ -441,27 +442,41 @@ function TopBar({ email, initial }) {
   };
 
   return (
-    <header className="fixed left-0 top-0 z-40 flex h-[66px] w-full items-center !justify-between bg-[#100A0D] px-6 text-white">
-      <div className="flex items-center gap-5">
+    <header className="fixed left-0 top-0 z-40 flex h-[66px] w-full items-center !justify-between bg-[#100A0D] px-4 md:px-6 text-white !z-[998]">
+      <div className="flex items-center gap-4">
         <button onClick={() => navigateWithTransition("/inicio")}>
           <img
             src="/assets/logos/TOPEDUCATIONLOGONAV.png"
             alt="Logo Top.education"
-            className="h-auto w-[200px] object-contain md:w-[210px] lg:w-[230px] max-md:w-[128px]"
+            className="h-auto w-[140px] object-contain md:w-[210px] lg:w-[230px]"
           />
         </button>
-        <span className="h-7 w-px bg-white/20" />
-        <span className="!font-['Montserrat'] text-sm text-white/55">Mi espacio</span>
+
+        <span className="hidden h-7 w-px bg-white/20 md:block" />
+        <span className="hidden !font-['Montserrat'] text-sm text-white/55 md:block">
+          Mi espacio
+        </span>
       </div>
 
       <div className="flex items-center gap-3">
         <StarMark small />
+
         <div className="grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-[#2563EB] !font-['Montserrat'] font-bold shadow-[0_10px_30px_rgba(25,65,207,0.45)]">
           {initial}
         </div>
-        <span className="hidden max-w-[260px] truncate !font-['Montserrat'] text-sm text-white/75 md:block">
+
+        <span className="hidden max-w-[260px] truncate !font-['Montserrat'] text-sm text-white/75 lg:block">
           {email || "—"}
         </span>
+
+        <button
+          type="button"
+          onClick={onOpenMobileMenu}
+          className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white lg:hidden"
+          aria-label="Abrir menú"
+        >
+          <Menu size={22} />
+        </button>
       </div>
     </header>
   );
@@ -580,7 +595,7 @@ function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl, learni
           <span className="flex items-center gap-3">
             <span className="grid h-9 w-9 place-items-center rounded-[12px] bg-white/18">↗</span>
             <span className="flex flex-wrap items-center">
-              <strong className="block">Ir a la App</strong>
+              <strong className="block !text-left">Ir a la App</strong>
               <span className="text-sm text-white/80">
                 {openingMxApp
                   ? "Generando acceso..."
@@ -621,6 +636,181 @@ function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl, learni
   );
 }
 
+function MobileMenuDrawer({
+  open,
+  onClose,
+  activeTab,
+  onTabChange,
+  me,
+  planLabel,
+  backendBaseUrl,
+  learningRoute,
+}) {
+  const navigate = useNavigate();
+  const initial = (me?.email || me?.username || "U").charAt(0).toUpperCase();
+  const mxAccessActive = hasActiveMxAccess(me, learningRoute);
+  const [openingMxApp, setOpeningMxApp] = useState(false);
+
+  if (!open) return null;
+
+  const goToMxApp = async () => {
+    if (!mxAccessActive) {
+      toast.error("Tu acceso está inactivo o suspendido.");
+      return;
+    }
+
+    setOpeningMxApp(true);
+
+    try {
+      const res = await postJSON(`${backendBaseUrl}/api/account/mx/magic-link/refresh/`);
+      const magicLink = res?.data?.magic_link || res?.data?.magicLink || res?.magicLink;
+
+      if (!magicLink) {
+        toast.error("No se pudo generar el acceso a la app.");
+        return;
+      }
+
+      window.open(magicLink, "_blank", "noopener,noreferrer");
+      onClose();
+    } catch (error) {
+      toast.error(error?.message || "No fue posible abrir la app.");
+    } finally {
+      setOpeningMxApp(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("learningRoute");
+
+    await fetch(`${backendBaseUrl}/api/auth/logout/`, {
+      method: "POST",
+      credentials: "include",
+    }).catch(() => null);
+
+    navigate("/login");
+  };
+
+  const streakDays = Number(
+    me?.learning_streak_days ||
+    me?.streak_days ||
+    learningRoute?.streak_days ||
+    0
+  );
+
+  return (
+    <div className="fixed inset-0 !z-[999] lg:hidden">
+      <button
+        type="button"
+        className="absolute inset-0 bg-black/45 backdrop-blur-sm"
+        onClick={onClose}
+        aria-label="Cerrar menú"
+      />
+
+      <aside className="absolute right-0 top-0 flex h-full w-[86vw] max-w-[380px] flex-col rounded-l-[28px] bg-white shadow-[0_25px_90px_rgba(0,0,0,0.35)] animate-[mobileDrawerIn_0.25s_ease-out]">
+        <div className="flex items-center justify-between border-b border-black/10 p-5">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="grid h-12 w-12 place-items-center rounded-full bg-[linear-gradient(135deg,#2563EB,#5CC781)] !font-['Montserrat'] font-bold text-white">
+              {initial}
+            </div>
+
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <h2 className="truncate !font-['Montserrat'] text-lg font-black text-[#111111]">
+                  Mi cuenta
+                </h2>
+                <span className="rounded-full bg-[#2563EB] px-2 py-0.5 !font-['Montserrat'] text-[11px] font-black text-white">
+                  {planLabel}
+                </span>
+              </div>
+              <p className="truncate !font-['Montserrat'] text-xs text-neutral-400">
+                {me?.email || "—"}
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid h-10 w-10 place-items-center rounded-full bg-neutral-100 text-neutral-600"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <nav className="flex-1 space-y-2 overflow-y-auto p-5">
+          {TABS.map((item) => {
+            const active = activeTab === item.key;
+
+            return (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => {
+                  onTabChange(item.key);
+                  onClose();
+                }}
+                className={`flex w-full items-center justify-between rounded-[18px] px-4 py-4 !font-['Montserrat'] text-[15px] font-bold transition ${
+                  active
+                    ? "bg-[#100A0D] text-white"
+                    : "bg-[#F6F4EF] text-neutral-700"
+                }`}
+              >
+                <span className="flex items-center gap-3">
+                  {item.icon}
+                  {item.label}
+                </span>
+                {active && <span className="h-2 w-2 rounded-full bg-[#5CC781]" />}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="space-y-3 border-t border-black/10 p-5">
+          <button
+            type="button"
+            onClick={goToMxApp}
+            disabled={openingMxApp}
+            className={`flex w-full items-center justify-between rounded-[20px] p-4 !font-['Montserrat'] text-white ${
+              mxAccessActive ? "bg-[#63BE79]" : "bg-neutral-400"
+            } ${openingMxApp ? "opacity-70" : ""}`}
+          >
+            <span>
+              <strong className="block !text-left">Ir a la App</strong>
+              <span className="text-sm text-white/80">
+                {openingMxApp ? "Generando acceso..." : "Abrir plataforma MX"}
+              </span>
+            </span>
+            <span>↗</span>
+          </button>
+
+          <div className="rounded-[20px] bg-[#100A0D] p-4 text-white">
+            <span className="!font-['Montserrat'] text-xs font-bold uppercase text-[#5CC781]">
+              Consejo
+            </span>
+            <p className="mt-1 !font-['Montserrat'] text-sm leading-snug text-white/85">
+              {streakDays > 0
+                ? `Llevas ${streakDays} días seguidos aprendiendo 🔥`
+                : "Aún no tienes racha activa. Ingresa a la app para empezar."}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex w-full items-center gap-2 rounded-[18px] px-4 py-3 !font-['Montserrat'] font-bold text-red-500 hover:bg-red-50"
+          >
+            <LogOut size={18} />
+            Cerrar sesión
+          </button>
+        </div>
+      </aside>
+    </div>
+  );
+}
+
 function DashboardWelcomeModal({ open, onClose, defaultTab }) {
   if (!open) return null;
 
@@ -632,8 +822,8 @@ function DashboardWelcomeModal({ open, onClose, defaultTab }) {
             <Star size={40} strokeWidth={2.2} />
           </div>
 
-          <h2 className="mt-2 !font-['Montserrat'] text-[1.9rem] font-black text-[#111111]">¡Bienvenido a tu dashboard!</h2>
-          <p className="!font-['Montserrat'] text-neutral-500">Te mostraremos rápidamente las funciones principales.</p>
+          <h2 className="mt-2 !font-['Montserrat'] text-[1.3rem] font-black text-[#111111]">¡Bienvenido a tu dashboard!</h2>
+          <p className="!font-['Montserrat'] leading-[1em] text-neutral-500">Te mostraremos rápidamente las funciones principales.</p>
         </div>
 
         <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
@@ -893,8 +1083,8 @@ function CareerTab({ learningRoute }) {
     <>
       <div className="mb-3 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <h1 className="!font-['Montserrat'] text-[2rem] font-bold tracking-[-0.04em] text-[#111111]">Plan de Carrera</h1>
-          <p className="!font-['Montserrat'] text-neutral-500">Tu hoja de ruta profesional personalizada.</p>
+          <h1 className="!font-['Montserrat'] text-[2rem] font-bold leading-[1.1em] text-[#111111]">Plan de Carrera</h1>
+          <p className="!font-['Montserrat'] leading-[1.2em] text-neutral-500">Tu hoja de ruta profesional personalizada.</p>
         </div>
         <span className="w-fit rounded-full bg-[#2563EB]/10 px-4 py-2 !font-['Montserrat'] text-sm font-bold text-[#2563EB]">✦ Generado para ti</span>
       </div>
@@ -1108,10 +1298,10 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
 
       <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="!font-['Montserrat'] text-[2rem] font-bold tracking-[-0.04em] text-[#111111]">
+          <h1 className="!font-['Montserrat'] text-[2rem] font-bold leading-[1em] text-[#111111]">
             Mi CV
           </h1>
-          <p className="!font-['Montserrat'] text-neutral-500">
+          <p className="!font-['Montserrat'] leading-[1.2em] text-neutral-500">
             Analiza tu hoja de vida y recibe recomendaciones personalizadas.
           </p>
         </div>
@@ -1390,7 +1580,7 @@ function ProfileTab({ me }) {
             {[["Nombre completo", me?.full_name || me?.name || "Usuario top.education"], ["Correo electrónico", me?.email || "—"], ["País", me?.country || "Colombia"], ["Idioma", me?.language || "Español"]].map(([label, value]) => (
               <label key={label} className="block !font-['Montserrat'] text-sm text-neutral-600">
                 {label}
-                <input value={value} readOnly className="mt-2 w-full rounded-[16px] border border-black/10 bg-[#F6F4EF] px-5 py-4 text-[17px] text-[#111111] outline-none" />
+                <input value={value} readOnly className="mt-1 w-full rounded-[16px] border border-black/10 bg-[#F6F4EF] px-5 py-3 text-[17px] text-[#111111] outline-none" />
               </label>
             ))}
           </div>
@@ -1418,8 +1608,6 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
   const [cancelLoading, setCancelLoading] = useState(false);
 
   const planDetails = getPlanDetails(me, learningRoute);
-
-  
 
   const isCancelScheduled = Boolean(me?.cancel_at_period_end);
 
@@ -1603,7 +1791,7 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
   return (
     <>
       <div className="mb-3">
-        <h1 className="!font-['Montserrat'] text-[2rem] font-semibold tracking-[-0.04em] text-[#111111]">
+        <h1 className="!font-['Montserrat'] text-[2rem] font-semibold leading-[1.1em] text-[#111111]">
           Gestionar Membresía
         </h1>
         {isCancelScheduled && (
@@ -1616,7 +1804,7 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
             </p>
           </div>
         )}
-        <p className="!font-['Montserrat'] text-neutral-500">
+        <p className="!font-['Montserrat'] leading-[1.2em] text-neutral-500">
           Administra tu plan, beneficios y método de pago desde un solo lugar.
         </p>
       </div>
@@ -1646,11 +1834,11 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
               {planDetails.planLine}
             </p>
 
-            <div className="mt-3 flex flex-wrap gap-3">
+            <div className="mt-3 flex flex-wrap gap-2 lg:gap-3">
               {(planDetails.tags || []).map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full bg-white/16 px-4 py-2 !font-['Montserrat'] text-sm font-semibold"
+                  className="rounded-full bg-white/16 px-3 py-1 lg:px-4 lg:py-2 !font-['Montserrat'] text-[12px] lg:text-sm font-semibold"
                 >
                   {tag}
                 </span>
@@ -1844,7 +2032,7 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
                   Resumen:
                 </span>
 
-                <ul className="mt-2 space-y-1.5 !font-['Montserrat'] text-[12px] leading-[1.2em] text-neutral-700">
+                <ul className="mt-2 mb-3 space-y-1.5 !font-['Montserrat'] text-[12px] leading-[1.2em] text-neutral-700">
                   {features.slice(0, 5).map((feature) => (
                     <li key={feature} className="text-[#5CC781]">
                       ✓ <span className="text-neutral-700">{feature}</span>
@@ -1993,7 +2181,7 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
         </section>
       </div>
 
-      <section className="mt-7 rounded-[24px] border border-black/10 bg-white p-7 shadow-[0_12px_35px_rgba(0,0,0,0.05)]">
+      <section className="mt-7 rounded-[24px] border border-black/10 bg-white p-5 shadow-[0_12px_35px_rgba(0,0,0,0.05)]">
         <div className="flex flex-wrap justify-between">
           <div>
             <h2 className="!font-['Montserrat'] text-xl font-semibold text-[#111111]">
@@ -2006,7 +2194,7 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
           <button
             type="button"
             onClick={openBillingPortal}
-            className="rounded-full bg-[#1941CF] px-5 py-3 !font-['Montserrat'] text-sm font-black text-white"
+            className="rounded-full bg-[#1941CF] mt-2 lg:mt-0 px-5 py-3 !font-['Montserrat'] text-sm font-black text-white"
           >
             Gestionar facturación en Stripe
           </button>
@@ -2247,7 +2435,7 @@ export default function Account() {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [invoices, setInvoices] = useState([]);
-
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
 
   const backendBaseUrl = useMemo(() => {
@@ -2359,20 +2547,28 @@ export default function Account() {
   return (
     <Elements stripe={stripePromise}>
       <div className="min-h-screen bg-[#F6F4EF]">
-        <TopBar email={me?.email} initial={initial} />
+        <TopBar
+          email={me?.email}
+          initial={initial}
+          onOpenMobileMenu={() => setMobileMenuOpen(true)}
+        />
+
+        <MobileMenuDrawer
+          open={mobileMenuOpen}
+          onClose={() => setMobileMenuOpen(false)}
+          activeTab={activeTab}
+          onTabChange={changeTab}
+          me={me}
+          planLabel={planLabel}
+          backendBaseUrl={backendBaseUrl}
+          learningRoute={learningRoute}
+        />
 
         <div className="grid min-h-screen grid-cols-1 pt-[66px] lg:grid-cols-[300px_1fr]">
           <Sidebar activeTab={activeTab} learningRoute={learningRoute} onTabChange={changeTab} me={me} planLabel={planLabel} backendBaseUrl={backendBaseUrl} />
 
-          <main className="box-border px-5 py-10 lg:ml-[300px] lg:w-[calc(100vw-300px)] lg:px-12">
+          <main className="box-border px-2 py-3 lg:ml-[300px] lg:w-[calc(100vw-300px)] lg:px-12 lg:py-10">
             <div className="mx-auto max-w-[1240px]">
-              <div className="mb-6 flex flex-wrap gap-2 lg:hidden">
-                {TABS.map((item) => (
-                  <button key={item.key} type="button" onClick={() => changeTab(item.key)} className={`rounded-full px-4 py-2 !font-['Montserrat'] text-sm font-bold ${activeTab === item.key ? "bg-[#111111] text-white" : "bg-white text-neutral-600"}`}>
-                    {item.label}
-                  </button>
-                ))}
-              </div>
 
               {activeTab === "career" && <CareerTab learningRoute={learningRoute} />}
               {activeTab === "cv" && (

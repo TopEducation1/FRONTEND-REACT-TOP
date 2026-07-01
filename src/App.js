@@ -78,6 +78,7 @@ function App() {
           <Route path="/recursos" element={<Blog />} />
           <Route path="/para-equipos" element={<ParaEquipos />} />
           <Route path="/empieza-ahora" element={<StartNow />} />
+          <Route path="/dev-empieza-ahora" element={<StartNow />} />
           <Route path="/lo-mas-top" element={<LoMasTop />} />
           <Route path="/account" element={<Account />} />
           <Route path="/login" element={<Login />} />
