@@ -1609,6 +1609,14 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
 
   const planDetails = getPlanDetails(me, learningRoute);
 
+  const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
+  const [invoiceModalUrl, setInvoiceModalUrl] = useState("");
+
+  const openInvoiceModal = (url) => {
+    setInvoiceModalUrl(url);
+    setInvoiceModalOpen(true);
+  };
+
   const isCancelScheduled = Boolean(me?.cancel_at_period_end);
 
   const [billingCycle, setBillingCycle] = useState(
@@ -2228,26 +2236,25 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
                       </span>
                     </td>
                     <td className="py-4 pr-4">
-                      <div className="flex gap-3">
+                      <div className="flex items-center gap-2">
                         {invoice.hosted_invoice_url && (
-                          <a
-                            href={invoice.hosted_invoice_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="font-bold text-[#2563EB]"
+                          <button
+                            type="button"
+                            onClick={() => openInvoiceModal(invoice.hosted_invoice_url)}
+                            className="rounded-full bg-[#1941CF] px-4 py-2 !font-['Montserrat'] text-xs font-black text-white transition hover:-translate-y-0.5 hover:bg-[#1234A8]"
                           >
-                            Ver
-                          </a>
+                            Ver factura
+                          </button>
                         )}
 
                         {invoice.invoice_pdf && (
                           <a
                             href={invoice.invoice_pdf}
                             target="_blank"
-                            rel="noreferrer"
-                            className="font-bold text-[#2563EB]"
+                            rel="noopener noreferrer"
+                            className="rounded-full border border-[#1941CF]/20 bg-[#EEF2FF] px-4 py-2 !font-['Montserrat'] text-xs font-black text-[#1941CF] transition hover:-translate-y-0.5 hover:bg-[#E0E7FF]"
                           >
-                            PDF
+                            Descargar PDF
                           </a>
                         )}
                       </div>
@@ -2281,6 +2288,32 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
         onConfirm={confirmPlanChange}
         loading={planLoading}
       />
+
+      {invoiceModalOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="relative h-[88vh] w-full max-w-[980px] overflow-hidden rounded-[24px] bg-white shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
+            <div className="flex items-center justify-between border-b border-black/10 px-5 py-4">
+              <h3 className="!font-['Montserrat'] text-lg font-black text-[#111111]">
+                Vista de factura
+              </h3>
+
+              <button
+                type="button"
+                onClick={() => setInvoiceModalOpen(false)}
+                className="grid h-9 w-9 place-items-center rounded-full bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+              >
+                ×
+              </button>
+            </div>
+
+            <iframe
+              src={invoiceModalUrl}
+              title="Factura Stripe"
+              className="h-[calc(88vh-65px)] w-full"
+            />
+          </div>
+        </div>
+      )}
 
       {cancelStep === "reason" && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/55 px-4 backdrop-blur-sm">
