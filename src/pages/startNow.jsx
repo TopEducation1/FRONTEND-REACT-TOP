@@ -680,15 +680,28 @@ function StartNowContent() {
     if (!formEl) return;
 
     const emailInput = formEl.querySelector('[name="email"]');
+    const phoneInput = formEl.querySelector('[name="phone"]');
 
     if (!emailInput?.value) return;
 
-    formEl.dispatchEvent(
-      new Event("submit", {
-        bubbles: true,
-        cancelable: true,
-      })
-    );
+    formEl.querySelectorAll("input, select, textarea").forEach((input) => {
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      input.dispatchEvent(new Event("blur", { bubbles: true }));
+    });
+
+    setTimeout(() => {
+      if (typeof formEl.requestSubmit === "function") {
+        formEl.requestSubmit();
+      } else {
+        formEl.dispatchEvent(
+          new Event("submit", {
+            bubbles: true,
+            cancelable: true,
+          })
+        );
+      }
+    }, 150);
   };
 
 
@@ -1363,38 +1376,23 @@ function StartNowContent() {
           id="clientify-startnow-form"
           name="clientify-startnow-form"
           data-clientify-form="startnow"
-          className="fixed bottom-0 right-0 h-[1px] w-[1px] overflow-hidden opacity-[0.01] pointer-events-none"
-          onSubmit={(e) => e.preventDefault()}
+          className="fixed bottom-0 right-0 h-[1px] w-[1px] overflow-hidden opacity-[0.01]"
         >
           <input type="text" name="first_name" value={form.first_name} readOnly />
           <input type="text" name="last_name" value={form.last_name} readOnly />
           <input type="email" name="email" value={form.email} readOnly />
           <input type="text" name="phone_country_code" value={form.phone_country_code} readOnly />
           <input type="text" name="phone_number" value={form.phone_number} readOnly />
-          <input
-            type="text"
-            name="phone_e164"
-            value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`}
-            readOnly
-          />
-          <input
-            type="text"
-            name="phone"
-            value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`}
-            readOnly
-          />
-          <input
-            type="text"
-            name="mobile_phone"
-            value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`}
-            readOnly
-          />
-          <input
-            type="text"
-            name="telefono"
-            value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`}
-            readOnly
-          />
+          <input type="text" name="phone_e164" value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`} readOnly />
+          <input type="text" name="phone" value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`} readOnly />
+          <input type="text" name="mobile_phone" value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`} readOnly />
+          <input type="text" name="telefono" value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`} readOnly />
+          <input name="phone" value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`} readOnly />
+          <input name="mobile_phone" value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`} readOnly />
+          <input name="telefono" value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`} readOnly />
+          <input name="teléfono" value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`} readOnly />
+          <input name="Teléfonos" value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`} readOnly />
+          <input name="phone_e164" value={`${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`} readOnly />
           <input type="text" name="age" value={form.age} readOnly />
           <input type="text" name="gender" value={form.gender} readOnly />
           <input type="text" name="country" value={form.country} readOnly />

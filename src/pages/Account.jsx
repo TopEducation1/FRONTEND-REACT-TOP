@@ -1799,7 +1799,7 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
           Administra tu plan, beneficios y método de pago desde un solo lugar.
         </p>
         {isCancelScheduled && (
-          <div className="mb-5 rounded-[18px] border border-[#FDBA3B]/30 bg-[#FFF7E8] p-4 !font-['Montserrat']">
+          <div className="mb-5 mt-2 rounded-[18px] border border-[#FDBA3B]/30 bg-[#FFF7E8] p-4 !font-['Montserrat']">
             <h3 className="font-black !font-['Montserrat'] text-[#111111]">
               Tu suscripción está cancelada
             </h3>
