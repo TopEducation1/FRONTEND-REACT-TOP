@@ -327,8 +327,9 @@ function TopicCard({
                 <img
                   src={imageUrl}
                   alt={topic.name}
-                  className="w-10 h-10 brightness-500 object-contain"
-                  
+                  className={`w-10 h-10 object-contain ${
+                    /\.svg(?:$|[?#])/i.test(imageUrl || "") ? "brightness-500" : ""
+                  }`}
                   loading="lazy"
                   onError={(e) => {
                     e.currentTarget.style.display = "none";
