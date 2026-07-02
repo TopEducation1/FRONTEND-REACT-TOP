@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" fill="none" stroke="#635bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M9 21V15L25 9V27L9 21Z"/>
+  <line x1="9" y1="18" x2="6" y2="18"/>
+  <path d="M9 21V27C9 28 10 29 11 29H12C13 29 14 28 14 27V21"/>
+  <line x1="27" y1="13" x2="30" y2="11" opacity=".5"/>
+  <line x1="27" y1="18" x2="31" y2="18" opacity=".5"/>
+  <line x1="27" y1="23" x2="30" y2="25" opacity=".5"/>
+</svg>
