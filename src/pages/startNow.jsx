@@ -680,8 +680,6 @@ function StartNowContent() {
     if (!formEl) return;
 
     const emailInput = formEl.querySelector('[name="email"]');
-    const phoneInput = formEl.querySelector('[name="phone"]');
-
     if (!emailInput?.value) return;
 
     formEl.querySelectorAll("input, select, textarea").forEach((input) => {
@@ -690,18 +688,12 @@ function StartNowContent() {
       input.dispatchEvent(new Event("blur", { bubbles: true }));
     });
 
-    setTimeout(() => {
-      if (typeof formEl.requestSubmit === "function") {
-        formEl.requestSubmit();
-      } else {
-        formEl.dispatchEvent(
-          new Event("submit", {
-            bubbles: true,
-            cancelable: true,
-          })
-        );
-      }
-    }, 150);
+    formEl.dispatchEvent(
+      new Event("submit", {
+        bubbles: true,
+        cancelable: true,
+      })
+    );
   };
 
 
@@ -735,7 +727,14 @@ function StartNowContent() {
     };
 
     syncClientifyHiddenForm(payload);
-    submitClientifyHiddenForm();
+
+    if (
+      eventName === "startnow_info_completed" ||
+      eventName === "startnow_plan_selected" ||
+      eventName === "startnow_signup_completed"
+    ) {
+      submitClientifyHiddenForm();
+    }
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(payload);
@@ -1376,6 +1375,7 @@ function StartNowContent() {
           id="clientify-startnow-form"
           name="clientify-startnow-form"
           data-clientify-form="startnow"
+          onSubmit={(e) => e.preventDefault()}
           className="fixed bottom-0 right-0 h-[1px] w-[1px] overflow-hidden opacity-[0.01]"
         >
           <input type="text" name="first_name" value={form.first_name} readOnly />
