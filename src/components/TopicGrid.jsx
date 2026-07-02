@@ -327,7 +327,7 @@ function TopicCard({
                 <img
                   src={imageUrl}
                   alt={topic.name}
-                  className="w-10 h-10 object-contain"
+                  className="w-10 h-10 brightness-500 object-contain"
                   
                   loading="lazy"
                   onError={(e) => {
