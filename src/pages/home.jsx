@@ -8,6 +8,7 @@ import Flags from "../components/Flags";
 import ImageSlider3D from "../components/ImageSlider3D";
 import HeroSlider from "../components/HeroSlider";
 import FinisherHeaderComponent from "../components/FinisherHeaderComponent";
+import KnowledgeDomains from "../components/KnowledgeDomains";
 import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import TopicGrid from "../components/TopicGrid";
 import endpoints from "../config/api";
@@ -472,10 +473,6 @@ function HomePage() {
     (item) => item.skill_type?.trim().toLowerCase() === "tema"
   );
 
-  const skillItems = topics.filter(
-    (item) => item.skill_type?.trim().toLowerCase() === "habilidad"
-  );
-
   return (
     <>
       <Helmet>
@@ -636,38 +633,53 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="relative py-12 lg:py-20 overflow-hidden bg-[#F5F3EE] !z-5">
-        <div className="relative z-10 max-w-[1400px] mx-auto px-4 lg:px-8">
-          <div className="text-center mb-16">
-            <span className="uppercase tracking-[0.35em] text-[11px] text-[#7B6E63] font-medium">
-              Top habilidades
+      <section className="relative overflow-hidden bg-[#F5F3EE] py-16 lg:py-24">
+        {/* Decoración de fondo */}
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute left-[-180px] top-[-100px] h-[420px] w-[420px] rounded-full bg-[#1941CF]/[0.035] blur-[100px]" />
+
+          <div className="absolute bottom-[-160px] right-[-120px] h-[420px] w-[420px] rounded-full bg-[#5CC781]/[0.035] blur-[100px]" />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-[1240px] px-4 lg:px-8">
+          <div className="mx-auto mb-14 max-w-[800px] text-center md:mb-16">
+            <span className="font-['Montserrat'] text-[11px] font-semibold uppercase tracking-[0.35em] text-[#1941CF]">
+              Dominios de conocimiento
             </span>
 
-            <h2 className="mt-3 text-[#0F090B] font-light leading-none text-[2.5rem] md:text-[3.8rem] lg:text-[4.2rem] font-te">
-              Habilidades que impulsan tu futuro
+            <h2 className="mt-5 font-te text-[2.7rem] font-light leading-[0.98em] text-[#0F090B] md:text-[3.8rem] lg:text-[4.2rem]">
+              Dominios que impulsan
+              <br className="hidden sm:block" /> tu crecimiento
             </h2>
 
-            <p className="mt-3 max-w-2xl mx-auto text-[#6D6258] text-[1rem] md:text-[1.2rem] leading-[1.3em]">
-              Explora las habilidades más relevantes para crecer profesionalmente y encuentra certificaciones alineadas con tus objetivos.
+            <p className="mx-auto mt-6 max-w-[720px] font-['Montserrat'] text-[1rem] font-normal leading-[1.65em] text-[#776C64] md:text-[1.08rem]">
+              Explora las áreas que están transformando el futuro profesional y
+              descubre las habilidades más demandadas por empresas y líderes de
+              todo el mundo.
             </p>
           </div>
 
-          <div className="relative">
-            <TopicGrid topics={skillItems} columns={5} />
-          </div>
+          <KnowledgeDomains />
+          <div className="mt-14 flex flex-col items-center justify-center text-center md:mt-16">
+            <p className="!font-['Montserrat'] text-[0.95rem] font-normal text-[#776C64] md:text-[1rem]">
+              ¿Listo para construir tu propia ruta?
+            </p>
 
-          <div className="flex justify-center mt-14">
             <button
               type="button"
-              onClick={() => navigateWithTransition("/explora")}
-              className="group inline-flex items-center gap-3 text-[#0F090B] transition-all duration-300 hover:text-[#1941cf]"
+              //onClick={() => navigateWithTransition("/empieza-ahora")}
+              className="group mt-5 inline-flex min-h-[54px] items-center justify-center gap-3 rounded-full bg-[linear-gradient(90deg,#1941CF_0%,#1D15D8_100%)] px-8 py-4 !font-['Montserrat'] text-[0.95rem] font-bold text-white shadow-[0_18px_40px_rgba(25,65,207,0.28)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_rgba(25,65,207,0.36)] md:min-w-[292px]"
             >
-              <span className="text-[1rem] font-medium">Ver todas las habilidades</span>
-              <span className="transition-transform duration-300 group-hover:translate-x-1">
-                <ArrowRight size={16} strokeWidth={2} className="translate-y-[1px]" />
-              </span>
+              <span>Crear mi ruta personalizada</span>
+
+              <ArrowRight
+                size={17}
+                strokeWidth={2.2}
+                className="transition-transform duration-300 group-hover:translate-x-1.5"
+              />
             </button>
           </div>
+
         </div>
       </section>
               

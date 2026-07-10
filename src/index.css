@@ -2794,3 +2794,44 @@ header {
     opacity: 1;
   }
 }
+
+.knowledge-domain-card {
+  isolation: isolate;
+}
+
+.knowledge-domain-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--domain-accent) 7%, transparent) 0%,
+      transparent 45%
+    );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.knowledge-domain-card:hover::after {
+  opacity: 1;
+}
+
+.knowledge-domain-card:hover .domain-skill-tag {
+  border-color: color-mix(
+    in srgb,
+    var(--domain-accent) 24%,
+    transparent
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .knowledge-domain-card,
+  .knowledge-domain-card *,
+  .knowledge-domain-card::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

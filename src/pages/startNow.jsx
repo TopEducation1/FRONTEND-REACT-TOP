@@ -502,22 +502,73 @@ function StartNowContent() {
   );
 
   const topicOptions = [
-    ["🎯", "Inteligencia Artificial"],
-    ["🎯", "Liderazgo"],
-    ["📈", "Productividad"],
-    ["📈", "Marketing"],
-    ["🎯", "Ventas"],
-    ["🎨", "Diseño UX/UI"],
-    ["💻", "Desarrollo de Software"],
-    ["📊", "Análisis de Datos"],
-    ["📋", "Gestión de Proyectos"],
-    ["💰", "Finanzas"],
-    ["💬", "Comunicación"],
-    ["🚀", "Innovación"],
-    ["👥", "Recursos Humanos"],
-    ["⭐", "Éxito del Cliente"],
-  ];
-
+  {
+    id: "language-learning",
+    title: "Aprendizaje de idiomas",
+    image: "/assets/category/topic/ico-Aprendizaje-de-un-idioma.png",
+    backgroundColor: "#5CC781",
+  },
+  {
+    id: "arts-humanities",
+    title: "Arte y humanidades",
+    image: "/assets/category/topic/ico-Artes-y-humanidades.png",
+    backgroundColor: "#034694",
+  },
+  {
+    id: "biology-life-sciences",
+    title: "Biología y Ciencias de la Vida",
+    image: "/assets/category/topic/ico-Salud.png",
+    backgroundColor: "#D33B3E",
+  },
+  {
+    id: "data-science",
+    title: "Ciencias de datos",
+    image: "/assets/category/topic/ico-Ciencia-de-datos.png",
+    backgroundColor: "#5CC781",
+  },
+  {
+    id: "computer-science",
+    title: "Ciencias de la Computación",
+    image: "/assets/category/topic/ico-Ciencias-de-la-computacion.png",
+    backgroundColor: "#034694",
+  },
+  {
+    id: "physical-science-engineering",
+    title: "Ciencias físicas e ingeniería",
+    image: "/assets/category/topic/ico-Ciencias-fisicas-e-ingenieria.png",
+    backgroundColor: "#D33B3E",
+  },
+  {
+    id: "social-sciences",
+    title: "Ciencias Sociales",
+    image: "/assets/category/topic/ico-Ciencias-sociales.png",
+    backgroundColor: "#5CC781",
+  },
+  {
+    id: "personal-development",
+    title: "Desarrollo personal",
+    image: "/assets/category/topic/ico-Desarrollo-personal.png",
+    backgroundColor: "#D33B3E",
+  },
+  {
+    id: "math-logic",
+    title: "Matemáticas y lógica",
+    image: "/assets/category/topic/ico-Matematicas-y-logica.png",
+    backgroundColor: "#034694",
+  },
+  {
+    id: "business",
+    title: "Negocios",
+    image: "/assets/category/topic/ico-Negocios.png",
+    backgroundColor: "#D33B3E",
+  },
+  {
+    id: "information-technology",
+    title: "Tecnología de la información",
+    image: "/assets/category/topic/ico-Tecnologia-de-la-informacion.png",
+    backgroundColor: "#5CC781",
+  },
+];
   const goals = [
     ["📈", "Obtener un ascenso"],
     ["🚀", "Cambiar de carrera"],
@@ -1637,28 +1688,58 @@ function StartNowContent() {
               </span>
             </div>
 
-            <div className="mt-8 grid grid-cols-3 gap-3 md:grid-cols-5">
-              {topicOptions.map(([icon, topic]) => {
-                const active = form.topics.includes(topic);
+            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 ">
+              {topicOptions.map((topicOption) => {
+                const {
+                  id,
+                  title,
+                  image,
+                  backgroundColor,
+                } = topicOption;
+
+                const active = form.topics.includes(title);
 
                 return (
                   <button
-                    key={topic}
+                    key={id}
                     type="button"
-                    onClick={() => toggleTopic(topic)}
-                    className={`min-h-[120px] rounded-[16px] border bg-white p-3 md:p-4 text-center transition-all hover:-translate-y-1 ${
+                    onClick={() => toggleTopic(title)}
+                    aria-pressed={active}
+                    className={`group relative flex min-h-[126px] flex-col items-center justify-center overflow-hidden rounded-[18px] border bg-white px-3 py-4 text-center transition-all duration-300 hover:-translate-y-1 ${
                       active
-                        ? "border-[#2563EB] shadow-[0_20px_45px_rgba(25,65,207,0.16)]"
-                        : "border-black/10 shadow-sm"
+                        ? "border-[#2563EB] shadow-[0_20px_45px_rgba(25,65,207,0.16)] ring-2 ring-[#2563EB]/10"
+                        : "border-black/10 shadow-sm hover:border-black/20 hover:shadow-[0_18px_40px_rgba(0,0,0,0.08)]"
                     }`}
                   >
-                    <span className="mx-auto grid h-12 w-12 place-items-center rounded-[14px] bg-[#ECE9FF] text-2xl">
-                      {icon}
+                   <span
+                    className={`relative mx-auto grid h-18 w-18 shrink-0 place-items-center rounded-3xl transition-all duration-300 group-hover:scale-105 bg-[${backgroundColor}]/30`}
+                    style={{
+                      boxShadow: active
+                        ? `0 10px 24px ${backgroundColor}45`
+                        : "none",
+                    }}
+                  >
+                      <img
+                        src={image}
+                        alt=""
+                        aria-hidden="true"
+                        className="h-12 w-12 object-contain"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
                     </span>
 
-                    <span className="mt-2 block !font-['Montserrat'] text-[.7rem] md:text-[.9rem] font-semibold leading-tight text-[#111111]">
-                      {topic}
+                    <span className="mt-1 block !font-['Montserrat'] text-[0.72rem] font-semibold leading-[1.25em] text-[#111111] md:text-[0.85rem]">
+                      {title}
                     </span>
+
+                    {active && (
+                      <span className="absolute right-2.5 top-2.5 grid h-5 w-5 place-items-center rounded-full bg-[#2563EB] text-[11px] font-bold text-white shadow-sm">
+                        ✓
+                      </span>
+                    )}
                   </button>
                 );
               })}
