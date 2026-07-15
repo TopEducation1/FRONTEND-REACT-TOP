@@ -73,9 +73,30 @@ export default function TopOriginals() {
         setError(null);
         setShowSlider(false);
 
-        const res = await axios.get(endpoints.original_detail(slug), {
-          signal: controller.signal,
-        });
+        const res = await axios.get(
+          endpoints.original_detail(slug),
+          {
+            signal: controller.signal,
+          }
+        );
+
+        console.log(
+          "ORIGINAL DETAIL RESPONSE:",
+          res.data
+        );
+
+        console.log(
+          "CERTIFICATIONS:",
+          res.data?.certifications
+        );
+
+        console.log(
+          "FIRST CERTIFICATION DETAIL:",
+          res.data?.certifications?.[0]
+            ?.certification_detail
+        );
+
+        setOriginal(res.data);
 
         setOriginal(res.data);
       } catch (error) {
@@ -101,7 +122,43 @@ export default function TopOriginals() {
 
     return () => clearTimeout(timer);
   }, [loading, error, original]);
+  function EntityIdentity({ icon, name }) {
+    const [imageFailed, setImageFailed] = useState(false);
 
+    if (!name && (!icon || imageFailed)) {
+      return null;
+    }
+
+    return (
+      <div className="flex min-w-0 max-w-[210px] items-center gap-2">
+        {icon && !imageFailed ? (
+          <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full border border-black/10 bg-white p-1">
+            <img
+              src={icon}
+              alt={name || "Entidad"}
+              loading="lazy"
+              decoding="async"
+              onError={() => setImageFailed(true)}
+              className="max-h-7 max-w-7 object-contain"
+            />
+          </span>
+        ) : (
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-black/10 bg-[#F5F3EE] font-['Montserrat'] text-xs font-bold text-neutral-600">
+            {name?.trim()?.charAt(0)?.toUpperCase() || "E"}
+          </span>
+        )}
+
+        {name && (
+          <span
+            title={name}
+            className="line-clamp-2 min-w-0 font-['Montserrat'] text-[11px] font-semibold leading-[1.2em] text-neutral-600"
+          >
+            {name}
+          </span>
+        )}
+      </div>
+    );
+  }
   const heroMotion = useMemo(() => {
     const maxScroll = 400;
     const clampedScroll = Math.min(scrollY, maxScroll);
@@ -423,6 +480,24 @@ export default function TopOriginals() {
                     detail?.plataforma_certificacion?.plat_img
                 );
 
+                const university = detail?.universidad_certificacion || null;
+                const company = detail?.empresa_certificacion || null;
+
+                const entity = university || company;
+
+                const entityName =
+                  entity?.nombre ||
+                  entity?.name ||
+                  entity?.univ_nombre ||
+                  entity?.empr_nombre ||
+                  "";
+
+                const entityIcon = normalizeAssetUrl(
+                  university?.univ_ico ||
+                    university?.univ_img ||
+                    company?.empr_ico ||
+                    company?.empr_img
+                );
                 const certificationImage =
                   normalizeAssetUrl(item?.certification_image_url) ||
                   FALLBACK_COURSE_IMAGE;
@@ -506,6 +581,28 @@ export default function TopOriginals() {
                                   onError={handleImageError}
                                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                                 />
+                                <div className="absolute left-2 top-2 flex min-h-8 items-center">
+                                      {platformIcon ? (
+                                        <img
+                                          src={platformIcon}
+                                          alt={
+                                            detail?.plataforma_certificacion?.nombre ||
+                                            "Plataforma"
+                                          }
+                                          loading="lazy"
+                                          decoding="async"
+                                          onError={(event) => {
+                                            event.currentTarget.style.display = "none";
+                                          }}
+                                          className="h-7 max-w-[105px] object-contain"
+                                        />
+                                      ) : (
+                                        <span className="font-['Montserrat'] text-xs font-bold text-neutral-400">
+                                          {detail?.plataforma_certificacion?.nombre ||
+                                            "top.education"}
+                                        </span>
+                                      )}
+                                    </div>
 
                                 <span className="absolute right-4 top-4 rounded-full bg-[#1941CF] px-4 py-1.5 font-['Montserrat'] text-[12px] font-bold text-white">
                                   Certificación
@@ -517,25 +614,15 @@ export default function TopOriginals() {
                                   {item.certification_title || "Ver certificación"}
                                 </h4>
 
-                                <div className="mt-6 flex items-center justify-between">
-                                  {platformIcon ? (
-                                    <img
-                                      src={platformIcon}
-                                      alt=""
-                                      loading="lazy"
-                                      decoding="async"
-                                      onError={(event) => {
-                                        event.currentTarget.style.display = "none";
-                                      }}
-                                      className="h-9 max-w-[110px] object-contain"
+                                <div className="mt-6 flex items-end justify-between gap-4 border-t border-black/10 pt-4">
+                                  <div className="flex min-w-0 flex-1 flex-col gap-3">
+                                    <EntityIdentity
+                                      icon={entityIcon}
+                                      name={entityName}
                                     />
-                                  ) : (
-                                    <span className="font-['Montserrat'] text-xs font-bold text-neutral-400">
-                                      top.education
-                                    </span>
-                                  )}
+                                  </div>
 
-                                  <span className="grid h-10 w-10 place-items-center rounded-full bg-[#0066D9] font-['Montserrat'] text-lg font-black text-white">
+                                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#0066D9] font-['Montserrat'] text-lg font-black text-white">
                                     <ArrowRight
                                       size={20}
                                       strokeWidth={2}
