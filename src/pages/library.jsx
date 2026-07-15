@@ -96,6 +96,14 @@ function LibraryPage({ showRoutes = true }) {
 
       Idioma: "idioma",
       idioma: "idioma",
+
+      Tipo: "tipo_certificacion",
+      "Tipo de certificación": "tipo_certificacion",
+      tipo_certificacion: "tipo_certificacion",
+
+      Nivel: "nivel_certificacion",
+      "Nivel de certificación": "nivel_certificacion",
+      nivel_certificacion: "nivel_certificacion",
     };
 
     return map[key] || String(key).toLowerCase();
@@ -104,14 +112,27 @@ function LibraryPage({ showRoutes = true }) {
   const getTagUrlValue = (category, tag) => {
     if (!tag) return "";
 
-    const normalizedCategory = normalizeCategoryKey(category);
+    const normalizedCategory =
+      normalizeCategoryKey(category);
 
-    if (normalizedCategory === "idioma") {
-      return typeof tag === "string" ? tag.trim() : "";
+    if (
+      normalizedCategory === "idioma" ||
+      normalizedCategory === "tipo_certificacion" ||
+      normalizedCategory === "nivel_certificacion"
+    ) {
+      return typeof tag === "string"
+        ? tag.trim()
+        : "";
     }
 
     if (typeof tag === "object") {
-      return tag.id || tag.slug || tag.nombre || tag.name || "";
+      return (
+        tag.id ||
+        tag.slug ||
+        tag.nombre ||
+        tag.name ||
+        ""
+      );
     }
 
     return String(tag).trim();
@@ -142,6 +163,9 @@ function LibraryPage({ showRoutes = true }) {
       aliados: "Aliado",
       plataforma: "Plataforma",
       idioma: "idioma",
+
+      tipo_certificacion: "tipo_certificacion",
+      nivel_certificacion: "nivel_certificacion",
     };
 
     return map[normalizedCategory] || category;
@@ -210,11 +234,81 @@ function LibraryPage({ showRoutes = true }) {
       ""
     );
   };
+  const areTagsEqual = (category, a, b) => {
+    const normalizedCategory = normalizeCategoryKey(category);
+
+    const simpleCategories = [
+      "idioma",
+      "tipo_certificacion",
+      "nivel_certificacion",
+    ];
+
+    if (simpleCategories.includes(normalizedCategory)) {
+      return (
+        String(a ?? "").trim().toLowerCase() ===
+        String(b ?? "").trim().toLowerCase()
+      );
+    }
+
+    if (
+      typeof a === "object" &&
+      a !== null &&
+      typeof b === "object" &&
+      b !== null
+    ) {
+      if (a?.id && b?.id) {
+        return String(a.id) === String(b.id);
+      }
+
+      if (a?.slug && b?.slug) {
+        return (
+          String(a.slug).trim().toLowerCase() ===
+          String(b.slug).trim().toLowerCase()
+        );
+      }
+
+      return JSON.stringify(a) === JSON.stringify(b);
+    }
+
+    if (typeof a === "object" && a !== null) {
+      const objectValue =
+        a.id ||
+        a.slug ||
+        a.nombre ||
+        a.name ||
+        "";
+
+      return (
+        String(objectValue).trim().toLowerCase() ===
+        String(b ?? "").trim().toLowerCase()
+      );
+    }
+
+    if (typeof b === "object" && b !== null) {
+      const objectValue =
+        b.id ||
+        b.slug ||
+        b.nombre ||
+        b.name ||
+        "";
+
+      return (
+        String(a ?? "").trim().toLowerCase() ===
+        String(objectValue).trim().toLowerCase()
+      );
+    }
+
+    return (
+      String(a ?? "").trim().toLowerCase() ===
+      String(b ?? "").trim().toLowerCase()
+    );
+  };
 
   const getTagLabel = (category, tag) => {
     if (!tag) return "";
 
-    const normalizedCategory = normalizeCategoryKey(category);
+    const normalizedCategory =
+      normalizeCategoryKey(category);
 
     if (normalizedCategory === "idioma") {
       return languageLabel(tag);
@@ -232,38 +326,42 @@ function LibraryPage({ showRoutes = true }) {
         "2": "Coursera",
         "3": "MasterClass",
         Coursera: "Coursera",
+        EDX: "edX",
         EdX: "edX",
         edX: "edX",
+        MASTERCLASS: "MasterClass",
         MasterClass: "MasterClass",
+      },
+
+      tipo_certificacion: {
+        CERTIFICATION: "Certificación",
+        CERTIFICACION: "Certificación",
+        SPECIALIZATION: "Especialización",
+        ESPECIALIZACION: "Especialización",
+      },
+
+      nivel_certificacion: {
+        BEGINNER: "Principiante",
+        PRINCIPIANTE: "Principiante",
+        INTERMEDIATE: "Intermedio",
+        INTERMEDIO: "Intermedio",
+        ADVANCED: "Avanzado",
+        AVANZADO: "Avanzado",
       },
     };
 
-    return readableMaps[normalizedCategory]?.[value] || value;
+    const normalizedValue = value.toUpperCase();
+
+    return (
+      readableMaps[normalizedCategory]?.[value] ||
+      readableMaps[normalizedCategory]?.[
+        normalizedValue
+      ] ||
+      value
+    );
   };
 
-  const areTagsEqual = (category, a, b) => {
-    const normalizedCategory = normalizeCategoryKey(category);
 
-    if (normalizedCategory === "idioma") {
-      return String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
-    }
-
-    if (typeof a === "object" && typeof b === "object") {
-      if (a?.id && b?.id) return String(a.id) === String(b.id);
-      if (a?.slug && b?.slug) return String(a.slug) === String(b.slug);
-      return JSON.stringify(a) === JSON.stringify(b);
-    }
-
-    if (typeof a === "object" && typeof b !== "object") {
-      return String(a?.id || a?.slug || "").trim() === String(b).trim();
-    }
-
-    if (typeof a !== "object" && typeof b === "object") {
-      return String(a).trim() === String(b?.id || b?.slug || "").trim();
-    }
-
-    return String(a).trim() === String(b).trim();
-  };
 
   function parseQueryParams(queryString) {
     const params = new URLSearchParams(queryString);
@@ -341,30 +439,46 @@ function LibraryPage({ showRoutes = true }) {
     }
   };
 
-  const loadFilterCatalogs = useCallback(async () => {
-    const [universidadesRaw, empresas, plataforma, aliados] = await Promise.all([
-      fetchOptionalCatalog([
-        endpoints.filterUniversitiesRegion
-      ]),
-      fetchOptionalCatalog([
-        endpoints.filterCompanies
-      ]),
-      fetchOptionalCatalog([
-        endpoints.filterPlatforms
-      ]),
-    ]);
+  const loadFilterCatalogs = useCallback(
+    async () => {
+      const [
+        universidadesRaw,
+        empresas,
+        plataforma,
+      ] = await Promise.all([
+        fetchOptionalCatalog([
+          endpoints.filterUniversitiesRegion,
+        ]),
+        fetchOptionalCatalog([
+          endpoints.filterCompanies,
+        ]),
+        fetchOptionalCatalog([
+          endpoints.filterPlatforms,
+        ]),
+      ]);
 
-    const catalogs = {
-      universidades: flattenUniversitiesByRegion(universidadesRaw),
-      empresas,
-      plataforma,
-      aliados,
-    };
+      const catalogs = {
+        universidades:
+          flattenUniversitiesByRegion(
+            universidadesRaw
+          ),
+        empresas: Array.isArray(empresas)
+          ? empresas
+          : [],
+        plataforma: Array.isArray(plataforma)
+          ? plataforma
+          : [],
+        aliados: Array.isArray(plataforma)
+          ? plataforma
+          : [],
+      };
 
-    setFilterCatalogs(catalogs);
+      setFilterCatalogs(catalogs);
 
-    return catalogs;
-  }, []);
+      return catalogs;
+    },
+    []
+  );
 
   const findCatalogMatch = (catalog, rawTag) => {
     if (!Array.isArray(catalog) || catalog.length === 0) return null;
@@ -451,7 +565,13 @@ function LibraryPage({ showRoutes = true }) {
         const normalizedCategory = normalizeCategoryKey(category);
 
         hydrated[normalizedCategory] = (values || []).map((tag) => {
-          if (normalizedCategory === "idioma") return tag;
+          if (
+            normalizedCategory === "idioma" ||
+            normalizedCategory === "tipo_certificacion" ||
+            normalizedCategory === "nivel_certificacion"
+          ) {
+            return tag;
+          }
 
           if (
             normalizedCategory === "temas" ||
@@ -647,9 +767,12 @@ function LibraryPage({ showRoutes = true }) {
   const clearAllTags = useCallback(() => {
     if (!isReady) return;
 
-    navigate("/explora?idioma=es&idioma=en&page=1&page_size=16", {
-      replace: false,
-    });
+    navigate(
+      "/explora?idioma=es&page=1&page_size=16",
+      {
+        replace: false,
+      }
+    );
   }, [isReady, navigate]);
 
   const handleLatestClick = useCallback(() => {
@@ -996,9 +1119,7 @@ function LibraryPage({ showRoutes = true }) {
                 />
               </div>
 
-              <div className="hidden md:block pointer-events-none absolute bottom-0 left-0 right-0 flex h-14 items-end justify-center rounded-b-[24px] bg-gradient-to-t from-white via-white/90 to-transparent pb-3">
-                <FaChevronDown className="animate-bounce text-[14px] text-neutral-400" />
-              </div>
+             
             </aside>
 
             <main className="min-w-0 px-2 md:px-0">

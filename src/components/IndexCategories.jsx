@@ -13,9 +13,35 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
   const [empresas, setEmpresas] = useState([]);
   const [plataformas, setPlataformas] = useState([]);
   const [idiomas, setIdiomas] = useState([]);
+  const [showOtherLanguages, setShowOtherLanguages] = useState(false);
   const [universidadesPorRegion, setUniversidadesPorRegion] = useState({});
 
   const indexRef = useRef(null);
+  const certificationTypeOptions = [
+    {
+      value: "CERTIFICATION",
+      label: "Certificación",
+    },
+    {
+      value: "SPECIALIZATION",
+      label: "Especialización",
+    },
+  ];
+
+  const certificationLevelOptions = [
+    {
+      value: "BEGINNER",
+      label: "Principiante",
+    },
+    {
+      value: "INTERMEDIATE",
+      label: "Intermedio",
+    },
+    {
+      value: "ADVANCED",
+      label: "Avanzado",
+    },
+  ];
 
   const normalizeSkillType = (value) => {
     const v = (value || "").toString().trim().toLowerCase();
@@ -85,6 +111,13 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
   const isLanguageSelected = (code) =>
     Array.isArray(selectedTags?.idioma) && selectedTags.idioma.includes(code);
 
+  const isSimpleFilterSelected = (category, value) =>
+    Array.isArray(selectedTags?.[category]) &&
+    selectedTags[category].some(
+      (selectedValue) =>
+        String(selectedValue).trim().toLowerCase() ===
+        String(value).trim().toLowerCase()
+    );
   useEffect(() => {
     fetch(endpoints.filterSkills)
       .then((res) => res.json())
@@ -269,6 +302,12 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
     onTagSelect("idioma", code);
   };
 
+  const handleSimpleFilterToggle = (category, value) => {
+    if (disabled) return;
+
+    onTagSelect(category, value);
+  };
+
   const getIconSrc = (item, fallbackName = "") =>
     item?.skill_ico ||
     item?.skill_img ||
@@ -289,10 +328,10 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
     const [hasError, setHasError] = useState(false);
 
     const sizeClass =
-      size === "md" ? "h-7 w-7 text-[12px]" : "h-5 w-5 text-[10px]";
+      size === "md" ? "h-7 w-7 text-[12px]" : "h-7 w-7 text-[10px]";
 
     const imgSizeClass =
-      size === "md" ? "max-h-6 max-w-6" : "max-h-5 max-w-5";
+      size === "md" ? "max-h-7 max-w-7" : "max-h-7 max-w-7";
 
     if (!src || hasError) {
       return (
@@ -461,7 +500,7 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
 
   const renderUniversitiesDesktop = () => (
     <div
-      className="absolute left-full top-0 z-[999] ml-0 w-[50vw] rounded-[15px] border border-black/10 bg-white p-2 shadow-[0_24px_70px_rgba(0,0,0,0.18)]"
+      className="absolute left-full top-0 z-[999] ml-0 w-[70vw] rounded-[15px] border border-black/10 bg-white p-2 shadow-[0_24px_70px_rgba(0,0,0,0.18)]"
       data-lenis-prevent
     >
       <div className="max-h-[68vh] overflow-y-auto pr-2">
@@ -534,7 +573,7 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
 
   const renderCompaniesDesktop = () => (
     <div
-      className="absolute left-full top-0 z-[999] ml-0 w-[50vw] rounded-[15px] border border-black/10 bg-white p-2 shadow-[0_24px_70px_rgba(0,0,0,0.18)]"
+      className="absolute left-full top-0 z-[999] ml-0 w-[70vw] rounded-[15px] border border-black/10 bg-white p-2 shadow-[0_24px_70px_rgba(0,0,0,0.18)]"
       data-lenis-prevent
     >
       <div className="max-h-[68vh] overflow-y-auto pr-2">
@@ -604,56 +643,158 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
     </div>
   );
 
-  const renderLanguages = (isMobile = false) => (
-    <div className="relative">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-[13px] !font-[Montserrat] font-bold tracking-[0.08em] text-black">
-          Idioma
-        </h3>
-      </div>
+  const renderLanguages = () => {
+    const normalizeLanguageCode = (language) =>
+      String(
+        language?.code ||
+        language?.value ||
+        language?.language_code ||
+        ""
+      )
+        .trim()
+        .toLowerCase();
 
-      <div
-        data-lenis-prevent
-        className={`flex flex-col gap-0 overflow-y-auto pr-1 ${
-          isMobile ? "max-h-[300px] pb-8" : "max-h-[250px] pb-8"
-        }`}
-      >
-        {idiomas.map((lang) => {
-          const checked = isLanguageSelected(lang.code);
+    const prioritizedCodes = ["es", "en"];
 
-          return (
-            <label
-              key={lang.code}
-              className="flex cursor-pointer items-center gap-3 rounded-xl px-1 py-1 transition hover:bg-neutral-100"
+    const prioritizedLanguages = prioritizedCodes
+      .map((code) =>
+        idiomas.find(
+          (language) =>
+            normalizeLanguageCode(language) === code
+        )
+      )
+      .filter(Boolean);
+
+    const otherLanguages = idiomas
+      .filter(
+        (language) =>
+          !prioritizedCodes.includes(
+            normalizeLanguageCode(language)
+          )
+      )
+      .sort((a, b) =>
+        String(a?.label || "").localeCompare(
+          String(b?.label || ""),
+          "es"
+        )
+      );
+
+    const renderLanguageOption = (language) => {
+      const code = normalizeLanguageCode(language);
+      const checked = isLanguageSelected(code);
+
+      return (
+        <label
+          key={code}
+          className="flex cursor-pointer items-center justify-between gap-3 rounded-xl px-1 py-1.5 transition hover:bg-neutral-100"
+        >
+          <span className="flex min-w-0 items-center gap-3">
+            <input
+              type="checkbox"
+              checked={checked}
+              onChange={() => handleLanguageToggle(code)}
+              disabled={disabled}
+              className="relative h-[16px] w-[16px] shrink-0 cursor-pointer appearance-none rounded-full border-2 border-[#BDBDBD] bg-white outline-none transition-all duration-200 checked:border-[#1941cf] checked:bg-white before:absolute before:left-1/2 before:top-1/2 before:z-2 before:h-[5px] before:w-[5px] before:-translate-x-1/2 before:-translate-y-1/2 before:rounded-full before:bg-white before:opacity-0 after:absolute after:left-1/2 after:top-1/2 after:z-1 after:h-[15px] after:w-[15px] after:-translate-x-1/2 after:-translate-y-1/2 after:rounded-full after:bg-[#2563EB] after:opacity-0 checked:before:opacity-100 checked:after:opacity-100"
+            />
+
+            <span className="truncate text-[14px] text-neutral-700">
+              {language.label || code}
+            </span>
+          </span>
+
+          {typeof language.count !== "undefined" && (
+            <span className="shrink-0 text-xs text-neutral-400">
+              {language.count}
+            </span>
+          )}
+        </label>
+      );
+    };
+
+    return (
+      <div>
+        <div className="flex flex-col gap-0.5">
+          {prioritizedLanguages.map(renderLanguageOption)}
+        </div>
+
+        {otherLanguages.length > 0 && (
+          <>
+            <button
+              type="button"
+              onClick={() =>
+                setShowOtherLanguages((previous) => !previous)
+              }
+              className="mt-2 flex w-full items-center justify-between rounded-xl px-1 py-2 text-left text-[13px] font-semibold text-[#1941cf] transition hover:bg-[#1941cf]/5"
             >
-              <span className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => handleLanguageToggle(lang.code)}
-                  disabled={disabled}
-                  className="relative h-[16px] w-[16px] shrink-0 cursor-pointer appearance-none [-webkit-appearance:none] [-moz-appearance:none] rounded-full border-2 border-[#BDBDBD] bg-white outline-none transition-all duration-200 checked:border-[#1941cf] checked:bg-white before:absolute before:left-1/2 before:top-1/2 before:z-2 before:h-[5px] before:w-[5px] before:-translate-x-1/2 before:-translate-y-1/2 before:rounded-full before:bg-[#ffffff] before:opacity-0 before:transition-opacity before:duration-200 after:absolute after:left-1/2 after:top-1/2 after:z-1 after:h-[15px] after:w-[15px] after:-translate-x-1/2 after:-translate-y-1/2 after:rounded-full after:bg-[#2563EB] after:opacity-0 after:transition-opacity after:duration-200 checked:before:opacity-100 checked:after:opacity-100"
-                />
-
-                <span className="text-[14px] leading-none text-neutral-700">
-                  {lang.label}
-                </span>
+              <span>
+                {showOtherLanguages
+                  ? "Ocultar otros idiomas"
+                  : `Ver otros idiomas (${otherLanguages.length})`}
               </span>
 
-              {typeof lang.count !== "undefined" && (
-                <span className="text-xs text-neutral-400">{lang.count}</span>
-              )}
-            </label>
-          );
-        })}
-      </div>
+              <span
+                className={`text-lg transition-transform duration-300 ${
+                  showOtherLanguages ? "rotate-90" : ""
+                }`}
+              >
+                ›
+              </span>
+            </button>
 
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex h-10 items-end justify-center bg-gradient-to-t from-white via-white/90 to-transparent pb-1">
-        <span className="animate-bounce text-xs text-neutral-400">⌄</span>
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-out ${
+                showOtherLanguages
+                  ? "mt-1 max-h-[260px] opacity-100"
+                  : "max-h-0 opacity-0"
+              }`}
+            >
+              <div
+                data-lenis-prevent
+                className="max-h-[250px] overflow-y-auto pr-1"
+              >
+                {otherLanguages.map(renderLanguageOption)}
+              </div>
+            </div>
+          </>
+        )}
       </div>
+    );
+  };
+  
+  const renderSimpleCheckboxOptions = (category, options) => (
+    <div className="flex flex-col gap-0.5">
+      {options.map((option) => {
+        const checked = isSimpleFilterSelected(
+          category,
+          option.value
+        );
+
+        return (
+          <label
+            key={option.value}
+            className="flex cursor-pointer items-center gap-3 rounded-xl px-1 py-1.5 transition hover:bg-neutral-100"
+          >
+            <input
+              type="checkbox"
+              checked={checked}
+              onChange={() =>
+                handleSimpleFilterToggle(
+                  category,
+                  option.value
+                )
+              }
+              disabled={disabled}
+              className="relative h-[16px] w-[16px] shrink-0 cursor-pointer appearance-none rounded-full border-2 border-[#BDBDBD] bg-white outline-none transition-all duration-200 checked:border-[#1941cf] checked:bg-white before:absolute before:left-1/2 before:top-1/2 before:z-2 before:h-[5px] before:w-[5px] before:-translate-x-1/2 before:-translate-y-1/2 before:rounded-full before:bg-white before:opacity-0 after:absolute after:left-1/2 after:top-1/2 after:z-1 after:h-[15px] after:w-[15px] after:-translate-x-1/2 after:-translate-y-1/2 after:rounded-full after:bg-[#2563EB] after:opacity-0 checked:before:opacity-100 checked:after:opacity-100"
+            />
+
+            <span className="text-[14px] text-neutral-700">
+              {option.label}
+            </span>
+          </label>
+        );
+      })}
     </div>
   );
-
   const sections = [
     {
   title: "Tema",
@@ -702,10 +843,44 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
       renderMobile: () => renderPlatforms(true),
     },
     {
+      title: "Tipo",
+      key: "tipo_certificacion",
+      renderDesktop: () => (
+        <div className="absolute left-full top-0 z-[999] ml-0 w-[310px] rounded-[15px] border border-black/10 bg-white p-3 shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
+          {renderSimpleCheckboxOptions(
+            "tipo_certificacion",
+            certificationTypeOptions
+          )}
+        </div>
+      ),
+      renderMobile: () =>
+        renderSimpleCheckboxOptions(
+          "tipo_certificacion",
+          certificationTypeOptions
+        ),
+    },
+    {
+      title: "Nivel",
+      key: "nivel_certificacion",
+      renderDesktop: () => (
+        <div className="absolute left-full top-0 z-[999] ml-0 w-[310px] rounded-[15px] border border-black/10 bg-white p-3 shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
+          {renderSimpleCheckboxOptions(
+            "nivel_certificacion",
+            certificationLevelOptions
+          )}
+        </div>
+      ),
+      renderMobile: () =>
+        renderSimpleCheckboxOptions(
+          "nivel_certificacion",
+          certificationLevelOptions
+        ),
+    },
+    {
       title: "Idioma",
       key: "idioma",
-      renderDesktop: () => renderLanguages(false),
-      renderMobile: () => renderLanguages(true),
+      renderDesktop: renderLanguages,
+      renderMobile: renderLanguages,
     },
   ];
 

@@ -332,44 +332,44 @@ const CertificationsList = memo(({ certifications }) => {
                 </h3>
                 
                 <div className="mt-1 flex items-end justify-between gap-3">
-                  <div className="flex min-h-[34px] max-w-[80%] items-center gap-2 overflow-hidden">
-  <div className="flex h-[24px] w-[36px] shrink-0 items-center justify-center">
-    {showInstitutionImage ? (
-      <img
-        className="
-          max-h-[22px]
-          max-w-[36px]
-          object-contain
-          mix-blend-multiply
-        "
-        src={institutionImage}
-        alt={institutionName}
-        onError={() => hideImage(institutionKey)}
-        loading="lazy"
-        decoding="async"
-      />
-    ) : (
-      <div className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#F3F1EC] text-[9px] font-bold text-[#1941CF]">
-        {institutionName.charAt(0)}
-      </div>
-    )}
-  </div>
+                  <div className="flex min-h-[34px] max-w-[80%] items-center gap-1 overflow-hidden">
+                    <div className="flex h-[24px] max-w-[36px] shrink-0 items-center start">
+                      {showInstitutionImage ? (
+                        <img
+                          className="
+                            max-h-[22px]
+                            max-w-[36px]
+                            object-contain
+                            mix-blend-multiply
+                          "
+                          src={institutionImage}
+                          alt={institutionName}
+                          onError={() => hideImage(institutionKey)}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <div className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#F3F1EC] text-[9px] font-bold text-[#1941CF]">
+                          {institutionName.charAt(0)}
+                        </div>
+                      )}
+                    </div>
 
-  <span
-  className="
-    line-clamp-2
-    overflow-hidden
-    !font-[Montserrat]
-    text-[9px]
-    font-medium
-    leading-[1.15em]
-    text-[#686868]
-  "
-  title={institutionName}
->
-  {institutionName}
-</span>
-</div>
+                    <span
+                      className="
+                        line-clamp-2
+                        overflow-hidden
+                        !font-[Montserrat]
+                        text-[9px]
+                        font-medium
+                        leading-[1.15em]
+                        text-[#686868]
+                      "
+                      title={institutionName}
+                    >
+                      {institutionName}
+                    </span>
+                  </div>
 
                   <div
                     className="
