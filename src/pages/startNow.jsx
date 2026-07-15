@@ -39,13 +39,22 @@ async function postJSON(url, body, { withCredentials = true } = {}) {
 
   if (!res.ok || data?.ok === false) {
     const detail =
-      data?.detail ||
       data?.message ||
+      data?.detail ||
       data?.error ||
       data?.errorCode ||
       `HTTP ${res.status}`;
 
-    throw new Error(detail);
+    const requestError = new Error(detail);
+
+    requestError.status = res.status;
+    requestError.code =
+      data?.error ||
+      data?.errorCode ||
+      null;
+    requestError.data = data;
+
+    throw requestError;
   }
 
   return data;
@@ -460,8 +469,6 @@ function StartNowContent() {
   const [selectedPaidPlan, setSelectedPaidPlan] = useState("monthly_x");
   const [showPass, setShowPass] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
-  const [showProPass, setShowProPass] = useState(false);
-  const [showProPass2, setShowProPass2] = useState(false);
   const [paidSubscriptionData, setPaidSubscriptionData] = useState(null);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -501,8 +508,6 @@ function StartNowContent() {
     goal: "",
     password: "",
     confirm_password: "",
-    pro_password: "",
-    pro_confirm_password: "",
   });
 
   const backendBaseUrl = useMemo(() => {
@@ -1116,9 +1121,23 @@ function StartNowContent() {
     return "FREE";
   };
 
-  const getBillingPeriod = (packageCode) => {
-    if (packageCode.includes("MONTHLY")) return "MONTHLY";
-    if (packageCode.includes("ANNUAL")) return "ANNUAL";
+  const getBillingPeriod = (packageCode = "") => {
+    const normalizedCode = String(packageCode)
+      .trim()
+      .toUpperCase();
+
+    if (normalizedCode === "TOP_EDUCATION_FREE") {
+      return "MONTHLY";
+    }
+
+    if (normalizedCode.includes("MONTHLY")) {
+      return "MONTHLY";
+    }
+
+    if (normalizedCode.includes("ANNUAL")) {
+      return "ANNUAL";
+    }
+
     return null;
   };
 
@@ -1331,41 +1350,6 @@ function StartNowContent() {
     }
   };
 
-  const startProSignup = async () => {
-    setErrorMsg("");
-
-    if (!form.pro_password || form.pro_password.length < 8) {
-      setErrorMsg("La contraseña debe tener mínimo 8 caracteres.");
-      return;
-    }
-
-    if (form.pro_password !== form.pro_confirm_password) {
-      setErrorMsg("Las contraseñas no coinciden.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      await postJSON(LEARNING_ROUTE_FREE_SIGNUP_URL, {
-        route_id: routeId,
-        email: form.email,
-        password: form.pro_password,
-      });
-
-      setSelectedPlan("x");
-      persistLearningRoute({
-        selected_plan: "pro",
-        status: "pro_account_created",
-      });
-      setStep("proPayment");
-    } catch (error) {
-      setErrorMsg(error.message || "No se pudo crear la cuenta.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const completeSignup = async ({ plan, redirectTo }) => {
     setErrorMsg("");
 
@@ -1376,40 +1360,61 @@ function StartNowContent() {
     try {
       const finalPlan =
         plan ||
-        (selectedPlan === "free"
-          ? "free"
-          : selectedPaidPlan.includes("plus")
-          ? "plus"
-          : "x");
+        (
+          selectedPlan === "free"
+            ? "free"
+            : selectedPaidPlan.includes("plus")
+            ? "plus"
+            : "x"
+        );
 
       const subscriptionData = paidSubscriptionData || {};
 
-      const res = await postJSON(LEARNING_ROUTE_COMPLETE_SIGNUP_URL, {
-        route_id: routeId,
-        email: form.email,
-        phone_country_code: form.phone_country_code,
-        phone_number: form.phone_number,
-        phone_e164: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
-        password: form.password,
-        selected_plan: finalPlan,
-        selected_paid_plan: finalPlan === "free" ? "free" : selectedPaidPlan,
-        stripe_subscription_id: subscriptionData?.stripe_subscription_id,
-        stripe_customer_id: subscriptionData?.stripe_customer_id,
-        route_status: finalPlan === "free" ? "free_active" : "pro_trialing",
-      });
+      const res = await postJSON(
+        LEARNING_ROUTE_COMPLETE_SIGNUP_URL,
+        {
+          route_id: routeId,
+          email: form.email,
+          phone_country_code: form.phone_country_code,
+          phone_number: form.phone_number,
+          phone_e164:
+            `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
+          password: form.password,
+          selected_plan: finalPlan,
+          selected_paid_plan:
+            finalPlan === "free"
+              ? "free"
+              : selectedPaidPlan,
+          stripe_subscription_id:
+            subscriptionData?.stripe_subscription_id,
+          stripe_customer_id:
+            subscriptionData?.stripe_customer_id,
+          route_status:
+            finalPlan === "free"
+              ? "free_active"
+              : "pro_trialing",
+        }
+      );
 
-      const mxStatus =
-      res?.mx_status ||
-      res?.mx_response?.status ||
-      "";
-      const validMxStatuses = [
+      const mxStatus = String(
+        res?.mx_status ||
+        res?.data?.mx_status ||
+        res?.mx_response?.status ||
+        res?.data?.mx_response?.status ||
+        ""
+      )
+        .trim()
+        .toUpperCase();
+
+      const validMxStatuses = new Set([
         "APPLIED",
         "DUPLICATE",
-      ];
-      if (!validMxStatuses.includes(mxStatus)) {
+      ]);
+
+      if (!validMxStatuses.has(mxStatus)) {
         if (mxStatus === "RETRYABLE_ERROR") {
           throw new Error(
-            "MX presentó un error temporal. El acceso será reintentado."
+            "MX presentó un error temporal. El acceso debe reintentarse con el mismo evento."
           );
         }
 
@@ -1420,60 +1425,94 @@ function StartNowContent() {
         }
 
         throw new Error(
-          `MX devolvió un estado no reconocido: ${mxStatus || "UNKNOWN"}`
+          `MX devolvió un estado no reconocido: ${
+            mxStatus || "UNKNOWN"
+          }`
         );
       }
 
       const payload = persistLearningRoute({
         selected_plan: finalPlan,
-        selected_paid_plan: selectedPaidPlan,
-        status: finalPlan === "free" ? "free_active" : "pro_trialing",
-        stripe_subscription_id: subscriptionData?.stripe_subscription_id,
-        trial_start: subscriptionData?.trial_start,
-        trial_end: subscriptionData?.trial_end,
+        selected_paid_plan:
+          finalPlan === "free"
+            ? "free"
+            : selectedPaidPlan,
+        status:
+          finalPlan === "free"
+            ? "free_active"
+            : "pro_trialing",
+        stripe_subscription_id:
+          subscriptionData?.stripe_subscription_id,
+        trial_start:
+          subscriptionData?.trial_start,
+        trial_end:
+          subscriptionData?.trial_end,
         mx_status: mxStatus,
         mx_magic_link:
           res?.magic_link ||
+          res?.magicLink ||
+          res?.mx_response?.magicLinkUrl ||
+          res?.mx_response?.magicLink ||
           res?.data?.magic_link ||
           res?.data?.magicLink ||
           null,
-        mx_response: res?.data || res,
+        mx_response:
+          res?.mx_response ||
+          res?.data?.mx_response ||
+          res,
       });
 
-      pushClientifyEvent("startnow_signup_completed", {
-        final_plan: finalPlan,
-        mx_status: mxStatus,
-      });
+      pushClientifyEvent(
+        "startnow_signup_completed",
+        {
+          final_plan: finalPlan,
+          mx_status: mxStatus,
+        }
+      );
 
       setShowSuccessToast(true);
 
       setTimeout(() => {
-        navigate(redirectTo, {
-          state: { learningRoute: payload },
-          replace: true,
-        });
+        navigate(
+          redirectTo,
+          {
+            state: {
+              learningRoute: payload,
+            },
+            replace: true,
+          }
+        );
       }, 1300);
     } catch (error) {
-      const message = String(error?.message || "");
+      const message = String(
+        error?.message || ""
+      );
 
       if (
         message === "email_already_registered" ||
         message.includes("email_already_registered") ||
         message.includes("Ya existe una cuenta")
       ) {
-        setErrorMsg("Ya tienes una cuenta. Inicia sesión para continuar.");
+        setErrorMsg(
+          "Ya tienes una cuenta. Inicia sesión para continuar."
+        );
 
         setTimeout(() => {
-          navigate(`/login?email=${encodeURIComponent(form.email)}`, {
-            replace: true,
-          });
+          navigate(
+            `/login?email=${encodeURIComponent(form.email)}`,
+            {
+              replace: true,
+            }
+          );
         }, 900);
 
         return;
       }
 
-      setErrorMsg(error.message || "No se pudo crear la ruta.");
-      setStep("goal");
+      setErrorMsg(
+        message ||
+        "No fue posible completar la activación de tu acceso."
+      );
     } finally {
       setLoading(false);
     }
@@ -2660,14 +2699,19 @@ function StartNowContent() {
                 label="Contraseña"
                 value={form.password}
                 onChange={(e) =>
-                  setForm({ ...form, password: e.target.value })
+                  setForm({
+                    ...form,
+                    password: e.target.value,
+                  })
                 }
                 placeholder="Crea una contraseña segura"
                 type={showPass ? "text" : "password"}
                 rightAction={
                   <button
                     type="button"
-                    onClick={() => setShowPass((prev) => !prev)}
+                    onClick={() =>
+                      setShowPass((prev) => !prev)
+                    }
                     className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#2563EB]"
                   >
                     {showPass ? "Ocultar" : "Ver"}
@@ -2679,22 +2723,33 @@ function StartNowContent() {
                 label="Confirmar Contraseña"
                 value={form.confirm_password}
                 onChange={(e) =>
-                  setForm({ ...form, confirm_password: e.target.value })
+                  setForm({
+                    ...form,
+                    confirm_password: e.target.value,
+                  })
                 }
                 placeholder="Confirma tu contraseña"
                 type={showPass2 ? "text" : "password"}
                 rightAction={
                   <button
                     type="button"
-                    onClick={() => setShowPass2((prev) => !prev)}
+                    onClick={() =>
+                      setShowPass2((prev) => !prev)
+                    }
                     className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#2563EB]"
                   >
                     {showPass2 ? "Ocultar" : "Ver"}
                   </button>
                 }
               />
-            </div>
+              <PasswordStrength password={form.password} />
 
+              <PasswordMatchMessage
+                password={form.password}
+                confirmPassword={form.confirm_password}
+              />
+            </div>
+                
             {errorMsg && (
               <div className="mt-6 w-full rounded-[16px] border border-red-100 bg-red-50 px-5 py-4 !font-['Montserrat'] text-sm font-semibold text-red-600">
                 {errorMsg}
@@ -2713,116 +2768,6 @@ function StartNowContent() {
               className="mt-7 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? "Creando cuenta..." : "Crear cuenta gratis"}{" "}
-              <ArrowIcon />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setStep("ready")}
-              className="mt-5 !font-['Montserrat'] text-sm font-medium text-neutral-500 hover:text-[#111111]"
-            >
-              Volver a planes
-            </button>
-          </section>
-        )}
-
-        {step === "proSignup" && (
-          <section className="mx-auto flex min-h-screen max-w-[620px] flex-col items-center justify-center px-5 py-16 md:py-24">
-            <div className="grid h-16 w-16 place-items-center rounded-[18px] bg-[#2563EB]/10 text-3xl text-[#2563EB]">
-              ✦
-            </div>
-
-            <span className="mt-6 !font-['Montserrat'] font-semibold uppercase text-[#2563EB]">
-              {activePlanName}
-            </span>
-
-            <h2 className="mt-2 text-center !font-['Montserrat'] text-3xl font-semibold text-[#111111]">
-              Crea tu cuenta para iniciar tu prueba
-            </h2>
-
-            <p className="mt-2 text-center !font-['Montserrat'] text-neutral-600">
-              Guardaremos tu ruta y luego podrás agregar tu tarjeta para activar
-              los 7 días gratis.
-            </p>
-
-            <div className="mt-6 w-full rounded-[20px] border border-[#2563EB]/20 bg-white p-5 shadow-[0_16px_45px_rgba(0,0,0,0.04)]">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="!font-['Montserrat'] text-sm text-neutral-500">
-                    Cuenta
-                  </p>
-                  <p className="!font-['Montserrat'] text-lg font-semibold text-[#111111]">
-                    {form.email}
-                  </p>
-                </div>
-
-                <span className="rounded-full bg-[#2563EB]/10 px-4 py-2 !font-['Montserrat'] text-sm font-semibold text-[#2563EB]">
-                  7 días gratis
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-8 w-full space-y-3">
-              <FormInput
-                label="Correo Electrónico"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="Correo electrónico"
-                readOnly
-              />
-
-              <FormInput
-                label="Contraseña"
-                value={form.pro_password}
-                onChange={(e) =>
-                  setForm({ ...form, pro_password: e.target.value })
-                }
-                placeholder="Crea una contraseña segura"
-                type={showProPass ? "text" : "password"}
-                rightAction={
-                  <button
-                    type="button"
-                    onClick={() => setShowProPass((prev) => !prev)}
-                    className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#2563EB]"
-                  >
-                    {showProPass ? "Ocultar" : "Ver"}
-                  </button>
-                }
-              />
-
-              <FormInput
-                label="Confirmar Contraseña"
-                value={form.pro_confirm_password}
-                onChange={(e) =>
-                  setForm({ ...form, pro_confirm_password: e.target.value })
-                }
-                placeholder="Confirma tu contraseña"
-                type={showProPass2 ? "text" : "password"}
-                rightAction={
-                  <button
-                    type="button"
-                    onClick={() => setShowProPass2((prev) => !prev)}
-                    className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#2563EB]"
-                  >
-                    {showProPass2 ? "Ocultar" : "Ver"}
-                  </button>
-                }
-              />
-            </div>
-
-            {errorMsg && (
-              <div className="mt-6 w-full rounded-[16px] border border-red-100 bg-red-50 px-5 py-4 !font-['Montserrat'] text-sm font-semibold text-red-600">
-                {errorMsg}
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={startProSignup}
-              disabled={loading}
-              className="mt-7 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {loading ? "Creando cuenta..." : "Continuar a pago seguro"}{" "}
               <ArrowIcon />
             </button>
 
