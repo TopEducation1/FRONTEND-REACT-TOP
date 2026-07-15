@@ -742,15 +742,15 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
             </button>
 
             <div
-              className={`overflow-hidden transition-all duration-300 ease-out ${
+              className={`transition-all duration-300 ease-out ${
                 showOtherLanguages
-                  ? "mt-1 max-h-[260px] opacity-100"
-                  : "max-h-0 opacity-0"
+                  ? "mt-1 max-h-[240px] opacity-100"
+                  : "max-h-0 overflow-hidden opacity-0"
               }`}
             >
               <div
                 data-lenis-prevent
-                className="max-h-[250px] overflow-y-auto pr-1"
+                className="max-h-[230px] overflow-y-auto overflow-x-hidden overscroll-contain pr-2 pb-2"
               >
                 {otherLanguages.map(renderLanguageOption)}
               </div>
@@ -994,8 +994,17 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
         </div>
       </div>
 
-      <div className="hidden lg:block">
-        <div className="relative rounded-[24px] pb-2 px-2">
+      <div className="hidden overflow-visible lg:block">
+        <div
+          className="
+            relative
+            overflow-visible
+            rounded-[24px]
+            px-2
+            pb-4
+            pr-3
+          "
+        >
           <h2 className="mb-3 !font-[Montserrat] text-base font-bold text-black">
             Biblioteca
           </h2>

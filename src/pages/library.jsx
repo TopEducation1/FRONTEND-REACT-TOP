@@ -1111,15 +1111,13 @@ function LibraryPage({ showRoutes = true }) {
         <div className="container mx-auto py-4 min-h-[70vh]">
           <div className="grid grid-cols-1 gap-2 lg:grid-cols-[220px_1fr]">
             <aside className="relative z-20 rounded-[15px] lg:sticky lg:top-24 lg:h-fit">
-              <div className="max-h-[calc(100vh-190px)]  pr-2">
+              <div className="overflow-visible pr-2 pb-6">
                 <IndexCategories
                   onTagSelect={handleTagSelect}
                   selectedTags={selectedTags}
                   disabled={!isReady}
                 />
               </div>
-
-             
             </aside>
 
             <main className="min-w-0 px-2 md:px-0">
