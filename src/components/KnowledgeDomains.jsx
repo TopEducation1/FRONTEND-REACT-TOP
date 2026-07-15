@@ -292,12 +292,12 @@ function KnowledgeDomainCard({ domain }) {
 
           <div className="flex shrink-0 flex-col items-end gap-2">
             <span className="rounded-full bg-[var(--domain-soft)] px-3.5 py-1.5 text-[12px] font-semibold text-[var(--domain-accent)] transition-all duration-500 group-hover:bg-[var(--domain-accent)] group-hover:text-white">
-              {domain.courses} cursos
+              {domain.courses} certificaciones
             </span>
 
-            <span className="rounded-full bg-[#F4F2F2] px-3.5 py-1.5 text-[12px] font-medium text-[#8A8480] transition-all duration-500 group-hover:bg-[var(--domain-soft)] group-hover:text-[var(--domain-accent)]">
+            {/*<span className="rounded-full bg-[#F4F2F2] px-3.5 py-1.5 text-[12px] font-medium text-[#8A8480] transition-all duration-500 group-hover:bg-[var(--domain-soft)] group-hover:text-[var(--domain-accent)]">
               {domain.certifications} certs
-            </span>
+            </span>*/}
           </div>
         </div>
 

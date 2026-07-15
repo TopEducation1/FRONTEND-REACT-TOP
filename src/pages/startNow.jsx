@@ -51,6 +51,48 @@ async function postJSON(url, body, { withCredentials = true } = {}) {
   return data;
 }
 
+const BUILDING_MESSAGES = [
+  {
+    until: 15,
+    text: "Analizando tus intereses y objetivos...",
+  },
+  {
+    until: 32,
+    text: "Buscando certificaciones relacionadas con tus temas...",
+  },
+  {
+    until: 48,
+    text: "Comparando contenidos de Coursera, edX y MasterClass...",
+  },
+  {
+    until: 64,
+    text: "Seleccionando el nivel adecuado para cada recomendación...",
+  },
+  {
+    until: 78,
+    text: "Equilibrando tu ruta entre fundamentos y especialización...",
+  },
+  {
+    until: 90,
+    text: "Organizando las certificaciones más relevantes para ti...",
+  },
+  {
+    until: 99,
+    text: "Preparando tu hoja de ruta personalizada...",
+  },
+  {
+    until: 100,
+    text: "Tu ruta está lista.",
+  },
+];
+
+const getBuildingMessage = (progress) => {
+  return (
+    BUILDING_MESSAGES.find((item) => progress <= item.until)?.text ||
+    "Finalizando tu ruta personalizada..."
+  );
+};
+
 const normalizeLevelItems = (levelData) => {
   if (Array.isArray(levelData)) return levelData;
   if (Array.isArray(levelData?.items)) return levelData.items;
@@ -312,18 +354,32 @@ const CourseCard = ({ course }) => (
         {course.level}
       </span>
 
-      {course.platformLogo && (
-        <span className="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-white shadow-sm">
-          <img
-            src={course.platformLogo}
-            alt={course.provider || "Proveedor"}
-            className="max-h-8 max-w-8 object-contain"
-            onError={(e) => {
-              e.currentTarget.style.display = "none";
-            }}
-          />
-        </span>
-      )}
+      <span className="absolute left-3 top-3 grid h-10 w-10 place-items-center rounded-full bg-white p-1.5 shadow-sm">
+        <img
+          src={
+            course.platformLogo ||
+            course.platformLogoFallback ||
+            "/assets/platforms/icons/icon-coursera.png"
+          }
+          alt={course.provider || "Plataforma"}
+          className="block max-h-7 max-w-7 object-contain"
+          onError={(event) => {
+            const image = event.currentTarget;
+            const fallback = course.platformLogoFallback;
+
+            if (
+              fallback &&
+              image.dataset.fallbackApplied !== "true"
+            ) {
+              image.dataset.fallbackApplied = "true";
+              image.src = fallback;
+              return;
+            }
+
+            image.style.display = "none";
+          }}
+        />
+      </span>
     </div>
 
     <div className="p-4">
@@ -441,6 +497,7 @@ function StartNowContent() {
     gender: "",
     country: "",
     topics: [],
+    topic_ids: [],
     goal: "",
     password: "",
     confirm_password: "",
@@ -464,8 +521,6 @@ function StartNowContent() {
   const LEARNING_ROUTE_COMPLETE_SIGNUP_URL =
     endpoints.learningRouteCompleteSignup ||
     `${backendBaseUrl}/api/learning-route/complete-signup/`;
-
-  const LEARNING_ROUTE_FREE_SIGNUP_URL = LEARNING_ROUTE_COMPLETE_SIGNUP_URL;
 
   const BILLING_SETUP_INTENT_URL =
     endpoints.billingSetupIntent || `${backendBaseUrl}/api/billing/setup-intent/`;
@@ -503,67 +558,67 @@ function StartNowContent() {
 
   const topicOptions = [
   {
-    id: "language-learning",
+    id: 41, // ID real de Skills
     title: "Aprendizaje de idiomas",
     image: "/assets/category/topic/ico-Aprendizaje-de-un-idioma.png",
     backgroundColor: "#5CC781",
   },
   {
-    id: "arts-humanities",
+    id: 28,
     title: "Arte y humanidades",
     image: "/assets/category/topic/ico-Artes-y-humanidades.png",
     backgroundColor: "#034694",
   },
   {
-    id: "biology-life-sciences",
+    id: 11230,
     title: "Biología y Ciencias de la Vida",
     image: "/assets/category/topic/ico-Salud.png",
     backgroundColor: "#D33B3E",
   },
   {
-    id: "data-science",
+    id: 1,
     title: "Ciencias de datos",
     image: "/assets/category/topic/ico-Ciencia-de-datos.png",
     backgroundColor: "#5CC781",
   },
   {
-    id: "computer-science",
+    id: 3,
     title: "Ciencias de la Computación",
     image: "/assets/category/topic/ico-Ciencias-de-la-computacion.png",
     backgroundColor: "#034694",
   },
   {
-    id: "physical-science-engineering",
+    id: 20,
     title: "Ciencias físicas e ingeniería",
     image: "/assets/category/topic/ico-Ciencias-fisicas-e-ingenieria.png",
     backgroundColor: "#D33B3E",
   },
   {
-    id: "social-sciences",
+    id: 23,
     title: "Ciencias Sociales",
     image: "/assets/category/topic/ico-Ciencias-sociales.png",
     backgroundColor: "#5CC781",
   },
   {
-    id: "personal-development",
+    id: 13,
     title: "Desarrollo personal",
     image: "/assets/category/topic/ico-Desarrollo-personal.png",
     backgroundColor: "#D33B3E",
   },
   {
-    id: "math-logic",
+    id: 45,
     title: "Matemáticas y lógica",
     image: "/assets/category/topic/ico-Matematicas-y-logica.png",
     backgroundColor: "#034694",
   },
   {
-    id: "business",
+    id: 5,
     title: "Negocios",
     image: "/assets/category/topic/ico-Negocios.png",
     backgroundColor: "#D33B3E",
   },
   {
-    id: "information-technology",
+    id: 9,
     title: "Tecnología de la información",
     image: "/assets/category/topic/ico-Tecnologia-de-la-informacion.png",
     backgroundColor: "#5CC781",
@@ -589,50 +644,213 @@ function StartNowContent() {
     return value || "Recomendado";
   };
 
-  const normalizeProviderName = (course) =>
+  const normalizeProviderName = (course = {}) =>
     course.provider ||
     course.plataforma_nombre ||
     course.plataforma ||
     course.platform ||
     course.source_provider ||
+    course.plataforma_certificacion?.nombre ||
     "";
 
-  const normalizeCourseForCard = (course) => ({
-    id: course.id,
-    idInterno: course.id_interno || course.idInterno || "",
-    colombiaCertificationId: course.colombiaCertificationId || course.id,
-    title: course.nombre || course.title || "Certificación recomendada",
-    level: normalizeLevelLabel(course.nivel_certificacion || course.level),
-    hours: course.tiempo_certificacion || course.hours || "Flexible",
-    institution:
-      course.universidad_nombre ||
-      course.empresa_nombre ||
-      course.institution ||
-      normalizeProviderName(course) ||
-      "Top Education",
-    provider: normalizeProviderName(course),
-    platformLogo:
+  const normalizePlatformLogoUrl = (value = "") => {
+    const cleanValue = String(value || "")
+      .trim()
+      .replace(/\\/g, "/");
+
+    if (!cleanValue) {
+      return "";
+    }
+
+    if (
+      ["none", "null", "undefined"].includes(
+        cleanValue.toLowerCase()
+      )
+    ) {
+      return "";
+    }
+
+    /*
+    * Si Django devolvió una URL absoluta del backend que contiene
+    * /assets/, extraemos solamente la ruta para que el navegador
+    * consulte el asset desde el frontend.
+    *
+    * Ejemplo:
+    * http://127.0.0.1:8000/assets/platforms/icons/icon-edx.png
+    *
+    * Se convierte en:
+    * /assets/platforms/icons/icon-edx.png
+    */
+    try {
+      const parsedUrl = new URL(
+        cleanValue,
+        window.location.origin
+      );
+
+      const assetsPosition = parsedUrl.pathname.indexOf("/assets/");
+
+      if (assetsPosition >= 0) {
+        return parsedUrl.pathname.slice(assetsPosition);
+      }
+    } catch {
+      // Continúa con la normalización manual.
+    }
+
+    if (cleanValue.startsWith("assets/")) {
+      return `/${cleanValue}`;
+    }
+
+    if (cleanValue.startsWith("/")) {
+      return cleanValue;
+    }
+
+    if (
+      cleanValue.startsWith("http://") ||
+      cleanValue.startsWith("https://")
+    ) {
+      return cleanValue;
+    }
+
+    return `/${cleanValue}`;
+  };
+    
+  const getPlatformLogoFallback = (
+    provider = "",
+    platformId = null
+  ) => {
+    const numericPlatformId = Number(platformId);
+
+    if (numericPlatformId === 1) {
+      return "/assets/platforms/icons/icon-edx.png";
+    }
+
+    if (numericPlatformId === 2) {
+      return "/assets/platforms/icons/icon-coursera.png";
+    }
+
+    if (numericPlatformId === 3) {
+      return "/assets/platforms/icons/icon-masterclass.png";
+    }
+
+    const normalizedProvider = String(provider)
+      .trim()
+      .toLowerCase();
+
+    if (normalizedProvider.includes("coursera")) {
+      return "/assets/platforms/icons/icon-coursera.png";
+    }
+
+    if (
+      normalizedProvider.includes("masterclass") ||
+      normalizedProvider.includes("master class")
+    ) {
+      return "/assets/platforms/icons/icon-masterclass.png";
+    }
+
+    if (
+      normalizedProvider.includes("edx") ||
+      normalizedProvider.includes("ed x")
+    ) {
+      return "/assets/platforms/icons/icon-edx.png";
+    }
+
+    return "";
+  };
+
+  const normalizeCourseForCard = (course = {}) => {
+    const provider = normalizeProviderName(course);
+
+    const platformId =
+      course.platform_id ??
+      course.plataforma_certificacion_id ??
+      course.platformId ??
+      course.plataforma_certificacion?.id ??
+      null;
+
+    const fallbackLogo = getPlatformLogoFallback(
+      provider,
+      platformId
+    );
+
+    const backendPlatformLogo =
       course.platform_logo ||
       course.plat_ico ||
       course.plataforma_ico ||
       course.provider_logo ||
-      "",
-    mainSkill:
-      course.main_skill ||
-      course.skill_principal ||
-      course.primary_skill ||
-      "",
-    mainSkillIcon:
-      course.main_skill_icon ||
-      course.skill_principal_icon ||
-      course.primary_skill_icon ||
-      "",
-    image:
-      course.imagen_final ||
-      course.image ||
-      course.imagen ||
-      "/assets/content/courses/course-1.jpg",
-  });
+      course.plataforma_certificacion?.plat_ico ||
+      course.plataforma_certificacion?.plat_img ||
+      "";
+
+    const normalizedBackendLogo =
+      normalizePlatformLogoUrl(backendPlatformLogo);
+
+    return {
+      id: course.id,
+
+      idInterno:
+        course.id_interno ||
+        course.idInterno ||
+        "",
+
+      colombiaCertificationId:
+        course.colombiaCertificationId ||
+        course.id,
+
+      title:
+        course.nombre ||
+        course.title ||
+        "Certificación recomendada",
+
+      level: normalizeLevelLabel(
+        course.nivel_certificacion ||
+        course.level
+      ),
+
+      hours: normalizeHours(
+        course.tiempo_certificacion ||
+        course.hours
+      ),
+
+      institution:
+        course.universidad_nombre ||
+        course.empresa_nombre ||
+        course.institution ||
+        course.universidad_certificacion?.nombre ||
+        course.empresa_certificacion?.nombre ||
+        provider ||
+        "Top Education",
+
+      provider,
+      platformId,
+
+      platformLogo:
+        normalizedBackendLogo ||
+        fallbackLogo,
+
+      platformLogoFallback:
+        fallbackLogo,
+
+      mainSkill:
+        course.main_skill ||
+        course.skill_principal ||
+        course.primary_skill?.translate ||
+        course.primary_skill?.nombre ||
+        "",
+
+      mainSkillIcon:
+        course.main_skill_icon ||
+        course.skill_principal_icon ||
+        course.primary_skill?.skill_ico ||
+        course.primary_skill?.skill_img ||
+        "",
+
+      image:
+        course.imagen_final ||
+        course.image ||
+        course.imagen ||
+        "/assets/content/courses/course-1.jpg",
+    };
+  };
 
   const allRecommendedCourses = useMemo(
     () => [
@@ -797,6 +1015,11 @@ function StartNowContent() {
       })
     );
   };
+
+  const buildingMessage = useMemo(
+    () => getBuildingMessage(progress),
+    [progress]
+  );
   useEffect(() => {
     syncClientifyHiddenForm({
       first_name: form.first_name,
@@ -851,17 +1074,25 @@ function StartNowContent() {
     return payload;
   };
 
-  const toggleTopic = (topic) => {
-    setForm((prev) => {
-      const exists = prev.topics.includes(topic);
+  const toggleTopic = (topicOption) => {
+    const { id, title } = topicOption;
 
-      if (!exists && prev.topics.length >= 3) return prev;
+    setForm((prev) => {
+      const exists = prev.topic_ids.includes(id);
+
+      if (!exists && prev.topic_ids.length >= 3) {
+        return prev;
+      }
 
       return {
         ...prev,
         topics: exists
-          ? prev.topics.filter((item) => item !== topic)
-          : [...prev.topics, topic],
+          ? prev.topics.filter((topic) => topic !== title)
+          : [...prev.topics, title],
+
+        topic_ids: exists
+          ? prev.topic_ids.filter((topicId) => topicId !== id)
+          : [...prev.topic_ids, id],
       };
     });
   };
@@ -989,121 +1220,114 @@ function StartNowContent() {
 
     return true;
   };
+  const normalizeHours = (value) => {
+    const clean = String(value || "").trim();
+
+    if (
+      !clean ||
+      ["none", "null", "undefined"].includes(clean.toLowerCase())
+    ) {
+      return "Duración flexible";
+    }
+
+    return clean;
+  };
 
   const createRoute = async () => {
-  setErrorMsg("");
-  setLoading(true);
-  setIsBuildingRoute(true);
-  setStep("building");
-  setProgress(8);
-
-  try {
-    pushClientifyEvent("startnow_generate_route_clicked");
-
-    const recommendationsRes = await postJSON(
-      LEARNING_ROUTE_RECOMMENDATIONS_URL,
-      {
-        topics: form.topics,
-        goal: form.goal,
-        limit_per_level: 3,
-      }
-    );
-
-    const recData = recommendationsRes?.data || recommendationsRes || {};
-
-    const nextRecommendedByLevel = {
-      level_1: normalizeLevelItems(recData.level_1).map(normalizeCourseForCard),
-      level_2: normalizeLevelItems(recData.level_2).map(normalizeCourseForCard),
-      level_3: normalizeLevelItems(recData.level_3).map(normalizeCourseForCard),
-    };
-
-    setRecommendedByLevel(nextRecommendedByLevel);
-
-    const flattenedRecommendations = [
-      ...nextRecommendedByLevel.level_1.map((course, index) => ({
-        ...course,
-        routeLevel: 1,
-        order: index + 1,
-      })),
-      ...nextRecommendedByLevel.level_2.map((course, index) => ({
-        ...course,
-        routeLevel: 2,
-        order: index + 1,
-      })),
-      ...nextRecommendedByLevel.level_3.map((course, index) => ({
-        ...course,
-        routeLevel: 3,
-        order: index + 1,
-      })),
-    ];
-
-    const data = await postJSON(LEARNING_ROUTE_CREATE_URL, {
-      email: form.email,
-      phone_country_code: form.phone_country_code,
-      phone_number: form.phone_number,
-      phone_e164: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
-      first_name: form.first_name,
-      last_name: form.last_name,
-      age: form.age ? Number(form.age) : null,
-      gender: form.gender,
-      country: form.country,
-      topics: form.topics,
-      goal: form.goal,
-      recommended_certifications: flattenedRecommendations,
-    });
-
-    setRouteId(data?.id || data?.data?.id || null);
-
-    setProgress(100);
-
-    setTimeout(() => {
-      setStep("ready");
-    }, 500);
-  } catch (error) {
-    setErrorMsg(error.message || "No se pudo crear la ruta.");
-    setStep("goal");
-  } finally {
-    setLoading(false);
-    setIsBuildingRoute(false);
-  }
-};
-
-  const startFreeSignup = async () => {
     setErrorMsg("");
-
-    if (!form.password || form.password.length < 8) {
-      setErrorMsg("La contraseña debe tener mínimo 8 caracteres.");
-      return;
-    }
-
-    if (form.password !== form.confirm_password) {
-      setErrorMsg("Las contraseñas no coinciden.");
-      return;
-    }
-
     setLoading(true);
+    setIsBuildingRoute(true);
+    setStep("building");
+    setProgress(0);
 
     try {
-      await postJSON(LEARNING_ROUTE_FREE_SIGNUP_URL, {
-        route_id: routeId,
+      pushClientifyEvent("startnow_generate_route_clicked");
+
+      // Permite que React muestre la pantalla en 0%
+      // antes de iniciar las consultas al backend.
+      await new Promise((resolve) => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(resolve);
+        });
+      });
+
+      setProgress(4);
+
+      const recommendationsRes = await postJSON(
+        LEARNING_ROUTE_RECOMMENDATIONS_URL,
+        {
+          topics: form.topics,
+          topic_ids: form.topic_ids,
+          goal: form.goal,
+          limit_per_level: 3,
+        }
+      );
+
+      setProgress((current) => Math.max(current, 72));
+
+      const recData = recommendationsRes?.data || recommendationsRes || {};
+
+      const nextRecommendedByLevel = {
+        level_1: normalizeLevelItems(recData.level_1).map(
+          normalizeCourseForCard
+        ),
+        level_2: normalizeLevelItems(recData.level_2).map(
+          normalizeCourseForCard
+        ),
+        level_3: normalizeLevelItems(recData.level_3).map(
+          normalizeCourseForCard
+        ),
+      };
+
+      setRecommendedByLevel(nextRecommendedByLevel);
+
+      const flattenedRecommendations = [
+        ...nextRecommendedByLevel.level_1.map((course, index) => ({
+          ...course,
+          routeLevel: 1,
+          order: index + 1,
+        })),
+        ...nextRecommendedByLevel.level_2.map((course, index) => ({
+          ...course,
+          routeLevel: 2,
+          order: index + 1,
+        })),
+        ...nextRecommendedByLevel.level_3.map((course, index) => ({
+          ...course,
+          routeLevel: 3,
+          order: index + 1,
+        })),
+      ];
+
+      setProgress((current) => Math.max(current, 84));
+
+      const data = await postJSON(LEARNING_ROUTE_CREATE_URL, {
         email: form.email,
-        password: form.password,
+        phone_country_code: form.phone_country_code,
+        phone_number: form.phone_number,
+        phone_e164: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
+        first_name: form.first_name,
+        last_name: form.last_name,
+        age: form.age ? Number(form.age) : null,
+        gender: form.gender,
+        country: form.country,
+        topics: form.topics,
+        goal: form.goal,
+        recommended_certifications: flattenedRecommendations,
       });
 
-      const payload = persistLearningRoute({
-        selected_plan: "free",
-        status: "free_active",
-      });
+      setRouteId(data?.id || data?.data?.id || null);
+      setProgress(100);
 
-      navigate("/account?tab=cv", {
-        state: {
-          learningRoute: payload,
-        },
-      });
+      setTimeout(() => {
+        setStep("ready");
+      }, 650);
     } catch (error) {
-      setErrorMsg(error.message || "No se pudo crear la cuenta.");
+      setErrorMsg(error.message || "No se pudo crear la ruta.");
+      setStep("goal");
     } finally {
       setLoading(false);
+      setIsBuildingRoute(false);
     }
   };
 
@@ -1174,26 +1398,29 @@ function StartNowContent() {
         route_status: finalPlan === "free" ? "free_active" : "pro_trialing",
       });
 
-      const mxStatusRaw =
-        res?.mx_status ||
-        res?.data?.mx_status ||
-        res?.data?.status ||
-        res?.status ||
-        "";
-
-      const mxStatus = String(mxStatusRaw).toUpperCase();
-
+      const mxStatus =
+      res?.mx_status ||
+      res?.mx_response?.status ||
+      "";
       const validMxStatuses = [
         "APPLIED",
         "DUPLICATE",
-        "CREATED",
       ];
-
       if (!validMxStatuses.includes(mxStatus)) {
+        if (mxStatus === "RETRYABLE_ERROR") {
+          throw new Error(
+            "MX presentó un error temporal. El acceso será reintentado."
+          );
+        }
+
+        if (mxStatus === "PERMANENT_ERROR") {
+          throw new Error(
+            "MX rechazó el acceso por un error permanente en el contrato o los datos."
+          );
+        }
+
         throw new Error(
-          res?.mx_message ||
-            res?.message ||
-            `MX no pudo crear/aplicar el acceso. Estado: ${mxStatus || "UNKNOWN"}`
+          `MX devolvió un estado no reconocido: ${mxStatus || "UNKNOWN"}`
         );
       }
 
@@ -1382,14 +1609,25 @@ function StartNowContent() {
   useEffect(() => {
     if (step !== "building") return;
 
-    setProgress(8);
-
     const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 92) return prev;
-        return Math.min(prev + 7, 92);
+      setProgress((current) => {
+        if (current >= 94) {
+          return current;
+        }
+
+        let increment = 1;
+
+        if (current < 20) {
+          increment = 4;
+        } else if (current < 50) {
+          increment = 3;
+        } else if (current < 75) {
+          increment = 2;
+        }
+
+        return Math.min(current + increment, 94);
       });
-    }, 420);
+    }, 480);
 
     return () => clearInterval(interval);
   }, [step]);
@@ -1406,6 +1644,17 @@ function StartNowContent() {
 
       <style>
         {`
+          @keyframes buildingText {
+            from {
+              opacity: 0;
+              transform: translateY(6px);
+            }
+
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
           @keyframes topoWave {
             0% { transform: scale(0.6); opacity: 0.32; }
             70% { opacity: 0.12; }
@@ -1672,7 +1921,7 @@ function StartNowContent() {
                 <span
                   key={num}
                   className={`grid h-9 w-9 place-items-center rounded-xl font-semibold ${
-                    form.topics.length >= num
+                    form.topic_ids.length >= num
                       ? "bg-[#2563EB] text-white"
                       : "bg-black/5 text-neutral-400"
                   }`}
@@ -1682,9 +1931,9 @@ function StartNowContent() {
               ))}
 
               <span>
-                {form.topics.length === 0
+                {form.topic_ids.length === 0
                   ? "Selecciona al menos 1 tema"
-                  : `${form.topics.length} temas seleccionados`}
+                  : `${form.topic_ids.length} temas seleccionados`}
               </span>
             </div>
 
@@ -1697,13 +1946,13 @@ function StartNowContent() {
                   backgroundColor,
                 } = topicOption;
 
-                const active = form.topics.includes(title);
+                const active = form.topic_ids.includes(id);
 
                 return (
                   <button
                     key={id}
                     type="button"
-                    onClick={() => toggleTopic(title)}
+                    onClick={() => toggleTopic(topicOption)}
                     aria-pressed={active}
                     className={`group relative flex min-h-[126px] flex-col items-center justify-center overflow-hidden rounded-[18px] border bg-white px-3 py-4 text-center transition-all duration-300 hover:-translate-y-1 ${
                       active
@@ -1756,7 +2005,7 @@ function StartNowContent() {
 
               <button
                 type="button"
-                disabled={form.topics.length === 0}
+                disabled={form.topic_ids.length === 0}
                 onClick={() => {
                   pushClientifyEvent("startnow_topics_completed", {
                     topics: form.topics,
@@ -1849,22 +2098,27 @@ function StartNowContent() {
           <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-20 text-center">
             <div className="route-dot-grid absolute inset-0 opacity-[0.14]" />
 
-            <div className="relative z-10 mx-auto max-w-[620px]">
+            <div className="relative z-10 mx-auto w-full max-w-[620px]">
               <div className="flex justify-center">
                 <StarLogo size="sm" />
               </div>
 
-              <h2 className="mt-10 !font-['Montserrat'] text-[2.4rem] font-semibold leading-tight tracking-[-0.05em] text-[#111111]">
+              <h2 className="mt-10 !font-['Montserrat'] text-[2rem] font-semibold leading-[1.12em] tracking-[-0.04em] text-[#111111] md:text-[2.4rem]">
                 Construyendo tu ruta de aprendizaje personalizada...
               </h2>
 
-              <p className="mt-5 !font-['Montserrat'] text-lg text-neutral-600">
-                Seleccionando contenido relevante.
-              </p>
+              <div className="mt-5 min-h-[32px]">
+                <p
+                  key={buildingMessage}
+                  className="animate-[buildingText_0.35s_ease-out] !font-['Montserrat'] text-[1rem] text-neutral-600 md:text-lg"
+                >
+                  {buildingMessage}
+                </p>
+              </div>
 
               <div className="mt-10 h-2 overflow-hidden rounded-full bg-black/10">
                 <div
-                  className="h-full rounded-full bg-[linear-gradient(90deg,#2563EB,#5CC781)] transition-all"
+                  className="h-full rounded-full bg-[linear-gradient(90deg,#2563EB,#5CC781)] transition-[width] duration-500 ease-out"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -1896,7 +2150,7 @@ function StartNowContent() {
                   [String(allRecommendedCourses.length || 0), "Cursos recomendados"],
                   ["3", "Certificaciones potenciales"],
                   ["~6", "Meses estimados"],
-                  [String(form.topics.length || 0), "Habilidades principales"],
+                  [String(form.topic_ids.length || 0), "Habilidades principales"],
                 ].map(([value, label]) => (
                   <div key={label}>
                     <strong className="block !font-['Montserrat'] text-[3.4rem] font-black leading-none">
@@ -2449,7 +2703,12 @@ function StartNowContent() {
 
             <button
               type="button"
-              onClick={startFreeSignup}
+              onClick={() =>
+                completeSignup({
+                  plan: "free",
+                  redirectTo: "/account?tab=cv",
+                })
+              }
               disabled={loading}
               className="mt-7 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-50"
             >
