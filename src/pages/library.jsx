@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import tagFilterService from "../services/filterByTagsTesting";
 import CertificationsList from "../components/layoutCertifications";
@@ -6,6 +12,8 @@ import CertificationsFetcher from "../services/certificationsFetcher";
 import { useDebounce } from "use-debounce";
 import IndexCategories from "../components/IndexCategories";
 import SearchBar from "../components/searchBar";
+
+import {KNOWLEDGE_DOMAINS,} from "../constants/knowledgeDomains";
 import { Helmet } from "react-helmet";
 import {
   FaChevronLeft,
@@ -20,6 +28,52 @@ import endpoints from "../config/api";
 const DEFAULT_SELECTED_TAGS = {
   idioma: ["es"],
 };
+
+const normalizeNumericIds = (values = []) => {
+  return [
+    ...new Set(
+      values
+        .map((value) => {
+          const rawValue =
+            typeof value === "object"
+              ? value?.id
+              : value;
+
+          const numericValue = Number(rawValue);
+
+          return Number.isInteger(numericValue) &&
+            numericValue > 0
+            ? numericValue
+            : null;
+        })
+        .filter(Boolean)
+    ),
+  ];
+};
+
+const findSelectedKnowledgeDomains = (
+  selectedSkills = []
+) => {
+  const selectedIds = new Set(
+    normalizeNumericIds(selectedSkills)
+  );
+
+  return KNOWLEDGE_DOMAINS.filter(
+    (domain) =>
+      domain.skillIds.every((skillId) =>
+        selectedIds.has(Number(skillId))
+      )
+  );
+};
+
+const buildDomainSkillTag = (skillId) => ({
+  id: Number(skillId),
+  nombre: "",
+  translate: "",
+  slug: "",
+  skill_type: "habilidad",
+  parent: null,
+});
 
 function LibraryPage({ showRoutes = true }) {
   const location = useLocation();
@@ -65,6 +119,9 @@ function LibraryPage({ showRoutes = true }) {
 
   function normalizeCategoryKey(key) {
     const map = {
+      Dominio: "dominio",
+      dominio: "dominio",
+
       Plataforma: "plataforma",
       plataforma: "plataforma",
       plataforma_id: "plataforma",
@@ -793,6 +850,67 @@ function LibraryPage({ showRoutes = true }) {
 
     addTagAndNavigate(category, tag);
   };
+  const handleDomainSelect = useCallback(
+    (domain) => {
+      if (!isReady || !domain) return;
+
+      const domainSkillIds =
+        normalizeNumericIds(
+          domain.skillIds || []
+        );
+
+      if (domainSkillIds.length === 0) {
+        return;
+      }
+
+      setSelectedTags((previousTags) => {
+        const currentSkills = Array.isArray(
+          previousTags.habilidades
+        )
+          ? previousTags.habilidades
+          : [];
+
+        const existingIds = new Set(
+          normalizeNumericIds(currentSkills)
+        );
+
+        const missingDomainSkills =
+          domainSkillIds
+            .filter(
+              (skillId) =>
+                !existingIds.has(skillId)
+            )
+            .map(buildDomainSkillTag);
+
+        const updatedTags = {
+          ...previousTags,
+          habilidades: [
+            ...currentSkills,
+            ...missingDomainSkills,
+          ],
+        };
+
+        const nextUrl = buildUrlFromTags(
+          updatedTags,
+          1,
+          16,
+          location.pathname
+        );
+
+        navigate(nextUrl, {
+          replace: false,
+        });
+
+        return updatedTags;
+      });
+    },
+    [
+      buildUrlFromTags,
+      isReady,
+      location.pathname,
+      navigate,
+    ]
+  );
 
   const handleTagSelect = (category, tag) => {
     if (!isReady) return;
@@ -872,6 +990,70 @@ function LibraryPage({ showRoutes = true }) {
       return updatedTags;
     });
   };
+
+  const removeKnowledgeDomain = useCallback(
+    (domain) => {
+      if (!isReady || !domain) return;
+
+      const domainIds = new Set(
+        normalizeNumericIds(
+          domain.skillIds || []
+        )
+      );
+
+      setSelectedTags((previousTags) => {
+        const updatedTags = {
+          ...previousTags,
+        };
+
+        const currentSkills = Array.isArray(
+          previousTags.habilidades
+        )
+          ? previousTags.habilidades
+          : [];
+
+        const remainingSkills =
+          currentSkills.filter((skill) => {
+            const skillId = Number(
+              typeof skill === "object"
+                ? skill?.id
+                : skill
+            );
+
+            return (
+              !Number.isInteger(skillId) ||
+              !domainIds.has(skillId)
+            );
+          });
+
+        if (remainingSkills.length > 0) {
+          updatedTags.habilidades =
+            remainingSkills;
+        } else {
+          delete updatedTags.habilidades;
+        }
+
+        const nextUrl = buildUrlFromTags(
+          updatedTags,
+          1,
+          16,
+          location.pathname
+        );
+
+        navigate(nextUrl, {
+          replace: false,
+        });
+
+        return updatedTags;
+      });
+    },
+    [
+      buildUrlFromTags,
+      isReady,
+      location.pathname,
+      navigate,
+    ]
+  );
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -1044,7 +1226,71 @@ function LibraryPage({ showRoutes = true }) {
       </div>
     );
   };
+  const selectedKnowledgeDomains = useMemo(
+    () =>
+      findSelectedKnowledgeDomains(
+        selectedTags.habilidades || []
+      ),
+    [selectedTags.habilidades]
+  );
 
+  const knowledgeDomainSkillIds = useMemo(
+    () =>
+      new Set(
+        selectedKnowledgeDomains.flatMap(
+          (domain) =>
+            normalizeNumericIds(
+              domain.skillIds || []
+            )
+        )
+      ),
+    [selectedKnowledgeDomains]
+  );
+
+  const visibleSelectedTags = useMemo(() => {
+    const result = {};
+
+    Object.entries(selectedTags || {}).forEach(
+      ([category, tags]) => {
+        if (!Array.isArray(tags)) return;
+
+        if (
+          normalizeCategoryKey(category) !==
+          "habilidades"
+        ) {
+          result[category] = tags;
+          return;
+        }
+
+        const remainingSkills = tags.filter(
+          (tag) => {
+            const skillId = Number(
+              typeof tag === "object"
+                ? tag?.id
+                : tag
+            );
+
+            return (
+              !Number.isInteger(skillId) ||
+              !knowledgeDomainSkillIds.has(
+                skillId
+              )
+            );
+          }
+        );
+
+        if (remainingSkills.length > 0) {
+          result[category] =
+            remainingSkills;
+        }
+      }
+    );
+
+    return result;
+  }, [
+    selectedTags,
+    knowledgeDomainSkillIds,
+  ]);
   return (
     <>
       <Helmet>
@@ -1114,6 +1360,7 @@ function LibraryPage({ showRoutes = true }) {
               <div className="overflow-visible pr-2 pb-6">
                 <IndexCategories
                   onTagSelect={handleTagSelect}
+                  onDomainSelect={handleDomainSelect}
                   selectedTags={selectedTags}
                   disabled={!isReady}
                 />
@@ -1123,36 +1370,91 @@ function LibraryPage({ showRoutes = true }) {
             <main className="min-w-0 px-2 md:px-0">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex min-h-[30px] flex-wrap gap-2">
-                  {Object.keys(selectedTags).length === 0 ||
-                  Object.values(selectedTags).every(
-                    (tags) => !tags || tags.length === 0
+                  {selectedKnowledgeDomains.length === 0 &&
+                  (
+                    Object.keys(visibleSelectedTags).length ===
+                      0 ||
+                    Object.values(
+                      visibleSelectedTags
+                    ).every(
+                      (tags) =>
+                        !Array.isArray(tags) ||
+                        tags.length === 0
+                    )
                   ) ? (
                     <p className="text-sm text-neutral-500">
                       Aún no has seleccionado filtros
                     </p>
                   ) : (
-                    Object.entries(selectedTags).map(([category, tags]) =>
-                      tags.map((tag, tagIndex) => (
-                        <div
-                          key={`${category}-${tagIndex}-${getTagUrlValue(
-                            category,
-                            tag
-                          )}`}
-                          className="flex items-center gap-2 rounded-full border border-black/10 bg-[#F5F3EE] pl-4 pr-2 py-1 text-sm font-medium text-neutral-800 shadow-sm"
-                        >
-                          <span>{getTagLabel(category, tag)}</span>
-
-                          <button
-                            type="button"
-                            onClick={() => removeSelectedTag(category, tag)}
-                            disabled={!isReady}
-                            className="flex h-5 w-5 items-center justify-center leading-[.8em] rounded-full bg-neutral-100 text-xs text-neutral-500 transition hover:bg-neutral-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                    <>
+                      {/* Tags compactos de dominio */}
+                      {selectedKnowledgeDomains.map(
+                        (domain) => (
+                          <div
+                            key={`domain-${domain.id}`}
+                            className="flex items-center gap-2 rounded-full border border-[#1941CF]/20 bg-[#EEF2FF] py-1 pl-4 pr-2 text-sm font-semibold text-[#1941CF] shadow-sm"
                           >
-                            ×
-                          </button>
-                        </div>
-                      ))
-                    )
+                            <span>{domain.title}</span>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                removeKnowledgeDomain(
+                                  domain
+                                )
+                              }
+                              disabled={!isReady}
+                              aria-label={`Eliminar dominio ${domain.title}`}
+                              className="flex h-5 w-5 items-center justify-center rounded-full bg-white/80 text-xs leading-[0.8em] text-[#1941CF] transition hover:bg-[#1941CF] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        )
+                      )}
+
+                      {/* Resto de filtros no incluidos en dominios */}
+                      {Object.entries(
+                        visibleSelectedTags
+                      ).flatMap(([category, tags]) =>
+                        (tags || []).map(
+                          (tag, tagIndex) => (
+                            <div
+                              key={`${category}-${tagIndex}-${getTagUrlValue(
+                                category,
+                                tag
+                              )}`}
+                              className="flex items-center gap-2 rounded-full border border-black/10 bg-[#F5F3EE] py-1 pl-4 pr-2 text-sm font-medium text-neutral-800 shadow-sm"
+                            >
+                              <span>
+                                {getTagLabel(
+                                  category,
+                                  tag
+                                )}
+                              </span>
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  removeSelectedTag(
+                                    category,
+                                    tag
+                                  )
+                                }
+                                disabled={!isReady}
+                                aria-label={`Eliminar filtro ${getTagLabel(
+                                  category,
+                                  tag
+                                )}`}
+                                className="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-100 text-xs leading-[0.8em] text-neutral-500 transition hover:bg-neutral-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          )
+                        )
+                      )}
+                    </>
                   )}
                 </div>
 

@@ -514,7 +514,7 @@ export default function TopOriginals() {
                           onError={(event) => {
                             event.currentTarget.style.display = "none";
                           }}
-                          className="pointer-events-none absolute left-[1%] top-[0%] h-[75%] max-h-[320px] w-auto object-contain opacity-[0.3]"
+                          className="invert pointer-events-none absolute left-[1%] top-[0%] h-[75%] max-h-[320px] w-auto object-contain opacity-[0.3]"
                         />
                       )}
 

@@ -246,25 +246,73 @@ const KNOWLEDGE_DOMAINS = [
  * Resultado para un dominio:
  * /explora?habilidad_id=101&habilidad_id=102&habilidad_id=103
  */
-function buildExploreUrl(skillIds = []) {
+function buildExploreUrl(
+  skillIds = [],
+  {
+    languages = ["en", "es"],
+    page = 1,
+    pageSize = 16,
+  } = {}
+) {
   const params = new URLSearchParams();
 
-  skillIds.forEach((skillId) => {
-    if (skillId !== null && skillId !== undefined && skillId !== "") {
-      params.append("habilidad_id", String(skillId));
-    }
+  const normalizedLanguages = [
+    ...new Set(
+      languages
+        .map((language) =>
+          String(language || "")
+            .trim()
+            .toLowerCase()
+        )
+        .filter(Boolean)
+    ),
+  ];
+
+  const normalizedSkillIds = [
+    ...new Set(
+      skillIds
+        .map((skillId) => {
+          const numericId = Number(skillId);
+
+          return Number.isInteger(numericId) &&
+            numericId > 0
+            ? numericId
+            : null;
+        })
+        .filter(Boolean)
+    ),
+  ];
+
+  normalizedLanguages.forEach((language) => {
+    params.append("idioma", language);
   });
 
-  const queryString = params.toString();
+  normalizedSkillIds.forEach((skillId) => {
+    params.append(
+      "habilidad_id",
+      String(skillId)
+    );
+  });
 
-  return queryString ? `/explora?idioma=en&idioma=es&${queryString}` : "/explora";
+  params.set("page", String(page));
+  params.set(
+    "page_size",
+    String(pageSize)
+  );
+
+  return `/explora?${params.toString()}`;
 }
 
 function KnowledgeDomainCard({ domain }) {
   const DomainIcon = domain.icon;
 
-  const domainSkillIds = domain.skills.map((skill) => skill.id);
-  const domainUrl = buildExploreUrl(domainSkillIds);
+  const domainSkillIds = domain.skills
+    .map((skill) => skill?.id)
+    .filter(Boolean);
+
+  const domainUrl = buildExploreUrl(
+    domainSkillIds
+  );
 
   return (
     <article
@@ -272,17 +320,15 @@ function KnowledgeDomainCard({ domain }) {
       style={{
         "--domain-accent": domain.accent,
         "--domain-soft": domain.softAccent,
-        "--domain-border": domain.borderAccent,
+        "--domain-border":
+          domain.borderAccent,
       }}
     >
-      {/* Resplandor superior durante hover */}
       <div className="pointer-events-none absolute -left-20 -top-24 h-64 w-64 rounded-full bg-[var(--domain-accent)] opacity-0 blur-[90px] transition-opacity duration-500 group-hover:opacity-[0.12]" />
 
       <div className="relative z-10 flex h-full flex-1 flex-col">
         <div className="flex items-start justify-between gap-5">
-          <div
-            className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-[18px] bg-[var(--domain-soft)] text-[var(--domain-accent)] transition-all duration-500 group-hover:-rotate-6 group-hover:scale-105 group-hover:bg-[var(--domain-accent)] group-hover:text-white group-hover:shadow-[0_16px_34px_color-mix(in_srgb,var(--domain-accent)_28%,transparent)]"
-          >
+          <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center rounded-[18px] bg-[var(--domain-soft)] text-[var(--domain-accent)] transition-all duration-500 group-hover:-rotate-6 group-hover:scale-105 group-hover:bg-[var(--domain-accent)] group-hover:text-white group-hover:shadow-[0_16px_34px_color-mix(in_srgb,var(--domain-accent)_28%,transparent)]">
             <DomainIcon
               size={34}
               strokeWidth={2}
@@ -294,10 +340,6 @@ function KnowledgeDomainCard({ domain }) {
             <span className="rounded-full bg-[var(--domain-soft)] px-3.5 py-1.5 text-[12px] font-semibold text-[var(--domain-accent)] transition-all duration-500 group-hover:bg-[var(--domain-accent)] group-hover:text-white">
               {domain.courses} certificaciones
             </span>
-
-            {/*<span className="rounded-full bg-[#F4F2F2] px-3.5 py-1.5 text-[12px] font-medium text-[#8A8480] transition-all duration-500 group-hover:bg-[var(--domain-soft)] group-hover:text-[var(--domain-accent)]">
-              {domain.certifications} certs
-            </span>*/}
           </div>
         </div>
 
@@ -312,7 +354,9 @@ function KnowledgeDomainCard({ domain }) {
             return (
               <Link
                 key={`${domain.id}-${skill.id}`}
-                to={buildExploreUrl([skill.id])}
+                to={buildExploreUrl([
+                  skill.id,
+                ])}
                 className="domain-skill-tag inline-flex min-h-[32px] items-center gap-1.5 rounded-full border border-transparent bg-[#F3F1F1] px-3.5 py-1.5 font-['Montserrat'] text-[12px] font-medium leading-none text-[#756F6B] transition-all duration-300 hover:!border-[var(--domain-accent)] hover:!bg-[var(--domain-accent)] hover:!text-white hover:shadow-[0_8px_18px_rgba(15,9,11,0.09)] group-hover:border-[color-mix(in_srgb,var(--domain-accent)_22%,transparent)] group-hover:bg-[var(--domain-soft)] group-hover:text-[var(--domain-accent)]"
                 aria-label={`Explorar certificaciones de ${skill.name}`}
               >

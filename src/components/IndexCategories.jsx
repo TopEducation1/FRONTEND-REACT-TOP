@@ -1,7 +1,22 @@
-import React, { useEffect, useState, useRef, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+} from "react";
+
 import endpoints from "../config/api";
 
-const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
+import {
+  KNOWLEDGE_DOMAINS,
+} from "../constants/knowledgeDomains";
+
+const IndexCategories = ({
+  onTagSelect,
+  onDomainSelect,
+  selectedTags,
+  disabled = false,
+}) => {
   const [openSection, setOpenSection] = useState(null);
   const [openChildMenu, setOpenChildMenu] = useState(null);
 
@@ -760,6 +775,28 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
       </div>
     );
   };
+
+  const selectKnowledgeDomain = (
+    domain,
+    closeMobile = false
+  ) => {
+    if (
+      disabled ||
+      !domain ||
+      typeof onDomainSelect !== "function"
+    ) {
+      return;
+    }
+
+    onDomainSelect(domain);
+
+    setOpenSection(null);
+    setOpenChildMenu(null);
+
+    if (closeMobile) {
+      closeMobileFilters();
+    }
+  };
   
   const renderSimpleCheckboxOptions = (category, options) => (
     <div className="flex flex-col gap-0.5">
@@ -796,6 +833,43 @@ const IndexCategories = ({ onTagSelect, selectedTags, disabled = false }) => {
     </div>
   );
   const sections = [
+    {
+      title: "Dominio",
+      key: "domain",
+      renderDesktop: () => (
+        <div className="absolute left-full top-0 z-[999] ml-0 w-[330px] rounded-[15px] border border-black/10 bg-white p-2 shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
+          {KNOWLEDGE_DOMAINS.map((domain) => (
+            <button
+              key={domain.id}
+              type="button"
+              onClick={() =>
+                selectKnowledgeDomain(domain)
+              }
+              className={smallItemBaseClass}
+            >
+              {domain.title}
+            </button>
+          ))}
+        </div>
+      ),
+
+      renderMobile: () => (
+        <div className="flex flex-col gap-1">
+          {KNOWLEDGE_DOMAINS.map((domain) => (
+            <button
+              key={domain.id}
+              type="button"
+              onClick={() =>
+                selectKnowledgeDomain(domain, true)
+              }
+              className={smallItemBaseClass}
+            >
+              {domain.title}
+            </button>
+          ))}
+        </div>
+      ),
+    },
     {
   title: "Tema",
   key: "temas",
