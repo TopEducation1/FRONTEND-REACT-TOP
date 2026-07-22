@@ -8,6 +8,9 @@ const app = express();
 const PORT = Number(process.env.PORT || 3000);
 const BUILD_PATH = path.join(__dirname, "build");
 
+const DJANGO_URL =
+  process.env.DJANGO_URL || "https://app.top.education";
+
 app.disable("x-powered-by");
 app.use(compression());
 
@@ -15,8 +18,6 @@ app.use(compression());
  * ============================================================
  * PRERENDER.IO
  * ============================================================
- *
- * Si no hay token, React seguirá funcionando normalmente.
  */
 const prerenderToken = String(
   process.env.PRERENDER_TOKEN || ""
@@ -51,6 +52,78 @@ app.get("/health", (_request, response) => {
 
 /*
  * ============================================================
+ * PROXY DE SITEMAPS
+ * ============================================================
+ *
+ * Django genera los XML en app.top.education.
+ * Express los expone públicamente en www.top.education.
+ */
+const proxySitemap = async (request, response) => {
+  try {
+    const sitemapUrl =
+      `${DJANGO_URL}${request.originalUrl}`;
+
+    const djangoResponse = await fetch(sitemapUrl, {
+      headers: {
+        Accept: "application/xml,text/xml,*/*",
+      },
+    });
+
+    if (!djangoResponse.ok) {
+      const body = await djangoResponse.text();
+
+      console.error("[SEO] Error obteniendo sitemap", {
+        url: sitemapUrl,
+        status: djangoResponse.status,
+        body: body.slice(0, 500),
+      });
+
+      return response
+        .status(djangoResponse.status)
+        .type("text/plain")
+        .send("No se pudo obtener el sitemap.");
+    }
+
+    let xml = await djangoResponse.text();
+
+    /*
+     * El índice generado por Django puede contener enlaces hacia:
+     *
+     * https://app.top.education/sitemap-pages.xml
+     *
+     * Los reemplazamos para que apunten al dominio público.
+     */
+    xml = xml.replaceAll(
+      "https://app.top.education",
+      "https://www.top.education"
+    );
+
+    return response
+      .status(200)
+      .set({
+        "Content-Type": "application/xml; charset=utf-8",
+        "Cache-Control":
+          "public, max-age=300, s-maxage=300",
+      })
+      .send(xml);
+  } catch (error) {
+    console.error("[SEO] Error cargando sitemap", {
+      url: request.originalUrl,
+      message: error?.message,
+    });
+
+    return response
+      .status(502)
+      .type("text/plain")
+      .send("Error al consultar el sitemap.");
+  }
+};
+
+app.get("/sitemap.xml", proxySitemap);
+app.get("/sitemap-:section.xml", proxySitemap);
+
+/*
+ * ============================================================
  * ARCHIVOS ESTÁTICOS
  * ============================================================
  */
@@ -65,9 +138,6 @@ app.use(
  * ============================================================
  * CATCH-ALL DE REACT
  * ============================================================
- *
- * Se usa app.use en lugar de app.get("*") para mantener
- * compatibilidad con Express 4 y Express 5.
  */
 app.use((request, response, next) => {
   if (request.method !== "GET") {
