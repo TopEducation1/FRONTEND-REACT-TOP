@@ -59,35 +59,51 @@ const HeroSlider = () => {
   };
 
   const HeroSliderSkeleton = () => {
-    return (
-      <div className="flex w-full flex-wrap items-center py-20">
-        <div className="relative flex h-[50vh] w-[50%] items-center justify-center md:h-[60vh]">
-          <div className="relative h-[450px] w-[620px] max-w-full animate-pulse">
-            <div className="absolute left-1/2 top-0 z-20 h-[450px] w-[250px] -translate-x-1/2 rounded-[24px] bg-neutral-300 shadow-[0_20px_60px_rgba(0,0,0,0.12)]" />
-            <div className="absolute left-[18%] top-[80px] h-[310px] w-[160px] rounded-[18px] bg-neutral-200" />
-            <div className="absolute right-[18%] top-[80px] h-[310px] w-[160px] rounded-[18px] bg-neutral-200" />
-          </div>
+  return (
+    <div className="w-full max-w-full overflow-hidden px-4 py-10 md:px-6 md:py-16 lg:flex lg:items-center lg:px-0 lg:py-20">
+      {/* Skeleton del carrusel */}
+      <div className="relative flex h-[410px] w-full items-center justify-center md:h-[500px] lg:h-[60vh] lg:w-1/2">
+        <div className="relative h-[380px] w-full max-w-[360px] animate-pulse sm:max-w-[440px] md:h-[450px] md:max-w-[620px]">
+          {/* Tarjeta central */}
+          <div className="absolute left-1/2 top-0 z-20 h-[360px] w-[200px] -translate-x-1/2 rounded-[24px] bg-neutral-300 shadow-[0_20px_60px_rgba(0,0,0,0.12)] sm:h-[380px] sm:w-[215px] md:h-[450px] md:w-[250px]" />
 
-          <div className="absolute left-4 top-1/2 h-[54px] w-[54px] -translate-y-1/2 rounded-full bg-white shadow-[0_14px_45px_rgba(0,0,0,0.08)]" />
-          <div className="absolute right-4 top-1/2 h-[54px] w-[54px] -translate-y-1/2 rounded-full bg-white shadow-[0_14px_45px_rgba(0,0,0,0.08)]" />
+          {/* Tarjeta izquierda */}
+          <div className="absolute left-[-55px] top-[55px] h-[260px] w-[135px] rounded-[18px] bg-neutral-200 opacity-80 sm:left-[-25px] sm:h-[285px] sm:w-[145px] md:left-[18%] md:top-[80px] md:h-[310px] md:w-[160px]" />
+
+          {/* Tarjeta derecha */}
+          <div className="absolute right-[-55px] top-[55px] h-[260px] w-[135px] rounded-[18px] bg-neutral-200 opacity-80 sm:right-[-25px] sm:h-[285px] sm:w-[145px] md:right-[18%] md:top-[80px] md:h-[310px] md:w-[160px]" />
         </div>
 
-        <div className="mt-10 w-[50%] animate-pulse text-center lg:mt-16 lg:text-left">
-          <div className="mx-auto h-6 w-[260px] rounded-full bg-neutral-200 lg:mx-0 lg:ml-15" />
-          <div className="mx-auto mt-4 h-16 w-[420px] max-w-[80%] rounded-full bg-neutral-300 lg:mx-0 lg:ml-15" />
-          <div className="mx-auto mt-6 h-5 w-[520px] max-w-[80%] rounded-full bg-neutral-200 lg:mx-0 lg:ml-15" />
-          <div className="mx-auto mt-3 h-5 w-[420px] max-w-[70%] rounded-full bg-neutral-200 lg:mx-0 lg:ml-15" />
+        {/* Flechas */}
+        <div className="absolute bottom-0 left-[calc(50%-58px)] h-[48px] w-[48px] rounded-full bg-white shadow-[0_14px_45px_rgba(0,0,0,0.08)] lg:bottom-auto lg:left-4 lg:top-1/2 lg:h-[54px] lg:w-[54px] lg:-translate-y-1/2" />
 
-          <div className="mt-8 flex justify-center gap-2 lg:justify-start lg:pl-15">
-            <span className="h-[4px] w-[30px] rounded-full bg-[#1941cf]/40" />
-            {Array.from({ length: 7 }).map((_, index) => (
-              <span key={index} className="h-[4px] w-[10px] rounded-full bg-neutral-300" />
-            ))}
-          </div>
+        <div className="absolute bottom-0 right-[calc(50%-58px)] h-[48px] w-[48px] rounded-full bg-white shadow-[0_14px_45px_rgba(0,0,0,0.08)] lg:bottom-auto lg:right-4 lg:top-1/2 lg:h-[54px] lg:w-[54px] lg:-translate-y-1/2" />
+      </div>
+
+      {/* Skeleton del contenido */}
+      <div className="mt-10 w-full min-w-0 animate-pulse text-center lg:mt-16 lg:w-1/2 lg:text-left">
+        <div className="mx-auto h-5 w-[210px] max-w-full rounded-full bg-neutral-200 lg:mx-0 lg:ml-15 lg:w-[260px]" />
+
+        <div className="mx-auto mt-4 h-14 w-[300px] max-w-[90%] rounded-[24px] bg-neutral-300 sm:w-[380px] lg:mx-0 lg:ml-15 lg:h-16 lg:w-[420px]" />
+
+        <div className="mx-auto mt-6 h-4 w-full max-w-[320px] rounded-full bg-neutral-200 sm:max-w-[430px] lg:mx-0 lg:ml-15 lg:h-5 lg:max-w-[520px]" />
+
+        <div className="mx-auto mt-3 h-4 w-[85%] max-w-[270px] rounded-full bg-neutral-200 sm:max-w-[360px] lg:mx-0 lg:ml-15 lg:h-5 lg:max-w-[420px]" />
+
+        <div className="mt-8 flex max-w-full flex-wrap justify-center gap-2 lg:justify-start lg:pl-15">
+          <span className="h-[4px] w-[30px] rounded-full bg-[#1941cf]/40" />
+
+          {Array.from({ length: 7 }).map((_, index) => (
+            <span
+              key={index}
+              className="h-[4px] w-[10px] rounded-full bg-neutral-300"
+            />
+          ))}
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   const navigateWithTransition = (url) => {
     if (document.startViewTransition) {

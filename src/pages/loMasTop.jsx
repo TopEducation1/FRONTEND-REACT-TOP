@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { useNavigate, Link } from "react-router-dom";
 
 import HorizontalScroll from "../components/HorizontalScroll";
 import SearchLMT from "../components/SearchLMT";
 import RankingsGrid from "../components/RankingsGrid";
+import Seo from "../components/Seo";
 
 import endpoints from "../config/api";
 
@@ -251,24 +251,11 @@ export default function LoMasTop() {
 
   return (
     <>
-      <Helmet>
-        <title>Lo más top! | Top.education</title>
-        <meta
-          name="description"
-          content="Descubre ebooks y blogs exclusivos de Top.education. Accede a contenido valioso para potenciar tu conocimiento y alcanzar tus metas personales y profesionales."
-        />
-        <meta
-          property="og:title"
-          content="Top Education | Aprende con edX, Coursera y MasterClass"
-        />
-        <meta name="author" content="Top Education" />
-        <meta name="robots" content="index, follow" />
-        <meta
-          property="og:description"
-          content="Descubre ebooks y blogs exclusivos de Top Education. Accede a contenido valioso para potenciar tu conocimiento y alcanzar tus metas personales y profesionales."
-        />
-        <meta property="og:type" content="website" />
-      </Helmet>
+      <Seo
+        title="Rankings de universidades, empresas y certificaciones"
+        description="Explora rankings de universidades, empresas y certificaciones para encontrar oportunidades de formación, comparar instituciones y elegir tu próxima ruta de aprendizaje."
+        canonicalPath="/lo-mas-top"
+      />
 
       <section className="h-full w-screen flex-shrink-0 bg-gradient-to-t from-transparent to-[#1c1c1c]">
         <HorizontalScroll>

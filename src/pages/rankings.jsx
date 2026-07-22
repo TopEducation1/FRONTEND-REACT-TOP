@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import Seo from "../components/Seo";
 
 import endpoints from "../config/api";
 
@@ -239,8 +240,23 @@ export default function RankingPage() {
 
   const rankingTheme = getRankingTheme();
   const rankingImage = getRankingImage();
+  const seoTitle = ranking?.nombre
+    ? `${ranking.nombre} | Rankings`
+    : "Rankings";
 
+  const seoDescription =
+    ranking?.descripcion ||
+    `Explora el ranking ${ranking?.nombre || ""} y descubre las mejores universidades, empresas y certificaciones según Top Education.`;
+
+  const canonicalPath = `/lo-mas-top/ranking/${slug}`;
   return (
+    <>
+    <Seo
+      title={seoTitle}
+      description={seoDescription}
+      canonicalPath={canonicalPath}
+      image={rankingImage || undefined}
+    />
     <section className="relative overflow-hidden bg-[#F8F7F4] pb-20">
       <div className="pointer-events-none absolute left-[-180px] top-10 h-[420px] w-[420px] rounded-full bg-[#F8F7F4]/10 blur-[120px]" />
       <div className="pointer-events-none absolute right-[-180px] top-40 h-[420px] w-[420px] rounded-full bg-[#F8F7F4]/10 blur-[120px]" />
@@ -493,5 +509,6 @@ export default function RankingPage() {
         )}
       </div>
     </section>
+    </>
   );
 }

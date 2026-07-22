@@ -6,7 +6,7 @@ import getCertificationById from "../services/getCertificationById";
 import RightPop from "../components/RightPop";
 import YouTubePlayer from "../components/YoutubePlayer";
 import CertificationSlider from "../components/CertificationSlider";
-import { Helmet } from "react-helmet-async";
+import Seo from "../components/Seo";
 
 const CertificationPageSkeleton = () => {
   return (
@@ -147,21 +147,51 @@ const CertificationPage = () => {
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadCertification = async () => {
       try {
         setLoading(true);
+        setError(null);
+        setCertification(null);
+        setActiveTab("tab1");
+        setShowFullDescription(false);
+        setHiddenImages({});
+        setVisibleContainerPopUp(true);
+
         const data = await getCertificationById(slug);
+
+        if (!isMounted) return;
+
+        if (!data) {
+          throw new Error("No se encontró la certificación solicitada.");
+        }
+
         setCertification(data);
-      } catch (error) {
-        setError(error.message);
+      } catch (loadError) {
+        if (!isMounted) return;
+
+        setError(
+          loadError?.message ||
+            "No se pudo cargar la certificación solicitada."
+        );
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     if (slug) {
       loadCertification();
+    } else {
+      setError("No se especificó la certificación solicitada.");
+      setLoading(false);
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [slug]);
 
   function navigateWithTransition(path) {
@@ -205,6 +235,53 @@ const CertificationPage = () => {
     return String(url).trim();
   };
 
+  const stripHtml = (value = "") =>
+    String(value || "")
+      .replace(/<[^>]*>/g, " ")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/&amp;/gi, "&")
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;/gi, "'")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const truncateDescription = (value, maxLength = 157) => {
+    const cleanValue = stripHtml(value);
+
+    if (!cleanValue) return "";
+
+    if (cleanValue.length <= maxLength) {
+      return cleanValue;
+    }
+
+    const truncated = cleanValue
+      .slice(0, maxLength)
+      .replace(/\s+\S*$/, "")
+      .trim();
+
+    return `${truncated || cleanValue.slice(0, maxLength).trim()}...`;
+  };
+
+  const slugifyPathSegment = (value = "") =>
+    String(value)
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+  const isSafeExternalUrl = (value) => {
+    if (!isValidValue(value)) return false;
+
+    try {
+      const parsed = new URL(value);
+      return ["http:", "https:"].includes(parsed.protocol);
+    } catch {
+      return false;
+    }
+  };
+
   const shouldShowImage = (key, url) => {
     return Boolean(getImageUrl(url)) && !hiddenImages[key];
   };
@@ -220,23 +297,39 @@ const CertificationPage = () => {
     return <CertificationPageSkeleton />;
   }
 
-  if (error) {
+  if (error || !certification) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-white">
-        <div className="font-['Montserrat'] text-2xl font-bold text-black">
-          Error: {error}
-        </div>
-      </div>
-    );
-  }
+      <>
+        <Seo
+          title="Certificación no encontrada"
+          description="La certificación solicitada no se encuentra disponible."
+          canonicalPath={`/certificacion/${slug || ""}`}
+          robots="noindex, nofollow"
+        />
 
-  if (!certification) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-white">
-        <div className="font-['Montserrat'] text-2xl font-bold text-black">
-          No se encontró la certificación
-        </div>
-      </div>
+        <main className="flex min-h-screen w-full items-center justify-center bg-white px-4 py-32">
+          <div
+            role="alert"
+            className="max-w-[620px] rounded-[24px] border border-red-100 bg-red-50 px-6 py-6 text-center font-['Montserrat'] text-sm font-medium text-red-600"
+          >
+            <p className="text-lg font-bold">
+              No se pudo cargar esta certificación.
+            </p>
+
+            <p className="mt-2 text-red-500">
+              {error || "La certificación solicitada no se encuentra disponible."}
+            </p>
+
+            <button
+              type="button"
+              onClick={() => navigate("/explora")}
+              className="mt-5 inline-flex items-center justify-center rounded-full bg-[#111111] px-6 py-3 font-bold text-white transition hover:-translate-y-1 hover:bg-black"
+            >
+              Explorar certificaciones
+            </button>
+          </div>
+        </main>
+      </>
     );
   }
 
@@ -495,6 +588,105 @@ const CertificationPage = () => {
     return text.length > max ? `${text.substring(0, max)}...` : text;
   };
 
+  const platformName =
+    certification.plataforma_certificacion?.nombre || "";
+
+  const platformSlug =
+    certification.plataforma_certificacion?.slug ||
+    slugifyPathSegment(platformName);
+
+  const certificationSlug = certification.slug || slug;
+
+  const canonicalPath = platformSlug
+    ? `/certificacion/${platformSlug}/${certificationSlug}`
+    : `/certificacion/${certificationSlug}`;
+
+  const canonicalUrl = `https://www.top.education${canonicalPath}`;
+
+  const seoTitle =
+    certification.nombre || "Certificación profesional";
+
+  const seoDescription =
+    truncateDescription(certification.metadescripcion_certificacion) ||
+    truncateDescription(certification.descripcion_certificacion) ||
+    `Descubre la certificación ${seoTitle}${
+      institutionName ? ` de ${institutionName}` : ""
+    } y conoce sus habilidades, nivel, duración y contenido.`;
+
+  const seoImage =
+    getImageUrl(certification.imagen_destacada) ||
+    certificationImage ||
+    undefined;
+
+  const languageLabel = isValidValue(certification.lenguaje_certificacion)
+    ? getLanguageLabel(certification.lenguaje_certificacion)
+    : undefined;
+
+  const providerName =
+    institutionName ||
+    platformName ||
+    "Top Education";
+
+  const courseJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Course",
+        "@id": `${canonicalUrl}#course`,
+        name: seoTitle,
+        description: seoDescription,
+        url: canonicalUrl,
+        ...(seoImage ? { image: seoImage } : {}),
+        ...(languageLabel ? { inLanguage: languageLabel } : {}),
+        ...(level ? { educationalLevel: level } : {}),
+        provider: {
+          "@type":
+            institutionType === "Universidad"
+              ? "CollegeOrUniversity"
+              : "Organization",
+          name: providerName,
+          ...(isSafeExternalUrl(certification.url_certificacion_original)
+            ? { url: certification.url_certificacion_original }
+            : {}),
+        },
+        ...(validSkills.length > 0
+          ? {
+              teaches: validSkills
+                .map((skill) => getSkillLabel(skill))
+                .filter(Boolean),
+            }
+          : {}),
+        ...(aprendizajes.length > 0
+          ? { syllabusSections: aprendizajes }
+          : {}),
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonicalUrl}#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Inicio",
+            item: "https://www.top.education/",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Explora",
+            item: "https://www.top.education/explora",
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: seoTitle,
+            item: canonicalUrl,
+          },
+        ],
+      },
+    ],
+  };
+
   const sectionCard =
     "rounded-[28px] border border-black/10 bg-white shadow-[0_18px_60px_rgba(0,0,0,0.05)]";
 
@@ -520,47 +712,14 @@ const CertificationPage = () => {
   };
     return (
     <>
-      <Helmet>
-        <title>{certification.nombre} | top.education</title>
-
-        <meta
-          name="description"
-          content={certification.metadescripcion_certificacion || certification.nombre}
-        />
-        <meta
-          name="keywords"
-          content={certification.palabra_clave_certificacion || ""}
-        />
-        <meta name="author" content="Top Education" />
-        <meta name="robots" content="index, follow" />
-
-        <meta property="og:title" content={certification.nombre} />
-        <meta
-          property="og:description"
-          content={certification.metadescripcion_certificacion || certification.nombre}
-        />
-        <meta property="og:type" content="course" />
-        <meta
-          property="og:url"
-          content={`https://top.education/certificacion/${certification.plataforma_certificacion?.nombre?.toLowerCase()}/${certification.slug}`}
-        />
-        <meta property="og:site_name" content="Top Education" />
-        <meta property="og:image" content={certification.imagen_destacada || certificationImage || ""} />
-
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={certification.nombre} />
-        <meta
-          name="twitter:description"
-          content={certification.metadescripcion_certificacion || certification.nombre}
-        />
-        <meta name="twitter:image" content={certification.imagen_destacada || certificationImage || ""} />
-        <meta name="twitter:site" content="@TopEducation" />
-
-        <link
-          rel="canonical"
-          href={`https://top.education/certificacion/${certification.plataforma_certificacion?.nombre?.toLowerCase()}/${certification.slug}`}
-        />
-      </Helmet>
+      <Seo
+        title={seoTitle}
+        description={seoDescription}
+        canonicalPath={canonicalPath}
+        image={seoImage}
+        type="website"
+        jsonLd={courseJsonLd}
+      />
 
       <div className="bg-white">
         <div className="relative overflow-hidden bg-white px-2 md:px-4 py-10 md:py-16 lg:py-20">
@@ -752,6 +911,7 @@ const CertificationPage = () => {
                                       alt={course.nombre}
                                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                       loading="lazy"
+                                      decoding="async"
                                       onError={(e) => {
                                         e.currentTarget.style.display = "none";
                                       }}
@@ -800,6 +960,8 @@ const CertificationPage = () => {
                                   src={instructor.imagen}
                                   alt={instructor.nombre}
                                   className="h-[50px] w-[50px] rounded-full object-cover"
+                                  loading="lazy"
+                                  decoding="async"
                                   onError={() => hideImage(`instructor-${index}`)}
                                 />
                               ) : (
@@ -839,6 +1001,9 @@ const CertificationPage = () => {
                       src={certificationImage}
                       className="h-[260px] w-full rounded-2xl object-cover"
                       alt={certification.nombre}
+                      loading="eager"
+                      decoding="async"
+                      fetchPriority="high"
                       onError={() => hideImage("certification-main")}
                     />
 
@@ -871,6 +1036,8 @@ const CertificationPage = () => {
                               className="max-h-[34px] max-w-[120px] object-contain"
                               src={platformImage}
                               alt={certification.plataforma_certificacion?.nombre || "Plataforma"}
+                              loading="lazy"
+                              decoding="async"
                               onError={() => hideImage("platform")}
                             />
                           </button>
@@ -896,6 +1063,8 @@ const CertificationPage = () => {
                               className="max-h-[42px] max-w-[150px] object-contain"
                               src={institutionImage}
                               alt={institutionName || "Institución"}
+                              loading="lazy"
+                              decoding="async"
                               onError={() => hideImage("institution")}
                             />
                           </button>
@@ -972,16 +1141,32 @@ const CertificationPage = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      try {
-                        const rawUrl = certification.url_certificacion_original;
-                        const url = new URL(rawUrl);
-                        url.searchParams.delete("connection");
-                        window.open(url.toString().replace(/\?$/, ""), "_blank");
-                      } catch (e) {
-                        window.open(certification.url_certificacion_original, "_blank");
+                      if (
+                        !isSafeExternalUrl(
+                          certification.url_certificacion_original
+                        )
+                      ) {
+                        return;
                       }
+
+                      const url = new URL(
+                        certification.url_certificacion_original
+                      );
+
+                      url.searchParams.delete("connection");
+
+                      window.open(
+                        url.toString().replace(/\?$/, ""),
+                        "_blank",
+                        "noopener,noreferrer"
+                      );
                     }}
-                    className="w-full mt-2 rounded-full bg-[#111111] px-5 py-2.5 font-['Montserrat'] text-sm font-bold text-white transition-all duration-300 hover:bg-black hover:shadow-[0_20px_50px_rgba(0,0,0,0.18)]"
+                    disabled={
+                      !isSafeExternalUrl(
+                        certification.url_certificacion_original
+                      )
+                    }
+                    className="mt-2 w-full rounded-full bg-[#111111] px-5 py-2.5 font-['Montserrat'] text-sm font-bold text-white transition-all duration-300 hover:bg-black hover:shadow-[0_20px_50px_rgba(0,0,0,0.18)] disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500 disabled:shadow-none"
                   >
                     Ver en la página oficial
                   </button>
@@ -992,7 +1177,12 @@ const CertificationPage = () => {
               {visibleContainerPopUp &&
                   (positionPopUp ? (
                     <div className="sticky top-24 !mt-5 !rounded-lg">
-                      <button onClick={handleClickButtonPopUp} id="close-pop">
+                      <button
+                        type="button"
+                        onClick={handleClickButtonPopUp}
+                        id="close-pop"
+                        aria-label="Cerrar recomendación"
+                      >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="20"

@@ -11,7 +11,9 @@ const DEFAULT_DESCRIPTION =
   "Descubre certificaciones, cursos y rutas de aprendizaje de universidades y plataformas reconocidas para impulsar tu crecimiento profesional.";
 
 const DEFAULT_IMAGE =
-  `${SITE_URL}/assets/logo192.png`;
+  `${SITE_URL}/assets/seo/top-education-og.jpg`;
+
+const TWITTER_SITE = "@TopEducation";
 
 const normalizePath = (path = "/") => {
   if (!path || path === "/") {
@@ -21,24 +23,76 @@ const normalizePath = (path = "/") => {
   return `/${String(path).replace(/^\/+|\/+$/g, "")}`;
 };
 
-const buildAbsoluteUrl = (value, fallback = SITE_URL) => {
+const buildAbsoluteUrl = (
+  value,
+  fallback = SITE_URL
+) => {
   if (!value) {
     return fallback;
   }
 
-  if (/^https?:\/\//i.test(value)) {
-    return value;
+  const cleanValue = String(value).trim();
+
+  if (/^https?:\/\//i.test(cleanValue)) {
+    return cleanValue;
   }
 
-  return `${SITE_URL}${normalizePath(value)}`;
+  return `${SITE_URL}${normalizePath(cleanValue)}`;
 };
 
-const cleanDescription = (value = "") => {
-  return String(value)
+const cleanDescription = (
+  value = "",
+  maxLength = 160
+) => {
+  const cleanValue = String(value)
     .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
     .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 160);
+    .trim();
+
+  if (cleanValue.length <= maxLength) {
+    return cleanValue;
+  }
+
+  const truncated = cleanValue
+    .slice(0, maxLength)
+    .replace(/\s+\S*$/, "")
+    .trim();
+
+  return truncated || cleanValue.slice(0, maxLength);
+};
+
+const buildPageTitle = (title) => {
+  if (!title) {
+    return DEFAULT_TITLE;
+  }
+
+  const cleanTitle = String(title).trim();
+
+  const alreadyContainsSiteName =
+    cleanTitle
+      .toLowerCase()
+      .includes(SITE_NAME.toLowerCase()) ||
+    cleanTitle
+      .toLowerCase()
+      .includes("top.education");
+
+  return alreadyContainsSiteName
+    ? cleanTitle
+    : `${cleanTitle} | ${SITE_NAME}`;
+};
+
+const normalizeDate = (value) => {
+  if (!value) return null;
+
+  const date = new Date(value);
+
+  return Number.isNaN(date.getTime())
+    ? null
+    : date.toISOString();
 };
 
 const Seo = ({
@@ -46,34 +100,55 @@ const Seo = ({
   description = DEFAULT_DESCRIPTION,
   canonicalPath = "/",
   image = DEFAULT_IMAGE,
+  imageAlt,
+  imageWidth = 1200,
+  imageHeight = 630,
   type = "website",
   robots = "index, follow",
   noindex = false,
   jsonLd = null,
+  publishedTime = null,
+  modifiedTime = null,
+  author = SITE_NAME,
+  section = null,
+  keywords = null,
 }) => {
-  const pageTitle = title
-    ? `${title} | ${SITE_NAME}`
-    : DEFAULT_TITLE;
+  const pageTitle = buildPageTitle(title);
 
   const pageDescription =
-    cleanDescription(description) || DEFAULT_DESCRIPTION;
+    cleanDescription(description) ||
+    DEFAULT_DESCRIPTION;
 
-  const canonicalUrl = buildAbsoluteUrl(canonicalPath);
-  const imageUrl = buildAbsoluteUrl(image, DEFAULT_IMAGE);
+  const canonicalUrl =
+    buildAbsoluteUrl(canonicalPath);
+
+  const imageUrl =
+    buildAbsoluteUrl(image, DEFAULT_IMAGE);
+
+  const finalImageAlt =
+    imageAlt || pageTitle;
 
   const robotsContent = noindex
     ? "noindex, nofollow"
     : robots;
 
+  const normalizedPublishedTime =
+    normalizeDate(publishedTime);
+
+  const normalizedModifiedTime =
+    normalizeDate(modifiedTime);
+
   const structuredData = Array.isArray(jsonLd)
-    ? jsonLd
+    ? jsonLd.filter(Boolean)
     : jsonLd
       ? [jsonLd]
       : [];
 
+  const isArticle = type === "article";
+
   return (
     <Helmet prioritizeSeoTags>
-      <html lang="es" />
+      <html lang="es-CO" />
 
       <title>{pageTitle}</title>
 
@@ -86,6 +161,27 @@ const Seo = ({
         name="robots"
         content={robotsContent}
       />
+
+      <meta
+        name="googlebot"
+        content={robotsContent}
+      />
+
+      <meta
+        name="author"
+        content={author || SITE_NAME}
+      />
+
+      {keywords && (
+        <meta
+          name="keywords"
+          content={
+            Array.isArray(keywords)
+              ? keywords.join(", ")
+              : keywords
+          }
+        />
+      )}
 
       <link
         rel="canonical"
@@ -116,7 +212,6 @@ const Seo = ({
         property="og:description"
         content={pageDescription}
       />
-      <meta name="author" content="Top Education" />
 
       <meta
         property="og:url"
@@ -129,13 +224,37 @@ const Seo = ({
       />
 
       <meta
-        property="og:image:alt"
-        content={pageTitle}
+        property="og:image:secure_url"
+        content={imageUrl}
       />
+
+      <meta
+        property="og:image:alt"
+        content={finalImageAlt}
+      />
+
+      {imageWidth && (
+        <meta
+          property="og:image:width"
+          content={String(imageWidth)}
+        />
+      )}
+
+      {imageHeight && (
+        <meta
+          property="og:image:height"
+          content={String(imageHeight)}
+        />
+      )}
 
       <meta
         name="twitter:card"
         content="summary_large_image"
+      />
+
+      <meta
+        name="twitter:site"
+        content={TWITTER_SITE}
       />
 
       <meta
@@ -152,6 +271,39 @@ const Seo = ({
         name="twitter:image"
         content={imageUrl}
       />
+
+      <meta
+        name="twitter:image:alt"
+        content={finalImageAlt}
+      />
+
+      {isArticle && normalizedPublishedTime && (
+        <meta
+          property="article:published_time"
+          content={normalizedPublishedTime}
+        />
+      )}
+
+      {isArticle && normalizedModifiedTime && (
+        <meta
+          property="article:modified_time"
+          content={normalizedModifiedTime}
+        />
+      )}
+
+      {isArticle && author && (
+        <meta
+          property="article:author"
+          content={author}
+        />
+      )}
+
+      {isArticle && section && (
+        <meta
+          property="article:section"
+          content={section}
+        />
+      )}
 
       {structuredData.map((schema, index) => (
         <script

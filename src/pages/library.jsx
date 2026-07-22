@@ -14,7 +14,7 @@ import IndexCategories from "../components/IndexCategories";
 import SearchBar from "../components/searchBar";
 
 import {KNOWLEDGE_DOMAINS,} from "../constants/knowledgeDomains";
-import { Helmet } from "react-helmet-async";
+import Seo from "../components/Seo";
 import {
   FaChevronLeft,
   FaChevronRight,
@@ -1166,6 +1166,7 @@ function LibraryPage({ showRoutes = true }) {
           <button
             type="button"
             onClick={() => handlePageChange(1)}
+            aria-label="Ir a la primera página"
             disabled={current_page === 1 || !isReady || loading}
             className="flex h-10 w-8 md:w-10 items-center justify-center rounded-full bg-neutral-50 text-neutral-900 transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-40"
           >
@@ -1175,6 +1176,7 @@ function LibraryPage({ showRoutes = true }) {
           <button
             type="button"
             onClick={() => handlePageChange(current_page - 1)}
+            aria-label="Ir a la página anterior"
             disabled={current_page === 1 || !isReady || loading}
             className="flex h-10 w-8 md:w-10 items-center justify-center rounded-full bg-neutral-50 text-neutral-900 transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-40"
           >
@@ -1190,6 +1192,8 @@ function LibraryPage({ showRoutes = true }) {
               type="button"
               key={page}
               onClick={() => handlePageChange(page)}
+              aria-label={`Ir a la página ${page}`}
+              aria-current={page === current_page ? "page" : undefined}
               disabled={!isReady || loading}
               className={`flex h-10 w-8 md:w-10 items-center justify-center rounded-full px-3 text-sm font-bold transition ${
                 page === current_page
@@ -1208,6 +1212,7 @@ function LibraryPage({ showRoutes = true }) {
           <button
             type="button"
             onClick={() => handlePageChange(current_page + 1)}
+            aria-label="Ir a la página siguiente"
             disabled={current_page === total_pages || !isReady || loading}
             className="flex h-10 w-8 md:w-10 items-center justify-center rounded-full bg-neutral-50 text-neutral-900 transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-40"
           >
@@ -1217,6 +1222,7 @@ function LibraryPage({ showRoutes = true }) {
           <button
             type="button"
             onClick={() => handlePageChange(total_pages)}
+            aria-label="Ir a la última página"
             disabled={current_page === total_pages || !isReady || loading}
             className="flex h-10 w-8 md:w-10 items-center justify-center rounded-full bg-neutral-50 text-neutral-900 transition hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-40"
           >
@@ -1291,11 +1297,212 @@ function LibraryPage({ showRoutes = true }) {
     selectedTags,
     knowledgeDomainSkillIds,
   ]);
+  const seoState = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+
+    const currentPage = Math.max(
+      1,
+      Number.parseInt(params.get("page"), 10) || 1
+    );
+
+    const pageSize = Math.max(
+      1,
+      Number.parseInt(params.get("page_size"), 10) || 16
+    );
+
+    const isLatestView =
+      location.pathname === "/explora/filter" ||
+      params.get("latest") === "1";
+
+    const ignoredParams = new Set([
+      "page",
+      "page_size",
+      "clear",
+    ]);
+
+    const filterEntries = [...params.entries()].filter(
+      ([key, value]) => {
+        if (ignoredParams.has(key)) return false;
+
+        // Español es el filtro predeterminado de la biblioteca y no crea
+        // una página SEO diferente por sí solo.
+        if (
+          key === "idioma" &&
+          String(value).trim().toLowerCase() === "es"
+        ) {
+          return false;
+        }
+
+        return String(value).trim() !== "";
+      }
+    );
+
+    const hasMeaningfulFilters =
+      isLatestView || filterEntries.length > 0;
+
+    const isPaginatedView =
+      currentPage > 1 || pageSize !== 16;
+
+    const shouldIndex =
+      location.pathname === "/explora" &&
+      !hasMeaningfulFilters &&
+      !isPaginatedView;
+
+    const filterLabels = [];
+
+    Object.entries(selectedTags || {}).forEach(
+      ([category, tags]) => {
+        if (!Array.isArray(tags)) return;
+
+        tags.forEach((tag) => {
+          const normalizedCategory =
+            normalizeCategoryKey(category);
+
+          const isDefaultSpanish =
+            normalizedCategory === "idioma" &&
+            String(tag).trim().toLowerCase() === "es";
+
+          if (isDefaultSpanish) return;
+
+          const label = getTagLabel(category, tag);
+
+          if (
+            label &&
+            !filterLabels.includes(String(label))
+          ) {
+            filterLabels.push(String(label));
+          }
+        });
+      }
+    );
+
+    let title =
+      "Explora cursos, certificaciones y rutas de aprendizaje";
+
+    let description =
+      "Encuentra cursos, certificaciones y rutas de aprendizaje por tema, habilidad, plataforma, universidad, empresa, nivel e idioma.";
+
+    if (isLatestView) {
+      title = "Nuevas certificaciones y cursos";
+      description =
+        "Descubre las certificaciones y cursos más recientes disponibles en Top Education.";
+    } else if (filterLabels.length > 0) {
+      const selectedLabelText = filterLabels
+        .slice(0, 3)
+        .join(", ");
+
+      title = `Certificaciones de ${selectedLabelText}`;
+      description = `Explora cursos y certificaciones relacionados con ${selectedLabelText} en Top Education.`;
+    } else if (currentPage > 1) {
+      title = `Explora certificaciones — Página ${currentPage}`;
+      description = `Consulta la página ${currentPage} del catálogo de cursos y certificaciones de Top Education.`;
+    }
+
+    return {
+      title,
+      description,
+      canonicalPath: "/explora",
+      robots: shouldIndex
+        ? "index, follow"
+        : "noindex, follow",
+      shouldIndex,
+      currentPage,
+      pageSize,
+      isLatestView,
+      hasMeaningfulFilters,
+    };
+  }, [
+    location.pathname,
+    location.search,
+    selectedTags,
+  ]);
+
+  const collectionJsonLd = useMemo(() => {
+    const startPosition =
+      (seoState.currentPage - 1) * seoState.pageSize;
+
+    const itemListElement = certifications
+      .map((certification, index) => {
+        const name =
+          certification?.nombre ||
+          certification?.name ||
+          certification?.titulo ||
+          "";
+
+        const slugValue =
+          certification?.slug ||
+          certification?.slug_certificacion ||
+          "";
+
+        const platformName =
+          certification?.plataforma_certificacion?.nombre ||
+          certification?.plataforma?.nombre ||
+          certification?.platform_name ||
+          "";
+
+        let itemUrl;
+
+        if (slugValue && platformName) {
+          const platformSlug = String(platformName)
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, "-");
+
+          itemUrl = `https://www.top.education/certificacion/${encodeURIComponent(
+            platformSlug
+          )}/${encodeURIComponent(slugValue)}`;
+        } else if (slugValue) {
+          itemUrl = `https://www.top.education/certificacion/${encodeURIComponent(
+            slugValue
+          )}`;
+        }
+
+        if (!name && !itemUrl) return null;
+
+        return {
+          "@type": "ListItem",
+          position: startPosition + index + 1,
+          ...(name ? { name } : {}),
+          ...(itemUrl ? { url: itemUrl } : {}),
+        };
+      })
+      .filter(Boolean);
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name:
+        "Explora cursos, certificaciones y rutas de aprendizaje",
+      description:
+        "Encuentra cursos, certificaciones y rutas de aprendizaje por tema, habilidad, plataforma, universidad, empresa, nivel e idioma.",
+      url: "https://www.top.education/explora",
+      ...(itemListElement.length > 0
+        ? {
+            mainEntity: {
+              "@type": "ItemList",
+              numberOfItems:
+                pagination.count || itemListElement.length,
+              itemListElement,
+            },
+          }
+        : {}),
+    };
+  }, [
+    certifications,
+    pagination.count,
+    seoState.currentPage,
+    seoState.pageSize,
+  ]);
+
   return (
     <>
-      <Helmet>
-        <title>Certificaciones | Top Education</title>
-      </Helmet>
+      <Seo
+        title={seoState.title}
+        description={seoState.description}
+        canonicalPath={seoState.canonicalPath}
+        robots={seoState.robots}
+        jsonLd={collectionJsonLd}
+      />
 
       <div className="w-full pt-18 bg-[#FFFFFF]">
         <div className="border-b border-black/10 bg-white">
@@ -1326,8 +1533,10 @@ function LibraryPage({ showRoutes = true }) {
                 >
                   <img
                     src={platform.img}
-                    alt={platform.name}
-                    className="max-h-[20px] max-w-[120px] md:max-w-[150px] object-contain"
+                    alt={`Explorar certificaciones de ${platform.name}`}
+                    className="max-h-[20px] max-w-[100px] object-contain md:max-w-[150px]"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </button>
               ))}
@@ -1347,7 +1556,24 @@ function LibraryPage({ showRoutes = true }) {
         </div>
 
         <div className="border-b border-black/10 bg-[#F5F3EE]">
-          <div className="container mx-auto max-w-[1200px] px-4 py-4">
+          <div className="container mx-auto max-w-[1200px] px-4 py-5">
+            <div className="mb-4 max-w-[920px]">
+              <span className="!font-['Montserrat'] text-[11px] font-bold uppercase tracking-[0.2em] text-[#2563EB]">
+                Biblioteca de aprendizaje
+              </span>
+
+              <h1 className="mt-1 !font-['Montserrat'] text-[2rem] font-bold leading-[1.08em] text-[#111111] md:text-[2rem]">
+                {seoState.isLatestView
+                  ? "Nuevas certificaciones y cursos"
+                  : "Explora cursos, certificaciones y rutas de aprendizaje"}
+              </h1>
+
+              <p className="mt-2 max-w-[960px] !font-['Montserrat'] text-[14px] leading-[1.3em] text-neutral-600 md:text-[16px]">
+                Encuentra oportunidades de aprendizaje por tema, habilidad,
+                plataforma, universidad, empresa, nivel e idioma.
+              </p>
+            </div>
+
             <div className="rounded-[25px] bg-white shadow-[0_12px_40px_rgba(0,0,0,0.04)]">
               <SearchBar selectedTags={selectedTags} />
             </div>

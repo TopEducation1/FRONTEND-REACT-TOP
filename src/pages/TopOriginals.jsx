@@ -1,8 +1,9 @@
 import { useRef, useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
-import { Helmet } from "react-helmet-async";
+
 import HeroSlider from "../components/HeroSlider";
+import Seo from "../components/Seo";
 import endpoints from "../config/api";
 import { ArrowRight } from "lucide-react";
 
@@ -80,23 +81,6 @@ export default function TopOriginals() {
           }
         );
 
-        console.log(
-          "ORIGINAL DETAIL RESPONSE:",
-          res.data
-        );
-
-        console.log(
-          "CERTIFICATIONS:",
-          res.data?.certifications
-        );
-
-        console.log(
-          "FIRST CERTIFICATION DETAIL:",
-          res.data?.certifications?.[0]
-            ?.certification_detail
-        );
-
-        setOriginal(res.data);
 
         setOriginal(res.data);
       } catch (error) {
@@ -316,28 +300,49 @@ export default function TopOriginals() {
     return (
       <main className="min-h-screen bg-white px-4 py-32 text-center">
         <p className="font-['Montserrat'] text-neutral-600">
-          No se encontró el autor.
+          No se encontró este Top Education Original.
         </p>
       </main>
     );
   }
+  const seoTitle = original.name
+    ? `¿Qué habría aprendido ${original.name}?`
+    : "Top Education Originals";
 
+  const plainBiography = original.biog
+    ? original.biog
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+    : "";
+
+  const seoDescription =
+    plainBiography.length > 160
+      ? plainBiography.substring(0, 157).replace(/\s+\S*$/, "") + "..."
+      : plainBiography ||
+        `Descubre qué habría aprendido ${original.name} en Top Education y explora una ruta de certificaciones inspirada en su trayectoria.`;
+  
+        const canonicalPath = `/originals/${slug}`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: seoTitle,
+    description: seoDescription,
+    image: original.image,
+    author: {
+      "@type": "Organization",
+      name: "Top Education"
+    }
+  };
   return (
     <>
-      <Helmet>
-        <title>{original.name} | Top.education</title>
-        <meta
-          name="description"
-          content="Descubre contenido original de Top.education y certificaciones recomendadas para crecer profesionalmente."
-        />
-        <meta property="og:title" content={`${original.name} | Top.education`} />
-        <meta
-          property="og:description"
-          content="Aprende con rutas inspiradas en grandes referentes globales."
-        />
-        <meta property="og:type" content="website" />
-        {original.image && <meta property="og:image" content={original.image} />}
-      </Helmet>
+      <Seo
+        title={seoTitle}
+        description={seoDescription}
+        canonicalPath={canonicalPath}
+        image={original.image || undefined}
+        jsonLd={jsonLd}
+      />
 
       <main className="overflow-hidden bg-white text-[#111111]">
         <section className="relative h-[92vh] w-full overflow-hidden bg-white">
@@ -534,7 +539,7 @@ export default function TopOriginals() {
                             )}
                           </div>
 
-                          <h3 className="max-w-[620px] !font-['Montserrat'] text-[2erem] font-semibold leading-[1.02em] text-[#111111] md:text-[2.5rem]">
+                          <h3 className="max-w-[620px] !font-['Montserrat'] text-[2rem] font-semibold leading-[1.02em] text-[#111111] md:text-[2.5rem]">
                             {item.title}
                           </h3>
 

@@ -1,11 +1,10 @@
-import React, {  useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
 import Flags from "../components/Flags";
 import TeamsHero from "../components/TeamsHero";
 import TeamsPricing from "../components/TeamsPricing";
 import ImageSlider3D from "../components/ImageSlider3D";
-import { Helmet } from "react-helmet-async";
-
-import endpoints from '../config/api';
+import Seo from "../components/Seo";
+import endpoints from "../config/api";
 
 function ParaEquipos () {
     const flagsTeams = [
@@ -70,15 +69,11 @@ function ParaEquipos () {
     return (
         <>
             {/**SEO ELEMENTS WITH REACT -HELMET */}
-            <Helmet>
-                <title>Para Equipos | Capacita a tu equipo con Top.education</title>
-                <meta name="description" content="Capacita a tu equipo sin grandes inversiones. Optimiza el desarrollo profesional con soluciones educativas personalizadas. Impulsa productividad e innovación." />
-                <meta property="og:title" content="Capacita a tu equipo con Top Education" />
-                <meta name="author" content="Top Education" />
-                <meta name="robots" content="index, follow" />
-                <meta property="og:description" content="Potencia tu perfil profesional con una suscripción a Top Education. Accede a +13,000 certificaciones y recursos exclusivos para transformar tu futuro." />
-                <meta property="og:type" content="website" />
-            </Helmet>
+            <Seo
+                title="Capacitación empresarial y formación para equipos"
+                description="Capacita a tu equipo con rutas personalizadas, seguimiento de progreso y certificaciones de instituciones reconocidas a nivel mundial."
+                canonicalPath="/para-equipos"
+                />
             <TeamsHero />
             <section className="relative overflow-hidden bg-[#F5F3EE] px-4 py-20 md:py-28">
                 <div className="mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-14 lg:grid-cols-2">

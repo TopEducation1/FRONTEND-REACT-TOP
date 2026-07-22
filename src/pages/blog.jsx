@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import BlogsGrid from "../components/BlogsGrid";
-import { Helmet } from "react-helmet-async";
+import Seo from "../components/Seo";
 
 function BlogPage() {
   const clientifyRef = useRef(null);
@@ -11,21 +11,11 @@ function BlogPage() {
 
   return (
     <>
-      <Helmet>
-        <title>Recursos | Top.education</title>
-        <meta
-          name="description"
-          content="Descubre ebooks y blogs exclusivos de Top.education. Accede a contenido valioso para potenciar tu conocimiento y alcanzar tus metas personales y profesionales."
-        />
-        <meta property="og:title" content="Top Education | Aprende con edX, Coursera y MasterClass" />
-        <meta name="author" content="Top Education" />
-        <meta name="robots" content="index, follow" />
-        <meta
-          property="og:description"
-          content="Descubre ebooks y blogs exclusivos de Top Education. Accede a contenido valioso para potenciar tu conocimiento y alcanzar tus metas personales y profesionales."
-        />
-        <meta property="og:type" content="website" />
-      </Helmet>
+      <Seo
+        title="Recursos gratuitos, blogs y eBooks"
+        description="Explora artículos, guías, eBooks y recursos educativos gratuitos sobre desarrollo profesional, empleabilidad, certificaciones y aprendizaje continuo."
+        canonicalPath="/blog"
+      />
 
       <section className="pt-32 pb-20 px-8 bg-[#FFFFFF]">
         <div className="container m-auto mx-auto gap-2 sect-h-pequ">

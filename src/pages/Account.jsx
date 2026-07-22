@@ -20,6 +20,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import Seo from "../components/Seo";
 
 const stripePublishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
@@ -195,6 +196,73 @@ function trialPercentLeft(trialEnd, trialStart) {
   const left = Math.max(0, end - now);
 
   return Math.max(0, Math.min(100, (left / total) * 100));
+}
+
+function toTimestamp(value) {
+  if (!value) return null;
+
+  if (typeof value === "number") {
+    const milliseconds = value < 1000000000000 ? value * 1000 : value;
+    return Number.isFinite(milliseconds) ? milliseconds : null;
+  }
+
+  const timestamp = new Date(value).getTime();
+  return Number.isFinite(timestamp) ? timestamp : null;
+}
+
+function getPaymentAmount(item) {
+  const raw =
+    item?.amount_paid ??
+    item?.amount ??
+    item?.amount_total ??
+    item?.total ??
+    item?.amount_due ??
+    0;
+
+  const amount = Number(raw);
+  return Number.isFinite(amount) ? amount : 0;
+}
+
+function isSuccessfulPayment(item) {
+  const status = String(
+    item?.status || item?.payment_status || item?.invoice_status || ""
+  ).toLowerCase();
+
+  return ["paid", "succeeded", "success", "complete", "completed"].includes(status);
+}
+
+function getPaymentDate(item) {
+  return toTimestamp(
+    item?.paid_at ||
+      item?.status_transitions?.paid_at ||
+      item?.created_at ||
+      item?.created ||
+      item?.date
+  );
+}
+
+function getLatestPaidCharge(invoices = [], purchases = []) {
+  return [...(Array.isArray(invoices) ? invoices : []), ...(Array.isArray(purchases) ? purchases : [])]
+    .filter((item) => isSuccessfulPayment(item) && getPaymentAmount(item) > 0)
+    .map((item) => ({ item, timestamp: getPaymentDate(item) }))
+    .filter(({ timestamp }) => Number.isFinite(timestamp))
+    .sort((a, b) => b.timestamp - a.timestamp)[0] || null;
+}
+
+function addBillingPeriod(value, billingCycle = "monthly") {
+  const timestamp = toTimestamp(value);
+  if (!timestamp) return null;
+
+  const source = new Date(timestamp);
+  const next = new Date(source);
+
+  if (billingCycle === "yearly") {
+    next.setFullYear(next.getFullYear() + 1);
+  } else {
+    next.setMonth(next.getMonth() + 1);
+  }
+
+  return next.toISOString();
 }
 
 function normalizePurchases(raw) {
@@ -1636,13 +1704,9 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
     PLAN_CATALOG.plus,
   ].filter(Boolean);
 
-  const subscriptionStatus =
-    me?.subscription_status || me?.subscription?.status || "free";
-
-  const isTrial =
-    subscriptionStatus === "trialing" ||
-    subscriptionStatus === "pro_trialing" ||
-    Boolean(me?.trial_end);
+  const subscriptionStatus = String(
+    me?.subscription_status || me?.subscription?.status || "free"
+  ).toLowerCase();
 
   const trialStart =
     me?.trial_start ||
@@ -1651,20 +1715,58 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
     learningRoute?.trial_start ||
     null;
 
+  // IMPORTANTE: current_period_end no es el final de la prueba.
+  // Solo se usan campos reales de trial para decidir si la prueba continúa activa.
   const trialEnd =
     me?.trial_end ||
     me?.subscription_trial_end ||
-    me?.current_period_end ||
-    me?.subscription_renewal ||
-    me?.subscription?.current_period_end ||
+    me?.subscription?.trial_end ||
     learningRoute?.trial_end ||
     null;
 
-  const firstChargeDate =
-    trialEnd || me?.current_period_end || me?.subscription_renewal || null;
+  const trialEndTimestamp = toTimestamp(trialEnd);
+  const trialDays = trialEndTimestamp ? daysUntil(trialEnd) : null;
+  const latestPaidCharge = getLatestPaidCharge(invoices, purchases);
+  const hasSuccessfulPaidCharge = Boolean(latestPaidCharge);
 
-  const trialDays = daysUntil(trialEnd);
-  const progressWidth = trialPercentLeft(trialEnd, trialStart);
+  const backendTrialFlag =
+    me?.is_trial_active ??
+    me?.trial_active ??
+    me?.subscription?.is_trial_active;
+
+  const trialStatusActive = ["trialing", "pro_trialing"].includes(subscriptionStatus);
+  const trialDateActive = Boolean(trialEndTimestamp && trialEndTimestamp > Date.now());
+
+  const isTrial =
+    planDetails.key !== "free" &&
+    backendTrialFlag !== false &&
+    trialStatusActive &&
+    trialDateActive &&
+    !hasSuccessfulPaidCharge;
+
+  const progressWidth = isTrial ? trialPercentLeft(trialEnd, trialStart) : 0;
+
+  const backendNextBillingDate =
+    me?.next_billing_date ||
+    me?.next_payment_date ||
+    me?.current_period_end ||
+    me?.subscription_renewal ||
+    me?.subscription?.current_period_end ||
+    null;
+
+  const backendNextBillingTimestamp = toTimestamp(backendNextBillingDate);
+  const latestPaidDate = latestPaidCharge?.timestamp || null;
+
+  // Si el backend todavía devuelve una fecha vencida (por ejemplo, el final del trial),
+  // calculamos la siguiente renovación desde la última factura pagada.
+  const nextBillingDate =
+    backendNextBillingTimestamp && backendNextBillingTimestamp > Date.now()
+      ? new Date(backendNextBillingTimestamp).toISOString()
+      : latestPaidDate
+      ? addBillingPeriod(latestPaidDate, planDetails.billingCycle)
+      : null;
+
+  const firstChargeDate = isTrial ? trialEnd : nextBillingDate;
 
   const currentPlanMonthlyValue = Number(planDetails.monthlyValue || 0);
   const currentPlanYearlyValue = Number(planDetails.yearlyValue || 0);
@@ -1844,14 +1946,16 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
             </p>
 
             <div className="mt-3 flex flex-wrap gap-2 lg:gap-3">
-              {(planDetails.tags || []).map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full bg-white/16 px-3 py-1 lg:px-4 lg:py-2 !font-['Montserrat'] text-[12px] lg:text-sm font-semibold"
-                >
-                  {tag}
-                </span>
-              ))}
+              {(planDetails.tags || [])
+                .filter((tag) => isTrial || !/7\s*d[ií]as\s*gratis/i.test(String(tag)))
+                .map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full bg-white/16 px-3 py-1 lg:px-4 lg:py-2 !font-['Montserrat'] text-[12px] lg:text-sm font-semibold"
+                  >
+                    {tag}
+                  </span>
+                ))}
             </div>
           </div>
 
@@ -1874,11 +1978,11 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
           </div>
         </div>
 
-        {isTrial && planDetails.key !== "free" && (
+        {isTrial && planDetails.key !== "free" ? (
           <div className="mt-4 border-t border-white/20 pt-4">
             <div className="flex items-center justify-between !font-['Montserrat']">
               <span>Período de prueba</span>
-              <strong>{trialDays ?? 7} días restantes</strong>
+              <strong>{trialDays ?? 0} días restantes</strong>
             </div>
 
             <div className="mt-1 h-2 overflow-hidden rounded-full bg-white/20">
@@ -1889,9 +1993,17 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
             </div>
 
             <p className="mt-2 !font-['Montserrat'] text-sm text-white/80">
-              Próximo cobro: {fmtDate(firstChargeDate)} · {currentActivePrice} USD
+              Primer cobro: {fmtDate(firstChargeDate)} · {currentActivePrice} USD
             </p>
           </div>
+        ) : (
+          planDetails.key !== "free" && nextBillingDate && (
+            <div className="mt-4 border-t border-white/20 pt-4">
+              <p className="!font-['Montserrat'] text-sm text-white/85">
+                Próximo cobro: {fmtDate(nextBillingDate)} · {currentActivePrice} USD
+              </p>
+            </div>
+          )
         )}
       </section>
 
@@ -2583,7 +2695,15 @@ export default function Account() {
   const planLabel = planDetails.badge;
 
   return (
-    <Elements stripe={stripePromise}>
+    <>
+      <Seo
+        title="Mi cuenta"
+        description="Administra tu cuenta, perfil, membresía y ruta de aprendizaje en Top Education."
+        canonicalPath="/account"
+        robots="noindex, nofollow"
+      />
+
+      <Elements stripe={stripePromise}>
       <div className="min-h-screen bg-[#F6F4EF]">
         <TopBar
           email={me?.email}
@@ -2634,6 +2754,7 @@ export default function Account() {
 
         <DashboardWelcomeModal open={showWelcome} onClose={() => setShowWelcome(false)} defaultTab={defaultTab} />
       </div>
-    </Elements>
+      </Elements>
+    </>
   );
 }

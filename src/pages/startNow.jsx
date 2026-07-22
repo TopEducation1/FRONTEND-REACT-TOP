@@ -1,6 +1,5 @@
 // src/pages/StartNow.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Elements,
@@ -10,6 +9,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import endpoints from "../config/api";
+import Seo from "../components/Seo";
 
 async function postJSON(url, body, { withCredentials = true } = {}) {
   const res = await fetch(url, {
@@ -1673,13 +1673,11 @@ function StartNowContent() {
 
   return (
     <>
-      <Helmet>
-        <title>Empieza Ahora | Top Education</title>
-        <meta
-          name="description"
-          content="Construye tu ruta personalizada de aprendizaje con Top Education."
-        />
-      </Helmet>
+      <Seo
+        title="Empieza ahora"
+        description="Crea tu ruta de aprendizaje personalizada y descubre cursos y certificaciones alineados con tus intereses, objetivos y crecimiento profesional."
+        canonicalPath="/empieza-ahora"
+      />
 
       <style>
         {`
