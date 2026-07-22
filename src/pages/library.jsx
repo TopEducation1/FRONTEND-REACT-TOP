@@ -14,7 +14,7 @@ import IndexCategories from "../components/IndexCategories";
 import SearchBar from "../components/searchBar";
 
 import {KNOWLEDGE_DOMAINS,} from "../constants/knowledgeDomains";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import {
   FaChevronLeft,
   FaChevronRight,

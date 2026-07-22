@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import Seo from "../components/Seo";
 import TopicSelector from "../components/TopicSelector";
 import PlatformsSelector from "../components/PlatformsSelector";
 import HorizontalScroll from "../components/HorizontalScroll";
@@ -475,16 +475,12 @@ function HomePage() {
 
   return (
     <>
-      <Helmet>
-        <title>Top.education</title>
-        <meta name="description" content="Conoce Top Education..." />
-        <meta
-          property="og:title"
-          content="Top Education | Aprende con edX, Coursera y MasterClass"
-        />
-        <meta name="author" content="Top Education" />
-        <meta name="robots" content="index, follow" />
-      </Helmet>
+      <Seo
+        title="Certificaciones y rutas de aprendizaje"
+        description="Descubre certificaciones, cursos y rutas de aprendizaje de universidades y plataformas reconocidas para impulsar tu crecimiento profesional."
+        canonicalPath="/"
+      />
+      
       <style jsx>{`
         .home-swiper-prev,
         .home-swiper-next {

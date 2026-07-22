@@ -175,23 +175,19 @@ function TeamsHero() {
             </p>
           </div>
 
-          {/* CONTENEDOR VACÍO PARA FORMULARIO */}
+          {/* AGENDADOR GOOGLE CALENDAR */}
           <div className="order-1 lg:order-2">
             <div
               id="teams-demo-form-container"
-              className="relative min-h-[540px] w-full overflow-hidden rounded-[26px] bg-white shadow-[0_32px_90px_rgba(0,0,0,0.26)] md:min-h-[620px]"
+              className="relative min-h-[720px] w-full overflow-hidden rounded-[26px] bg-white shadow-[0_32px_90px_rgba(0,0,0,0.26)] md:min-h-[680px]"
             >
-              {/*
-                Insertar aquí el formulario embebido.
-
-                Ejemplo:
-
-                <iframe
-                  src="URL_DEL_FORMULARIO"
-                  title="Agenda tu demo"
-                  className="absolute inset-0 h-full w-full border-0"
-                />
-              */}
+              <iframe
+                src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ10Vy_lLuSUdtV-g55UJpr5FGOXR4qEdAiY7cSIz5bZC0pzbBCFsYQonlZIxQEKUXIT2fUujTQ9?gv=true"
+                title="Agenda una demostración empresarial con Top Education"
+                className="absolute inset-0 h-full w-full border-0"
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+              />
             </div>
           </div>
         </div>

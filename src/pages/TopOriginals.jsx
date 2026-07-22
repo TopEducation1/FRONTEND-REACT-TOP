@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import HeroSlider from "../components/HeroSlider";
 import endpoints from "../config/api";
 import { ArrowRight } from "lucide-react";

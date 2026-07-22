@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import BlogsGrid from "../components/BlogsGrid";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 function BlogPage() {
   const clientifyRef = useRef(null);

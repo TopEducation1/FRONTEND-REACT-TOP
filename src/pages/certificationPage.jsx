@@ -6,7 +6,7 @@ import getCertificationById from "../services/getCertificationById";
 import RightPop from "../components/RightPop";
 import YouTubePlayer from "../components/YoutubePlayer";
 import CertificationSlider from "../components/CertificationSlider";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 const CertificationPageSkeleton = () => {
   return (

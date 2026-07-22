@@ -3,7 +3,7 @@ import Flags from "../components/Flags";
 import TeamsHero from "../components/TeamsHero";
 import TeamsPricing from "../components/TeamsPricing";
 import ImageSlider3D from "../components/ImageSlider3D";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 import endpoints from '../config/api';
 
