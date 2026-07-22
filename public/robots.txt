@@ -1,3 +1,20 @@
-https://www.robotstxt.org/robotstxt.html
+# ==========================================================
+# TOP EDUCATION
+# https://www.top.education
+# ==========================================================
+
 User-agent: *
 Allow: /
+
+# Zonas privadas
+Disallow: /account
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /success
+
+# APIs
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://www.top.education/sitemap.xml
