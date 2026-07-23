@@ -1564,8 +1564,8 @@ function LibraryPage({ showRoutes = true }) {
 
               <h1 className="mt-1 !font-['Montserrat'] text-[2rem] font-bold leading-[1.08em] text-[#111111] md:text-[2rem]">
                 {seoState.isLatestView
-                  ? "Nuevas certificaciones y cursos"
-                  : "Explora cursos, certificaciones y rutas de aprendizaje"}
+                  ? "Nuevas certificaciones"
+                  : "Explora certificaciones y rutas de aprendizaje"}
               </h1>
 
               <p className="mt-2 max-w-[960px] !font-['Montserrat'] text-[14px] leading-[1.3em] text-neutral-600 md:text-[16px]">
