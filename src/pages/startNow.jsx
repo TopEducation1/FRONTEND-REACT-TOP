@@ -454,6 +454,169 @@ const cardElementOptions = {
   },
 };
 
+const PLANS = {
+  free: {
+    id: "free",
+    plan: "free",
+    name: "Top Education Free",
+    shortName: "Free",
+    tier: "FREE",
+
+    monthly: {
+      selectionValue: "free",
+      packageCode: "TOP_EDUCATION_FREE",
+      price: 0,
+      displayPrice: "$0",
+      billingPeriod: null,
+    },
+
+    yearly: {
+      selectionValue: "free",
+      packageCode: "TOP_EDUCATION_FREE",
+      price: 0,
+      displayPrice: "$0",
+      billingPeriod: null,
+    },
+
+    trialDays: 0,
+    lifecycleStatus: "FREE",
+    status: "free_active",
+    buttonText: "Comenzar Gratis",
+
+    features: [
+      { label: "Cursos recomendados", included: true },
+      { label: "Ruta completa", included: false },
+      { label: "Coursera", included: true },
+      { label: "edX", included: true },
+      { label: "MasterClass", included: false },
+      { label: "Certificaciones", included: false },
+      { label: "IA Topo — Mapa", type: "detail" },
+      { label: "Análisis de CV — 2 en total", type: "detail" },
+    ],
+  },
+
+  basic: {
+    id: "basic",
+    plan: "basic",
+    name: "Top Education Básico",
+    shortName: "Básico",
+    tier: "BASIC",
+
+    monthly: {
+      selectionValue: "monthly_basic",
+      packageCode: "TOP_EDUCATION_BASIC_MONTHLY",
+      price: 19,
+      displayPrice: "$19",
+      billingPeriod: "MONTHLY",
+    },
+
+    yearly: {
+      selectionValue: "yearly_basic",
+      packageCode: "TOP_EDUCATION_BASIC_ANNUAL",
+      price: 199,
+      displayPrice: "$17",
+      billingPeriod: "ANNUAL",
+    },
+
+    trialDays: 7,
+    lifecycleStatus: "TRIALING",
+    status: "pro_trialing",
+    buttonText: "Comenzar prueba gratuita",
+
+    features: [
+      { label: "Cursos recomendados", included: true },
+      { label: "Ruta completa", included: true },
+      { label: "Coursera", included: true },
+      { label: "edX", included: false },
+      { label: "MasterClass", included: false },
+      { label: "Certificaciones", included: true },
+      { label: "IA Topo — Análisis", type: "detail" },
+      { label: "Análisis de CV — 1 al mes (12 anuales)", type: "detail" },
+    ],
+  },
+
+  x: {
+    id: "x",
+    plan: "x",
+    name: "Top Education X",
+    shortName: "X",
+    tier: "X",
+    popular: true,
+
+    monthly: {
+      selectionValue: "monthly_x",
+      packageCode: "TOP_EDUCATION_X_MONTHLY",
+      price: 29,
+      displayPrice: "$29",
+      billingPeriod: "MONTHLY",
+    },
+
+    yearly: {
+      selectionValue: "yearly_x",
+      packageCode: "TOP_EDUCATION_X_ANNUAL",
+      price: 299,
+      displayPrice: "$25",
+      billingPeriod: "ANNUAL",
+    },
+
+    trialDays: 7,
+    lifecycleStatus: "TRIALING",
+    status: "pro_trialing",
+    buttonText: "Comenzar prueba gratuita",
+
+    features: [
+      { label: "Cursos recomendados", included: true },
+      { label: "Ruta completa", included: true },
+      { label: "Coursera", included: true },
+      { label: "edX", included: false },
+      { label: "MasterClass", included: true },
+      { label: "Certificaciones", included: true },
+      { label: "IA Topo — Predicción", type: "detail" },
+      { label: "Análisis de CV — 2 al mes (24 anuales)", type: "detail" },
+    ],
+  },
+
+  plus: {
+    id: "plus",
+    plan: "plus",
+    name: "Top Education Plus",
+    shortName: "Plus",
+    tier: "PLUS",
+
+    monthly: {
+      selectionValue: "monthly_plus",
+      packageCode: "TOP_EDUCATION_PLUS_MONTHLY",
+      price: 49,
+      displayPrice: "$49",
+      billingPeriod: "MONTHLY",
+    },
+
+    yearly: {
+      selectionValue: "yearly_plus",
+      packageCode: "TOP_EDUCATION_PLUS_ANNUAL",
+      price: 499,
+      displayPrice: "$42",
+      billingPeriod: "ANNUAL",
+    },
+
+    trialDays: 7,
+    lifecycleStatus: "TRIALING",
+    status: "pro_trialing",
+    buttonText: "Comenzar prueba gratuita",
+
+    features: [
+      { label: "Cursos recomendados", included: true },
+      { label: "Ruta completa", included: true },
+      { label: "Coursera", included: true },
+      { label: "edX", included: true },
+      { label: "MasterClass", included: true },
+      { label: "Certificaciones", included: true },
+      { label: "IA Topo — Avanzado", type: "detail" },
+      { label: "Análisis de CV — 3 al mes (36 anuales)", type: "detail" },
+    ],
+  },
+};
+
 function StartNowContent() {
   const navigate = useNavigate();
   const stripe = useStripe();
@@ -466,7 +629,7 @@ function StartNowContent() {
   const [routeId, setRouteId] = useState(null);
   const [progress, setProgress] = useState(0);
   const [selectedPlan, setSelectedPlan] = useState("");
-  const [selectedPaidPlan, setSelectedPaidPlan] = useState("monthly_x");
+  const [selectedPaidPlan, setSelectedPaidPlan] = useState(null);
   const [showPass, setShowPass] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
   const [paidSubscriptionData, setPaidSubscriptionData] = useState(null);
@@ -540,26 +703,53 @@ function StartNowContent() {
 
   const isAnnual = billingCycle === "yearly";
 
-  const planXPrice = isAnnual ? "$25" : "$29";
-  const planPlusPrice = isAnnual ? "$42" : "$49";
+  const getPlanConfig = (planId) => {
+    return PLANS[planId] || PLANS.free;
+  };
 
-  const planXSubcopy = isAnnual ? (
-    <>
-      $299 USD al año ·{" "}
-      <span className="font-black text-[#5CC781]">Ahorras $49</span>
-    </>
-  ) : (
-    "o $299 USD al año"
-  );
+  const getPlanCycleConfig = (
+    planId,
+    cycle = billingCycle
+  ) => {
+    const planConfig = getPlanConfig(planId);
 
-  const planPlusSubcopy = isAnnual ? (
-    <>
-      $499 USD al año ·{" "}
-      <span className="font-black text-[#5CC781]">Ahorras $89</span>
-    </>
-  ) : (
-    "o $499 USD al año"
-  );
+    if (planId === "free") {
+      return planConfig.monthly;
+    }
+
+    return cycle === "yearly"
+      ? planConfig.yearly
+      : planConfig.monthly;
+  };
+
+  const getPlanBySelectionValue = (selectionValue) => {
+    if (!selectionValue || selectionValue === "free") {
+      return {
+        planConfig: PLANS.free,
+        cycleConfig: PLANS.free.monthly,
+      };
+    }
+
+    for (const planConfig of Object.values(PLANS)) {
+      for (const cycleName of ["monthly", "yearly"]) {
+        const cycleConfig = planConfig[cycleName];
+
+        if (cycleConfig?.selectionValue === selectionValue) {
+          return {
+            planConfig,
+            cycleConfig,
+            cycle: cycleName,
+          };
+        }
+      }
+    }
+
+    return {
+      planConfig: PLANS.free,
+      cycleConfig: PLANS.free.monthly,
+      cycle: "monthly",
+    };
+  };
 
   const topicOptions = [
   {
@@ -886,20 +1076,19 @@ function StartNowContent() {
     }),
     [form, routeId, selectedPlan, selectedPaidPlan, allRecommendedCourses]
   );
+  const activePlanData = useMemo(
+    () => getPlanBySelectionValue(selectedPaidPlan),
+    [selectedPaidPlan]
+  );
 
-  const activePlanName = selectedPaidPlan.includes("plus")
-    ? "Top Education Plus"
-    : "Top Education X";
+  const activePlanName = activePlanData.planConfig.name;
+  const activePlanPrice = activePlanData.cycleConfig.displayPrice;
+  const activePlanInterval =
+    activePlanData.cycle === "yearly" ? "año" : "mes";
 
-  const activePlanPrice = selectedPaidPlan.includes("plus")
-    ? planPlusPrice
-    : planXPrice;
-
-  const activePlanInterval = selectedPaidPlan.includes("yearly") ? "año" : "mes";
-
-  const activePlanDescription = selectedPaidPlan.includes("plus")
-    ? "Obtén 7 días gratis de Top Education Plus. Cancela cuando quieras."
-    : "Obtén 7 días gratis de Top Education X con MasterClass y Coursera. Cancela cuando quieras.";
+  const activePlanDescription =
+    `Obtén ${activePlanData.planConfig.trialDays} días gratis de ` +
+    `${activePlanData.planConfig.name}. Cancela cuando quieras.`;
 
   const trialEndDate = paidSubscriptionData?.trial_end
     ? new Date(paidSubscriptionData.trial_end).toLocaleDateString("es-CO", {
@@ -918,7 +1107,21 @@ function StartNowContent() {
     form.age &&
     form.gender &&
     form.country;
+  
+  const selectPlan = (planId) => {
+    if (planId === "free") {
+      setSelectedPlan("free");
+      setSelectedPaidPlan("free");
+      trackClientifyPlanInterest("free");
+      return;
+    }
 
+    const cycleConfig = getPlanCycleConfig(planId, billingCycle);
+
+    setSelectedPlan(planId);
+    setSelectedPaidPlan(cycleConfig.selectionValue);
+    trackClientifyPlanInterest(cycleConfig.selectionValue);
+  };
   const syncClientifyHiddenForm = (payload = {}) => {
     const formEl = document.getElementById("clientify-startnow-form");
     if (!formEl) return;
@@ -1055,7 +1258,8 @@ function StartNowContent() {
     pushClientifyEvent("startnow_plan_selected", {
       selected_plan: finalPlan,
       selected_paid_plan: planValue,
-      billing_cycle: planValue.includes("yearly") ? "yearly" : "monthly",
+      billing_cycle:
+        String(planValue || "").includes("yearly") ? "yearly" : "monthly",
       package_code: packageCode,
       recommended_courses: allRecommendedCourses.map((course, index) => ({
         idInterno: course.idInterno,
@@ -1106,19 +1310,28 @@ function StartNowContent() {
     planValue = selectedPaidPlan,
     finalPlan = selectedPlan
   ) => {
-    if (finalPlan === "free") return "TOP_EDUCATION_FREE";
-    if (planValue === "monthly_x") return "TOP_EDUCATION_X_MONTHLY";
-    if (planValue === "yearly_x") return "TOP_EDUCATION_X_ANNUAL";
-    if (planValue === "monthly_plus") return "TOP_EDUCATION_PLUS_MONTHLY";
-    if (planValue === "yearly_plus") return "TOP_EDUCATION_PLUS_ANNUAL";
+    if (finalPlan === "free") {
+      return PLANS.free.monthly.packageCode;
+    }
 
-    return "TOP_EDUCATION_FREE";
+    const { cycleConfig } = getPlanBySelectionValue(planValue);
+
+    return cycleConfig.packageCode;
   };
 
-  const getTier = (packageCode) => {
-    if (packageCode.includes("PLUS")) return "PLUS";
-    if (packageCode.includes("_X_")) return "X";
-    return "FREE";
+  const getTier = (packageCode = "") => {
+    const normalizedCode = String(packageCode)
+      .trim()
+      .toUpperCase();
+
+    const matchedPlan = Object.values(PLANS).find((planConfig) => {
+      return (
+        planConfig.monthly?.packageCode === normalizedCode ||
+        planConfig.yearly?.packageCode === normalizedCode
+      );
+    });
+
+    return matchedPlan?.tier || "FREE";
   };
 
   const getBillingPeriod = (packageCode = "") => {
@@ -1126,16 +1339,14 @@ function StartNowContent() {
       .trim()
       .toUpperCase();
 
-    if (normalizedCode === "TOP_EDUCATION_FREE") {
-      return "MONTHLY";
-    }
+    for (const planConfig of Object.values(PLANS)) {
+      for (const cycleName of ["monthly", "yearly"]) {
+        const cycleConfig = planConfig[cycleName];
 
-    if (normalizedCode.includes("MONTHLY")) {
-      return "MONTHLY";
-    }
-
-    if (normalizedCode.includes("ANNUAL")) {
-      return "ANNUAL";
+        if (cycleConfig?.packageCode === normalizedCode) {
+          return cycleConfig.billingPeriod;
+        }
+      }
     }
 
     return null;
@@ -1147,79 +1358,125 @@ function StartNowContent() {
     return 3;
   };
 
-  const buildMxPayload = ({ finalPlan, subscriptionData = {} }) => {
-    const packageCode = getPackageCode(selectedPaidPlan, finalPlan);
-    const isFree = finalPlan === "free";
+  const buildMxPayload = ({
+  finalPlan,
+  subscriptionData = {},
+}) => {
+  const planConfig = getPlanConfig(finalPlan);
 
-    return {
-      schemaVersion: "1.0",
-      eventType: "USER_ACCESS_PROVISION",
-      traceId: `col-startnow-${routeId || Date.now()}`,
-      customer: {
-        email: form.email,
-        emailNormalized: form.email.trim().toLowerCase(),
-        name: form.first_name,
-        lastName: form.last_name,
-        age: form.age ? Number(form.age) : null,
-        gender: form.gender,
-        country: form.country,
-      },
-      learningProfile: {
-        topics: form.topics.map((topic, index) => ({
-          id: null,
-          name: topic,
-          order: index + 1,
-        })),
-        goal: form.goal,
-      },
-      recommendedCourses: allRecommendedCourses.map((course, index) => ({
-        idInterno: course.idInterno,
-        colombiaCertificationId: course.colombiaCertificationId || course.id,
-        title: course.title,
-        level: course.level,
-        provider: course.provider,
+  const cycleConfig =
+    finalPlan === "free"
+      ? planConfig.monthly
+      : getPlanBySelectionValue(selectedPaidPlan)
+          .cycleConfig;
+
+  const isFree = finalPlan === "free";
+
+  return {
+    schemaVersion: "1.1",
+    eventType: "USER_ACCESS_PROVISION",
+    traceId: `col-startnow-${routeId || Date.now()}`,
+
+    customer: {
+      email: form.email,
+      emailNormalized: form.email.trim().toLowerCase(),
+      name: form.first_name,
+      lastName: form.last_name,
+      age: form.age ? Number(form.age) : null,
+      gender: form.gender,
+      country: form.country,
+    },
+
+    learningProfile: {
+      topics: form.topics.map((topic, index) => ({
+        id: null,
+        name: topic,
         order: index + 1,
-        routeLevel: getRouteLevelByCourse(course),
       })),
-      plan: {
-        packageCode,
-        tier: getTier(packageCode),
-        billingPeriod: getBillingPeriod(packageCode),
-        accessStatus: "ALLOWED",
-        lifecycleStatus: isFree ? "FREE" : "TRIALING",
-        pendingAction: "NONE",
-        trial: {
-          isTrial: !isFree,
-          trialStart: subscriptionData?.trial_start || null,
-          trialEnd: subscriptionData?.trial_end || null,
-          trialDays: isFree ? 0 : 7,
-        },
-      },
-      billing: {
-        source: "COLOMBIA",
-        stripeCustomerId: subscriptionData?.stripe_customer_id || null,
-        stripeSubscriptionId: subscriptionData?.stripe_subscription_id || null,
-        stripePaymentMethodId: subscriptionData?.payment_method_id || null,
-        status: isFree ? "free" : subscriptionData?.status || "trialing",
-        currentPeriodEnd: subscriptionData?.current_period_end || null,
-      },
-      redirects: {
-        subscriptionManagementUrl: `${window.location.origin}/account?tab=license`,
-        colombiaAccountUrl: `${window.location.origin}/account`,
-      },
-      metadata: {
-        routeId,
-        selectedPaidPlan,
-        createdFrom: "startNow",
-      },
-    };
-  };
+      goal: form.goal,
+    },
 
-  const getFinalPlanFromPaidPlan = (paidPlan = selectedPaidPlan) => {
-    if (paidPlan.includes("plus")) return "plus";
-    if (paidPlan.includes("basic")) return "basic";
-    if (paidPlan.includes("x")) return "x";
-    return "free";
+    recommendedCourses:
+      allRecommendedCourses.map(
+        (course, index) => ({
+          idInterno: course.idInterno,
+          colombiaCertificationId:
+            course.colombiaCertificationId ||
+            course.id,
+          title: course.title,
+          level: course.level,
+          provider: course.provider,
+          order: index + 1,
+          routeLevel:
+            getRouteLevelByCourse(course),
+        })
+      ),
+
+    plan: {
+      packageCode:
+        cycleConfig.packageCode,
+      tier: planConfig.tier,
+      billingPeriod:
+        cycleConfig.billingPeriod,
+      accessStatus: "ALLOWED",
+      lifecycleStatus:
+        planConfig.lifecycleStatus,
+      pendingAction: "NONE",
+
+      trial: {
+        isTrial: !isFree,
+        trialStart:
+          subscriptionData?.trial_start ||
+          null,
+        trialEnd:
+          subscriptionData?.trial_end ||
+          null,
+        trialDays:
+          planConfig.trialDays,
+      },
+    },
+
+    billing: {
+      source: "COLOMBIA",
+      stripeCustomerId:
+        subscriptionData?.stripe_customer_id ||
+        null,
+      stripeSubscriptionId:
+        subscriptionData?.stripe_subscription_id ||
+        null,
+      stripePaymentMethodId:
+        subscriptionData?.payment_method_id ||
+        null,
+      status: isFree
+        ? "free"
+        : subscriptionData?.status ||
+          "trialing",
+      currentPeriodEnd:
+        subscriptionData?.current_period_end ||
+        null,
+    },
+
+    redirects: {
+      subscriptionManagementUrl:
+        `${window.location.origin}/account?tab=license`,
+      colombiaAccountUrl:
+        `${window.location.origin}/account`,
+    },
+
+    metadata: {
+      routeId,
+      selectedPaidPlan,
+      createdFrom: "startNow",
+    },
+  };
+};
+
+  const getFinalPlanFromPaidPlan = (
+    paidPlan = selectedPaidPlan
+  ) => {
+    const { planConfig } = getPlanBySelectionValue(paidPlan);
+
+    return planConfig.plan;
   };
 
   const validatePassword = () => {
@@ -1360,13 +1617,8 @@ function StartNowContent() {
     try {
       const finalPlan =
         plan ||
-        (
-          selectedPlan === "free"
-            ? "free"
-            : selectedPaidPlan.includes("plus")
-            ? "plus"
-            : "x"
-        );
+        selectedPlan ||
+        getFinalPlanFromPaidPlan(selectedPaidPlan);
 
       const subscriptionData = paidSubscriptionData || {};
 
@@ -1670,7 +1922,19 @@ function StartNowContent() {
 
     return () => clearInterval(interval);
   }, [step]);
+  useEffect(() => {
+    if (!selectedPlan || selectedPlan === "free") {
+      return;
+    }
 
+    const planConfig = getPlanConfig(selectedPlan);
+    const cycleConfig =
+      billingCycle === "yearly"
+        ? planConfig.yearly
+        : planConfig.monthly;
+
+    setSelectedPaidPlan(cycleConfig.selectionValue);
+  }, [billingCycle, selectedPlan]);
   return (
     <>
       <Seo
@@ -1950,7 +2214,7 @@ function StartNowContent() {
             </h2>
 
             <p className="mt-0 !font-['Montserrat'] text-[1rem] md:text-[1.05rem] text-neutral-600">
-              Selecciona hasta 3 temas que te interesen.
+              Selecciona hasta 3 dominios que te interesen.
             </p>
 
             <div className="mt-3 flex items-center gap-3 !font-['Montserrat'] text-sm text-neutral-600">
@@ -1969,8 +2233,8 @@ function StartNowContent() {
 
               <span>
                 {form.topic_ids.length === 0
-                  ? "Selecciona al menos 1 tema"
-                  : `${form.topic_ids.length} temas seleccionados`}
+                  ? "Selecciona al menos 1 dominio"
+                  : `${form.topic_ids.length} dominios seleccionados`}
               </span>
             </div>
 
@@ -2369,216 +2633,151 @@ function StartNowContent() {
                 </span>
               </div>
 
-              <div className="mt-10 grid grid-cols-1 gap-3 lg:grid-cols-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    trackClientifyPlanInterest("free");
-                    setSelectedPlan("free");
-                    setStep("createPassword");
-                  }}
-                  className="flex min-h-[420px] mt-4 mb-4 flex-col rounded-[24px] border border-black/10 bg-white px-5 py-8 text-left shadow-[0_16px_45px_rgba(0,0,0,0.05)] transition hover:-translate-y-1"
-                >
-                  <span className="!font-['Montserrat'] text-sm font-black uppercase text-[#5CC781]">
-                    Comenzar gratis
-                  </span>
-                  <h4 className="mt-0 !font-['Montserrat'] text-[1.8rem] font-black text-[#111111]">
-                    Top Education Free
-                  </h4>
-                  <div className="mt-2 !font-['Montserrat'] text-[3.2rem] font-black leading-none text-[#111111]">
-                    $0
-                  </div>
-                  <p className="mt-3 !font-['Montserrat'] text-neutral-600">
-                    Explora la plataforma y descubre tu potencial.
-                  </p>
+              <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+                {Object.values(PLANS).map((planConfig) => {
+                  const cycleConfig =
+                    planConfig.id === "free"
+                      ? planConfig.monthly
+                      : getPlanCycleConfig(planConfig.id, billingCycle);
 
-                  <span className="mt-5 !font-['Montserrat'] font-black uppercase text-[#111111]">
-                    Incluye:
-                  </span>
-                  <ul className="mt-2 space-y-3 !font-['Montserrat'] text-neutral-700">
-                    <li className="text-[#5CC781]">
-                      ✓{" "}
-                      <span className="text-neutral-700">
-                        Acceso al Nivel 1 de tu ruta
-                      </span>
-                    </li>
-                    <li className="text-[#5CC781]">
-                      ✓{" "}
-                      <span className="text-neutral-700">
-                        3 cursos seleccionados por Top Education
-                      </span>
-                    </li>
-                    <li className="text-[#5CC781]">
-                      ✓{" "}
-                      <span className="text-neutral-700">
-                        Dashboard de aprendizaje
-                      </span>
-                    </li>
-                    <li>✓ Análisis de tu CV cotejado con tu ruta</li>
-                    <li className="text-[#5CC781]">
-                      ✓{" "}
-                      <span className="text-neutral-700">
-                        Recomendaciones básicas
-                      </span>
-                    </li>
-                    <li className="text-neutral-300">
-                      × <span className="text-neutral-400">Certificaciones</span>
-                    </li>
-                    <li className="text-neutral-300">
-                      ×{" "}
-                      <span className="text-neutral-400">
-                        Acceso completo a la ruta
-                      </span>
-                    </li>
-                    <li className="text-neutral-300">
-                      ×{" "}
-                      <span className="text-neutral-400">
-                        Seguimiento avanzado
-                      </span>
-                    </li>
-                    <li className="text-neutral-300">
-                      × <span className="text-neutral-400">IA personalizada</span>
-                    </li>
-                  </ul>
+                  const isPopular = Boolean(planConfig.popular);
+                  const isFreePlan = planConfig.id === "free";
+                  const isSelected = selectedPlan === planConfig.id;
 
-                  <div className="mt-auto rounded-[16px] border border-black/10 bg-[#F6F4EF] px-6 py-4 text-center !font-['Montserrat'] font-bold text-[#111111]">
-                    Comenzar Gratis
-                  </div>
-                </button>
+                  const annualTotal =
+                    !isFreePlan && billingCycle === "yearly"
+                      ? cycleConfig.price
+                      : null;
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    const plan = isAnnual ? "yearly_x" : "monthly_x";
-                    setSelectedPlan("x");
-                    setSelectedPaidPlan(plan);
-                    trackClientifyPlanInterest(plan);
-                    setStep("proPayment");
-                  }}
-                  disabled={loading}
-                  className="relative flex min-h-[560px] flex-col rounded-[24px] bg-[#1941cf] px-5 py-8 text-left text-white shadow-[0_26px_70px_rgba(47,91,219,0.28)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  <span className="absolute left-1/2 top-[-18px] -translate-x-1/2 rounded-full bg-[#FDBA3B] px-5 py-2 !font-['Montserrat'] text-sm font-black text-white shadow-[0_14px_35px_rgba(253,186,59,0.28)]">
-                    ⭐ MÁS POPULAR
-                  </span>
+                  const monthlyEquivalent =
+                    !isFreePlan && billingCycle === "yearly"
+                      ? cycleConfig.displayPrice
+                      : cycleConfig.displayPrice;
 
-                  <h4 className="mt-6 !font-['Montserrat'] text-[2rem] font-black">
-                    Top Education X
-                  </h4>
-                  <div className="mt-2 !font-['Montserrat'] text-[3.2rem] font-black leading-none">
-                    {planXPrice}{" "}
-                    <span className="text-lg font-medium text-white/75">
-                      USD / mes
-                    </span>
-                  </div>
-                  <p className="mt-2 !font-['Montserrat'] text-white/70">
-                    {planXSubcopy}
-                  </p>
-                  <p className="mt-4 !font-['Montserrat'] text-lg font-semibold leading-[1.45em] text-white">
-                    La mejor combinación para acelerar tu crecimiento
-                    profesional.
-                  </p>
+                  return (
+                    <button
+                      key={planConfig.id}
+                      type="button"
+                      onClick={() => {
+                        selectPlan(planConfig.id);
+                        setStep(isFreePlan ? "createPassword" : "proPayment");
+                      }}
+                      disabled={loading}
+                      className={`relative flex min-h-[550px] flex-col rounded-[26px] px-6 py-8 text-left transition duration-300 hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-60 ${
+                        isPopular
+                          ? "bg-[#2438C8] text-white shadow-[0_26px_70px_rgba(36,56,200,0.30)]"
+                          : "border border-black/10 bg-white text-[#111111] shadow-[0_16px_45px_rgba(0,0,0,0.06)]"
+                      } ${
+                        isSelected
+                          ? isPopular
+                            ? "ring-4 ring-[#2438C8]/20"
+                            : "ring-4 ring-[#2563EB]/15"
+                          : ""
+                      }`}
+                    >
+                      {isPopular && (
+                        <span className="absolute left-1/2 top-[-16px] -translate-x-1/2 whitespace-nowrap rounded-full bg-[#FDBA3B] px-5 py-2 !font-['Montserrat'] text-xs font-black text-white shadow-[0_14px_35px_rgba(253,186,59,0.28)]">
+                          + MÁS POPULAR
+                        </span>
+                      )}
 
-                  <span className="mt-5 !font-['Montserrat'] font-black uppercase">
-                    Incluye:
-                  </span>
-                  <ul className="my-2 space-y-2 !font-['Montserrat'] text-white">
-                    <li>✓ Coursera + MasterClass</li>
-                    <li>✓ Certificaciones disponibles en tus 3 cursos</li>
-                    <li>✓ Acceso a toda tu ruta personalizada</li>
-                    <li>✓ IA Topo: recomendaciones inteligentes</li>
-                    <li>✓ Acceso a toda tu ruta personalizada</li>
-                    <li>✓ Certificaciones disponibles</li>
-                    <li>✓ Seguimiento de progreso</li>
-                    <li>✓ Recomendaciones inteligentes</li>
-                    <li>✓ Nuevas rutas personalizadas</li>
-                    <li>✓ Actualización continua de habilidades</li>
-                    <li>✓ Prueba gratuita de 7 días</li>
-                  </ul>
+                      {isFreePlan && (
+                        <span className="!font-['Montserrat'] text-sm font-black uppercase text-[#5CC781]">
+                          Comenzar gratis
+                        </span>
+                      )}
 
-                  <div className="mt-auto rounded-[16px] bg-white px-6 py-4 text-center !font-['Montserrat'] font-black text-[#1941cf]">
-                    Comenzar prueba gratuita →
-                  </div>
-                </button>
+                      <h4
+                        className={`${
+                          isPopular || isFreePlan ? "mt-3" : "mt-0"
+                        } !font-['Montserrat'] text-[1.7rem] font-black leading-tight`}
+                      >
+                        {planConfig.name}
+                      </h4>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    const plan = isAnnual ? "yearly_plus" : "monthly_plus";
-                    setSelectedPlan("plus");
-                    setSelectedPaidPlan(plan);
-                    trackClientifyPlanInterest(plan);
-                    setStep("proPayment");
-                  }}
-                  disabled={loading}
-                  className="flex min-h-[420px] my-4 flex-col rounded-[24px] border border-black/10 bg-white p-7 text-left shadow-[0_16px_45px_rgba(0,0,0,0.05)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  <h4 className="mt-3 !font-['Montserrat'] text-[1.8rem] font-black text-[#111111]">
-                    Top Education Plus
-                  </h4>
-                  <div className="mt-2 !font-['Montserrat'] text-[3.2rem] font-black leading-none text-[#111111]">
-                    {planPlusPrice}{" "}
-                    <span className="text-lg font-medium text-neutral-500">
-                      USD / mes
-                    </span>
-                  </div>
-                  <p className="mt-2 !font-['Montserrat'] text-neutral-500">
-                    {planPlusSubcopy}
-                  </p>
-                  <p className="mt-4 !font-['Montserrat'] leading-[1.55em] text-neutral-600">
-                    La experiencia completa para quienes buscan maximizar su
-                    aprendizaje.
-                  </p>
+                      <div className="mt-3 flex items-end gap-2">
+                        <span className="!font-['Montserrat'] text-[3rem] font-black leading-none">
+                          {monthlyEquivalent}
+                        </span>
 
-                  <span className="mt-5 !font-['Montserrat'] font-black uppercase text-[#111111]">
-                    Incluye:
-                  </span>
-                  <ul className="my-2 space-y-2 !font-['Montserrat'] text-neutral-700">
-                    <li className="text-[#2563EB]">
-                      ✓ <span className="text-neutral-700">Coursera</span>
-                    </li>
-                    <li className="text-[#2563EB]">
-                      ✓ <span className="text-neutral-700">edX</span>
-                    </li>
-                    <li className="text-[#2563EB]">
-                      ✓ <span className="text-neutral-700">MasterClass</span>
-                    </li>
-                    <li className="text-[#2563EB]">
-                      ✓{" "}
-                      <span className="text-neutral-700">
-                        Todas las certificaciones disponibles
-                      </span>
-                    </li>
-                    <li className="text-[#2563EB]">
-                      ✓ <span className="text-neutral-700">Ruta completa</span>
-                    </li>
-                    <li className="text-[#2563EB]">
-                      ✓ <span className="text-neutral-700">IA avanzada</span>
-                    </li>
-                    <li className="text-[#2563EB]">
-                      ✓{" "}
-                      <span className="text-neutral-700">
-                        Recomendaciones premium
-                      </span>
-                    </li>
-                    <li className="text-[#2563EB]">
-                      ✓{" "}
-                      <span className="text-neutral-700">
-                        Acceso prioritario a nuevas experiencias
-                      </span>
-                    </li>
-                    <li className="text-[#2563EB]">
-                      ✓{" "}
-                      <span className="text-neutral-700">
-                        Prueba gratuita de 7 días
-                      </span>
-                    </li>
-                  </ul>
+                        {!isFreePlan && (
+                          <span
+                            className={`mb-1 !font-['Montserrat'] text-base ${
+                              isPopular ? "text-white/75" : "text-neutral-500"
+                            }`}
+                          >
+                            /mes
+                          </span>
+                        )}
+                      </div>
 
-                  <div className="mt-auto rounded-[16px] bg-[#1941cf] px-6 py-4 text-center !font-['Montserrat'] font-black text-white">
-                    Comenzar prueba gratuita →
-                  </div>
-                </button>
+                      <p
+                        className={`mt-3 !font-['Montserrat'] text-sm ${
+                          isPopular ? "text-white/80" : "text-neutral-500"
+                        }`}
+                      >
+                        {isFreePlan
+                          ? "para siempre"
+                          : billingCycle === "yearly"
+                          ? `$${annualTotal} USD al año`
+                          : "7 días gratis"}
+                      </p>
+
+                      <ul
+                        className={`mt-6 space-y-2 !font-['Montserrat'] text-[15px] ${
+                          isPopular ? "text-white" : "text-neutral-700"
+                        }`}
+                      >
+                        {planConfig.features.map((feature) => {
+                          const isDetail = feature.type === "detail";
+                          const included = feature.included !== false;
+
+                          return (
+                            <li
+                              key={feature.label}
+                              className={`flex items-start gap-2 ${
+                                !isDetail && !included
+                                  ? isPopular
+                                    ? "text-white/40"
+                                    : "text-neutral-300"
+                                  : ""
+                              }`}
+                            >
+                              <span
+                                className={`mt-[1px] shrink-0 ${
+                                  isDetail
+                                    ? isPopular
+                                      ? "text-white/80"
+                                      : "text-neutral-500"
+                                    : included
+                                    ? isPopular
+                                      ? "text-white"
+                                      : "text-[#5CC781]"
+                                    : ""
+                                }`}
+                              >
+                                {isDetail ? "·" : included ? "✓" : "×"}
+                              </span>
+                              <span>{feature.label}</span>
+                            </li>
+                          );
+                        })}
+                      </ul>
+
+                      <div
+                        className={`mt-auto rounded-[18px] px-5 py-4 text-center !font-['Montserrat'] font-black ${
+                          isPopular
+                            ? "bg-white text-[#2438C8]"
+                            : isFreePlan
+                            ? "border border-black/10 bg-[#F6F4EF] text-[#111111]"
+                            : "bg-[#0D0709] text-white"
+                        }`}
+                      >
+                        {planConfig.buttonText}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </section>
 
@@ -2588,11 +2787,12 @@ function StartNowContent() {
               </h3>
 
               <div className="mt-8 overflow-x-auto">
-                <table className="min-w-full !font-['Montserrat'] text-left text-[15px]">
+                <table className="min-w-[850px] w-full !font-['Montserrat'] text-left text-[15px]">
                   <thead>
                     <tr className="border-b border-black/10 text-neutral-600">
                       <th className="px-5 py-4">Característica</th>
                       <th className="px-5 py-4 text-center">Free</th>
+                      <th className="px-5 py-4 text-center">Básico</th>
                       <th className="bg-[#F4F6FB] px-5 py-4 text-center text-[#2563EB]">
                         X
                       </th>
@@ -2601,39 +2801,42 @@ function StartNowContent() {
                   </thead>
                   <tbody>
                     {[
-                      ["Cursos recomendados", "✓", "✓", "✓"],
-                      ["Ruta completa", "×", "✓", "✓"],
-                      ["MasterClass", "×", "✓", "✓"],
-                      ["Coursera", "×", "Opcional", "✓"],
-                      ["edX", "×", "×", "✓"],
-                      ["Certificaciones", "×", "✓", "✓"],
-                      ["IA Top Education", "Básica", "Completa", "Premium"],
-                    ].map(([feature, free, x, plus]) => (
+                      ["Cursos recomendados", "✓", "✓", "✓", "✓"],
+                      ["Ruta completa", "×", "✓", "✓", "✓"],
+                      ["Coursera", "✓", "✓", "✓", "✓"],
+                      ["edX", "✓", "×", "×", "✓"],
+                      ["MasterClass", "×", "×", "✓", "✓"],
+                      ["Certificaciones", "×", "✓", "✓", "✓"],
+                      ["IA Topo", "Mapa", "Análisis", "Predicción", "Avanzado"],
+                      [
+                        "Análisis de CV",
+                        "2 en total",
+                        "1 al mes",
+                        "2 al mes",
+                        "3 al mes",
+                      ],
+                    ].map(([feature, free, basic, x, plus]) => (
                       <tr key={feature} className="border-b border-black/5">
-                        <td className="px-5 py-4 text-[#111111]">{feature}</td>
-                        <td
-                          className={`px-5 py-4 text-center ${
-                            free === "✓"
-                              ? "text-[#5CC781]"
-                              : free === "×"
-                              ? "text-neutral-300"
-                              : "text-neutral-500"
-                          }`}
-                        >
-                          {free}
+                        <td className="px-5 py-4 font-semibold text-[#111111]">
+                          {feature}
                         </td>
-                        <td className="bg-[#F4F6FB] px-5 py-4 text-center font-bold text-[#2563EB]">
-                          {x}
-                        </td>
-                        <td
-                          className={`px-5 py-4 text-center ${
-                            plus === "✓"
-                              ? "text-[#2563EB]"
-                              : "text-neutral-500"
-                          }`}
-                        >
-                          {plus}
-                        </td>
+
+                        {[free, basic, x, plus].map((value, index) => (
+                          <td
+                            key={`${feature}-${index}`}
+                            className={`px-5 py-4 text-center ${
+                              index === 2
+                                ? "bg-[#F4F6FB] font-bold text-[#2563EB]"
+                                : value === "✓"
+                                ? "text-[#5CC781]"
+                                : value === "×"
+                                ? "text-neutral-300"
+                                : "text-neutral-500"
+                            }`}
+                          >
+                            {value}
+                          </td>
+                        ))}
                       </tr>
                     ))}
                   </tbody>
