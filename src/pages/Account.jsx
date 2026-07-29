@@ -1304,7 +1304,7 @@ function CvReportPreviewModal({ open, reportUrl, fileName, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-[130] flex items-center justify-center bg-[#100A0D]/80 px-3 py-4 backdrop-blur-sm md:px-8 md:py-6"
+      className="fixed inset-0 z-[130] flex items-center justify-center bg-[#100A0D]/80 px-3 py-4 backdrop-blur-sm md:px-8 md:pt-12 md:pb-6"
       role="dialog"
       aria-modal="true"
       aria-label="Vista previa del reporte de análisis de CV"
@@ -1316,8 +1316,8 @@ function CvReportPreviewModal({ open, reportUrl, fileName, onClose }) {
         aria-label="Cerrar vista previa"
       />
 
-      <div className="relative z-10 flex h-[92vh] w-full max-w-[1180px] flex-col overflow-hidden rounded-[26px] bg-[#F3F0EB] shadow-[0_35px_110px_rgba(0,0,0,0.45)]">
-        <header className="flex shrink-0 flex-col gap-4 border-b border-black/10 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between md:px-7">
+      <div className="relative z-10 flex h-[85vh] w-full max-w-[1180px] flex-col overflow-hidden rounded-[26px] bg-[#F3F0EB] shadow-[0_35px_110px_rgba(0,0,0,0.45)]">
+        <div className="flex shrink-0 flex-col gap-4 border-b border-black/10 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between md:px-5">
           <div className="flex min-w-0 items-center gap-4">
             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[13px] bg-[#EEF2FF] text-[#2438C8]">
               <FileText size={23} />
@@ -1348,7 +1348,7 @@ function CvReportPreviewModal({ open, reportUrl, fileName, onClose }) {
               <X size={23} />
             </button>
           </div>
-        </header>
+        </div>
 
         <div className="min-h-0 flex-1 p-3 md:p-6">
           <div className="relative h-full overflow-hidden rounded-[16px] border border-black/10 bg-white shadow-[0_18px_55px_rgba(0,0,0,0.10)]">
@@ -1366,6 +1366,16 @@ function CvReportPreviewModal({ open, reportUrl, fileName, onClose }) {
                 <h3 className="mt-4 !font-['Montserrat'] text-xl font-black text-[#111111]">No se pudo mostrar la vista previa</h3>
                 <p className="mt-2 max-w-[600px] !font-['Montserrat'] text-sm leading-relaxed text-neutral-500">{previewError}</p>
                 <p className="mt-2 max-w-[600px] !font-['Montserrat'] text-xs text-neutral-400">Puedes descargar el archivo usando el botón superior.</p>
+                <a
+                  href={reportUrl}
+                  download={fileName || "reporte-analisis-cv.pdf"}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2438C8] px-5 py-3 !font-['Montserrat'] text-sm font-black text-white shadow-[0_14px_35px_rgba(36,56,200,0.24)] transition hover:-translate-y-0.5 md:px-7"
+                >
+                  <span aria-hidden="true">⇩</span>
+                  Descargar PDF
+                </a>
               </div>
             )}
 
