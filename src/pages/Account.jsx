@@ -1229,6 +1229,96 @@ function CareerTab({ learningRoute }) {
   );
 }
 
+
+function CvReportPreviewModal({ open, reportUrl, fileName, onClose }) {
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open, onClose]);
+
+  if (!open || !reportUrl) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-[130] flex items-center justify-center bg-[#100A0D]/80 px-3 py-4 backdrop-blur-sm md:px-8 md:py-6"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Vista previa del reporte de análisis de CV"
+    >
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute inset-0 cursor-default"
+        aria-label="Cerrar vista previa"
+      />
+
+      <div className="relative z-10 flex h-[92vh] w-full max-w-[1180px] flex-col overflow-hidden rounded-[26px] bg-[#F3F0EB] shadow-[0_35px_110px_rgba(0,0,0,0.45)]">
+        <header className="flex shrink-0 flex-col gap-4 border-b border-black/10 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between md:px-7">
+          <div className="flex min-w-0 items-center gap-4">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[13px] bg-[#EEF2FF] text-[#2438C8]">
+              <FileText size={23} />
+            </span>
+
+            <div className="min-w-0">
+              <h2 className="truncate !font-['Montserrat'] text-lg font-black text-[#111111] md:text-xl">
+                Reporte de análisis de CV
+              </h2>
+              <p className="truncate !font-['Montserrat'] text-sm text-neutral-500">
+                Generado por Topo · Top Education
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-end gap-3">
+            <a
+              href={reportUrl}
+              download={fileName || "reporte-analisis-cv.pdf"}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2438C8] px-5 py-3 !font-['Montserrat'] text-sm font-black text-white shadow-[0_14px_35px_rgba(36,56,200,0.24)] transition hover:-translate-y-0.5 md:px-7"
+            >
+              <span aria-hidden="true">⇩</span>
+              Descargar PDF
+            </a>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-neutral-500 transition hover:bg-neutral-100 hover:text-[#111111]"
+              aria-label="Cerrar vista previa"
+            >
+              <X size={23} />
+            </button>
+          </div>
+        </header>
+
+        <div className="min-h-0 flex-1 p-3 md:p-6">
+          <div className="h-full overflow-hidden rounded-[16px] border border-black/10 bg-white shadow-[0_18px_55px_rgba(0,0,0,0.10)]">
+            <iframe
+              src={`${reportUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`}
+              title="Vista previa del reporte de análisis de CV"
+              className="h-full w-full border-0 bg-white"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CvTab({ backendBaseUrl, me, learningRoute }) {
   const [subTab, setSubTab] = useState("upload");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -1237,9 +1327,39 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
   const [loadingLast, setLoadingLast] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState("");
 
   const email = me?.email || learningRoute?.email || "";
   const routeId = learningRoute?.route_id || learningRoute?.id || "";
+  const userName = String(
+    me?.first_name || me?.name || me?.full_name || learningRoute?.name || ""
+  )
+    .trim()
+    .split(/\s+/)[0];
+
+  const reportUrl =
+    analysis?.report?.signedUrl ||
+    analysis?.report?.signed_url ||
+    analysis?.report?.url ||
+    analysis?.reportUrl ||
+    analysis?.report_url ||
+    "";
+
+  const openReportPreview = () => {
+    if (!reportUrl) {
+      toast.error("El reporte PDF todavía no está disponible.");
+      return;
+    }
+
+    setPreviewUrl(reportUrl);
+    setPreviewOpen(true);
+  };
+
+  const closeReportPreview = () => {
+    setPreviewOpen(false);
+    setPreviewUrl("");
+  };
 
   const loadLastAnalysis = async () => {
     if (!email) return;
@@ -1315,9 +1435,7 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
         formData
       );
 
-      const nextAnalysis = res?.data || null;
-
-      setAnalysis(nextAnalysis);
+      setAnalysis(res?.data || null);
       setSubTab("history");
       toast.success("CV analizado correctamente.");
     } catch (error) {
@@ -1332,31 +1450,33 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
   const recommendations = Array.isArray(analysis?.recommendations)
     ? analysis.recommendations
     : [];
-
   const strengths = recommendations.filter((item) => item.type === "strength");
   const improvements = recommendations.filter((item) => item.type === "improvement");
 
   return (
     <div className="relative w-full">
+      <CvReportPreviewModal
+        open={previewOpen}
+        reportUrl={previewUrl}
+        fileName={analysis?.filename || "reporte-analisis-cv.pdf"}
+        onClose={closeReportPreview}
+      />
+
       {loadingAnalysis && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/55 px-5 backdrop-blur-sm">
           <div className="w-full max-w-[520px] rounded-[30px] bg-white p-8 text-center shadow-[0_35px_100px_rgba(0,0,0,0.28)]">
             <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#2563EB]/10 text-[#2563EB]">
               <span className="animate-pulse text-4xl">★</span>
             </div>
-
             <h2 className="mt-5 !font-['Montserrat'] text-2xl font-black text-[#111111]">
               Analizando tu CV...
             </h2>
-
             <p className="mt-2 !font-['Montserrat'] text-neutral-500">
               Estamos revisando tu hoja de vida y generando recomendaciones personalizadas.
             </p>
-
             <div className="mt-6 h-2 overflow-hidden rounded-full bg-neutral-100">
               <div className="h-full w-2/3 animate-pulse rounded-full bg-[#2563EB]" />
             </div>
-
             <p className="mt-4 !font-['Montserrat'] text-sm font-semibold text-neutral-400">
               Esto puede tardar algunos segundos.
             </p>
@@ -1364,21 +1484,50 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
         </div>
       )}
 
+      <section className="mb-6 overflow-hidden rounded-[26px] bg-[#72BE80] px-6 py-7 text-white shadow-[0_18px_45px_rgba(55,139,76,0.20)] md:px-10 md:py-10">
+        <div className="flex flex-col gap-6 md:flex-row md:items-start">
+          <StarMark />
+
+          <div className="min-w-0 flex-1">
+            <h1 className="!font-['Montserrat'] text-[1.45rem] font-black leading-tight md:text-[1.7rem]">
+              ¡Hola{userName ? `, ${userName}` : ""}! 👋
+            </h1>
+
+            <p className="mt-3 max-w-[760px] !font-['Montserrat'] text-[1rem] leading-[1.55em] text-white/95 md:text-[1.15rem]">
+              Antes de empezar tu viaje de aprendizaje, queremos conocerte mejor.
+            </p>
+
+            <p className="mt-4 max-w-[820px] !font-['Montserrat'] text-[1rem] leading-[1.55em] text-white/95 md:text-[1.05rem]">
+              Sube tu CV y juntos{" "}
+              <strong className="font-black">dignificaremos tu perfil profesional.</strong>{" "}
+              Te daré recomendaciones personalizadas para destacar tus fortalezas y alcanzar
+              tus metas. <strong className="font-black">Es gratis, siempre.</strong>
+            </p>
+
+            <div className="mt-7 flex items-start gap-3 rounded-[18px] bg-white/16 px-5 py-4">
+              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 border-white text-sm font-black">
+                i
+              </span>
+              <p className="!font-['Montserrat'] text-sm font-semibold leading-[1.4em] text-white/95 md:text-base">
+                Tu información es 100% confidencial y solo la usamos para ayudarte.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="!font-['Montserrat'] text-[2rem] font-bold leading-[1em] text-[#111111]">
+          <h2 className="!font-['Montserrat'] text-[2rem] font-bold leading-[1em] text-[#111111]">
             Mi CV
-          </h1>
+          </h2>
           <p className="!font-['Montserrat'] leading-[1.2em] text-neutral-500">
             Analiza tu hoja de vida y recibe recomendaciones personalizadas.
           </p>
         </div>
 
         <div className="flex w-fit rounded-[18px] border border-black/10 bg-white p-1 shadow-sm">
-          {[
-            ["upload", "Subir CV"],
-            ["history", "Último análisis"],
-          ].map(([key, label]) => (
+          {[["upload", "Subir CV"], ["history", "Último análisis"]].map(([key, label]) => (
             <button
               key={key}
               type="button"
@@ -1433,23 +1582,18 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                 accept=".pdf,.doc,.docx"
                 onChange={(event) => handleFileChange(event.target.files?.[0])}
               />
-
               <span className="grid h-16 w-16 place-items-center rounded-[18px] bg-[#2563EB]/10 text-4xl text-[#2563EB]">
                 ⇧
               </span>
-
               <h2 className="mt-5 !font-['Montserrat'] text-xl font-black text-[#111111]">
                 Arrastra tu CV aquí o selecciona un archivo
               </h2>
-
               <span className="mt-5 rounded-full border border-[#2563EB] px-7 py-3 !font-['Montserrat'] text-sm font-bold text-[#2563EB]">
                 Seleccionar archivo
               </span>
-
               <p className="mt-5 !font-['Montserrat'] text-sm text-neutral-400">
                 PDF o Word (.docx) · Máximo 5MB
               </p>
-
               {fileName && (
                 <p className="mt-4 rounded-full bg-[#5CC781]/10 px-4 py-2 !font-['Montserrat'] text-sm font-bold text-[#5CC781]">
                   {fileName}
@@ -1486,18 +1630,15 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                   <span className="!font-['Montserrat'] text-xs font-black uppercase tracking-[0.16em] text-[#2563EB]">
                     Análisis completado
                   </span>
-
                   <h2 className="mt-1 line-clamp-2 !font-['Montserrat'] text-2xl font-black text-[#111111]">
                     {analysis.filename || "CV analizado"}
                   </h2>
-
                   <p className="mt-1 !font-['Montserrat'] text-sm text-neutral-400">
                     Analizado el {fmtDate(analysis.analyzedAt || analysis.analyzed_at)}
                   </p>
 
-                  
                   <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="rounded-[18px] flex gap-3 border border-[#5CC781]/20 bg-[#5CC781]/5 p-5">
+                    <div className="flex gap-3 rounded-[18px] border border-[#5CC781]/20 bg-[#5CC781]/5 p-5">
                       <div className="!font-['Montserrat'] text-5xl font-black text-[#5CC781]">
                         {strengths.length}
                       </div>
@@ -1511,7 +1652,7 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                       </div>
                     </div>
 
-                    <div className="rounded-[18px] flex gap-3 border border-[#FDBA3B]/20 bg-[#FDBA3B]/10 p-5">
+                    <div className="flex gap-3 rounded-[18px] border border-[#FDBA3B]/20 bg-[#FDBA3B]/10 p-5">
                       <div className="!font-['Montserrat'] text-5xl font-black text-[#D99000]">
                         {improvements.length}
                       </div>
@@ -1528,29 +1669,29 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                 </div>
 
                 <div className="rounded-[24px] bg-[#1941CF] p-6 text-center text-white shadow-[0_20px_50px_rgba(25,65,207,0.22)]">
-                  <div className="">
-                      <span className="!font-['Montserrat'] text-xs font-black uppercase text-white/80">
-                        Score general
-                      </span>
-                      <div className="mt-2 !font-['Montserrat'] text-6xl font-black text-white">
-                        {score.value || 0} / {score.max || 10}
-                      </div>
-                      <p className="mt-1 !font-['Montserrat'] text-sm font-bold text-white/90">
-                        {score.label || "Resultado"} · {score.percentage || 0}%
-                      </p>
-                    </div>
-                  {analysis?.report?.signedUrl && (
-                    <a
-                      href={analysis.report.signedUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-6 inline-flex w-full justify-center rounded-[16px] bg-white px-5 py-3 !font-['Montserrat'] text-sm font-black text-[#1941CF]"
+                  <span className="!font-['Montserrat'] text-xs font-black uppercase text-white/80">
+                    Score general
+                  </span>
+                  <div className="mt-2 !font-['Montserrat'] text-6xl font-black text-white">
+                    {score.value || 0} / {score.max || 10}
+                  </div>
+                  <p className="mt-1 !font-['Montserrat'] text-sm font-bold text-white/90">
+                    {score.label || "Resultado"} · {score.percentage || 0}%
+                  </p>
+
+                  {reportUrl && (
+                    <button
+                      type="button"
+                      onClick={openReportPreview}
+                      className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-white px-5 py-3 !font-['Montserrat'] text-sm font-black text-[#1941CF] transition hover:-translate-y-0.5"
                     >
-                      Descargar PDF →
-                    </a>
+                      <span aria-hidden="true">▣</span>
+                      Ver reporte PDF
+                    </button>
                   )}
                 </div>
               </div>
+
               <div className="mt-3 rounded-[20px] bg-[#F6F4EF] p-5">
                 <h3 className="!font-['Montserrat'] text-lg font-black text-[#111111]">
                   Resumen
@@ -1596,11 +1737,9 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                         {item.type === "strength" ? "Fortaleza" : "Mejora"} ·{" "}
                         {item.priority || "medium"}
                       </span>
-
                       <h4 className="mt-3 !font-['Montserrat'] text-lg font-black leading-tight text-[#111111]">
                         {item.title}
                       </h4>
-
                       <p className="mt-2 !font-['Montserrat'] text-sm leading-[1.45em] text-neutral-500">
                         {item.detail}
                       </p>
