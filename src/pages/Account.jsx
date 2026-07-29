@@ -1231,23 +1231,74 @@ function CareerTab({ learningRoute }) {
 
 
 function CvReportPreviewModal({ open, reportUrl, fileName, onClose }) {
-  useEffect(() => {
-    if (!open) return undefined;
+  const [previewObjectUrl, setPreviewObjectUrl] = useState("");
+  const [loadingPreview, setLoadingPreview] = useState(false);
+  const [previewError, setPreviewError] = useState("");
 
+  useEffect(() => {
+    if (!open || !reportUrl) {
+      setPreviewObjectUrl("");
+      setLoadingPreview(false);
+      setPreviewError("");
+      return undefined;
+    }
+
+    let active = true;
+    let generatedObjectUrl = "";
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    const onKeyDown = (event) => {
+    const handleKeyDown = (event) => {
       if (event.key === "Escape") onClose();
     };
 
-    window.addEventListener("keydown", onKeyDown);
+    const loadPreview = async () => {
+      setLoadingPreview(true);
+      setPreviewError("");
+
+      try {
+        const response = await fetch(reportUrl, {
+          method: "GET",
+          mode: "cors",
+          credentials: "omit",
+          headers: { Accept: "application/pdf" },
+        });
+
+        if (!response.ok) {
+          throw new Error(`No se pudo obtener el PDF. HTTP ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        if (!blob || blob.size === 0) throw new Error("El archivo PDF está vacío.");
+
+        const pdfBlob =
+          blob.type === "application/pdf"
+            ? blob
+            : new Blob([blob], { type: "application/pdf" });
+
+        generatedObjectUrl = URL.createObjectURL(pdfBlob);
+        if (active) setPreviewObjectUrl(generatedObjectUrl);
+      } catch (error) {
+        if (active) {
+          setPreviewError(
+            error?.message || "No fue posible cargar la vista previa del PDF."
+          );
+        }
+      } finally {
+        if (active) setLoadingPreview(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    loadPreview();
 
     return () => {
+      active = false;
       document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
+      if (generatedObjectUrl) URL.revokeObjectURL(generatedObjectUrl);
     };
-  }, [open, onClose]);
+  }, [open, reportUrl, onClose]);
 
   if (!open || !reportUrl) return null;
 
@@ -1271,14 +1322,9 @@ function CvReportPreviewModal({ open, reportUrl, fileName, onClose }) {
             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[13px] bg-[#EEF2FF] text-[#2438C8]">
               <FileText size={23} />
             </span>
-
             <div className="min-w-0">
-              <h2 className="truncate !font-['Montserrat'] text-lg font-black text-[#111111] md:text-xl">
-                Reporte de análisis de CV
-              </h2>
-              <p className="truncate !font-['Montserrat'] text-sm text-neutral-500">
-                Generado por Topo · Top Education
-              </p>
+              <h2 className="truncate !font-['Montserrat'] text-lg font-black text-[#111111] md:text-xl">Reporte de análisis de CV</h2>
+              <p className="truncate !font-['Montserrat'] text-sm text-neutral-500">Generado por Topo · Top Education</p>
             </div>
           </div>
 
@@ -1293,7 +1339,6 @@ function CvReportPreviewModal({ open, reportUrl, fileName, onClose }) {
               <span aria-hidden="true">⇩</span>
               Descargar PDF
             </a>
-
             <button
               type="button"
               onClick={onClose}
@@ -1306,12 +1351,31 @@ function CvReportPreviewModal({ open, reportUrl, fileName, onClose }) {
         </header>
 
         <div className="min-h-0 flex-1 p-3 md:p-6">
-          <div className="h-full overflow-hidden rounded-[16px] border border-black/10 bg-white shadow-[0_18px_55px_rgba(0,0,0,0.10)]">
-            <iframe
-              src={`${reportUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`}
-              title="Vista previa del reporte de análisis de CV"
-              className="h-full w-full border-0 bg-white"
-            />
+          <div className="relative h-full overflow-hidden rounded-[16px] border border-black/10 bg-white shadow-[0_18px_55px_rgba(0,0,0,0.10)]">
+            {loadingPreview && (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white px-6 text-center">
+                <div className="grid h-16 w-16 place-items-center rounded-full bg-[#2438C8]/10 text-[#2438C8]"><span className="animate-pulse text-3xl">★</span></div>
+                <h3 className="mt-4 !font-['Montserrat'] text-xl font-black text-[#111111]">Preparando vista previa...</h3>
+                <p className="mt-2 max-w-[520px] !font-['Montserrat'] text-sm text-neutral-500">Estamos cargando el PDF privado de forma segura.</p>
+              </div>
+            )}
+
+            {!loadingPreview && previewError && (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white px-6 text-center">
+                <div className="grid h-16 w-16 place-items-center rounded-full bg-red-50 text-red-500"><AlertCircle size={30} /></div>
+                <h3 className="mt-4 !font-['Montserrat'] text-xl font-black text-[#111111]">No se pudo mostrar la vista previa</h3>
+                <p className="mt-2 max-w-[600px] !font-['Montserrat'] text-sm leading-relaxed text-neutral-500">{previewError}</p>
+                <p className="mt-2 max-w-[600px] !font-['Montserrat'] text-xs text-neutral-400">Puedes descargar el archivo usando el botón superior.</p>
+              </div>
+            )}
+
+            {!loadingPreview && !previewError && previewObjectUrl && (
+              <iframe
+                src={`${previewObjectUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`}
+                title="Vista previa del reporte de análisis de CV"
+                className="h-full w-full border-0 bg-white"
+              />
+            )}
           </div>
         </div>
       </div>
