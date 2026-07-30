@@ -71,7 +71,7 @@ const BUILDING_MESSAGES = [
   },
   {
     until: 48,
-    text: "Comparando contenidos de Coursera, edX y MasterClass...",
+    text: "Consultando experiencias gratuitas de Coursera y edX...",
   },
   {
     until: 64,
@@ -359,9 +359,15 @@ const CourseCard = ({ course }) => (
 
       <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
 
-      <span className="absolute right-3 top-3 rounded-full bg-white px-3 py-1 !font-['Montserrat'] text-[11px] font-bold text-[#2563EB] shadow-sm">
-        {course.level}
-      </span>
+      <div className="absolute right-3 top-3 flex flex-col items-end gap-2">
+        <span className="rounded-full bg-[#5CC781] px-3 py-1 !font-['Montserrat'] text-[11px] font-black uppercase tracking-[0.04em] text-white shadow-[0_8px_20px_rgba(92,199,129,0.35)]">
+          Gratis
+        </span>
+
+        <span className="rounded-full bg-white px-3 py-1 !font-['Montserrat'] text-[11px] font-bold text-[#2563EB] shadow-sm">
+          {course.level}
+        </span>
+      </div>
 
       <span className="absolute left-3 top-3 grid h-10 w-10 place-items-center rounded-full bg-white p-1.5 shadow-sm">
         <img
@@ -751,6 +757,22 @@ function StartNowContent() {
     };
   };
 
+  const getPackageCode = (
+    planValue = selectedPaidPlan,
+    finalPlan = selectedPlan
+  ) => {
+    if (!finalPlan || finalPlan === "free") {
+      return PLANS.free.monthly.packageCode;
+    }
+
+    const { cycleConfig } = getPlanBySelectionValue(planValue);
+
+    return (
+      cycleConfig?.packageCode ||
+      PLANS.free.monthly.packageCode
+    );
+  };
+
   const topicOptions = [
   {
     id: 41, // ID real de Skills
@@ -952,6 +974,19 @@ function StartNowContent() {
     return "";
   };
 
+  const normalizeHours = (value) => {
+    const clean = String(value || "").trim();
+
+    if (
+      !clean ||
+      ["none", "null", "undefined"].includes(clean.toLowerCase())
+    ) {
+      return "Duración flexible";
+    }
+
+    return clean;
+  };
+
   const normalizeCourseForCard = (course = {}) => {
     const provider = normalizeProviderName(course);
 
@@ -985,7 +1020,35 @@ function StartNowContent() {
       idInterno:
         course.id_interno ||
         course.idInterno ||
+        course.internal_id ||
+        course.internalId ||
         "",
+
+      isFree: true,
+      available: course.available !== false,
+      preview: course.preview || {
+        type: course.preview_type || course.previewType || null,
+        url: course.preview_url || course.previewUrl || null,
+        validatedAt:
+          course.preview_validated_at ||
+          course.previewValidatedAt ||
+          null,
+      },
+      previewType:
+        course.preview?.type ||
+        course.preview_type ||
+        course.previewType ||
+        null,
+      previewUrl:
+        course.preview?.url ||
+        course.preview_url ||
+        course.previewUrl ||
+        null,
+      previewValidatedAt:
+        course.preview?.validatedAt ||
+        course.preview_validated_at ||
+        course.previewValidatedAt ||
+        null,
 
       colombiaCertificationId:
         course.colombiaCertificationId ||
@@ -1069,12 +1132,32 @@ function StartNowContent() {
       country: form.country,
       goal: form.goal,
       topics: form.topics,
-      selected_plan: selectedPlan,
-      selected_paid_plan: selectedPaidPlan,
-      status: selectedPlan === "free" ? "free_active" : "pro_trialing",
+      selected_plan: selectedPlan || "free",
+      selected_paid_plan: selectedPaidPlan || "free",
+      package_code: getPackageCode(
+        selectedPaidPlan || "free",
+        selectedPlan || "free"
+      ),
+      tier: getPlanConfig(selectedPlan || "free").tier,
+      billing_period:
+        selectedPlan && selectedPlan !== "free"
+          ? getPlanCycleConfig(selectedPlan, billingCycle).billingPeriod
+          : null,
+      status:
+        selectedPlan === "free" || !selectedPlan
+          ? "free_active"
+          : "pro_trialing",
+      free_courses: allRecommendedCourses,
       recommended_courses: allRecommendedCourses,
     }),
-    [form, routeId, selectedPlan, selectedPaidPlan, allRecommendedCourses]
+    [
+      form,
+      routeId,
+      selectedPlan,
+      selectedPaidPlan,
+      billingCycle,
+      allRecommendedCourses,
+    ]
   );
   const activePlanData = useMemo(
     () => getPlanBySelectionValue(selectedPaidPlan),
@@ -1267,6 +1350,9 @@ function StartNowContent() {
         title: course.title,
         provider: course.provider,
         level: course.level,
+        isFree: true,
+        previewType: course.previewType,
+        previewUrl: course.previewUrl,
         order: index + 1,
       })),
     });
@@ -1306,19 +1392,6 @@ function StartNowContent() {
     });
   };
 
-  const getPackageCode = (
-    planValue = selectedPaidPlan,
-    finalPlan = selectedPlan
-  ) => {
-    if (finalPlan === "free") {
-      return PLANS.free.monthly.packageCode;
-    }
-
-    const { cycleConfig } = getPlanBySelectionValue(planValue);
-
-    return cycleConfig.packageCode;
-  };
-
   const getTier = (packageCode = "") => {
     const normalizedCode = String(packageCode)
       .trim()
@@ -1353,8 +1426,24 @@ function StartNowContent() {
   };
 
   const getRouteLevelByCourse = (course) => {
-    if (recommendedByLevel.level_1.some((item) => item.id === course.id)) return 1;
-    if (recommendedByLevel.level_2.some((item) => item.id === course.id)) return 2;
+    const identity = course.idInterno || course.id;
+
+    if (
+      recommendedByLevel.level_1.some(
+        (item) => (item.idInterno || item.id) === identity
+      )
+    ) {
+      return 1;
+    }
+
+    if (
+      recommendedByLevel.level_2.some(
+        (item) => (item.idInterno || item.id) === identity
+      )
+    ) {
+      return 2;
+    }
+
     return 3;
   };
 
@@ -1496,18 +1585,6 @@ function StartNowContent() {
 
     return true;
   };
-  const normalizeHours = (value) => {
-    const clean = String(value || "").trim();
-
-    if (
-      !clean ||
-      ["none", "null", "undefined"].includes(clean.toLowerCase())
-    ) {
-      return "Duración flexible";
-    }
-
-    return clean;
-  };
 
   const createRoute = async () => {
     setErrorMsg("");
@@ -1535,7 +1612,9 @@ function StartNowContent() {
           topics: form.topics,
           topic_ids: form.topic_ids,
           goal: form.goal,
-          limit_per_level: 3,
+          country_code: "CO",
+          language: "es",
+          limit_per_level: 1,
         }
       );
 
@@ -1558,22 +1637,23 @@ function StartNowContent() {
       setRecommendedByLevel(nextRecommendedByLevel);
 
       const flattenedRecommendations = [
-        ...nextRecommendedByLevel.level_1.map((course, index) => ({
+        ...nextRecommendedByLevel.level_1.map((course) => ({
           ...course,
           routeLevel: 1,
-          order: index + 1,
         })),
-        ...nextRecommendedByLevel.level_2.map((course, index) => ({
+        ...nextRecommendedByLevel.level_2.map((course) => ({
           ...course,
           routeLevel: 2,
-          order: index + 1,
         })),
-        ...nextRecommendedByLevel.level_3.map((course, index) => ({
+        ...nextRecommendedByLevel.level_3.map((course) => ({
           ...course,
           routeLevel: 3,
-          order: index + 1,
         })),
-      ];
+      ].map((course, index) => ({
+        ...course,
+        order: index + 1,
+        isFree: true,
+      }));
 
       setProgress((current) => Math.max(current, 84));
 
@@ -1589,7 +1669,7 @@ function StartNowContent() {
         country: form.country,
         topics: form.topics,
         goal: form.goal,
-        recommended_certifications: flattenedRecommendations,
+        free_courses: flattenedRecommendations,
       });
 
       setRouteId(data?.id || data?.data?.id || null);
