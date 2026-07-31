@@ -198,71 +198,162 @@ function trialPercentLeft(trialEnd, trialStart) {
   return Math.max(0, Math.min(100, (left / total) * 100));
 }
 
+
 function toTimestamp(value) {
   if (!value) return null;
-
-  if (typeof value === "number") {
-    const milliseconds = value < 1000000000000 ? value * 1000 : value;
-    return Number.isFinite(milliseconds) ? milliseconds : null;
-  }
 
   const timestamp = new Date(value).getTime();
   return Number.isFinite(timestamp) ? timestamp : null;
 }
 
-function getPaymentAmount(item) {
-  const raw =
-    item?.amount_paid ??
-    item?.amount ??
-    item?.amount_total ??
-    item?.total ??
-    item?.amount_due ??
-    0;
+function isSuccessfulPaymentStatus(status) {
+  const normalized = String(status || "").trim().toLowerCase();
 
-  const amount = Number(raw);
-  return Number.isFinite(amount) ? amount : 0;
+  return [
+    "paid",
+    "succeeded",
+    "success",
+    "complete",
+    "completed",
+  ].includes(normalized);
 }
 
-function isSuccessfulPayment(item) {
-  const status = String(
-    item?.status || item?.payment_status || item?.invoice_status || ""
-  ).toLowerCase();
-
-  return ["paid", "succeeded", "success", "complete", "completed"].includes(status);
-}
-
-function getPaymentDate(item) {
-  return toTimestamp(
-    item?.paid_at ||
-      item?.status_transitions?.paid_at ||
-      item?.created_at ||
-      item?.created ||
-      item?.date
+function getPaymentCreatedAt(payment) {
+  return (
+    payment?.created_at ||
+    payment?.created ||
+    payment?.date ||
+    payment?.paid_at ||
+    payment?.status_transitions?.paid_at ||
+    null
   );
 }
 
-function getLatestPaidCharge(invoices = [], purchases = []) {
-  return [...(Array.isArray(invoices) ? invoices : []), ...(Array.isArray(purchases) ? purchases : [])]
-    .filter((item) => isSuccessfulPayment(item) && getPaymentAmount(item) > 0)
-    .map((item) => ({ item, timestamp: getPaymentDate(item) }))
-    .filter(({ timestamp }) => Number.isFinite(timestamp))
-    .sort((a, b) => b.timestamp - a.timestamp)[0] || null;
+function getPaymentAmount(payment) {
+  const rawAmount =
+    payment?.amount_paid ??
+    payment?.amount ??
+    payment?.amount_total ??
+    payment?.total ??
+    payment?.amount_due ??
+    0;
+
+  const amount = Number(rawAmount);
+  return Number.isFinite(amount) ? amount : 0;
 }
 
-function addBillingPeriod(value, billingCycle = "monthly") {
-  const timestamp = toTimestamp(value);
-  if (!timestamp) return null;
+function hasSuccessfulChargeAfterTrial({
+  invoices = [],
+  purchases = [],
+  trialEnd,
+}) {
+  const trialEndTimestamp = toTimestamp(trialEnd);
+  const payments = [
+    ...(Array.isArray(invoices) ? invoices : []),
+    ...(Array.isArray(purchases) ? purchases : []),
+  ];
 
-  const source = new Date(timestamp);
-  const next = new Date(source);
+  return payments.some((payment) => {
+    if (!isSuccessfulPaymentStatus(payment?.status)) return false;
+    if (getPaymentAmount(payment) <= 0) return false;
 
-  if (billingCycle === "yearly") {
-    next.setFullYear(next.getFullYear() + 1);
-  } else {
-    next.setMonth(next.getMonth() + 1);
-  }
+    const createdTimestamp = toTimestamp(getPaymentCreatedAt(payment));
 
-  return next.toISOString();
+    /*
+     * Cuando tenemos la fecha final de la prueba, solo consideramos cobros
+     * realizados al terminarla o después. Si el backend no devuelve esa fecha,
+     * la existencia de un pago exitoso y con valor positivo evita mostrar una
+     * prueba activa indefinidamente.
+     */
+    if (!trialEndTimestamp) return true;
+    if (!createdTimestamp) return false;
+
+    return createdTimestamp >= trialEndTimestamp;
+  });
+}
+
+function getTrialState({
+  me,
+  learningRoute,
+  invoices = [],
+  purchases = [],
+  planKey,
+}) {
+  const subscriptionStatus = String(
+    me?.subscription_status ||
+      me?.subscription?.status ||
+      learningRoute?.subscription_status ||
+      ""
+  )
+    .trim()
+    .toLowerCase();
+
+  const explicitTrialActive =
+    me?.trial_active ??
+    me?.is_trial_active ??
+    me?.subscription?.trial_active ??
+    learningRoute?.trial_active;
+
+  const trialStart =
+    me?.trial_start ||
+    me?.subscription_trial_start ||
+    me?.subscription?.trial_start ||
+    learningRoute?.trial_start ||
+    null;
+
+  /*
+   * No usamos current_period_end como trial_end. Después del primer cobro,
+   * Stripe actualiza current_period_end al final del ciclo pagado y eso hacía
+   * que el frontend siguiera mostrando la prueba como activa.
+   */
+  const trialEnd =
+    me?.trial_end ||
+    me?.subscription_trial_end ||
+    me?.subscription?.trial_end ||
+    learningRoute?.trial_end ||
+    null;
+
+  const trialEndTimestamp = toTimestamp(trialEnd);
+  const now = Date.now();
+  const trialHasEnded =
+    trialEndTimestamp !== null && trialEndTimestamp <= now;
+
+  const successfulChargeAfterTrial = hasSuccessfulChargeAfterTrial({
+    invoices,
+    purchases,
+    trialEnd,
+  });
+
+  const statusSaysTrial = ["trialing", "pro_trialing"].includes(
+    subscriptionStatus
+  );
+
+  const backendSaysTrial =
+    explicitTrialActive === true ||
+    String(explicitTrialActive).toLowerCase() === "true";
+
+  const backendSaysNotTrial =
+    explicitTrialActive === false ||
+    String(explicitTrialActive).toLowerCase() === "false";
+
+  const isActive =
+    planKey !== "free" &&
+    !backendSaysNotTrial &&
+    !trialHasEnded &&
+    !successfulChargeAfterTrial &&
+    (backendSaysTrial || statusSaysTrial) &&
+    Boolean(trialEndTimestamp);
+
+  return {
+    isActive,
+    trialStart,
+    trialEnd,
+    daysRemaining: isActive ? daysUntil(trialEnd) : null,
+    progressPercent: isActive
+      ? trialPercentLeft(trialEnd, trialStart)
+      : 0,
+    successfulChargeAfterTrial,
+  };
 }
 
 function normalizePurchases(raw) {
@@ -1229,170 +1320,6 @@ function CareerTab({ learningRoute }) {
   );
 }
 
-
-function CvReportPreviewModal({ open, reportUrl, fileName, onClose }) {
-  const [previewObjectUrl, setPreviewObjectUrl] = useState("");
-  const [loadingPreview, setLoadingPreview] = useState(false);
-  const [previewError, setPreviewError] = useState("");
-
-  useEffect(() => {
-    if (!open || !reportUrl) {
-      setPreviewObjectUrl("");
-      setLoadingPreview(false);
-      setPreviewError("");
-      return undefined;
-    }
-
-    let active = true;
-    let generatedObjectUrl = "";
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") onClose();
-    };
-
-    const loadPreview = async () => {
-      setLoadingPreview(true);
-      setPreviewError("");
-
-      try {
-        const response = await fetch(reportUrl, {
-          method: "GET",
-          mode: "cors",
-          credentials: "omit",
-          headers: { Accept: "application/pdf" },
-        });
-
-        if (!response.ok) {
-          throw new Error(`No se pudo obtener el PDF. HTTP ${response.status}`);
-        }
-
-        const blob = await response.blob();
-        if (!blob || blob.size === 0) throw new Error("El archivo PDF está vacío.");
-
-        const pdfBlob =
-          blob.type === "application/pdf"
-            ? blob
-            : new Blob([blob], { type: "application/pdf" });
-
-        generatedObjectUrl = URL.createObjectURL(pdfBlob);
-        if (active) setPreviewObjectUrl(generatedObjectUrl);
-      } catch (error) {
-        if (active) {
-          setPreviewError(
-            error?.message || "No fue posible cargar la vista previa del PDF."
-          );
-        }
-      } finally {
-        if (active) setLoadingPreview(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    loadPreview();
-
-    return () => {
-      active = false;
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-      if (generatedObjectUrl) URL.revokeObjectURL(generatedObjectUrl);
-    };
-  }, [open, reportUrl, onClose]);
-
-  if (!open || !reportUrl) return null;
-
-  return (
-    <div
-      className="fixed inset-0 z-[130] flex items-center justify-center bg-[#100A0D]/80 px-3 py-4 backdrop-blur-sm md:px-8 md:pt-12 md:pb-6"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Vista previa del reporte de análisis de CV"
-    >
-      <button
-        type="button"
-        onClick={onClose}
-        className="absolute inset-0 cursor-default"
-        aria-label="Cerrar vista previa"
-      />
-
-      <div className="relative z-10 flex h-[85vh] w-full max-w-[1180px] flex-col overflow-hidden rounded-[26px] bg-[#F3F0EB] shadow-[0_35px_110px_rgba(0,0,0,0.45)]">
-        <div className="flex shrink-0 flex-col gap-4 border-b border-black/10 bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between md:px-5">
-          <div className="flex min-w-0 items-center gap-4">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[13px] bg-[#EEF2FF] text-[#2438C8]">
-              <FileText size={23} />
-            </span>
-            <div className="min-w-0">
-              <h2 className="truncate !font-['Montserrat'] text-lg font-black text-[#111111] md:text-xl">Reporte de análisis de CV</h2>
-              <p className="truncate !font-['Montserrat'] text-sm text-neutral-500">Generado por Topo · Top Education</p>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-end gap-3">
-            <a
-              href={reportUrl}
-              download={fileName || "reporte-analisis-cv.pdf"}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2438C8] px-5 py-3 !font-['Montserrat'] text-sm font-black text-white shadow-[0_14px_35px_rgba(36,56,200,0.24)] transition hover:-translate-y-0.5 md:px-7"
-            >
-              <span aria-hidden="true">⇩</span>
-              Descargar PDF
-            </a>
-            <button
-              type="button"
-              onClick={onClose}
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-neutral-500 transition hover:bg-neutral-100 hover:text-[#111111]"
-              aria-label="Cerrar vista previa"
-            >
-              <X size={23} />
-            </button>
-          </div>
-        </div>
-
-        <div className="min-h-0 flex-1 p-3 md:p-6">
-          <div className="relative h-full overflow-hidden rounded-[16px] border border-black/10 bg-white shadow-[0_18px_55px_rgba(0,0,0,0.10)]">
-            {loadingPreview && (
-              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white px-6 text-center">
-                <div className="grid h-16 w-16 place-items-center rounded-full bg-[#2438C8]/10 text-[#2438C8]"><span className="animate-pulse text-3xl">★</span></div>
-                <h3 className="mt-4 !font-['Montserrat'] text-xl font-black text-[#111111]">Preparando vista previa...</h3>
-                <p className="mt-2 max-w-[520px] !font-['Montserrat'] text-sm text-neutral-500">Estamos cargando el PDF privado de forma segura.</p>
-              </div>
-            )}
-
-            {!loadingPreview && previewError && (
-              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white px-6 text-center">
-                <div className="grid h-16 w-16 place-items-center rounded-full bg-red-50 text-red-500"><AlertCircle size={30} /></div>
-                <h3 className="mt-4 !font-['Montserrat'] text-xl font-black text-[#111111]">No se pudo mostrar la vista previa</h3>
-                <p className="mt-2 max-w-[600px] !font-['Montserrat'] text-sm leading-relaxed text-neutral-500">{previewError}</p>
-                <p className="mt-2 max-w-[600px] !font-['Montserrat'] text-xs text-neutral-400">Puedes descargar el archivo usando el botón superior.</p>
-                <a
-                  href={reportUrl}
-                  download={fileName || "reporte-analisis-cv.pdf"}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2438C8] px-5 py-3 !font-['Montserrat'] text-sm font-black text-white shadow-[0_14px_35px_rgba(36,56,200,0.24)] transition hover:-translate-y-0.5 md:px-7"
-                >
-                  <span aria-hidden="true">⇩</span>
-                  Descargar PDF
-                </a>
-              </div>
-            )}
-
-            {!loadingPreview && !previewError && previewObjectUrl && (
-              <iframe
-                src={`${previewObjectUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`}
-                title="Vista previa del reporte de análisis de CV"
-                className="h-full w-full border-0 bg-white"
-              />
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function CvTab({ backendBaseUrl, me, learningRoute }) {
   const [subTab, setSubTab] = useState("upload");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -1401,39 +1328,9 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
   const [loadingLast, setLoadingLast] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState("");
 
   const email = me?.email || learningRoute?.email || "";
   const routeId = learningRoute?.route_id || learningRoute?.id || "";
-  const userName = String(
-    me?.first_name || me?.name || me?.full_name || learningRoute?.name || ""
-  )
-    .trim()
-    .split(/\s+/)[0];
-
-  const reportUrl =
-    analysis?.report?.signedUrl ||
-    analysis?.report?.signed_url ||
-    analysis?.report?.url ||
-    analysis?.reportUrl ||
-    analysis?.report_url ||
-    "";
-
-  const openReportPreview = () => {
-    if (!reportUrl) {
-      toast.error("El reporte PDF todavía no está disponible.");
-      return;
-    }
-
-    setPreviewUrl(reportUrl);
-    setPreviewOpen(true);
-  };
-
-  const closeReportPreview = () => {
-    setPreviewOpen(false);
-    setPreviewUrl("");
-  };
 
   const loadLastAnalysis = async () => {
     if (!email) return;
@@ -1509,7 +1406,9 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
         formData
       );
 
-      setAnalysis(res?.data || null);
+      const nextAnalysis = res?.data || null;
+
+      setAnalysis(nextAnalysis);
       setSubTab("history");
       toast.success("CV analizado correctamente.");
     } catch (error) {
@@ -1524,33 +1423,31 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
   const recommendations = Array.isArray(analysis?.recommendations)
     ? analysis.recommendations
     : [];
+
   const strengths = recommendations.filter((item) => item.type === "strength");
   const improvements = recommendations.filter((item) => item.type === "improvement");
 
   return (
     <div className="relative w-full">
-      <CvReportPreviewModal
-        open={previewOpen}
-        reportUrl={previewUrl}
-        fileName={analysis?.filename || "reporte-analisis-cv.pdf"}
-        onClose={closeReportPreview}
-      />
-
       {loadingAnalysis && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/55 px-5 backdrop-blur-sm">
           <div className="w-full max-w-[520px] rounded-[30px] bg-white p-8 text-center shadow-[0_35px_100px_rgba(0,0,0,0.28)]">
             <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#2563EB]/10 text-[#2563EB]">
               <span className="animate-pulse text-4xl">★</span>
             </div>
+
             <h2 className="mt-5 !font-['Montserrat'] text-2xl font-black text-[#111111]">
               Analizando tu CV...
             </h2>
+
             <p className="mt-2 !font-['Montserrat'] text-neutral-500">
               Estamos revisando tu hoja de vida y generando recomendaciones personalizadas.
             </p>
+
             <div className="mt-6 h-2 overflow-hidden rounded-full bg-neutral-100">
               <div className="h-full w-2/3 animate-pulse rounded-full bg-[#2563EB]" />
             </div>
+
             <p className="mt-4 !font-['Montserrat'] text-sm font-semibold text-neutral-400">
               Esto puede tardar algunos segundos.
             </p>
@@ -1558,50 +1455,21 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
         </div>
       )}
 
-      <section className="mb-6 overflow-hidden rounded-[26px] bg-[#72BE80] px-6 py-7 text-white shadow-[0_18px_45px_rgba(55,139,76,0.20)] md:px-10 md:py-10">
-        <div className="flex flex-col gap-6 md:flex-row md:items-start">
-          <StarMark />
-
-          <div className="min-w-0 flex-1">
-            <h1 className="!font-['Montserrat'] text-[1.45rem] font-black leading-tight md:text-[1.7rem]">
-              ¡Hola{userName ? `, ${userName}` : ""}! 👋
-            </h1>
-
-            <p className="mt-3 max-w-[760px] !font-['Montserrat'] text-[1rem] leading-[1.55em] text-white/95 md:text-[1.15rem]">
-              Antes de empezar tu viaje de aprendizaje, queremos conocerte mejor.
-            </p>
-
-            <p className="mt-4 max-w-[820px] !font-['Montserrat'] text-[1rem] leading-[1.55em] text-white/95 md:text-[1.05rem]">
-              Sube tu CV y juntos{" "}
-              <strong className="font-black">dignificaremos tu perfil profesional.</strong>{" "}
-              Te daré recomendaciones personalizadas para destacar tus fortalezas y alcanzar
-              tus metas. <strong className="font-black">Es gratis, siempre.</strong>
-            </p>
-
-            <div className="mt-7 flex items-start gap-3 rounded-[18px] bg-white/16 px-5 py-4">
-              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 border-white text-sm font-black">
-                i
-              </span>
-              <p className="!font-['Montserrat'] text-sm font-semibold leading-[1.4em] text-white/95 md:text-base">
-                Tu información es 100% confidencial y solo la usamos para ayudarte.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="!font-['Montserrat'] text-[2rem] font-bold leading-[1em] text-[#111111]">
+          <h1 className="!font-['Montserrat'] text-[2rem] font-bold leading-[1em] text-[#111111]">
             Mi CV
-          </h2>
+          </h1>
           <p className="!font-['Montserrat'] leading-[1.2em] text-neutral-500">
             Analiza tu hoja de vida y recibe recomendaciones personalizadas.
           </p>
         </div>
 
         <div className="flex w-fit rounded-[18px] border border-black/10 bg-white p-1 shadow-sm">
-          {[["upload", "Subir CV"], ["history", "Último análisis"]].map(([key, label]) => (
+          {[
+            ["upload", "Subir CV"],
+            ["history", "Último análisis"],
+          ].map(([key, label]) => (
             <button
               key={key}
               type="button"
@@ -1656,18 +1524,23 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                 accept=".pdf,.doc,.docx"
                 onChange={(event) => handleFileChange(event.target.files?.[0])}
               />
+
               <span className="grid h-16 w-16 place-items-center rounded-[18px] bg-[#2563EB]/10 text-4xl text-[#2563EB]">
                 ⇧
               </span>
+
               <h2 className="mt-5 !font-['Montserrat'] text-xl font-black text-[#111111]">
                 Arrastra tu CV aquí o selecciona un archivo
               </h2>
+
               <span className="mt-5 rounded-full border border-[#2563EB] px-7 py-3 !font-['Montserrat'] text-sm font-bold text-[#2563EB]">
                 Seleccionar archivo
               </span>
+
               <p className="mt-5 !font-['Montserrat'] text-sm text-neutral-400">
                 PDF o Word (.docx) · Máximo 5MB
               </p>
+
               {fileName && (
                 <p className="mt-4 rounded-full bg-[#5CC781]/10 px-4 py-2 !font-['Montserrat'] text-sm font-bold text-[#5CC781]">
                   {fileName}
@@ -1704,15 +1577,18 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                   <span className="!font-['Montserrat'] text-xs font-black uppercase tracking-[0.16em] text-[#2563EB]">
                     Análisis completado
                   </span>
+
                   <h2 className="mt-1 line-clamp-2 !font-['Montserrat'] text-2xl font-black text-[#111111]">
                     {analysis.filename || "CV analizado"}
                   </h2>
+
                   <p className="mt-1 !font-['Montserrat'] text-sm text-neutral-400">
                     Analizado el {fmtDate(analysis.analyzedAt || analysis.analyzed_at)}
                   </p>
 
+                  
                   <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="flex gap-3 rounded-[18px] border border-[#5CC781]/20 bg-[#5CC781]/5 p-5">
+                    <div className="rounded-[18px] flex gap-3 border border-[#5CC781]/20 bg-[#5CC781]/5 p-5">
                       <div className="!font-['Montserrat'] text-5xl font-black text-[#5CC781]">
                         {strengths.length}
                       </div>
@@ -1726,7 +1602,7 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                       </div>
                     </div>
 
-                    <div className="flex gap-3 rounded-[18px] border border-[#FDBA3B]/20 bg-[#FDBA3B]/10 p-5">
+                    <div className="rounded-[18px] flex gap-3 border border-[#FDBA3B]/20 bg-[#FDBA3B]/10 p-5">
                       <div className="!font-['Montserrat'] text-5xl font-black text-[#D99000]">
                         {improvements.length}
                       </div>
@@ -1743,29 +1619,29 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                 </div>
 
                 <div className="rounded-[24px] bg-[#1941CF] p-6 text-center text-white shadow-[0_20px_50px_rgba(25,65,207,0.22)]">
-                  <span className="!font-['Montserrat'] text-xs font-black uppercase text-white/80">
-                    Score general
-                  </span>
-                  <div className="mt-2 !font-['Montserrat'] text-6xl font-black text-white">
-                    {score.value || 0} / {score.max || 10}
-                  </div>
-                  <p className="mt-1 !font-['Montserrat'] text-sm font-bold text-white/90">
-                    {score.label || "Resultado"} · {score.percentage || 0}%
-                  </p>
-
-                  {reportUrl && (
-                    <button
-                      type="button"
-                      onClick={openReportPreview}
-                      className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-white px-5 py-3 !font-['Montserrat'] text-sm font-black text-[#1941CF] transition hover:-translate-y-0.5"
+                  <div className="">
+                      <span className="!font-['Montserrat'] text-xs font-black uppercase text-white/80">
+                        Score general
+                      </span>
+                      <div className="mt-2 !font-['Montserrat'] text-6xl font-black text-white">
+                        {score.value || 0} / {score.max || 10}
+                      </div>
+                      <p className="mt-1 !font-['Montserrat'] text-sm font-bold text-white/90">
+                        {score.label || "Resultado"} · {score.percentage || 0}%
+                      </p>
+                    </div>
+                  {analysis?.report?.signedUrl && (
+                    <a
+                      href={analysis.report.signedUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-6 inline-flex w-full justify-center rounded-[16px] bg-white px-5 py-3 !font-['Montserrat'] text-sm font-black text-[#1941CF]"
                     >
-                      <span aria-hidden="true">▣</span>
-                      Ver reporte PDF
-                    </button>
+                      Descargar PDF →
+                    </a>
                   )}
                 </div>
               </div>
-
               <div className="mt-3 rounded-[20px] bg-[#F6F4EF] p-5">
                 <h3 className="!font-['Montserrat'] text-lg font-black text-[#111111]">
                   Resumen
@@ -1811,9 +1687,11 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                         {item.type === "strength" ? "Fortaleza" : "Mejora"} ·{" "}
                         {item.priority || "medium"}
                       </span>
+
                       <h4 className="mt-3 !font-['Montserrat'] text-lg font-black leading-tight text-[#111111]">
                         {item.title}
                       </h4>
+
                       <p className="mt-2 !font-['Montserrat'] text-sm leading-[1.45em] text-neutral-500">
                         {item.detail}
                       </p>
@@ -1917,69 +1795,31 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
     PLAN_CATALOG.plus,
   ].filter(Boolean);
 
-  const subscriptionStatus = String(
-    me?.subscription_status || me?.subscription?.status || "free"
-  ).toLowerCase();
+  const trialState = getTrialState({
+    me,
+    learningRoute,
+    invoices,
+    purchases,
+    planKey: planDetails.key,
+  });
 
-  const trialStart =
-    me?.trial_start ||
-    me?.subscription_trial_start ||
-    me?.subscription?.trial_start ||
-    learningRoute?.trial_start ||
-    null;
+  const isTrial = trialState.isActive;
+  const trialEnd = trialState.trialEnd;
+  const trialDays = trialState.daysRemaining;
+  const progressWidth = trialState.progressPercent;
 
-  // IMPORTANTE: current_period_end no es el final de la prueba.
-  // Solo se usan campos reales de trial para decidir si la prueba continúa activa.
-  const trialEnd =
-    me?.trial_end ||
-    me?.subscription_trial_end ||
-    me?.subscription?.trial_end ||
-    learningRoute?.trial_end ||
-    null;
-
-  const trialEndTimestamp = toTimestamp(trialEnd);
-  const trialDays = trialEndTimestamp ? daysUntil(trialEnd) : null;
-  const latestPaidCharge = getLatestPaidCharge(invoices, purchases);
-  const hasSuccessfulPaidCharge = Boolean(latestPaidCharge);
-
-  const backendTrialFlag =
-    me?.is_trial_active ??
-    me?.trial_active ??
-    me?.subscription?.is_trial_active;
-
-  const trialStatusActive = ["trialing", "pro_trialing"].includes(subscriptionStatus);
-  const trialDateActive = Boolean(trialEndTimestamp && trialEndTimestamp > Date.now());
-
-  const isTrial =
-    planDetails.key !== "free" &&
-    backendTrialFlag !== false &&
-    trialStatusActive &&
-    trialDateActive &&
-    !hasSuccessfulPaidCharge;
-
-  const progressWidth = isTrial ? trialPercentLeft(trialEnd, trialStart) : 0;
-
-  const backendNextBillingDate =
-    me?.next_billing_date ||
-    me?.next_payment_date ||
+  const firstChargeDate =
+    trialEnd ||
     me?.current_period_end ||
     me?.subscription_renewal ||
     me?.subscription?.current_period_end ||
     null;
 
-  const backendNextBillingTimestamp = toTimestamp(backendNextBillingDate);
-  const latestPaidDate = latestPaidCharge?.timestamp || null;
-
-  // Si el backend todavía devuelve una fecha vencida (por ejemplo, el final del trial),
-  // calculamos la siguiente renovación desde la última factura pagada.
-  const nextBillingDate =
-    backendNextBillingTimestamp && backendNextBillingTimestamp > Date.now()
-      ? new Date(backendNextBillingTimestamp).toISOString()
-      : latestPaidDate
-      ? addBillingPeriod(latestPaidDate, planDetails.billingCycle)
-      : null;
-
-  const firstChargeDate = isTrial ? trialEnd : nextBillingDate;
+  const currentPlanTags = (planDetails.tags || []).filter(
+    (tag) =>
+      isTrial ||
+      !String(tag).toLowerCase().includes("7 días gratis")
+  );
 
   const currentPlanMonthlyValue = Number(planDetails.monthlyValue || 0);
   const currentPlanYearlyValue = Number(planDetails.yearlyValue || 0);
@@ -2159,16 +1999,14 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
             </p>
 
             <div className="mt-3 flex flex-wrap gap-2 lg:gap-3">
-              {(planDetails.tags || [])
-                .filter((tag) => isTrial || !/7\s*d[ií]as\s*gratis/i.test(String(tag)))
-                .map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full bg-white/16 px-3 py-1 lg:px-4 lg:py-2 !font-['Montserrat'] text-[12px] lg:text-sm font-semibold"
-                  >
-                    {tag}
-                  </span>
-                ))}
+              {currentPlanTags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-white/16 px-3 py-1 lg:px-4 lg:py-2 !font-['Montserrat'] text-[12px] lg:text-sm font-semibold"
+                >
+                  {tag}
+                </span>
+              ))}
             </div>
           </div>
 
@@ -2191,11 +2029,11 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
           </div>
         </div>
 
-        {isTrial && planDetails.key !== "free" ? (
+        {isTrial && planDetails.key !== "free" && (
           <div className="mt-4 border-t border-white/20 pt-4">
             <div className="flex items-center justify-between !font-['Montserrat']">
               <span>Período de prueba</span>
-              <strong>{trialDays ?? 0} días restantes</strong>
+              <strong>{trialDays === 1 ? "1 día restante" : `${trialDays ?? 0} días restantes`}</strong>
             </div>
 
             <div className="mt-1 h-2 overflow-hidden rounded-full bg-white/20">
@@ -2206,17 +2044,9 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
             </div>
 
             <p className="mt-2 !font-['Montserrat'] text-sm text-white/80">
-              Primer cobro: {fmtDate(firstChargeDate)} · {currentActivePrice} USD
+              Próximo cobro: {fmtDate(firstChargeDate)} · {currentActivePrice} USD
             </p>
           </div>
-        ) : (
-          planDetails.key !== "free" && nextBillingDate && (
-            <div className="mt-4 border-t border-white/20 pt-4">
-              <p className="!font-['Montserrat'] text-sm text-white/85">
-                Próximo cobro: {fmtDate(nextBillingDate)} · {currentActivePrice} USD
-              </p>
-            </div>
-          )
         )}
       </section>
 
@@ -2886,11 +2716,30 @@ export default function Account() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (loading) return <AccountSkeleton />;
+  if (loading) {
+    return (
+      <>
+        <Seo
+          title="Mi cuenta"
+          description="Administra tu cuenta, ruta de aprendizaje y membresía en Top Education."
+          canonicalPath="/account"
+          robots="noindex, nofollow"
+        />
+        <AccountSkeleton />
+      </>
+    );
+  }
 
   if (errorMsg) {
     return (
-      <div className="min-h-screen bg-[#F6F4EF] px-5 py-28">
+      <>
+        <Seo
+          title="Mi cuenta"
+          description="Administra tu cuenta, ruta de aprendizaje y membresía en Top Education."
+          canonicalPath="/account"
+          robots="noindex, nofollow"
+        />
+        <div className="min-h-screen bg-[#F6F4EF] px-5 py-28">
         <div className="mx-auto max-w-4xl rounded-[24px] border border-red-100 bg-red-50 p-6 text-red-700">
           <h1 className="!font-['Montserrat'] text-xl font-bold">No se pudo cargar tu cuenta</h1>
           <pre className="mt-3 whitespace-pre-wrap break-words text-xs">{errorMsg}</pre>
@@ -2900,6 +2749,7 @@ export default function Account() {
           </div>
         </div>
       </div>
+      </>
     );
   }
 
@@ -2911,7 +2761,7 @@ export default function Account() {
     <>
       <Seo
         title="Mi cuenta"
-        description="Administra tu cuenta, perfil, membresía y ruta de aprendizaje en Top Education."
+        description="Administra tu cuenta, ruta de aprendizaje y membresía en Top Education."
         canonicalPath="/account"
         robots="noindex, nofollow"
       />
