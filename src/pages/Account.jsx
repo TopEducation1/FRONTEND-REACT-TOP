@@ -512,64 +512,140 @@ const PLAN_CATALOG = {
 };
 
 function getPlanDetails(me, learningRoute) {
-  const planRaw = String(
-    me?.selected_plan ||
-      me?.subscription_plan ||
-      me?.plan ||
-      me?.subscription?.selected_plan ||
-      learningRoute?.selected_plan ||
-      "free"
-  ).toLowerCase();
+  const subscription = me?.subscription || {};
 
-  const paidPlanRaw = String(
-    me?.selected_paid_plan ||
-      me?.billing_variant ||
-      me?.subscription_interval ||
-      me?.interval ||
-      me?.subscription?.interval ||
-      me?.subscription?.selected_paid_plan ||
-      learningRoute?.selected_paid_plan ||
-      ""
-  ).toLowerCase();
+  const normalize = (value) =>
+    String(value || "")
+      .trim()
+      .toLowerCase();
 
-  const priceId = String(
-    me?.price_id ||
-      me?.subscription_price_id ||
-      me?.subscription?.price_id ||
-      ""
+  const upper = (value) =>
+    String(value || "")
+      .trim()
+      .toUpperCase();
+
+  /*
+   * Primero usamos los campos canónicos del contrato B2C.
+   * Estos son más confiables que selected_plan o el estado
+   * de la suscripción.
+   */
+  const tier = upper(
+    me?.tier ||
+      me?.plan?.tier ||
+      subscription?.tier ||
+      learningRoute?.tier
   );
 
+  const packageCode = upper(
+    me?.package_code ||
+      me?.packageCode ||
+      me?.plan?.packageCode ||
+      subscription?.package_code ||
+      subscription?.packageCode ||
+      learningRoute?.package_code ||
+      learningRoute?.packageCode
+  );
+
+  const billingPeriod = upper(
+    me?.billing_period ||
+      me?.billingPeriod ||
+      me?.plan?.billingPeriod ||
+      subscription?.billing_period ||
+      subscription?.billingPeriod ||
+      learningRoute?.billing_period ||
+      learningRoute?.billingPeriod
+  );
+
+  /*
+   * Valores legacy únicamente como respaldo.
+   */
+  const selectedPlan = normalize(
+    me?.selected_plan ||
+      me?.subscription_plan ||
+      subscription?.selected_plan ||
+      learningRoute?.selected_plan
+  );
+
+  const selectedPaidPlan = normalize(
+    me?.selected_paid_plan ||
+      me?.billing_variant ||
+      subscription?.selected_paid_plan ||
+      learningRoute?.selected_paid_plan
+  );
+
+  let planKey = "free";
+
+  /*
+   * packageCode tiene máxima prioridad porque identifica
+   * inequívocamente el producto contratado.
+   */
+  if (
+    packageCode === "TOP_EDUCATION_PLUS_MONTHLY" ||
+    packageCode === "TOP_EDUCATION_PLUS_ANNUAL"
+  ) {
+    planKey = "plus";
+  } else if (
+    packageCode === "TOP_EDUCATION_X_MONTHLY" ||
+    packageCode === "TOP_EDUCATION_X_ANNUAL"
+  ) {
+    planKey = "x";
+  } else if (
+    packageCode === "TOP_EDUCATION_BASIC_MONTHLY" ||
+    packageCode === "TOP_EDUCATION_BASIC_ANNUAL"
+  ) {
+    planKey = "basic";
+  } else if (packageCode === "TOP_EDUCATION_FREE") {
+    planKey = "free";
+  } else if (tier === "PLUS") {
+    planKey = "plus";
+  } else if (tier === "X") {
+    planKey = "x";
+  } else if (tier === "BASIC") {
+    planKey = "basic";
+  } else if (tier === "FREE") {
+    planKey = "free";
+  } else if (
+    selectedPlan.includes("plus") ||
+    selectedPaidPlan.includes("plus")
+  ) {
+    planKey = "plus";
+  } else if (
+    selectedPlan === "basic" ||
+    selectedPaidPlan.includes("basic")
+  ) {
+    /*
+     * Basic debe evaluarse antes que los valores legacy de X.
+     */
+    planKey = "basic";
+  } else if (
+    selectedPlan === "x" ||
+    selectedPlan === "pro" ||
+    selectedPaidPlan === "monthly_x" ||
+    selectedPaidPlan === "yearly_x"
+  ) {
+    planKey = "x";
+  }
+
+  const plan =
+    PLAN_CATALOG[planKey] ||
+    PLAN_CATALOG.free;
+
   const isYearly =
-    paidPlanRaw.includes("yearly") ||
-    paidPlanRaw.includes("annual") ||
-    me?.billing_period === "yearly" ||
-    me?.billing_period === "annual" ||
-    me?.subscription?.billing_period === "yearly";
-  const isBasic =
-  planRaw.includes("basic") ||
-  paidPlanRaw.includes("basic");
-  const isPlus =
-    planRaw.includes("plus") ||
-    paidPlanRaw.includes("plus");
-
-  const isX =
-    planRaw.includes("x") ||
-    planRaw.includes("pro") ||
-    paidPlanRaw.includes("monthly_x") ||
-    paidPlanRaw.includes("yearly_x") ||
-    Boolean(me?.subscription_status);
-
-  let plan = PLAN_CATALOG.free;
-
-  if (isPlus) plan = PLAN_CATALOG.plus;
-  else if (isX) plan = PLAN_CATALOG.x;
-  else if (isBasic) plan = PLAN_CATALOG.basic;
+    billingPeriod === "ANNUAL" ||
+    selectedPaidPlan.includes("yearly") ||
+    selectedPaidPlan.includes("annual");
 
   return {
     ...plan,
-    billingCycle: isYearly ? "yearly" : "monthly",
-    activePrice: isYearly ? plan.yearlyPrice : plan.monthlyPrice,
-    activePlanValue: isYearly ? plan.yearlyPlanValue : plan.monthlyPlanValue,
+    billingCycle: isYearly
+      ? "yearly"
+      : "monthly",
+    activePrice: isYearly
+      ? plan.yearlyPrice
+      : plan.monthlyPrice,
+    activePlanValue: isYearly
+      ? plan.yearlyPlanValue
+      : plan.monthlyPlanValue,
   };
 }
 

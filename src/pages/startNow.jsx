@@ -206,7 +206,7 @@ const FormSelect = ({
     <select
       value={value || ""}
       onChange={onChange}
-      className="mt-1 w-full rounded-[25px] border border-black/10 bg-white px-7 py-4 text-[18px] font-normal text-[#111111] outline-none transition-all duration-300 focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/15"
+      className="mt-1 w-full rounded-[25px] border border-black/10 bg-white px-7 py-3 text-[18px] font-normal text-[#111111] outline-none transition-all duration-300 focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/15"
     >
       <option value="">{placeholder}</option>
       {children}
@@ -2149,26 +2149,27 @@ function StartNowContent() {
             </p>
 
             <div className="mt-5 space-y-3">
-              <FormInput
-                label="Nombre"
-                required
-                value={form.first_name}
-                onChange={(e) =>
-                  setForm({ ...form, first_name: e.target.value })
-                }
-                placeholder="Ingresa tu nombre"
-              />
+              <div className="grid grid-cols-[1fr_1fr] gap-4">
+                <FormInput
+                  label="Nombre"
+                  required
+                  value={form.first_name}
+                  onChange={(e) =>
+                    setForm({ ...form, first_name: e.target.value })
+                  }
+                  placeholder="Ingresa tu nombre"
+                />
 
-              <FormInput
-                label="Apellido"
-                required
-                value={form.last_name}
-                onChange={(e) =>
-                  setForm({ ...form, last_name: e.target.value })
-                }
-                placeholder="Ingresa tu apellido"
-              />
-
+                <FormInput
+                  label="Apellido"
+                  required
+                  value={form.last_name}
+                  onChange={(e) =>
+                    setForm({ ...form, last_name: e.target.value })
+                  }
+                  placeholder="Ingresa tu apellido"
+                />
+              </div>
               <FormInput
                 label="Correo Electrónico"
                 required
