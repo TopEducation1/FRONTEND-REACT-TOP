@@ -2199,56 +2199,87 @@ function StartNowContent() {
                   required
                   type="tel"
                   value={form.phone_number}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    // 1. Deja solo números eliminando todo lo demás
+                    const apenasNumeros = e.target.value.replace(/\D/g, "");
+                    
+                    // 2. Corta el texto a un máximo de 10 dígitos
+                    const truncado = apenasNumeros.slice(0, 10);
+                    
+                    // 3. Aplica el formato visual (3 dígitos + espacio + 3 dígitos + espacio + 4 dígitos)
+                    let formateado = truncado;
+                    if (truncado.length > 3 && truncado.length <= 6) {
+                      formateado = `${truncado.slice(0, 3)} ${truncado.slice(3)}`;
+                    } else if (truncado.length > 6) {
+                      formateado = `${truncado.slice(0, 3)} ${truncado.slice(3, 6)} ${truncado.slice(6)}`;
+                    }
+
                     setForm({
                       ...form,
-                      phone_number: e.target.value.replace(/[^\d\s]/g, ""),
-                    })
-                  }
+                      phone_number: formateado,
+                    });
+                  }}
                   placeholder="300 123 4567"
                 />
+
               </div>
 
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-                <FormInput
-                  label="Edad"
-                  required
-                  type="number"
-                  value={form.age}
-                  onChange={(e) => setForm({ ...form, age: e.target.value })}
-                  placeholder="Tu edad"
-                />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-[1.2fr_2fr_2fr]"> {/* Subimos ligeramente de 1fr a 1.2fr para darle más aire */}
+                <FormInput 
+                  label="Edad" 
+                  required 
+                  type="number" 
+                  min="10"
+                  max="90"
+                  // Esta clase de Tailwind oculta las flechas que quitan espacio y tapan el número
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-center"
+                  value={form.age} 
+                  onChange={(e) => {
+                    const valor = e.target.value;
+                    if (valor === "") {
+                      setForm({ ...form, age: "" });
+                      return;
+                    }
+                    const numero = parseInt(valor, 10);
+                    if (valor.length > 2) return;
+                    if (numero >= 90) return;
+                    setForm({ ...form, age: valor });
+                  }} 
+                  onBlur={() => {
+                    const numero = parseInt(form.age, 10);
+                    if (numero <= 10) {
+                      setForm({ ...form, age: "10" });
+                    }
+                  }}
+                  placeholder="Tu edad" 
+                /> 
 
-                <FormSelect
-                  label="Género"
-                  required
-                  value={form.gender}
-                  onChange={(e) =>
-                    setForm({ ...form, gender: e.target.value })
-                  }
-                  placeholder="Selecciona"
-                >
-                  <option value="female">Femenino</option>
-                  <option value="male">Masculino</option>
-                  <option value="non_binary">No binario</option>
-                  <option value="prefer_not_to_say">Prefiero no decirlo</option>
-                  <option value="other">Otro</option>
-                </FormSelect>
+                <FormSelect 
+                  label="Género" 
+                  required 
+                  value={form.gender} 
+                  onChange={(e) => setForm({ ...form, gender: e.target.value }) } 
+                  placeholder="Selecciona" 
+                > 
+                  <option value="female">Femenino</option> 
+                  <option value="male">Masculino</option> 
+                  <option value="non_binary">No binario</option> 
+                  <option value="prefer_not_to_say">Prefiero no decirlo</option> 
+                  <option value="other">Otro</option> 
+                </FormSelect> 
+
+                <FormSelect 
+                  label="País" 
+                  required 
+                  value={form.country} 
+                  onChange={(e) => setForm({ ...form, country: e.target.value })} 
+                  placeholder="Selecciona tu país" 
+                > 
+                  {countries.map((country) => ( 
+                    <option key={country} value={country}> {country} </option> 
+                  ))} 
+                </FormSelect> 
               </div>
-
-              <FormSelect
-                label="País"
-                required
-                value={form.country}
-                onChange={(e) => setForm({ ...form, country: e.target.value })}
-                placeholder="Selecciona tu país"
-              >
-                {countries.map((country) => (
-                  <option key={country} value={country}>
-                    {country}
-                  </option>
-                ))}
-              </FormSelect>
             </div>
 
             <div className="mt-10 flex items-center gap-6">
