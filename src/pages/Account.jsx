@@ -1396,6 +1396,20 @@ function CareerTab({ learningRoute }) {
   );
 }
 
+function getCleanPdfUrl(url) {
+  const normalizedUrl = String(url || "").trim();
+
+  if (!normalizedUrl) return "";
+
+  const pdfPosition = normalizedUrl.toLowerCase().indexOf(".pdf");
+
+  if (pdfPosition === -1) {
+    return normalizedUrl;
+  }
+
+  return normalizedUrl.slice(0, pdfPosition + 4);
+}
+
 function CvReportPreviewModal({
   open,
   reportUrl,
@@ -1417,51 +1431,93 @@ function CvReportPreviewModal({
     const controller = new AbortController();
     let generatedObjectUrl = "";
 
+    const loadPdfAsBlob = async (url) => {
+      const response = await fetch(url, {
+        method: "GET",
+        credentials: "omit",
+        signal: controller.signal,
+        headers: {
+          Accept: "application/pdf",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const blob = await response.blob();
+
+      if (!blob.size) {
+        throw new Error("El reporte recibido está vacío.");
+      }
+
+      /*
+       * Algunos servidores o S3 pueden responder con
+       * application/octet-stream. Forzamos application/pdf
+       * para que el navegador pueda representarlo.
+       */
+      return blob.type === "application/pdf"
+        ? blob
+        : new Blob([blob], {
+            type: "application/pdf",
+          });
+    };
+
     const loadPreview = async () => {
       setLoadingPreview(true);
       setPreviewError("");
       setPreviewObjectUrl("");
 
-      try {
-        /*
-         * Descargamos el PDF como Blob para evitar que el parámetro
-         * response-content-disposition=attachment de S3 obligue al
-         * navegador a descargarlo en lugar de mostrarlo.
-         */
-        const response = await fetch(reportUrl, {
-          method: "GET",
-          credentials: "omit",
-          signal: controller.signal,
-          headers: {
-            Accept: "application/pdf",
-          },
-        });
+      const cleanPdfUrl = getCleanPdfUrl(reportUrl);
 
-        if (!response.ok) {
-          throw new Error(
-            `No fue posible cargar el reporte. HTTP ${response.status}`
+      try {
+        let pdfBlob = null;
+
+        /*
+         * PRIMER INTENTO:
+         * URL limpia hasta .pdf, sin parámetros que fuerzan
+         * Content-Disposition: attachment.
+         */
+        try {
+          pdfBlob = await loadPdfAsBlob(cleanPdfUrl);
+        } catch (cleanUrlError) {
+          console.warn(
+            "No fue posible cargar la URL limpia del PDF:",
+            cleanUrlError
           );
         }
 
-        const blob = await response.blob();
-
-        if (!blob.size) {
-          throw new Error("El reporte recibido está vacío.");
+        /*
+         * SEGUNDO INTENTO:
+         * Si la URL limpia no funciona porque el objeto es privado,
+         * usamos la URL firmada completa.
+         */
+        if (!pdfBlob && cleanPdfUrl !== reportUrl) {
+          try {
+            pdfBlob = await loadPdfAsBlob(reportUrl);
+          } catch (signedUrlError) {
+            console.warn(
+              "No fue posible cargar la URL firmada del PDF:",
+              signedUrlError
+            );
+          }
         }
 
-        const pdfBlob =
-          blob.type === "application/pdf"
-            ? blob
-            : new Blob([blob], {
-                type: "application/pdf",
-              });
+        if (!pdfBlob) {
+          throw new Error(
+            "El servidor no permitió cargar el PDF dentro del navegador."
+          );
+        }
 
         generatedObjectUrl = URL.createObjectURL(pdfBlob);
         setPreviewObjectUrl(generatedObjectUrl);
       } catch (error) {
         if (error?.name === "AbortError") return;
 
-        console.error("Error cargando preview del CV:", error);
+        console.error(
+          "Error cargando la vista previa del reporte:",
+          error
+        );
 
         setPreviewError(
           error?.message ||
@@ -1496,7 +1552,11 @@ function CvReportPreviewModal({
     document.body.style.overflow = "hidden";
 
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
+
       document.body.style.overflow = "";
     };
   }, [open, onClose]);
@@ -1513,7 +1573,7 @@ function CvReportPreviewModal({
       />
 
       <div
-        className="relative z-10 flex h-[85vh] w-full max-w-[1180px] flex-col overflow-hidden rounded-[26px] bg-white shadow-[0_35px_110px_rgba(0,0,0,0.4)]"
+        className="relative z-10 flex h-[80vh] w-full max-w-[1180px] flex-col overflow-hidden rounded-[26px] bg-white shadow-[0_35px_110px_rgba(0,0,0,0.4)]"
         role="dialog"
         aria-modal="true"
         aria-labelledby="cv-report-preview-title"
@@ -1532,27 +1592,14 @@ function CvReportPreviewModal({
             </h2>
           </div>
 
-          <div className="flex shrink-0 items-center gap-2">
-            <a
-              href={reportUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              download={fileName}
-              className="hidden items-center gap-2 rounded-full bg-[#2563EB] px-5 py-2.5 !font-['Montserrat'] text-sm font-black text-white transition hover:bg-[#1941CF] sm:inline-flex"
-            >
-              <span aria-hidden="true">⇩</span>
-              Descargar PDF
-            </a>
-
-            <button
-              type="button"
-              onClick={onClose}
-              className="grid h-10 w-10 place-items-center rounded-full bg-neutral-100 text-neutral-500 transition hover:bg-neutral-200"
-              aria-label="Cerrar"
-            >
-              <X size={20} />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-neutral-100 text-neutral-500 transition hover:bg-neutral-200"
+            aria-label="Cerrar"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         <div className="relative flex-1 overflow-hidden bg-[#EDEDED]">
@@ -1565,6 +1612,16 @@ function CvReportPreviewModal({
               </p>
             </div>
           )}
+
+          {!loadingPreview &&
+            !previewError &&
+            previewObjectUrl && (
+              <iframe
+                src={`${previewObjectUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`}
+                title="Vista previa del reporte de análisis de CV"
+                className="h-full w-full border-0 bg-white"
+              />
+            )}
 
           {!loadingPreview && previewError && (
             <div className="flex h-full items-center justify-center p-6">
@@ -1582,7 +1639,8 @@ function CvReportPreviewModal({
                 </p>
 
                 <p className="mt-2 !font-['Montserrat'] text-sm text-neutral-500">
-                  El archivo todavía puede descargarse directamente.
+                  Puedes descargar el archivo directamente
+                  para consultarlo.
                 </p>
 
                 <a
@@ -1598,41 +1656,7 @@ function CvReportPreviewModal({
               </div>
             </div>
           )}
-
-          {!loadingPreview && !previewError && previewObjectUrl && (
-            <iframe
-              src={`${previewObjectUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`}
-              title="Vista previa del reporte de análisis de CV"
-              className="h-full w-full border-0 bg-white"
-              onError={() => {
-                setPreviewError(
-                  "El navegador no pudo representar el archivo PDF."
-                );
-              }}
-            />
-          )}
         </div>
-
-        <footer className="flex items-center justify-between gap-3 border-t border-black/10 bg-white px-5 py-3 sm:hidden">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 rounded-[14px] border border-black/10 px-4 py-3 !font-['Montserrat'] text-sm font-black text-neutral-600"
-          >
-            Cerrar
-          </button>
-
-          <a
-            href={reportUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            download={fileName}
-            className="flex flex-1 items-center justify-center gap-2 rounded-[14px] bg-[#2563EB] px-4 py-3 !font-['Montserrat'] text-sm font-black text-white"
-          >
-            <span aria-hidden="true">⇩</span>
-            Descargar
-          </a>
-        </footer>
       </div>
     </div>
   );
