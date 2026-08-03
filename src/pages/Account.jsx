@@ -1504,7 +1504,7 @@ function CvReportPreviewModal({
   if (!open || !reportUrl) return null;
 
   return (
-    <div className="fixed inset-0 z-[140] flex items-center justify-center bg-black/65 px-3 py-5 backdrop-blur-sm md:px-6">
+    <div className="fixed inset-0 z-[140] flex items-center justify-center bg-black/65 px-3 pb-5 pt-20 backdrop-blur-sm md:px-6">
       <button
         type="button"
         aria-label="Cerrar vista previa"
@@ -1513,12 +1513,12 @@ function CvReportPreviewModal({
       />
 
       <div
-        className="relative z-10 flex h-[92vh] w-full max-w-[1180px] flex-col overflow-hidden rounded-[26px] bg-white shadow-[0_35px_110px_rgba(0,0,0,0.4)]"
+        className="relative z-10 flex h-[85vh] w-full max-w-[1180px] flex-col overflow-hidden rounded-[26px] bg-white shadow-[0_35px_110px_rgba(0,0,0,0.4)]"
         role="dialog"
         aria-modal="true"
         aria-labelledby="cv-report-preview-title"
       >
-        <header className="flex items-center justify-between gap-4 border-b border-black/10 px-5 py-4 md:px-6">
+        <div className="flex items-center justify-between gap-4 border-b border-black/10 px-5 py-4 md:px-6">
           <div className="min-w-0">
             <span className="!font-['Montserrat'] text-xs font-black uppercase tracking-[0.15em] text-[#2563EB]">
               Reporte de análisis
@@ -1553,7 +1553,7 @@ function CvReportPreviewModal({
               <X size={20} />
             </button>
           </div>
-        </header>
+        </div>
 
         <div className="relative flex-1 overflow-hidden bg-[#EDEDED]">
           {loadingPreview && (
