@@ -2746,15 +2746,15 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
                           </button>
                         )}
 
-                        {invoice.invoice_pdf && (
-                          <a
-                            href={invoice.invoice_pdf}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded-full border border-[#1941CF]/20 bg-[#EEF2FF] px-4 py-2 !font-['Montserrat'] text-xs font-black text-[#1941CF] transition hover:-translate-y-0.5 hover:bg-[#E0E7FF]"
+                        {reportUrl && (
+                          <button
+                            type="button"
+                            onClick={() => setShowReportPreview(true)}
+                            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-white px-5 py-3 !font-['Montserrat'] text-sm font-black text-[#1941CF] transition hover:-translate-y-0.5 hover:bg-[#F6F8FF]"
                           >
+                            <FileText size={17} />
                             Descargar PDF
-                          </a>
+                          </button>
                         )}
                       </div>
                     </td>
