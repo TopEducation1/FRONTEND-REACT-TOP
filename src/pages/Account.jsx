@@ -1396,6 +1396,248 @@ function CareerTab({ learningRoute }) {
   );
 }
 
+function CvReportPreviewModal({
+  open,
+  reportUrl,
+  fileName = "reporte-analisis-cv.pdf",
+  onClose,
+}) {
+  const [loadingPreview, setLoadingPreview] = useState(false);
+  const [previewError, setPreviewError] = useState("");
+  const [previewObjectUrl, setPreviewObjectUrl] = useState("");
+
+  useEffect(() => {
+    if (!open || !reportUrl) {
+      setLoadingPreview(false);
+      setPreviewError("");
+      setPreviewObjectUrl("");
+      return undefined;
+    }
+
+    const controller = new AbortController();
+    let generatedObjectUrl = "";
+
+    const loadPreview = async () => {
+      setLoadingPreview(true);
+      setPreviewError("");
+      setPreviewObjectUrl("");
+
+      try {
+        /*
+         * Descargamos el PDF como Blob para evitar que el parámetro
+         * response-content-disposition=attachment de S3 obligue al
+         * navegador a descargarlo en lugar de mostrarlo.
+         */
+        const response = await fetch(reportUrl, {
+          method: "GET",
+          credentials: "omit",
+          signal: controller.signal,
+          headers: {
+            Accept: "application/pdf",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            `No fue posible cargar el reporte. HTTP ${response.status}`
+          );
+        }
+
+        const blob = await response.blob();
+
+        if (!blob.size) {
+          throw new Error("El reporte recibido está vacío.");
+        }
+
+        const pdfBlob =
+          blob.type === "application/pdf"
+            ? blob
+            : new Blob([blob], {
+                type: "application/pdf",
+              });
+
+        generatedObjectUrl = URL.createObjectURL(pdfBlob);
+        setPreviewObjectUrl(generatedObjectUrl);
+      } catch (error) {
+        if (error?.name === "AbortError") return;
+
+        console.error("Error cargando preview del CV:", error);
+
+        setPreviewError(
+          error?.message ||
+            "No fue posible cargar la vista previa del reporte."
+        );
+      } finally {
+        setLoadingPreview(false);
+      }
+    };
+
+    loadPreview();
+
+    return () => {
+      controller.abort();
+
+      if (generatedObjectUrl) {
+        URL.revokeObjectURL(generatedObjectUrl);
+      }
+    };
+  }, [open, reportUrl]);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        onClose?.();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [open, onClose]);
+
+  if (!open || !reportUrl) return null;
+
+  return (
+    <div className="fixed inset-0 z-[140] flex items-center justify-center bg-black/65 px-3 py-5 backdrop-blur-sm md:px-6">
+      <button
+        type="button"
+        aria-label="Cerrar vista previa"
+        className="absolute inset-0 cursor-default"
+        onClick={onClose}
+      />
+
+      <div
+        className="relative z-10 flex h-[92vh] w-full max-w-[1180px] flex-col overflow-hidden rounded-[26px] bg-white shadow-[0_35px_110px_rgba(0,0,0,0.4)]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cv-report-preview-title"
+      >
+        <header className="flex items-center justify-between gap-4 border-b border-black/10 px-5 py-4 md:px-6">
+          <div className="min-w-0">
+            <span className="!font-['Montserrat'] text-xs font-black uppercase tracking-[0.15em] text-[#2563EB]">
+              Reporte de análisis
+            </span>
+
+            <h2
+              id="cv-report-preview-title"
+              className="truncate !font-['Montserrat'] text-lg font-black text-[#111111] md:text-xl"
+            >
+              Vista previa del reporte de CV
+            </h2>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2">
+            <a
+              href={reportUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              download={fileName}
+              className="hidden items-center gap-2 rounded-full bg-[#2563EB] px-5 py-2.5 !font-['Montserrat'] text-sm font-black text-white transition hover:bg-[#1941CF] sm:inline-flex"
+            >
+              <span aria-hidden="true">⇩</span>
+              Descargar PDF
+            </a>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="grid h-10 w-10 place-items-center rounded-full bg-neutral-100 text-neutral-500 transition hover:bg-neutral-200"
+              aria-label="Cerrar"
+            >
+              <X size={20} />
+            </button>
+          </div>
+        </header>
+
+        <div className="relative flex-1 overflow-hidden bg-[#EDEDED]">
+          {loadingPreview && (
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white">
+              <div className="h-11 w-11 animate-spin rounded-full border-4 border-[#2563EB]/20 border-t-[#2563EB]" />
+
+              <p className="mt-4 !font-['Montserrat'] text-sm font-bold text-neutral-600">
+                Cargando vista previa...
+              </p>
+            </div>
+          )}
+
+          {!loadingPreview && previewError && (
+            <div className="flex h-full items-center justify-center p-6">
+              <div className="w-full max-w-[520px] rounded-[24px] bg-white p-7 text-center shadow-[0_18px_55px_rgba(0,0,0,0.12)]">
+                <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-red-50 text-red-500">
+                  <FileText size={30} />
+                </div>
+
+                <h3 className="mt-4 !font-['Montserrat'] text-xl font-black text-[#111111]">
+                  No fue posible mostrar la vista previa
+                </h3>
+
+                <p className="mt-2 !font-['Montserrat'] text-sm leading-relaxed text-neutral-500">
+                  {previewError}
+                </p>
+
+                <p className="mt-2 !font-['Montserrat'] text-sm text-neutral-500">
+                  El archivo todavía puede descargarse directamente.
+                </p>
+
+                <a
+                  href={reportUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download={fileName}
+                  className="mt-6 inline-flex items-center justify-center gap-2 rounded-[16px] bg-[#2563EB] px-6 py-3.5 !font-['Montserrat'] text-sm font-black text-white"
+                >
+                  <span aria-hidden="true">⇩</span>
+                  Descargar PDF
+                </a>
+              </div>
+            </div>
+          )}
+
+          {!loadingPreview && !previewError && previewObjectUrl && (
+            <iframe
+              src={`${previewObjectUrl}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`}
+              title="Vista previa del reporte de análisis de CV"
+              className="h-full w-full border-0 bg-white"
+              onError={() => {
+                setPreviewError(
+                  "El navegador no pudo representar el archivo PDF."
+                );
+              }}
+            />
+          )}
+        </div>
+
+        <footer className="flex items-center justify-between gap-3 border-t border-black/10 bg-white px-5 py-3 sm:hidden">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 rounded-[14px] border border-black/10 px-4 py-3 !font-['Montserrat'] text-sm font-black text-neutral-600"
+          >
+            Cerrar
+          </button>
+
+          <a
+            href={reportUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            download={fileName}
+            className="flex flex-1 items-center justify-center gap-2 rounded-[14px] bg-[#2563EB] px-4 py-3 !font-['Montserrat'] text-sm font-black text-white"
+          >
+            <span aria-hidden="true">⇩</span>
+            Descargar
+          </a>
+        </footer>
+      </div>
+    </div>
+  );
+}
+
 function CvTab({ backendBaseUrl, me, learningRoute }) {
   const [subTab, setSubTab] = useState("upload");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -1403,6 +1645,7 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
   const [loadingAnalysis, setLoadingAnalysis] = useState(false);
   const [loadingLast, setLoadingLast] = useState(false);
   const [analysis, setAnalysis] = useState(null);
+  const [showReportPreview, setShowReportPreview] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   const email = me?.email || learningRoute?.email || "";
@@ -1502,6 +1745,24 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
 
   const strengths = recommendations.filter((item) => item.type === "strength");
   const improvements = recommendations.filter((item) => item.type === "improvement");
+  const reportUrl =
+    analysis?.report?.signedUrl ||
+    analysis?.report?.signed_url ||
+    analysis?.report?.url ||
+    analysis?.reportUrl ||
+    analysis?.report_url ||
+    analysis?.signedUrl ||
+    analysis?.signed_url ||
+    "";
+
+  const analyzedFileBaseName = String(
+    analysis?.filename || "reporte-analisis-cv"
+  ).replace(/\.[^.]+$/, "");
+
+  const reportFileName =
+    analysis?.report?.filename ||
+    analysis?.report?.fileName ||
+    `${analyzedFileBaseName}-analysis-report.pdf`;
 
   return (
     <div className="relative w-full">
@@ -1706,15 +1967,15 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                         {score.label || "Resultado"} · {score.percentage || 0}%
                       </p>
                     </div>
-                  {analysis?.report?.signedUrl && (
-                    <a
-                      href={analysis.report.signedUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-6 inline-flex w-full justify-center rounded-[16px] bg-white px-5 py-3 !font-['Montserrat'] text-sm font-black text-[#1941CF]"
+                  {reportUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setShowReportPreview(true)}
+                      className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-white px-5 py-3 !font-['Montserrat'] text-sm font-black text-[#1941CF] transition hover:-translate-y-0.5 hover:bg-[#F6F8FF]"
                     >
-                      Descargar PDF →
-                    </a>
+                      <FileText size={17} />
+                      Descargar PDF
+                    </button>
                   )}
                 </div>
               </div>
@@ -1788,6 +2049,13 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
           )}
         </section>
       )}
+
+      <CvReportPreviewModal
+        open={showReportPreview}
+        reportUrl={reportUrl}
+        fileName={reportFileName}
+        onClose={() => setShowReportPreview(false)}
+      />
     </div>
   );
 }
