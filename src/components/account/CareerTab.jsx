@@ -254,7 +254,7 @@ export const CAREER_PLANS = {
         description: "Con Plus agregas edX, análisis de CV ilimitado y seguimiento completo de tu plan de carrera.",
         button: "Desbloquear mi máximo potencial",
         secondary: "Comparar planes",
-        targetPlan: "x",
+        targetPlan: "plus",
       },
     },
     includes: {
@@ -296,15 +296,8 @@ export const CAREER_PLANS = {
         description: "Explora los cursos recomendados para seguir avanzando en tus habilidades.",
         button: "Continuar mi ruta",
         secondary: "",
-        targetPlan: "x",
+        targetPlan: "plus",
       },
-    },
-    includes: {
-      title: "¿Qué incluye este plan?",
-      subtitle: "X — Coursera + MasterClass",
-      items: ["Todo lo de Básico","MasterClass", "Certificados · Coursera + MasterClass", "Topo — predicción y recomendación", "2 análisis de CV / mes (24 anuales)"],
-      primaryButton: "Elegir X",
-      secondaryButton: "Comparar planes",
     },
     includes: {
       title: "¿Qué incluye este plan?",
@@ -316,6 +309,223 @@ export const CAREER_PLANS = {
     domains: DOMAINS,
   },
 };
+
+
+const DEFAULT_CAREER_ENDPOINT = `${process.env.REACT_APP_API_URL || ""}/api/account/career-plan/`
+  .replace(/([^:]\/)\/+/g, "$1");
+
+function normalizePlanKey(value) {
+  const raw = String(value || "").trim().toLowerCase();
+
+  if (PLAN_ORDER.includes(raw)) return raw;
+  if (raw.includes("plus")) return "plus";
+  if (raw === "x" || raw.includes("_x") || raw.includes("pro")) return "x";
+  if (raw.includes("basic")) return "basic";
+
+  return "free";
+}
+
+function normalizeLevelStatus(value, fallback = "Disponible") {
+  const raw = String(value || "").trim().toLowerCase();
+
+  if (["in_progress", "in-progress", "progress", "en progreso"].includes(raw)) {
+    return "En progreso";
+  }
+
+  if (["completed", "complete", "completado"].includes(raw)) {
+    return "Completado";
+  }
+
+  if (["locked", "blocked", "bloqueado"].includes(raw)) {
+    return "Bloqueado";
+  }
+
+  return fallback;
+}
+
+function normalizeCourse(course = {}) {
+  const url =
+    course.url ||
+    course.previewUrl ||
+    course.preview_url ||
+    course.originalUrl ||
+    course.original_url ||
+    course.detailUrl ||
+    course.detail_url ||
+    "#";
+
+  return {
+    ...course,
+    routeItemId:
+      course.routeItemId ??
+      course.route_item_id ??
+      course.id ??
+      null,
+    certificationId:
+      course.certificationId ??
+      course.certification_id ??
+      null,
+    idInterno: course.idInterno || course.id_interno || "",
+    title: course.title || course.nombre || "Curso recomendado",
+    provider: course.provider || course.plataforma || "Top Education",
+    institution:
+      course.institution ||
+      course.university ||
+      course.company ||
+      "",
+    duration: course.duration || course.tiempo || "",
+    language: course.language || course.lenguaje || "",
+    image: course.image || course.imagen || "",
+    order: Number(course.order || 1),
+    routeLevel: Number(course.routeLevel || course.route_level || 1),
+    available:
+      course.available !== false &&
+      course.is_available !== false,
+    url,
+    progress:
+      course.progress || {
+        supported: false,
+        status: "unknown",
+        percent: null,
+      },
+  };
+}
+
+function mergeCareerPlanWithUserData(staticPlan, careerData, selectedPlanKey) {
+  const backendPlan = careerData?.plan || {};
+  const backendRoute = careerData?.route || {};
+
+  const realPlanKey = normalizePlanKey(
+    backendPlan.key ||
+      backendPlan.tier ||
+      backendPlan.packageCode
+  );
+
+  const isCurrentUserPlan = selectedPlanKey === realPlanKey;
+
+  if (!isCurrentUserPlan) {
+    return {
+      ...staticPlan,
+      isCurrentUserPlan: false,
+      realPlanKey,
+    };
+  }
+
+  const backendLevels = Array.isArray(backendRoute.levels)
+    ? backendRoute.levels
+    : [];
+
+  const mergedLevels = staticPlan.levels.map((staticLevel) => {
+    const realLevel = backendLevels.find(
+      (item) => Number(item.id) === Number(staticLevel.id)
+    );
+
+    if (!realLevel) {
+      return {
+        ...staticLevel,
+        courses: [],
+        coursesLabel: "0 disponibles",
+        status: staticLevel.id === 1 ? "En progreso" : "Disponible",
+      };
+    }
+
+    const realCourses = Array.isArray(realLevel.courses)
+      ? realLevel.courses.map(normalizeCourse)
+      : [];
+
+    const realProviders = Array.from(
+      new Set(
+        [
+          ...(Array.isArray(realLevel.providers)
+            ? realLevel.providers
+            : []),
+          ...realCourses.map((course) => course.provider),
+        ].filter(Boolean)
+      )
+    );
+
+    const realSkills = Array.from(
+      new Set(
+        realCourses.flatMap((course) =>
+          Array.isArray(course.skills) ? course.skills : []
+        )
+      )
+    ).slice(0, 4);
+
+    return {
+      ...staticLevel,
+      number: realLevel.number || staticLevel.number,
+      title: realLevel.title || staticLevel.title,
+      level: realLevel.level || staticLevel.level,
+      status: normalizeLevelStatus(
+        realLevel.status,
+        staticLevel.id === 1 ? "En progreso" : "Disponible"
+      ),
+      providers:
+        realProviders.length > 0 ? realProviders : staticLevel.providers,
+      catalogLabel:
+        realProviders.length > 0
+          ? realProviders.join(" · ")
+          : staticLevel.catalogLabel,
+      skills:
+        realSkills.length > 0 ? realSkills : staticLevel.skills,
+      courses: realCourses,
+      coursesLabel: `${realCourses.length} ${
+        realCourses.length === 1 ? "disponible" : "disponibles"
+      }`,
+      emptyMessage:
+        "No encontramos cursos recomendados para este nivel en tu ruta actual.",
+    };
+  });
+
+  const providers = Array.isArray(backendRoute.providers)
+    ? backendRoute.providers.filter(Boolean)
+    : Array.from(
+        new Set(
+          mergedLevels.flatMap((level) => level.providers || [])
+        )
+      );
+
+  const coursesTotal = Number(
+    backendRoute.coursesTotal ??
+      mergedLevels.reduce(
+        (sum, level) => sum + level.courses.length,
+        0
+      )
+  );
+
+  return {
+    ...staticPlan,
+    isCurrentUserPlan: true,
+    realPlanKey,
+    routeMeta: {
+      id: backendRoute.id,
+      version: backendRoute.version,
+      goal: backendRoute.goal || "",
+      progress: backendRoute.progress || null,
+      mx: careerData?.mx || null,
+    },
+    stats: [
+      {
+        value: `${Number(backendRoute.levelsTotal) || 3} niveles`,
+        label: "en tu ruta",
+      },
+      {
+        value: `${coursesTotal} ${
+          coursesTotal === 1 ? "curso" : "cursos"
+        }`,
+        label: "recomendados",
+      },
+      {
+        value: `${providers.length} ${
+          providers.length === 1 ? "proveedor" : "proveedores"
+        }`,
+        label: providers.join(" · ") || "Sin proveedor",
+      },
+    ],
+    levels: mergedLevels,
+  };
+}
 
 function safePlanKey(value) {
   return PLAN_ORDER.includes(value) ? value : "free";
@@ -398,21 +608,102 @@ function CareerTimeline({ levels, selectedLevelId, onSelect }) {
   );
 }
 
-function CourseCard({ course }) {
+
+function CourseCard({ course, isCurrentUserPlan }) {
+  const hasUrl = course.url && course.url !== "#";
+
   return (
-    <article className="rounded-[16px] border border-black/10 bg-white p-4">
-      <div className="flex items-start justify-between gap-3">
-        <span className="rounded-full bg-[#EEF2FF] px-2 py-1 !font-['Montserrat'] text-[9px] font-black text-[#0458FF]">{course.provider}</span>
-        <span className="!font-['Montserrat'] text-[10px] text-neutral-400">{course.duration}</span>
+    <article
+      className={`overflow-hidden rounded-[16px] border bg-white ${
+        course.available === false
+          ? "border-red-200 opacity-75"
+          : "border-black/10"
+      }`}
+    >
+      {course.image && (
+        <div className="h-32 overflow-hidden bg-[#F3F4F8]">
+          <img
+            src={course.image}
+            alt={course.title}
+            className="h-full w-full object-cover"
+            loading="lazy"
+            onError={(event) => {
+              event.currentTarget.parentElement.style.display = "none";
+            }}
+          />
+        </div>
+      )}
+
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-3">
+          <span className="rounded-full bg-[#EEF2FF] px-2 py-1 !font-['Montserrat'] text-[9px] font-black text-[#0458FF]">
+            {course.provider}
+          </span>
+
+          {course.duration && (
+            <span className="!font-['Montserrat'] text-[10px] text-neutral-400">
+              {course.duration}
+            </span>
+          )}
+        </div>
+
+        <h4 className="mt-2 !font-['Montserrat'] text-sm font-black text-[#111111]">
+          {course.title}
+        </h4>
+
+        {course.institution && (
+          <p className="mt-0.5 !font-['Montserrat'] text-[11px] text-[#806B5F]">
+            {course.institution}
+          </p>
+        )}
+
+        <div className="mt-2 flex flex-wrap gap-2">
+          {course.language && (
+            <span className="rounded-full bg-neutral-100 px-2 py-1 !font-['Montserrat'] text-[9px] font-bold text-neutral-500">
+              {course.language}
+            </span>
+          )}
+
+          {isCurrentUserPlan && (
+            <span
+              className={`rounded-full px-2 py-1 !font-['Montserrat'] text-[9px] font-bold ${
+                course.available === false
+                  ? "bg-red-50 text-red-500"
+                  : "bg-[#EAF8EF] text-[#31985A]"
+              }`}
+            >
+              {course.available === false
+                ? "No disponible"
+                : "Asignado a tu ruta"}
+            </span>
+          )}
+        </div>
+
+        {hasUrl ? (
+          <a
+            href={course.url}
+            target={course.url.startsWith("http") ? "_blank" : undefined}
+            rel={
+              course.url.startsWith("http")
+                ? "noopener noreferrer"
+                : undefined
+            }
+            className="mt-4 inline-flex !font-['Montserrat'] text-xs font-black text-[#1941CF]"
+          >
+            {isCurrentUserPlan ? "Abrir curso" : "Ver curso"} →
+          </a>
+        ) : (
+          <span className="mt-4 inline-flex !font-['Montserrat'] text-xs font-bold text-neutral-400">
+            Acceso no disponible
+          </span>
+        )}
       </div>
-      <h4 className="mt-2 !font-['Montserrat'] text-sm font-black text-[#111111]">{course.title}</h4>
-      <p className="!font-['Montserrat'] text-[11px] text-[#806B5F]">{course.institution}</p>
-      <a href={course.url || "#"} className="mt-3 inline-flex !font-['Montserrat'] text-xs font-black text-[#1941CF]">Ver curso →</a>
     </article>
   );
 }
 
-function LevelDetail({ level }) {
+
+function LevelDetail({ level, isCurrentUserPlan }) {
   if (!level) return <div className="border-t border-black/10 p-8 text-center !font-['Montserrat'] text-neutral-500">Agrega los niveles de este plan en CAREER_PLANS.</div>;
   return (
     <div className="border-t border-black/10 px-5 py-6 md:px-7">
@@ -429,7 +720,7 @@ function LevelDetail({ level }) {
       </div>
       {level.courses.length ? (
         <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {level.courses.map((course, index) => <CourseCard key={`${course.title}-${index}`} course={course} />)}
+          {level.courses.map((course, index) => <CourseCard key={`${course.idInterno || course.title}-${index}`} course={course} isCurrentUserPlan={isCurrentUserPlan} />)}
         </div>
       ) : (
         <div className="mt-4 rounded-[16px] border border-black/10 bg-white px-5 py-5 text-center">
@@ -648,57 +939,247 @@ function DomainsCard({ domains }) {
   );
 }
 
-export default function CareerTab({ learningRoute, currentPlanKey = "free", onPlanAction, onComparePlans }) {
+
+export default function CareerTab({
+  learningRoute,
+  currentPlanKey = "free",
+  onPlanAction,
+  onComparePlans,
+  endpoint = DEFAULT_CAREER_ENDPOINT,
+}) {
   const normalizedCurrentPlan = safePlanKey(currentPlanKey);
-  const [selectedPlanKey, setSelectedPlanKey] = useState(normalizedCurrentPlan);
+  const [selectedPlanKey, setSelectedPlanKey] = useState(
+    normalizedCurrentPlan
+  );
   const [selectedLevelId, setSelectedLevelId] = useState(1);
+  const [careerData, setCareerData] = useState(null);
+  const [careerLoading, setCareerLoading] = useState(true);
+  const [careerError, setCareerError] = useState("");
 
-  useEffect(() => setSelectedPlanKey(normalizedCurrentPlan), [normalizedCurrentPlan]);
+  useEffect(() => {
+    setSelectedPlanKey(normalizedCurrentPlan);
+  }, [normalizedCurrentPlan]);
 
-  const plan = useMemo(() => CAREER_PLANS[selectedPlanKey] || CAREER_PLANS.free, [selectedPlanKey]);
+  useEffect(() => {
+    let cancelled = false;
+    const controller = new AbortController();
 
-  useEffect(() => setSelectedLevelId(plan.levels?.[0]?.id || 1), [selectedPlanKey, plan.levels]);
+    const loadCareerPlan = async () => {
+      setCareerLoading(true);
+      setCareerError("");
 
-  const personalizedTopics = Array.isArray(learningRoute?.topics) ? learningRoute.topics.filter(Boolean) : [];
+      try {
+        const response = await fetch(endpoint, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+          },
+          signal: controller.signal,
+        });
+
+        let payload = null;
+
+        try {
+          payload = await response.json();
+        } catch {
+          payload = null;
+        }
+
+        if (!response.ok || payload?.ok === false) {
+          throw new Error(
+            payload?.message ||
+              "No fue posible cargar tu plan de carrera."
+          );
+        }
+
+        const data = payload?.data || payload;
+
+        if (!cancelled) {
+          setCareerData(data || null);
+
+          const backendPlanKey = normalizePlanKey(
+            data?.plan?.key ||
+              data?.plan?.tier ||
+              data?.plan?.packageCode
+          );
+
+          if (PLAN_ORDER.includes(backendPlanKey)) {
+            setSelectedPlanKey(backendPlanKey);
+          }
+        }
+      } catch (error) {
+        if (error?.name === "AbortError" || cancelled) {
+          return;
+        }
+
+        console.error("Error cargando career-plan:", error);
+
+        setCareerError(
+          error?.message ||
+            "No fue posible cargar tu plan de carrera."
+        );
+      } finally {
+        if (!cancelled) {
+          setCareerLoading(false);
+        }
+      }
+    };
+
+    loadCareerPlan();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [endpoint]);
+
+  const staticPlan = useMemo(
+    () =>
+      CAREER_PLANS[selectedPlanKey] ||
+      CAREER_PLANS.free,
+    [selectedPlanKey]
+  );
+
+  const mergedPlan = useMemo(
+    () =>
+      mergeCareerPlanWithUserData(
+        staticPlan,
+        careerData,
+        selectedPlanKey
+      ),
+    [staticPlan, careerData, selectedPlanKey]
+  );
+
+  useEffect(() => {
+    setSelectedLevelId(
+      mergedPlan.levels?.[0]?.id || 1
+    );
+  }, [selectedPlanKey, mergedPlan.levels]);
+
+  const personalizedTopics = Array.isArray(
+    careerData?.route?.topics
+  )
+    ? careerData.route.topics.filter(Boolean)
+    : Array.isArray(learningRoute?.topics)
+    ? learningRoute.topics.filter(Boolean)
+    : [];
+
   const visiblePlan = useMemo(() => {
-    if (!personalizedTopics.length || !plan.levels?.length) return plan;
+    if (
+      !personalizedTopics.length ||
+      !mergedPlan.levels?.length
+    ) {
+      return mergedPlan;
+    }
+
     return {
-      ...plan,
-      levels: plan.levels.map((level, index) => ({
+      ...mergedPlan,
+      levels: mergedPlan.levels.map((level, index) => ({
         ...level,
-        skills: index === 0
-          ? Array.from(new Set([...personalizedTopics.slice(0, 3), ...level.skills])).slice(0, 4)
-          : level.skills,
+        skills:
+          index === 0
+            ? Array.from(
+                new Set([
+                  ...personalizedTopics.slice(0, 3),
+                  ...(level.skills || []),
+                ])
+              ).slice(0, 4)
+            : level.skills,
       })),
     };
-  }, [plan, personalizedTopics]);
+  }, [mergedPlan, personalizedTopics]);
 
-  const selectedLevel = visiblePlan.levels.find((level) => level.id === selectedLevelId);
+  const selectedLevel =
+    visiblePlan.levels.find(
+      (level) =>
+        Number(level.id) === Number(selectedLevelId)
+    ) || visiblePlan.levels[0];
 
   return (
     <div className="w-full pb-8">
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <h1 className="!font-['Montserrat'] text-[2rem] font-bold leading-[1.05em] text-[#111111]">Plan de Carrera</h1>
-          <p className="mt-1 !font-['Montserrat'] text-sm text-[#806B5F]">Tu hoja de ruta profesional personalizada por Topo</p>
+          <h1 className="!font-['Montserrat'] text-[2rem] font-bold leading-[1.05em] text-[#111111]">
+            Plan de Carrera
+          </h1>
+
+          <p className="mt-1 !font-['Montserrat'] text-sm text-[#806B5F]">
+            Tu hoja de ruta profesional personalizada por Topo
+          </p>
         </div>
-        <span className="w-fit rounded-full bg-[#E9ECF8] px-4 py-2 !font-['Montserrat'] text-xs font-black text-[#1941CF]">★ Análisis de Topo</span>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {visiblePlan.isCurrentUserPlan && (
+            <span className="w-fit rounded-full bg-[#EAF8EF] px-4 py-2 !font-['Montserrat'] text-xs font-black text-[#31985A]">
+              ✓ Tu plan actual
+            </span>
+          )}
+
+          <span className="w-fit rounded-full bg-[#E9ECF8] px-4 py-2 !font-['Montserrat'] text-xs font-black text-[#1941CF]">
+            ★ Análisis de Topo
+          </span>
+        </div>
       </div>
 
-      <PlanSelector selectedPlan={selectedPlanKey} onChange={setSelectedPlanKey} />
+      {careerError && (
+        <div className="mb-4 rounded-[16px] border border-amber-200 bg-amber-50 px-4 py-3 !font-['Montserrat'] text-sm text-amber-700">
+          {careerError} Se mostrará la configuración general del plan.
+        </div>
+      )}
+
+      <PlanSelector
+        selectedPlan={selectedPlanKey}
+        onChange={setSelectedPlanKey}
+      />
+
       <TopoMessage {...visiblePlan.intro} />
-      <StatsGrid stats={visiblePlan.stats} />
+
+      {careerLoading ? (
+        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+          {[1, 2, 3].map((item) => (
+            <div
+              key={item}
+              className="h-[92px] animate-pulse rounded-[18px] bg-neutral-200"
+            />
+          ))}
+        </div>
+      ) : (
+        <StatsGrid stats={visiblePlan.stats} />
+      )}
 
       <section className="mt-4 overflow-hidden rounded-[20px] border border-black/10 bg-white shadow-[0_8px_24px_rgba(0,0,0,0.05)]">
-        <CareerTimeline levels={visiblePlan.levels} selectedLevelId={selectedLevelId} onSelect={setSelectedLevelId} />
-        <LevelDetail level={selectedLevel} />
+        <CareerTimeline
+          levels={visiblePlan.levels}
+          selectedLevelId={selectedLevelId}
+          onSelect={setSelectedLevelId}
+        />
+
+        <LevelDetail
+          level={selectedLevel}
+          isCurrentUserPlan={
+            visiblePlan.isCurrentUserPlan
+          }
+        />
       </section>
 
-      <PotentialSection potential={visiblePlan.potential} onPlanAction={onPlanAction} onComparePlans={onComparePlans} />
+      <PotentialSection
+        potential={visiblePlan.potential}
+        onPlanAction={onPlanAction}
+        onComparePlans={onComparePlans}
+      />
 
       <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <IncludesCard includes={visiblePlan.includes} planKey={visiblePlan.key} onPlanAction={onPlanAction} onComparePlans={onComparePlans} />
-        <DomainsCard domains={visiblePlan.domains || []} />
+        <IncludesCard
+          includes={visiblePlan.includes}
+          planKey={visiblePlan.key}
+          onPlanAction={onPlanAction}
+          onComparePlans={onComparePlans}
+        />
+
+        <DomainsCard
+          domains={visiblePlan.domains || []}
+        />
       </div>
     </div>
   );
