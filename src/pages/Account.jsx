@@ -2660,26 +2660,30 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
                       </span>
                     </td>
                     <td className="py-4 pr-4">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         {invoice.hosted_invoice_url && (
                           <button
                             type="button"
-                            onClick={() => openInvoiceModal(invoice.hosted_invoice_url)}
+                            onClick={() =>
+                              openInvoiceModal(
+                                invoice.hosted_invoice_url
+                              )
+                            }
                             className="rounded-full bg-[#1941CF] px-4 py-2 !font-['Montserrat'] text-xs font-black text-white transition hover:-translate-y-0.5 hover:bg-[#1234A8]"
                           >
                             Ver factura
                           </button>
                         )}
 
-                        {reportUrl && (
-                          <button
-                            type="button"
-                            onClick={() => setShowReportPreview(true)}
-                            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-[16px] bg-white px-5 py-3 !font-['Montserrat'] text-sm font-black text-[#1941CF] transition hover:-translate-y-0.5 hover:bg-[#F6F8FF]"
+                        {invoice.invoice_pdf && (
+                          <a
+                            href={invoice.invoice_pdf}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-full border border-[#1941CF]/20 bg-[#EEF2FF] px-4 py-2 !font-['Montserrat'] text-xs font-black text-[#1941CF] transition hover:-translate-y-0.5 hover:bg-[#E1E7FF]"
                           >
-                            <FileText size={17} />
                             Descargar PDF
-                          </button>
+                          </a>
                         )}
                       </div>
                     </td>

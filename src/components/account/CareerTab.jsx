@@ -155,6 +155,7 @@ export const CAREER_PLANS = {
       },
     ],
     potential: {
+      scaleMaxHours: 60,
       title: "Tu potencial con este plan",
       description:
         "Cada curso aporta horas de aprendizaje a las habilidades que elegiste. Al mejorar tu plan, accedes a más contenidos y puedes alcanzar niveles más avanzados.",
@@ -197,6 +198,7 @@ export const CAREER_PLANS = {
     ],
     levels: cloneLevels(["Coursera"], 6, "Ilimitados · Coursera", "CV: 1 / mes (12 anuales)"),
     potential: {
+      scaleMaxHours: 60,
       title: "Tu potencial con este plan",
       description:
         "Cada curso aporta horas de aprendizaje a las habilidades que elegiste. Al mejorar tu plan, accedes a más contenidos y puedes alcanzar niveles más avanzados.",
@@ -238,6 +240,7 @@ export const CAREER_PLANS = {
     ],
     levels: cloneLevels(["Coursera", "MasterClass"], 8, "Ilimitados · 2 proveedores", "CV: 2 / mes"),
     potential: {
+      scaleMaxHours: 60,
       title: "Tu potencial con este plan",
       description: "Aumenta tu cobertura con contenidos de dos proveedores.",
       skills: [],
@@ -268,6 +271,7 @@ export const CAREER_PLANS = {
     ],
     levels: cloneLevels(["Coursera", "edX", "MasterClass"], 10, "Ilimitados · 3 proveedores", "CV ilimitados"),
     potential: {
+      scaleMaxHours: 60,
       title: "Tu potencial con este plan",
       description: "Desbloquea el máximo alcance de tu ruta, seguimiento avanzado e IA personalizada.",
       skills: [],
@@ -420,44 +424,163 @@ function LevelDetail({ level }) {
 
 function PotentialSection({ potential, onPlanAction, onComparePlans }) {
   if (!potential) return null;
+
+  const skills = Array.isArray(potential.skills)
+    ? potential.skills
+    : [];
+
   return (
     <section className="mt-5 rounded-[20px] border border-[#1941CF]/20 bg-[#F1F2F6] p-5 md:p-6">
-      <TopoMessage title={potential.title} description={potential.description} />
+      <TopoMessage
+        title={potential.title}
+        description={potential.description}
+      />
+
       <div className="mt-5 space-y-5">
-        {potential.skills.map((skill) => {
-          const percent = Math.min(100, Math.max(0, (skill.currentHours / skill.targetHours) * 100));
+        {skills.map((skill) => {
+          const currentHours = Math.max(
+            0,
+            Number(skill.currentHours) || 0
+          );
+
+          const nextPlanHours = Math.max(
+            currentHours,
+            Number(skill.targetHours) || currentHours
+          );
+
+          /*
+           * scaleMaxHours controla el ancho total de la barra.
+           * Puede definirse globalmente en potential o individualmente
+           * dentro de cada skill.
+           */
+          const scaleMaxHours = Math.max(
+            nextPlanHours,
+            Number(skill.scaleMaxHours) ||
+              Number(potential.scaleMaxHours) ||
+              nextPlanHours ||
+              1
+          );
+
+          const currentPercent = Math.min(
+            100,
+            Math.max(
+              0,
+              (currentHours / scaleMaxHours) * 100
+            )
+          );
+
+          const nextPlanPercent = Math.min(
+            100 - currentPercent,
+            Math.max(
+              0,
+              ((nextPlanHours - currentHours) /
+                scaleMaxHours) *
+                100
+            )
+          );
+
           return (
             <div key={skill.name}>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <strong className="!font-['Montserrat'] text-sm text-[#111111]">{skill.name}</strong>
-                  <span className="rounded-full bg-[#E2E7FA] px-2 py-1 !font-['Montserrat'] text-[10px] font-bold text-[#1941CF]">{skill.badge}</span>
+                  <strong className="!font-['Montserrat'] text-sm text-[#111111]">
+                    {skill.name}
+                  </strong>
+
+                  <span className="rounded-full bg-[#E2E7FA] px-2 py-1 !font-['Montserrat'] text-[10px] font-bold text-[#1941CF]">
+                    {skill.badge}
+                  </span>
                 </div>
-                <strong className="!font-['Montserrat'] text-xs text-[#1941CF]">{skill.currentHours}h de aprendizaje</strong>
+
+                <strong className="!font-['Montserrat'] text-xs text-[#1941CF]">
+                  {currentHours}h de aprendizaje
+                </strong>
               </div>
-              <div className="mt-2 h-3 overflow-hidden rounded-full bg-[#DADBDF]">
-                <div className="h-full rounded-full bg-[#1941CF]" style={{ width: `${percent}%` }} />
+
+              {/*
+               * Azul sólido: lo incluido en el plan seleccionado.
+               * Azul rayado: lo que podría alcanzar con el siguiente plan.
+               * Gris: capacidad restante de la escala.
+               */}
+              <div
+                className="mt-2 flex h-3 overflow-hidden rounded-full bg-[#DADBDF]"
+                role="progressbar"
+                aria-label={`Progreso de ${skill.name}`}
+                aria-valuemin={0}
+                aria-valuemax={scaleMaxHours}
+                aria-valuenow={currentHours}
+              >
+                <div
+                  className="h-full shrink-0 bg-[#1941CF]"
+                  style={{
+                    width: `${currentPercent}%`,
+                  }}
+                />
+
+                {nextPlanPercent > 0 && (
+                  <div
+                    className="h-full shrink-0 border-l border-white/50"
+                    style={{
+                      width: `${nextPlanPercent}%`,
+                      backgroundColor: "#DCE5FF",
+                      backgroundImage:
+                        "repeating-linear-gradient(135deg, rgba(25,65,207,0.38) 0px, rgba(25,65,207,0.38) 4px, transparent 4px, transparent 8px)",
+                    }}
+                    aria-hidden="true"
+                  />
+                )}
               </div>
-              <p className="mt-1 !font-['Montserrat'] text-[11px] text-[#806B5F]">{skill.nextText} <strong className="text-[#1941CF]">({skill.gain})</strong></p>
+
+              <p className="mt-1 !font-['Montserrat'] text-[11px] text-[#806B5F]">
+                {skill.nextText}{" "}
+                <strong className="text-[#1941CF]">
+                  ({skill.gain})
+                </strong>
+              </p>
             </div>
           );
         })}
       </div>
+
       {potential.cta && (
         <div className="mt-5 flex flex-col gap-4 rounded-[16px] border border-[#1941CF]/15 bg-white p-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h3 className="!font-['Montserrat'] text-base font-black text-[#111111]">{potential.cta.title}</h3>
-            <p className="mt-1 !font-['Montserrat'] text-sm text-[#806B5F]">{potential.cta.description}</p>
+            <h3 className="!font-['Montserrat'] text-base font-black text-[#111111]">
+              {potential.cta.title}
+            </h3>
+
+            <p className="mt-1 !font-['Montserrat'] text-sm text-[#806B5F]">
+              {potential.cta.description}
+            </p>
           </div>
+
           <div className="shrink-0 text-center">
-            <button type="button" onClick={() => onPlanAction?.(potential.cta.targetPlan)} className="rounded-[16px] bg-[#1941CF] px-5 py-3 !font-['Montserrat'] text-sm font-black text-white">{potential.cta.button}</button>
-            <button type="button" onClick={onComparePlans} className="mt-2 block w-full !font-['Montserrat'] text-sm text-[#6E5B4E]">{potential.cta.secondary}</button>
+            <button
+              type="button"
+              onClick={() =>
+                onPlanAction?.(
+                  potential.cta.targetPlan
+                )
+              }
+              className="rounded-[16px] bg-[#1941CF] px-5 py-3 !font-['Montserrat'] text-sm font-black text-white"
+            >
+              {potential.cta.button}
+            </button>
+
+            <button
+              type="button"
+              onClick={onComparePlans}
+              className="mt-2 block w-full !font-['Montserrat'] text-sm text-[#6E5B4E]"
+            >
+              {potential.cta.secondary}
+            </button>
           </div>
         </div>
       )}
     </section>
   );
 }
+
 
 function IncludesCard({ includes, onPlanAction, onComparePlans, planKey }) {
   return (
