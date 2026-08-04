@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 import Seo from "../components/Seo";
+import CareerTab from "../components/account/CareerTab";
 
 const stripePublishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
@@ -1295,106 +1296,6 @@ function AddPaymentMethodModal({ open, onClose, backendBaseUrl, onSaved, userEma
   );
 }
 
-function CareerTab({ learningRoute }) {
-  const topics = learningRoute?.topics?.length ? learningRoute.topics : ["Liderazgo", "Comunicación", "Estrategia"];
-  const goal = learningRoute?.goal || "Liderazgo aplicado";
-
-  const steps = [
-    { number: "✓", title: "Fundamentos", status: "Completada", done: true, active: false, skills: [topics[0] || "Comunicación", "Pensamiento crítico"] },
-    { number: "02", title: goal, status: "En curso", done: false, active: true, skills: [topics[1] || "Gestión de equipos", "Toma de decisiones"] },
-    { number: "03", title: "Especialización", status: "", done: false, active: false, skills: ["Data-driven leadership", topics[2] || "Estrategia"] },
-    { number: "04", title: "Nivel experto", status: "", done: false, active: false, skills: ["Dirección ejecutiva", "Innovación"] },
-  ];
-
-  const skillRows = [
-    ["Liderazgo", 68, "#2563EB"],
-    ["Comunicación", 45, "#5CC781"],
-    ["Estrategia", 30, "#F5B63D"],
-    ["Tecnología", 20, "#1F64D8"],
-    ["Creatividad", 55, "#8B5CF6"],
-  ];
-
-  return (
-    <>
-      <div className="mb-3 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div>
-          <h1 className="!font-['Montserrat'] text-[2rem] font-bold leading-[1.1em] text-[#111111]">Plan de Carrera</h1>
-          <p className="!font-['Montserrat'] leading-[1.2em] text-neutral-500">Tu hoja de ruta profesional personalizada.</p>
-        </div>
-        <span className="w-fit rounded-full bg-[#2563EB]/10 px-4 py-2 !font-['Montserrat'] text-sm font-bold text-[#2563EB]">✦ Generado para ti</span>
-      </div>
-
-      <section className="rounded-[24px] border border-black/10 bg-white p-5 shadow-[0_12px_35px_rgba(0,0,0,0.05)]">
-        <span className="!font-['Montserrat'] text-xs font-black uppercase tracking-[0.16em] text-neutral-500">Ruta de competencias</span>
-
-        <div className="mt-3 space-y-6">
-          {steps.map((step, index) => (
-            <div key={step.title} className="relative grid grid-cols-[48px_1fr] gap-5">
-              {index !== steps.length - 1 && <span className={`absolute left-[23px] top-[48px] h-[62px] w-[2px] ${step.done ? "bg-[#5CC781]" : "bg-neutral-200"}`} />}
-
-              <div className={`relative z-10 grid h-12 w-12 place-items-center rounded-full border !font-['Montserrat'] font-black ${step.done ? "border-[#5CC781] bg-[#5CC781] text-white" : step.active ? "border-[#2563EB] bg-[#2563EB] text-white" : "border-neutral-200 bg-white text-neutral-400"}`}>
-                {step.number}
-              </div>
-
-              <div className={step.active || step.done ? "" : "opacity-45"}>
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="!font-['Montserrat'] text-xl font-bold text-[#111111]">{step.title}</h3>
-                  {step.status && <span className={`rounded-full px-3 py-1 !font-['Montserrat'] text-xs font-bold ${step.done ? "bg-[#5CC781]/10 text-[#5CC781]" : "bg-[#2563EB] text-white"}`}>{step.done ? "✓ " : ""}{step.status}</span>}
-                </div>
-
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {step.skills.map((skill) => (
-                    <span key={skill} className={`rounded-full border px-3 py-1.5 !font-['Montserrat'] text-sm ${step.done ? "border-[#5CC781]/25 bg-[#5CC781]/5 text-[#5CC781]" : step.active ? "border-[#2563EB]/25 bg-[#2563EB]/5 text-[#2563EB]" : "border-neutral-200 bg-white text-neutral-400"}`}>
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <section className="rounded-[24px] border border-black/10 bg-white p-7 shadow-[0_12px_35px_rgba(0,0,0,0.05)]">
-          <span className="!font-['Montserrat'] text-xs font-black uppercase tracking-[0.16em] text-neutral-500">Matriz de habilidades</span>
-          <div className="mt-6 space-y-4">
-            {skillRows.map(([label, value, color]) => (
-              <div key={label}>
-                <div className="mb-2 flex items-center justify-between !font-['Montserrat'] text-sm">
-                  <span>{label}</span>
-                  <span style={{ color }}>{value}%</span>
-                </div>
-                <div className="h-2 overflow-hidden rounded-full bg-neutral-100">
-                  <div className="h-full rounded-full" style={{ width: `${value}%`, backgroundColor: color }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="rounded-[24px] border border-black/10 bg-white p-7 shadow-[0_12px_35px_rgba(0,0,0,0.05)]">
-          <span className="!font-['Montserrat'] text-xs font-black uppercase tracking-[0.16em] text-neutral-500">Próximos hitos</span>
-          <div className="mt-6 space-y-4">
-            {[
-              ["#2563EB", "Completar módulo 2", "Esta semana"],
-              ["#5CC781", "Certificación de Liderazgo", "Jun 2026"],
-              ["#F5B63D", "Especialización en Estrategia", "Ago 2026"],
-            ].map(([color, title, date]) => (
-              <div key={title} className="flex items-center justify-between rounded-[16px] border border-black/5 bg-white px-5 py-4">
-                <span className="flex items-center gap-3 !font-['Montserrat'] text-sm font-semibold">
-                  <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
-                  {title}
-                </span>
-                <span className="!font-['Montserrat'] text-xs text-neutral-400">{date}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-    </>
-  );
-}
 
 function getCleanPdfUrl(url) {
   const normalizedUrl = String(url || "").trim();
@@ -3159,7 +3060,27 @@ export default function Account() {
           <main className="box-border px-2 py-3 lg:ml-[300px] lg:w-[calc(100vw-300px)] lg:px-12 lg:py-10">
             <div className="mx-auto max-w-[1240px]">
 
-              {activeTab === "career" && <CareerTab learningRoute={learningRoute} />}
+              {activeTab === "career" && (
+                <CareerTab
+                  learningRoute={learningRoute}
+                  currentPlanKey={planDetails.key}
+                  onPlanAction={(targetPlan) => {
+                    changeTab("license");
+
+                    /*
+                    * Opcionalmente puedes guardar el plan que el usuario
+                    * desea consultar o contratar.
+                    */
+                    sessionStorage.setItem(
+                      "careerTargetPlan",
+                      targetPlan
+                    );
+                  }}
+                  onComparePlans={() => {
+                    changeTab("license");
+                  }}
+                />
+              )}
               {activeTab === "cv" && (
                 <CvTab
                   backendBaseUrl={backendBaseUrl}
