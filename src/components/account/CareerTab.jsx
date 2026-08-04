@@ -231,7 +231,7 @@ export const CAREER_PLANS = {
     intro: {
       title: "Tu ruta siempre avanza en 3 niveles",
       description: "El plan que elijas define cuántos cursos, proveedores y beneficios estarán disponibles dentro de tu ruta.",
-      highlight: "Amplía tu ruta con Coursera y MasterClass.",
+      highlight: "Amplía tu experiencia con Coursera y MasterClass.",
     },
     stats: [
       { value: "3 niveles", label: "siempre" },
@@ -242,14 +242,25 @@ export const CAREER_PLANS = {
     potential: {
       scaleMaxHours: 60,
       title: "Tu potencial con este plan",
-      description: "Aumenta tu cobertura con contenidos de dos proveedores.",
-      skills: [],
-      cta: { title: "Lleva tu ruta al siguiente nivel", description: "Con Plus agregas edX y beneficios avanzados.", button: "Conocer Plus", secondary: "Comparar planes", targetPlan: "plus" },
+      description:
+        "Cada curso aporta horas de aprendizaje a las habilidades que elegiste. Al mejorar tu plan, accedes a más contenidos y puedes alcanzar niveles más avanzados.",
+      skills: [
+        { name: "Liderazgo", badge: "Nivel 3 · Competente", currentHours: 32, targetHours: 52, nextText: "Con Plus puedes alcanzar 52h — Nivel 4 · Avanzado ", gain: "+20h" },
+        { name: "Comunicación", badge: "Nivel 3 · Competente", currentHours: 28, targetHours: 46, nextText: "Con Plus puedes alcanzar 46h — Nivel 4 · Avanzado", gain: "+18h" },
+        { name: "Negocios", badge: "Nivel 3 · Competente", currentHours: 24, targetHours: 40, nextText: "Con Plus puedes alcanzar 40h — Nivel 4 · Avanzado", gain: "+16h" },
+      ],
+      cta: {
+        title: "Alcanza tu máximo potencial",
+        description: "Con Plus agregas edX, análisis de CV ilimitado y seguimiento completo de tu plan de carrera.",
+        button: "Desbloquear mi máximo potencial",
+        secondary: "Comparar planes",
+        targetPlan: "x",
+      },
     },
     includes: {
       title: "¿Qué incluye este plan?",
-      subtitle: "X — Coursera y MasterClass",
-      items: ["Ruta completa", "Dos proveedores", "Certificaciones", "Seguimiento de progreso"],
+      subtitle: "X — Coursera + MasterClass",
+      items: ["Todo lo de Básico","MasterClass", "Certificados · Coursera + MasterClass", "Topo — predicción y recomendación", "2 análisis de CV / mes (24 anuales)"],
       primaryButton: "Elegir X",
       secondaryButton: "Comparar planes",
     },
@@ -262,25 +273,43 @@ export const CAREER_PLANS = {
     intro: {
       title: "Tu ruta siempre avanza en 3 niveles",
       description: "El plan que elijas define cuántos cursos, proveedores y beneficios estarán disponibles dentro de tu ruta.",
-      highlight: "Accede a la experiencia completa con Coursera, edX y MasterClass.",
+      highlight: "Accede a la experiencia más completa con Coursera, MasterClass y edX.",
     },
     stats: [
       { value: "3 niveles", label: "siempre" },
-      { value: "30 cursos", label: "disponibles" },
-      { value: "3 proveedores", label: "Coursera · edX · MasterClass" },
+      { value: "32 cursos", label: "disponibles" },
+      { value: "3 proveedores", label: "Coursera · MasterClass · edX" },
     ],
-    levels: cloneLevels(["Coursera", "edX", "MasterClass"], 10, "Ilimitados · 3 proveedores", "CV ilimitados"),
+    levels: cloneLevels(["Coursera", "edX", "MasterClass"], 10, "Ilimitados · Coursera + MasterClass + edX", "CV: 3 / mes (36 anuales)"),
     potential: {
       scaleMaxHours: 60,
       title: "Tu potencial con este plan",
-      description: "Desbloquea el máximo alcance de tu ruta, seguimiento avanzado e IA personalizada.",
-      skills: [],
-      cta: { title: "Tu ruta completa", description: "Disfruta de todos los proveedores y beneficios.", button: "Elegir Plus", secondary: "Comparar planes", targetPlan: "plus" },
+      description:
+        "Cada curso aporta horas de aprendizaje a las habilidades que elegiste. Al mejorar tu plan, accedes a más contenidos y puedes alcanzar niveles más avanzados.",
+      skills: [
+        { name: "Liderazgo", badge: "Nivel 4 · Avanzado", currentHours: 52, targetHours: 52, nextText: "", gain: "52h" },
+        { name: "Comunicación", badge: "Nivel 4 · Avanzado", currentHours: 46, targetHours: 46, nextText: "", gain: "46h" },
+        { name: "Negocios", badge: "Nivel 4 · Avanzado", currentHours: 40, targetHours: 40, nextText: "", gain: "40h" },
+      ],
+      cta: {
+        title: "Tienes acceso al máximo potencial de tu ruta",
+        description: "Explora los cursos recomendados para seguir avanzando en tus habilidades.",
+        button: "Continuar mi ruta",
+        secondary: "",
+        targetPlan: "x",
+      },
     },
     includes: {
       title: "¿Qué incluye este plan?",
-      subtitle: "Plus — Experiencia completa",
-      items: ["Todos los proveedores", "Todas las certificaciones", "Seguimiento avanzado", "IA Topo avanzada"],
+      subtitle: "X — Coursera + MasterClass",
+      items: ["Todo lo de Básico","MasterClass", "Certificados · Coursera + MasterClass", "Topo — predicción y recomendación", "2 análisis de CV / mes (24 anuales)"],
+      primaryButton: "Elegir X",
+      secondaryButton: "Comparar planes",
+    },
+    includes: {
+      title: "¿Qué incluye este plan?",
+      subtitle: "Plus — Coursera + MasterClass + edX",
+      items: ["Todo lo de X", "edX completo", "Certificados de los 3 proveedores", "Predicción y recomendación avanzada","3 análisis de CV / mes (36 anuales)","Seguimiento de tu plan de carrera"],
       primaryButton: "Elegir Plus",
       secondaryButton: "Comparar planes",
     },
