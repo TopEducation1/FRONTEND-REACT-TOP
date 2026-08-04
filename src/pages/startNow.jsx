@@ -652,6 +652,15 @@ function StartNowContent() {
     level_2: [],
     level_3: [],
   });
+
+  /*
+   * Selección contractual para TOP_EDUCATION_FREE:
+   * exactamente un curso por cada nivel.
+   *
+   * Se mantiene separada de las recomendaciones visuales,
+   * que pueden contener hasta nueve cursos.
+   */
+  const [freeCoursesForMx, setFreeCoursesForMx] = useState([]);
   const phoneCodes = [
     { country: "Colombia", code: "+57" },
     { country: "México", code: "+52" },
@@ -1015,7 +1024,15 @@ function StartNowContent() {
       normalizePlatformLogoUrl(backendPlatformLogo);
 
     return {
-      id: course.id,
+      ...course,
+
+      id:
+        course.id ||
+        course.certificationId ||
+        course.colombiaCertificationId ||
+        course.idInterno ||
+        course.id_interno ||
+        null,
 
       idInterno:
         course.id_interno ||
@@ -1052,7 +1069,26 @@ function StartNowContent() {
 
       colombiaCertificationId:
         course.colombiaCertificationId ||
+        course.certificationId ||
+        course.certification_id ||
         course.id,
+
+      routeLevel:
+        Number(
+          course.routeLevel ||
+            course.route_level ||
+            0
+        ) || null,
+
+      route_level:
+        Number(
+          course.routeLevel ||
+            course.route_level ||
+            0
+        ) || null,
+
+      order:
+        Number(course.order || 0) || null,
 
       title:
         course.nombre ||
@@ -1110,14 +1146,124 @@ function StartNowContent() {
     };
   };
 
+  /*
+   * Ruta visual/completa:
+   * máximo tres recomendaciones por nivel y nueve en total.
+   *
+   * El order se reinicia en cada nivel para respetar
+   * (route_level, order) como identidad de posición.
+   */
   const allRecommendedCourses = useMemo(
-    () => [
-      ...recommendedByLevel.level_1,
-      ...recommendedByLevel.level_2,
-      ...recommendedByLevel.level_3,
-    ],
+    () =>
+      [
+        ...recommendedByLevel.level_1
+          .slice(0, 3)
+          .map((course, index) => ({
+            ...course,
+            routeLevel: 1,
+            route_level: 1,
+            order: index + 1,
+          })),
+
+        ...recommendedByLevel.level_2
+          .slice(0, 3)
+          .map((course, index) => ({
+            ...course,
+            routeLevel: 2,
+            route_level: 2,
+            order: index + 1,
+          })),
+
+        ...recommendedByLevel.level_3
+          .slice(0, 3)
+          .map((course, index) => ({
+            ...course,
+            routeLevel: 3,
+            route_level: 3,
+            order: index + 1,
+          })),
+      ].slice(0, 9),
     [recommendedByLevel]
   );
+
+  /*
+   * Conserva únicamente los campos necesarios para persistir
+   * la ruta y aprovisionarla en México, sin perder el preview.
+   */
+  const normalizeCourseForPayload = (
+    course = {},
+    fallbackRouteLevel = 1,
+    fallbackOrder = 1
+  ) => {
+    const routeLevel =
+      Number(
+        course.routeLevel ||
+          course.route_level ||
+          fallbackRouteLevel
+      ) || fallbackRouteLevel;
+
+    const order =
+      Number(course.order || fallbackOrder) ||
+      fallbackOrder;
+
+    const idInterno =
+      course.idInterno ||
+      course.id_interno ||
+      course.internal_id ||
+      course.internalId ||
+      "";
+
+    const certificationId =
+      course.colombiaCertificationId ||
+      course.certificationId ||
+      course.certification_id ||
+      course.id ||
+      null;
+
+    const preview = course.preview || {
+      type:
+        course.previewType ||
+        course.preview_type ||
+        null,
+      url:
+        course.previewUrl ||
+        course.preview_url ||
+        null,
+      validatedAt:
+        course.previewValidatedAt ||
+        course.preview_validated_at ||
+        null,
+    };
+
+    return {
+      ...course,
+      idInterno,
+      id_interno: idInterno,
+      certificationId,
+      colombiaCertificationId:
+        certificationId,
+      title:
+        course.title ||
+        course.nombre ||
+        "Certificación recomendada",
+      provider:
+        course.provider ||
+        normalizeProviderName(course),
+      routeLevel,
+      route_level: routeLevel,
+      order,
+      available:
+        course.available !== false,
+      preview,
+      previewType:
+        preview?.type || null,
+      previewUrl:
+        preview?.url || null,
+      previewValidatedAt:
+        preview?.validatedAt || null,
+      isFree: true,
+    };
+  };
 
   const learningRouteState = useMemo(
     () => ({
@@ -1147,7 +1293,7 @@ function StartNowContent() {
         selectedPlan === "free" || !selectedPlan
           ? "free_active"
           : "pro_trialing",
-      free_courses: allRecommendedCourses,
+      free_courses: freeCoursesForMx,
       recommended_courses: allRecommendedCourses,
     }),
     [
@@ -1157,6 +1303,7 @@ function StartNowContent() {
       selectedPaidPlan,
       billingCycle,
       allRecommendedCourses,
+      freeCoursesForMx,
     ]
   );
   const activePlanData = useMemo(
@@ -1344,16 +1491,33 @@ function StartNowContent() {
       billing_cycle:
         String(planValue || "").includes("yearly") ? "yearly" : "monthly",
       package_code: packageCode,
-      recommended_courses: allRecommendedCourses.map((course, index) => ({
+      recommended_courses: allRecommendedCourses.map((course) => ({
         idInterno: course.idInterno,
-        colombiaCertificationId: course.colombiaCertificationId || course.id,
+        colombiaCertificationId:
+          course.colombiaCertificationId ||
+          course.id,
         title: course.title,
         provider: course.provider,
         level: course.level,
         isFree: true,
         previewType: course.previewType,
         previewUrl: course.previewUrl,
-        order: index + 1,
+        routeLevel:
+          course.routeLevel ||
+          course.route_level,
+        order: course.order,
+      })),
+      free_courses: freeCoursesForMx.map((course) => ({
+        idInterno: course.idInterno,
+        colombiaCertificationId:
+          course.colombiaCertificationId ||
+          course.id,
+        title: course.title,
+        provider: course.provider,
+        routeLevel:
+          course.routeLevel ||
+          course.route_level,
+        order: course.order,
       })),
     });
   };
@@ -1486,20 +1650,24 @@ function StartNowContent() {
     },
 
     recommendedCourses:
-      allRecommendedCourses.map(
-        (course, index) => ({
-          idInterno: course.idInterno,
-          colombiaCertificationId:
-            course.colombiaCertificationId ||
-            course.id,
-          title: course.title,
-          level: course.level,
-          provider: course.provider,
-          order: index + 1,
-          routeLevel:
-            getRouteLevelByCourse(course),
-        })
-      ),
+      (
+        isFree
+          ? freeCoursesForMx.slice(0, 3)
+          : allRecommendedCourses.slice(0, 9)
+      ).map((course) => ({
+        idInterno: course.idInterno,
+        colombiaCertificationId:
+          course.colombiaCertificationId ||
+          course.id,
+        title: course.title,
+        level: course.level,
+        provider: course.provider,
+        order: course.order || 1,
+        routeLevel:
+          course.routeLevel ||
+          course.route_level ||
+          getRouteLevelByCourse(course),
+      })),
 
     plan: {
       packageCode:
@@ -1614,63 +1782,170 @@ function StartNowContent() {
           goal: form.goal,
           country_code: "CO",
           language: "es",
-          limit_per_level: 1,
+
+          /*
+           * El backend devuelve hasta tres cursos por nivel.
+           * Se conserva por compatibilidad con implementaciones
+           * anteriores que todavía lean este parámetro.
+           */
+          limit_per_level: 3,
         }
       );
 
       setProgress((current) => Math.max(current, 72));
 
-      const recData = recommendationsRes?.data || recommendationsRes || {};
+      const recData =
+        recommendationsRes?.data ||
+        recommendationsRes ||
+        {};
 
       const nextRecommendedByLevel = {
-        level_1: normalizeLevelItems(recData.level_1).map(
-          normalizeCourseForCard
-        ),
-        level_2: normalizeLevelItems(recData.level_2).map(
-          normalizeCourseForCard
-        ),
-        level_3: normalizeLevelItems(recData.level_3).map(
-          normalizeCourseForCard
-        ),
+        level_1: normalizeLevelItems(
+          recData.level_1
+        )
+          .slice(0, 3)
+          .map((course, index) => ({
+            ...normalizeCourseForCard(course),
+            routeLevel: 1,
+            route_level: 1,
+            order: index + 1,
+          })),
+
+        level_2: normalizeLevelItems(
+          recData.level_2
+        )
+          .slice(0, 3)
+          .map((course, index) => ({
+            ...normalizeCourseForCard(course),
+            routeLevel: 2,
+            route_level: 2,
+            order: index + 1,
+          })),
+
+        level_3: normalizeLevelItems(
+          recData.level_3
+        )
+          .slice(0, 3)
+          .map((course, index) => ({
+            ...normalizeCourseForCard(course),
+            routeLevel: 3,
+            route_level: 3,
+            order: index + 1,
+          })),
       };
 
-      setRecommendedByLevel(nextRecommendedByLevel);
+      setRecommendedByLevel(
+        nextRecommendedByLevel
+      );
 
       const flattenedRecommendations = [
-        ...nextRecommendedByLevel.level_1.map((course) => ({
-          ...course,
-          routeLevel: 1,
-        })),
-        ...nextRecommendedByLevel.level_2.map((course) => ({
-          ...course,
-          routeLevel: 2,
-        })),
-        ...nextRecommendedByLevel.level_3.map((course) => ({
-          ...course,
-          routeLevel: 3,
-        })),
-      ].map((course, index) => ({
-        ...course,
-        order: index + 1,
-        isFree: true,
-      }));
+        ...nextRecommendedByLevel.level_1,
+        ...nextRecommendedByLevel.level_2,
+        ...nextRecommendedByLevel.level_3,
+      ]
+        .slice(0, 9)
+        .map((course) =>
+          normalizeCourseForPayload(
+            course,
+            course.routeLevel,
+            course.order
+          )
+        );
+
+      /*
+       * El endpoint entrega free_courses en la raíz.
+       * Como respaldo, elegimos el primer curso de cada nivel.
+       */
+      const rawFreeCourses = Array.isArray(
+        recommendationsRes?.free_courses
+      )
+        ? recommendationsRes.free_courses
+        : Array.isArray(recData?.free_courses)
+        ? recData.free_courses
+        : [
+            nextRecommendedByLevel.level_1[0],
+            nextRecommendedByLevel.level_2[0],
+            nextRecommendedByLevel.level_3[0],
+          ].filter(Boolean);
+
+      const freeCoursesPayload = rawFreeCourses
+        .slice(0, 3)
+        .map((course, index) => {
+          const fallbackRouteLevel =
+            Number(
+              course?.routeLevel ||
+                course?.route_level
+            ) ||
+            index + 1;
+
+          return normalizeCourseForPayload(
+            course,
+            fallbackRouteLevel,
+            1
+          );
+        });
+
+      if (
+        flattenedRecommendations.length < 3
+      ) {
+        throw new Error(
+          "No se encontraron suficientes recomendaciones para crear tu ruta."
+        );
+      }
+
+      if (freeCoursesPayload.length !== 3) {
+        throw new Error(
+          "No se pudieron seleccionar exactamente tres cursos para el plan Free."
+        );
+      }
+
+      setFreeCoursesForMx(
+        freeCoursesPayload
+      );
 
       setProgress((current) => Math.max(current, 84));
 
-      const data = await postJSON(LEARNING_ROUTE_CREATE_URL, {
-        email: form.email,
-        phone_country_code: form.phone_country_code,
-        phone_number: form.phone_number,
-        phone_e164: `${form.phone_country_code}${form.phone_number.replace(/\D/g, "")}`,
-        first_name: form.first_name,
-        last_name: form.last_name,
-        age: form.age ? Number(form.age) : null,
-        gender: form.gender,
-        country: form.country,
-        topics: form.topics,
-        goal: form.goal,
-        free_courses: flattenedRecommendations,
-      });
+      const data = await postJSON(
+        LEARNING_ROUTE_CREATE_URL,
+        {
+          email: form.email,
+          phone_country_code:
+            form.phone_country_code,
+          phone_number:
+            form.phone_number,
+          phone_e164:
+            `${form.phone_country_code}${form.phone_number.replace(
+              /\D/g,
+              ""
+            )}`,
+          first_name: form.first_name,
+          last_name: form.last_name,
+          age: form.age
+            ? Number(form.age)
+            : null,
+          gender: form.gender,
+          country: form.country,
+          topics: form.topics,
+          topic_ids: form.topic_ids,
+          goal: form.goal,
+
+          /*
+           * Hasta nueve recomendaciones para la ruta completa
+           * y para los planes Basic, X y Plus.
+           */
+          recommended_certifications:
+            flattenedRecommendations,
+          recommended_courses:
+            flattenedRecommendations,
+
+          /*
+           * Exactamente tres cursos, uno por nivel,
+           * para TOP_EDUCATION_FREE.
+           */
+          free_courses:
+            freeCoursesPayload,
+        }
+      );
 
       setRouteId(data?.id || data?.data?.id || null);
       setProgress(100);
