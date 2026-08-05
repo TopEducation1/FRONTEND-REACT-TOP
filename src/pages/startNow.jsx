@@ -654,6 +654,20 @@ function StartNowContent() {
   });
 
   /*
+   * Ruta completa devuelta por el backend.
+   *
+   * Esta colección puede contener más de nueve cursos y se
+   * utiliza para crear el snapshot completo en Colombia,
+   * aprovisionar Basic/X/Plus y alimentar Cursos disponibles.
+   *
+   * La visualización continúa separada en recommendedByLevel.
+   */
+  const [
+    completeRecommendedCourses,
+    setCompleteRecommendedCourses,
+  ] = useState([]);
+
+  /*
    * Selección contractual para TOP_EDUCATION_FREE:
    * exactamente un curso por cada nivel.
    *
@@ -1147,11 +1161,11 @@ function StartNowContent() {
   };
 
   /*
-   * Ruta visual/completa:
+   * Ruta visual:
    * máximo tres recomendaciones por nivel y nueve en total.
    *
-   * El order se reinicia en cada nivel para respetar
-   * (route_level, order) como identidad de posición.
+   * Esta colección se usa únicamente para pintar StartNow.
+   * La ruta completa se conserva en completeRecommendedCourses.
    */
   const allRecommendedCourses = useMemo(
     () =>
@@ -1294,7 +1308,12 @@ function StartNowContent() {
           ? "free_active"
           : "pro_trialing",
       free_courses: freeCoursesForMx,
-      recommended_courses: allRecommendedCourses,
+      recommended_courses:
+        completeRecommendedCourses.length
+          ? completeRecommendedCourses
+          : allRecommendedCourses,
+      visual_recommended_courses:
+        allRecommendedCourses,
     }),
     [
       form,
@@ -1302,6 +1321,7 @@ function StartNowContent() {
       selectedPlan,
       selectedPaidPlan,
       billingCycle,
+      completeRecommendedCourses,
       allRecommendedCourses,
       freeCoursesForMx,
     ]
@@ -1491,7 +1511,11 @@ function StartNowContent() {
       billing_cycle:
         String(planValue || "").includes("yearly") ? "yearly" : "monthly",
       package_code: packageCode,
-      recommended_courses: allRecommendedCourses.map((course) => ({
+      recommended_courses: (
+        completeRecommendedCourses.length
+          ? completeRecommendedCourses
+          : allRecommendedCourses
+      ).map((course) => ({
         idInterno: course.idInterno,
         colombiaCertificationId:
           course.colombiaCertificationId ||
@@ -1653,7 +1677,11 @@ function StartNowContent() {
       (
         isFree
           ? freeCoursesForMx.slice(0, 3)
-          : allRecommendedCourses.slice(0, 9)
+          : (
+              completeRecommendedCourses.length
+                ? completeRecommendedCourses
+                : allRecommendedCourses
+            )
       ).map((course) => ({
         idInterno: course.idInterno,
         colombiaCertificationId:
@@ -1838,6 +1866,10 @@ function StartNowContent() {
         nextRecommendedByLevel
       );
 
+      /*
+       * Nueve recomendaciones visuales:
+       * tres por cada nivel para la interfaz de StartNow.
+       */
       const flattenedRecommendations = [
         ...nextRecommendedByLevel.level_1,
         ...nextRecommendedByLevel.level_2,
@@ -1851,6 +1883,44 @@ function StartNowContent() {
             course.order
           )
         );
+
+      /*
+       * Ruta completa:
+       * el backend la devuelve en recommended_courses.
+       * No se reconstruye desde data/level_X porque esa
+       * estructura contiene únicamente los nueve visuales.
+       */
+      const rawCompleteRecommendations =
+        Array.isArray(
+          recommendationsRes?.recommended_courses
+        )
+          ? recommendationsRes.recommended_courses
+          : Array.isArray(
+              recData?.recommended_courses
+            )
+          ? recData.recommended_courses
+          : [];
+
+      const completeRecommendationsPayload =
+        rawCompleteRecommendations.length
+          ? rawCompleteRecommendations.map(
+              (course, index) =>
+                normalizeCourseForPayload(
+                  course,
+                  Number(
+                    course?.routeLevel ||
+                      course?.route_level ||
+                      ((index % 3) + 1)
+                  ) || ((index % 3) + 1),
+                  Number(course?.order || 0) ||
+                    Math.floor(index / 3) + 1
+                )
+            )
+          : flattenedRecommendations;
+
+      setCompleteRecommendedCourses(
+        completeRecommendationsPayload
+      );
 
       /*
        * El endpoint entrega free_courses en la raíz.
@@ -1889,9 +1959,31 @@ function StartNowContent() {
         flattenedRecommendations.length < 3
       ) {
         throw new Error(
-          "No se encontraron suficientes recomendaciones para crear tu ruta."
+          "No se encontraron suficientes recomendaciones visuales para crear tu ruta."
         );
       }
+
+      if (
+        completeRecommendationsPayload.length < 3
+      ) {
+        throw new Error(
+          "No fue posible recuperar la ruta completa de aprendizaje."
+        );
+      }
+
+      console.info(
+        "StartNow recomendaciones:",
+        {
+          visual:
+            flattenedRecommendations.length,
+          complete:
+            completeRecommendationsPayload.length,
+          free:
+            freeCoursesPayload.length,
+          backendMeta:
+            recommendationsRes?.meta || null,
+        }
+      );
 
       if (freeCoursesPayload.length !== 3) {
         throw new Error(
@@ -1930,12 +2022,19 @@ function StartNowContent() {
           goal: form.goal,
 
           /*
-           * Hasta nueve recomendaciones para la ruta completa
-           * y para los planes Basic, X y Plus.
+           * Ruta completa devuelta por el endpoint de
+           * recomendaciones. Puede contener más de nueve cursos.
            */
           recommended_certifications:
-            flattenedRecommendations,
+            completeRecommendationsPayload,
           recommended_courses:
+            completeRecommendationsPayload,
+
+          /*
+           * Nueve recomendaciones usadas únicamente
+           * para la visualización de StartNow.
+           */
+          visual_recommended_courses:
             flattenedRecommendations,
 
           /*
