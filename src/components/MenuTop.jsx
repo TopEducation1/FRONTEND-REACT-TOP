@@ -28,7 +28,7 @@ const MenuTop = ({ toggleMenu }) => {
     { name: "Lo más Top", path: "/lo-mas-top", classItem: "item-mastop" },
     { name: "Recursos", path: "/recursos", classItem: "item-recursos" },
     { name: "Para equipos", path: "/para-equipos", classItem: "item-equipos" },
-    { name: "Empieza ahora", path: "/empieza-ahora", classItem: "item-empezar" },
+    /*{ name: "Empieza ahora", path: "/empieza-ahora", classItem: "item-empezar" },*/
   ];
 
   const exploraSubmenu = {

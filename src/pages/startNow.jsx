@@ -1,6 +1,23 @@
 // src/pages/StartNow.jsx
-import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+import {
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
+
+import ReactModal from "react-modal";
+
+import {
+  AnimatePresence,
+  motion,
+} from "framer-motion";
 import {
   Elements,
   CardElement,
@@ -10,6 +27,7 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import endpoints from "../config/api";
 import Seo from "../components/Seo";
+ReactModal.setAppElement("#root");
 
 async function postJSON(url, body, { withCredentials = true } = {}) {
   const res = await fetch(url, {
@@ -753,6 +771,28 @@ function StartNowContent() {
   const [selectedPaidPlan, setSelectedPaidPlan] = useState(null);
   const [showPass, setShowPass] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
+  const [
+    isIntroVideoOpen,
+    setIsIntroVideoOpen,
+  ] = useState(false);
+
+  const [
+    introVideoMounted,
+    setIntroVideoMounted,
+  ] = useState(false);
+
+  const [
+    introVideoPlaying,
+    setIntroVideoPlaying,
+  ] = useState(false);
+
+  const [
+    introButtonRect,
+    setIntroButtonRect,
+  ] = useState(null);
+
+  const introVideoButtonRef = useRef(null);
+  const introVideoRef = useRef(null);
   const [paidSubscriptionData, setPaidSubscriptionData] = useState(null);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -1473,6 +1513,29 @@ function StartNowContent() {
     form.gender &&
     form.country;
   
+  const openIntroVideo = () => {
+    const rect =
+      introVideoButtonRef.current?.getBoundingClientRect();
+
+    setIntroButtonRect(rect || null);
+    setIntroVideoMounted(true);
+    setIsIntroVideoOpen(true);
+  };
+
+  const closeIntroVideo = () => {
+    if (introVideoRef.current) {
+      introVideoRef.current.pause();
+      introVideoRef.current.currentTime = 0;
+    }
+
+    setIntroVideoPlaying(false);
+    setIsIntroVideoOpen(false);
+
+    window.setTimeout(() => {
+      setIntroVideoMounted(false);
+    }, 450);
+  };
+
   const selectPlan = (planId) => {
     if (planId === "free") {
       setSelectedPlan("free");
@@ -1615,6 +1678,61 @@ function StartNowContent() {
       route_id: routeId || "",
     });
   }, [form, selectedPlan, selectedPaidPlan, billingCycle, routeId]);
+
+  useEffect(() => {
+    const video = introVideoRef.current;
+
+    if (!video) return undefined;
+
+    const handlePlay = () => {
+      setIntroVideoPlaying(true);
+    };
+
+    const handlePause = () => {
+      setIntroVideoPlaying(false);
+    };
+
+    video.addEventListener(
+      "play",
+      handlePlay
+    );
+
+    video.addEventListener(
+      "pause",
+      handlePause
+    );
+
+    return () => {
+      video.removeEventListener(
+        "play",
+        handlePlay
+      );
+
+      video.removeEventListener(
+        "pause",
+        handlePause
+      );
+    };
+  }, [introVideoMounted]);
+
+  const handleSkipStartNow = () => {
+    /*
+    * Volvemos a la página desde la cual
+    * el usuario ingresó a StartNow.
+    */
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    /*
+    * Fallback para usuarios que llegaron
+    * directamente a /empieza-ahora.
+    */
+    navigate("/inicio", {
+      replace: true,
+    });
+  };
 
   const trackClientifyPlanInterest = (planValue) => {
     const finalPlan = getFinalPlanFromPaidPlan(planValue);
@@ -2618,6 +2736,7 @@ function StartNowContent() {
         {step === "welcome" && (
           <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-20 text-center">
             <div className="route-dot-grid absolute inset-0 opacity-[0.14]" />
+
             <div className="pointer-events-none absolute left-1/2 top-[18%] h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[#2563EB]/10 blur-[120px]" />
 
             <div className="relative z-10 mx-auto max-w-[850px]">
@@ -2630,8 +2749,9 @@ function StartNowContent() {
               </h1>
 
               <p className="mx-auto mt-5 max-w-[650px] !font-['Montserrat'] text-[1rem] leading-[1.3em] text-neutral-600 md:text-[1.1rem]">
-                Cuéntanos sobre tus intereses y metas. Crearemos un viaje de
-                aprendizaje personalizado diseñado para tu crecimiento
+                Cuéntanos sobre tus intereses y metas.
+                Crearemos un viaje de aprendizaje
+                personalizado diseñado para tu crecimiento
                 profesional.
               </p>
 
@@ -2641,22 +2761,24 @@ function StartNowContent() {
                   onClick={() => setStep("info")}
                   className="inline-flex items-center gap-3 rounded-full bg-[#2563EB] px-4 py-2 md:px-10 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_55px_rgba(25,65,207,0.30)] transition hover:-translate-y-1 hover:bg-[#1941CF]"
                 >
-                  Crear mi ruta de aprendizaje <ArrowIcon />
+                  Crear mi ruta de aprendizaje
+                  <ArrowIcon />
                 </button>
 
                 <button
+                  ref={introVideoButtonRef}
                   type="button"
-                  onClick={skipToPlans}
-                  className="rounded-full px-4 py-2 md:px-8 md:py-4 !font-['Montserrat'] text-lg font-medium text-neutral-600 hover:text-black"
+                  onClick={openIntroVideo}
+                  className="rounded-full border border-black/10 bg-white px-4 py-2 md:px-8 md:py-4 !font-['Montserrat'] text-lg font-medium text-neutral-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-[#F8F7F3] hover:text-black"
                 >
-                  Conocer Más
+                  Conocer más
                 </button>
               </div>
 
               <button
                 type="button"
-                onClick={skipToPlans}
-                className="mt-10 !font-['Montserrat'] text-neutral-400 hover:text-neutral-700"
+                onClick={handleSkipStartNow}
+                className="mt-10 !font-['Montserrat'] text-neutral-400 transition hover:text-neutral-700"
               >
                 Saltar por ahora
               </button>
@@ -3940,6 +4062,122 @@ function StartNowContent() {
           </section>
         )}
       </main>
+      {introVideoMounted && (
+        <ReactModal
+          isOpen={isIntroVideoOpen}
+          onRequestClose={closeIntroVideo}
+          className="modal"
+          overlayClassName="overlay"
+          closeTimeoutMS={400}
+          ariaHideApp={false}
+          shouldCloseOnOverlayClick
+        >
+          <AnimatePresence mode="wait">
+            {isIntroVideoOpen && (
+              <motion.div
+                initial={
+                  introButtonRect
+                    ? {
+                        opacity: 0,
+                        scale: 0.2,
+
+                        x:
+                          introButtonRect.left +
+                          introButtonRect.width / 2 -
+                          window.innerWidth / 2,
+
+                        y:
+                          introButtonRect.top +
+                          introButtonRect.height / 2 -
+                          window.innerHeight / 2,
+                      }
+                    : {
+                        opacity: 0,
+                        scale: 0.85,
+                        x: 0,
+                        y: 20,
+                      }
+                }
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  x: 0,
+                  y: 0,
+                }}
+                exit={
+                  introButtonRect
+                    ? {
+                        opacity: 0,
+                        scale: 0.2,
+
+                        x:
+                          introButtonRect.left +
+                          introButtonRect.width / 2 -
+                          window.innerWidth / 2,
+
+                        y:
+                          introButtonRect.top +
+                          introButtonRect.height / 2 -
+                          window.innerHeight / 2,
+                      }
+                    : {
+                        opacity: 0,
+                        scale: 0.85,
+                        x: 0,
+                        y: 20,
+                      }
+                }
+                transition={{
+                  duration: 0.7,
+                  ease: "easeInOut",
+                }}
+                onAnimationComplete={() => {
+                  if (
+                    isIntroVideoOpen &&
+                    introVideoRef.current
+                  ) {
+                    introVideoRef.current.currentTime = 0;
+
+                    introVideoRef.current
+                      .play()
+                      .then(() => {
+                        setIntroVideoPlaying(true);
+                      })
+                      .catch(() => {
+                        /*
+                        * Algunos navegadores pueden bloquear
+                        * autoplay con sonido.
+                        * Los controles permanecen disponibles.
+                        */
+                      });
+                  }
+                }}
+                className="modal-inner-content relative overflow-hidden rounded-[32px]"
+              >
+                <button
+                  type="button"
+                  onClick={closeIntroVideo}
+                  className="absolute right-5 top-5 z-[5] grid h-10 w-10 place-items-center rounded-full bg-black text-xl text-white shadow-lg transition hover:scale-105"
+                  aria-label="Cerrar video"
+                >
+                  ×
+                </button>
+
+                <div className="video-container">
+                  <video
+                    ref={introVideoRef}
+                    src="/assets/video/main-video.mp4"
+                    controls
+                    playsInline
+                    preload="metadata"
+                    className="block h-auto w-full"
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </ReactModal>
+      )}
     </>
   );
 }
