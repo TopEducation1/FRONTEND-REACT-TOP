@@ -262,67 +262,182 @@ const countries = [
   "Otro",
 ];
 
-const getPasswordChecks = (password = "") => ({
-  length: password.length >= 8,
-  uppercase: /[A-ZÁÉÍÓÚÑ]/.test(password),
-  number: /\d/.test(password),
-  special: /[^A-Za-zÁÉÍÓÚÑáéíóúñ0-9]/.test(password),
-});
+const getPasswordChecks = (password = "") => {
+  const value = String(password || "");
+
+  return {
+    length: value.length >= 8,
+    uppercase: /[A-ZÁÉÍÓÚÑ]/.test(value),
+    lowercase: /[a-záéíóúñ]/.test(value),
+    number: /\d/.test(value),
+
+    // Símbolos reales. No cuenta espacios como carácter especial.
+    special: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(value),
+
+    // Recomendación adicional para considerar una contraseña fuerte.
+    longEnough: value.length >= 12,
+  };
+};
 
 const getPasswordScore = (password = "") => {
-  const checks = getPasswordChecks(password);
-  return Object.values(checks).filter(Boolean).length;
+  const value = String(password || "");
+
+  if (!value) return 0;
+
+  const checks = getPasswordChecks(value);
+
+  let score = 0;
+
+  /*
+   * Base de fortaleza.
+   */
+  if (checks.length) score += 1;
+  if (checks.uppercase && checks.lowercase) score += 1;
+  if (checks.number) score += 1;
+  if (checks.special) score += 1;
+
+  /*
+   * Bonus por longitud mayor.
+   */
+  if (
+    checks.longEnough &&
+    checks.uppercase &&
+    checks.lowercase &&
+    checks.number &&
+    checks.special
+  ) {
+    score += 1;
+  }
+
+  return Math.min(score, 5);
+};
+
+const getPasswordStrength = (password = "") => {
+  const score = getPasswordScore(password);
+
+  if (!password) {
+    return {
+      score: 0,
+      label: "",
+      color: "bg-neutral-200",
+      textColor: "text-neutral-400",
+    };
+  }
+
+  if (score <= 1) {
+    return {
+      score,
+      label: "Muy débil",
+      color: "bg-[#F6C344]",
+      textColor: "text-[#C69200]",
+    };
+  }
+
+  if (score === 2) {
+    return {
+      score,
+      label: "Débil",
+      color: "bg-[#F5A623]",
+      textColor: "text-[#D98200]",
+    };
+  }
+
+  if (score === 3) {
+    return {
+      score,
+      label: "Media",
+      color: "bg-[#F28C28]",
+      textColor: "text-[#D96D00]",
+    };
+  }
+
+  if (score === 4) {
+    return {
+      score,
+      label: "Buena",
+      color: "bg-[#9ACF72]",
+      textColor: "text-[#6BAE45]",
+    };
+  }
+
+  return {
+    score,
+    label: "Segura",
+    color: "bg-[#5CC781]",
+    textColor: "text-[#47A864]",
+  };
 };
 
 const PasswordStrength = ({ password }) => {
   const checks = getPasswordChecks(password);
-  const score = getPasswordScore(password);
-  const label =
-    score >= 4
-      ? "Fuerte"
-      : score >= 3
-      ? "Buena"
-      : score >= 2
-      ? "Media"
-      : password
-      ? "Débil"
-      : "";
+  const strength = getPasswordStrength(password);
+
+  const requirements = [
+    {
+      key: "length",
+      label: "8 caracteres mínimo",
+      valid: checks.length,
+    },
+    {
+      key: "uppercase",
+      label: "Una mayúscula",
+      valid: checks.uppercase,
+    },
+    {
+      key: "number",
+      label: "Un número",
+      valid: checks.number,
+    },
+    {
+      key: "special",
+      label: "Un carácter especial",
+      valid: checks.special,
+    },
+  ];
 
   return (
     <div className="mt-3">
-      <div className="grid grid-cols-4 gap-1">
-        {[1, 2, 3, 4].map((item) => (
-          <div
-            key={item}
-            className={`h-1.5 rounded-full ${
-              score >= item ? "bg-[#5CC781]" : "bg-neutral-200"
+      <div className="grid grid-cols-4 gap-1.5">
+        {[1, 2, 3, 4].map((item) => {
+          const active =
+            strength.score >= item;
+
+          return (
+            <div
+              key={item}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                active
+                  ? strength.color
+                  : "bg-neutral-200"
+              }`}
+            />
+          );
+        })}
+      </div>
+
+      <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5 md:grid-cols-4">
+        {requirements.map((requirement) => (
+          <span
+            key={requirement.key}
+            className={`!font-['Montserrat'] text-[10px] font-medium ${
+              requirement.valid
+                ? "text-[#5CC781]"
+                : "text-neutral-400"
             }`}
-          />
+          >
+            {requirement.valid ? "✓" : "○"}{" "}
+            {requirement.label}
+          </span>
         ))}
       </div>
 
-      <div className="mt-1 grid grid-cols-2 gap-x-4 gap-y-1 !font-['Montserrat'] !text-[10px] text-[13px] md:grid-cols-4">
-        <span className={checks.length ? "text-[#5CC781]" : "text-neutral-400"}>
-          {checks.length ? "⌁" : "○"} 8 caracteres mínimo
-        </span>
-        <span
-          className={checks.uppercase ? "text-[#5CC781]" : "text-neutral-400"}
+      {password && (
+        <p
+          className={`mt-1 text-right !font-['Montserrat'] text-sm font-bold ${strength.textColor}`}
         >
-          {checks.uppercase ? "⌁" : "○"} Una mayúscula
-        </span>
-        <span className={checks.number ? "text-[#5CC781]" : "text-neutral-400"}>
-          {checks.number ? "⌁" : "○"} Un número
-        </span>
-        <span
-          className={checks.special ? "text-[#5CC781]" : "text-neutral-400"}
-        >
-          {checks.special ? "⌁" : "○"} Un carácter especial
-        </span>
-      </div>
-
-      <p className="mt-1 text-right !font-['Montserrat'] text-sm font-bold text-[#5CC781]">
-        {label}
-      </p>
+          {strength.label}
+        </p>
+      )}
     </div>
   );
 };
@@ -1765,17 +1880,56 @@ function StartNowContent() {
   };
 
   const validatePassword = () => {
-    const score = getPasswordScore(form.password);
+    const password = String(
+      form.password || ""
+    );
 
-    if (score < 4) {
+    const confirmPassword = String(
+      form.confirm_password || ""
+    );
+
+    const checks =
+      getPasswordChecks(password);
+
+    if (!checks.length) {
       setErrorMsg(
-        "La contraseña debe tener mínimo 8 caracteres, una mayúscula, un número y un carácter especial."
+        "La contraseña debe tener mínimo 8 caracteres."
       );
       return false;
     }
 
-    if (form.password !== form.confirm_password) {
-      setErrorMsg("Las contraseñas no coinciden.");
+    if (!checks.uppercase) {
+      setErrorMsg(
+        "La contraseña debe incluir al menos una letra mayúscula."
+      );
+      return false;
+    }
+
+    if (!checks.lowercase) {
+      setErrorMsg(
+        "La contraseña debe incluir al menos una letra minúscula."
+      );
+      return false;
+    }
+
+    if (!checks.number) {
+      setErrorMsg(
+        "La contraseña debe incluir al menos un número."
+      );
+      return false;
+    }
+
+    if (!checks.special) {
+      setErrorMsg(
+        "La contraseña debe incluir al menos un carácter especial, por ejemplo: ! @ # $ % & *"
+      );
+      return false;
+    }
+
+    if (password !== confirmPassword) {
+      setErrorMsg(
+        "Las contraseñas no coinciden."
+      );
       return false;
     }
 
@@ -3451,10 +3605,12 @@ function StartNowContent() {
                   redirectTo: "/account?tab=cv",
                 })
               }
-              disabled={loading}
-              className="mt-7 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={!canSubmitPassword}
+              className="mt-7 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:bg-[#879BE8] disabled:opacity-70"
             >
-              {loading ? "Creando cuenta..." : "Crear cuenta gratis"}{" "}
+              {loading
+                ? "Creando cuenta..."
+                : "Crear cuenta gratis"}{" "}
               <ArrowIcon />
             </button>
 

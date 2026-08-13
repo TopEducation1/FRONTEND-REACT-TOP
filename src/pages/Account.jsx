@@ -14,6 +14,7 @@ import {
   FileText,
   Star,
   TrendingUp,
+  LayoutGrid,
   X,
   Menu,
   CheckCircle,
@@ -22,6 +23,7 @@ import {
 import { toast } from "react-toastify";
 import Seo from "../components/Seo";
 import CareerTab from "../components/account/CareerTab";
+import AvailableCoursesTab from "../components/account/AvailableCoursesTab";
 
 const stripePublishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
@@ -651,10 +653,31 @@ function getPlanDetails(me, learningRoute) {
 }
 
 const TABS = [
-  { key: "career", label: "Plan de Carrera", icon: <TrendingUp size={18} /> },
-  { key: "cv", label: "Mi CV", icon: <FileText size={18} /> },
-  { key: "profile", label: "Perfil", icon: <User size={18} /> },
-  { key: "license", label: "Licencia", icon: <Star size={18} /> },
+  {
+    key: "career",
+    label: "Plan de Carrera",
+    icon: <TrendingUp size={18} />,
+  },
+  {
+    key: "courses",
+    label: "Cursos disponibles",
+    icon: <LayoutGrid size={18} />,
+  },
+  {
+    key: "cv",
+    label: "Mi CV",
+    icon: <FileText size={18} />,
+  },
+  {
+    key: "profile",
+    label: "Perfil",
+    icon: <User size={18} />,
+  },
+  {
+    key: "license",
+    label: "Licencia",
+    icon: <Star size={18} />,
+  },
 ];
 
 function StarMark({ small = false }) {
@@ -836,7 +859,7 @@ function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl, learni
                 {openingMxApp
                   ? "Generando acceso..."
                   : mxAccessActive
-                  ? "Abrir plataforma MX"
+                  ? "Abrir plataforma"
                   : "Acceso suspendido"}
               </span>
             </span>
@@ -1065,6 +1088,7 @@ function DashboardWelcomeModal({ open, onClose, defaultTab }) {
         <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
           {[
             ["career", <TrendingUp size={28} />, "Plan de Carrera", "Visualiza tu ruta personalizada con cursos recomendados según tus intereses."],
+            ["courses", <LayoutGrid size={28} />, "Cursos disponibles", "Explora, busca y filtra todos los cursos que forman parte de tu ruta completa.",],
             ["cv", <FileText size={28} />, "Mi CV", "Sube tu CV y recibe análisis detallados con recomendaciones para mejorar tu perfil profesional."],
             ["profile", <User size={28} />, "Perfil", "Gestiona tu información, revisa tu progreso y accede a tus certificaciones obtenidas."],
             ["license", <Star size={28} />, "Licencia", "Administra tu plan, métodos de pago y beneficios de tu suscripción."],
@@ -3069,22 +3093,25 @@ export default function Account() {
                   learningRoute={learningRoute}
                   currentPlanKey={planDetails.key}
                   onPlanAction={(targetPlan) => {
-                    changeTab("license");
-
-                    /*
-                    * Opcionalmente puedes guardar el plan que el usuario
-                    * desea consultar o contratar.
-                    */
                     sessionStorage.setItem(
                       "careerTargetPlan",
                       targetPlan
                     );
+
+                    changeTab("license");
                   }}
                   onComparePlans={() => {
                     changeTab("license");
                   }}
                 />
               )}
+
+              {activeTab === "courses" && (
+                <AvailableCoursesTab
+                  backendBaseUrl={backendBaseUrl}
+                />
+              )}
+
               {activeTab === "cv" && (
                 <CvTab
                   backendBaseUrl={backendBaseUrl}

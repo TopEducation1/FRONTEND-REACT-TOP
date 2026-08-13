@@ -1057,35 +1057,86 @@ export default function CareerTab({
     );
   }, [selectedPlanKey, mergedPlan.levels]);
 
-  const personalizedTopics = Array.isArray(
-    careerData?.route?.topics
-  )
-    ? careerData.route.topics.filter(Boolean)
-    : Array.isArray(learningRoute?.topics)
-    ? learningRoute.topics.filter(Boolean)
-    : [];
+    const personalizedTopics = useMemo(() => {
+    const backendTopics = Array.isArray(
+      careerData?.route?.topics
+    )
+      ? careerData.route.topics
+      : [];
+
+    const localTopics = Array.isArray(
+      learningRoute?.topics
+    )
+      ? learningRoute.topics
+      : [];
+
+    const source =
+      backendTopics.length > 0
+        ? backendTopics
+        : localTopics;
+
+    return Array.from(
+      new Set(
+        source
+          .map((topic) => {
+            // Si backend devuelve simplemente:
+            // ["Data Science", "Business", ...]
+            if (
+              typeof topic === "string" ||
+              typeof topic === "number"
+            ) {
+              return String(topic).trim();
+            }
+
+            // Si en algún momento devuelve objetos.
+            if (topic && typeof topic === "object") {
+              return String(
+                topic.name ||
+                  topic.nombre ||
+                  topic.translation ||
+                  topic.translate ||
+                  topic.label ||
+                  ""
+              ).trim();
+            }
+
+            return "";
+          })
+          .filter(Boolean)
+      )
+    );
+  }, [
+    careerData?.route?.topics,
+    learningRoute?.topics,
+  ]);
 
   const visiblePlan = useMemo(() => {
-    if (
-      !personalizedTopics.length ||
-      !mergedPlan.levels?.length
-    ) {
+    if (!mergedPlan.levels?.length) {
+      return mergedPlan;
+    }
+
+    /*
+     * Las etiquetas mostradas debajo de cada nivel
+     * representan las habilidades/temas seleccionados
+     * originalmente por el usuario.
+     *
+     * NO deben obtenerse de las skills de los cursos,
+     * porque esas skills describen cada certificación
+     * recomendada y pueden ser distintas.
+     */
+    if (!personalizedTopics.length) {
       return mergedPlan;
     }
 
     return {
       ...mergedPlan,
-      levels: mergedPlan.levels.map((level, index) => ({
+
+      levels: mergedPlan.levels.map((level) => ({
         ...level,
-        skills:
-          index === 0
-            ? Array.from(
-                new Set([
-                  ...personalizedTopics.slice(0, 3),
-                  ...(level.skills || []),
-                ])
-              ).slice(0, 4)
-            : level.skills,
+
+        // Las mismas selecciones originales se muestran
+        // en los tres niveles de la ruta.
+        skills: personalizedTopics,
       })),
     };
   }, [mergedPlan, personalizedTopics]);
@@ -1128,10 +1179,10 @@ export default function CareerTab({
         </div>
       )}
 
-      <PlanSelector
+      {/*<PlanSelector
         selectedPlan={selectedPlanKey}
         onChange={setSelectedPlanKey}
-      />
+      />*/}
 
       <TopoMessage {...visiblePlan.intro} />
 

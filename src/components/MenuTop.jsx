@@ -28,75 +28,305 @@ const MenuTop = ({ toggleMenu }) => {
     { name: "Lo más Top", path: "/lo-mas-top", classItem: "item-mastop" },
     { name: "Recursos", path: "/recursos", classItem: "item-recursos" },
     { name: "Para equipos", path: "/para-equipos", classItem: "item-equipos" },
-    /*{ name: "Empieza ahora", path: "/empieza-ahora", classItem: "item-empezar" },*/
+    { name: "Empieza ahora", path: "/empieza-ahora", classItem: "item-empezar" },
   ];
 
   const exploraSubmenu = {
-    Plataforma: [
-      { img: "/assets/platforms/icons/icon-edx.png", text: "EdX", type: "Plataforma", tag: "EdX" },
-      { img: "/assets/platforms/icons/icon-coursera.png", text: "Coursera", type: "Plataforma", tag: "Coursera" },
-      { img: "/assets/platforms/icons/icon-masterclass.png", text: "MasterClass", type: "Plataforma", tag: "MasterClass" },
-    ],
+  Plataforma: [
+    {
+      img: "/assets/platforms/icons/icon-edx.png",
+      text: "EdX",
+      type: "Plataforma",
+      tag: "1",
+    },
+    {
+      img: "/assets/platforms/icons/icon-coursera.png",
+      text: "Coursera",
+      type: "Plataforma",
+      tag: "2",
+    },
+    {
+      img: "/assets/platforms/icons/icon-masterclass.png",
+      text: "MasterClass",
+      type: "Plataforma",
+      tag: "3",
+    },
+  ],
 
-    Temas: [
-      { img: "/assets/category/topic/ico-Aprendizaje-de-un-idioma.png", text: "Aprendizaje de idiomas", type: "Tema", tag: "language-learning" },
-      { img: "/assets/category/topic/ico-Artes-y-humanidades.png", text: "Arte y humanidades", type: "Tema", tag: "arts-and-humanities" },
-      { img: "/assets/category/topic/ico-Ciencia-de-datos.png", text: "Ciencias de datos", type: "Tema", tag: "data-science" },
-      { img: "/assets/category/topic/ico-Ciencias-de-la-computacion.png", text: "Ciencias de la Computación", type: "Tema", tag: "computer-science" },
-      { img: "/assets/category/topic/ico-Ciencias-fisicas-e-ingenieria.png", text: "Ciencias físicas e ingeniería", type: "Tema", tag: "physical-science-and-engineering" },
-      { img: "/assets/category/topic/ico-Ciencias-sociales.png", text: "Ciencias Sociales", type: "Tema", tag: "social-sciences" },
-      { img: "/assets/category/topic/ico-Desarrollo-personal.png", text: "Desarrollo personal", type: "Tema", tag: "personal-development" },
-      { img: "/assets/category/topic/ico-Matematicas-y-logica.png", text: "Matemáticas y lógica", type: "Tema", tag: "math-and-logic" },
-      { img: "/assets/category/topic/ico-Negocios.png", text: "Negocios", type: "Tema", tag: "business" },
-      { img: "/assets/category/topic/ico-Salud.png", text: "Salud", type: "Tema", tag: "health" },
-      { img: "/assets/category/topic/ico-Tecnologia-de-la-informacion.png", text: "Tecnología de la información", type: "Tema", tag: "information-technology" },
-    ],
+  Temas: [
+    {
+      id: "41",
+      img: "/assets/category/topic/ico-Aprendizaje-de-un-idioma.png",
+      text: "Aprendizaje de idiomas",
+      type: "Tema",
+    },
+    {
+      id: "28",
+      img: "/assets/category/topic/ico-Artes-y-humanidades.png",
+      text: "Arte y humanidades",
+      type: "Tema",
+    },
+    {
+      id: "1",
+      img: "/assets/category/topic/ico-Ciencia-de-datos.png",
+      text: "Ciencias de datos",
+      type: "Tema",
+    },
+    {
+      id: "3",
+      img: "/assets/category/topic/ico-Ciencias-de-la-computacion.png",
+      text: "Ciencias de la Computación",
+      type: "Tema",
+    },
+    {
+      id: "20",
+      img: "/assets/category/topic/ico-Ciencias-fisicas-e-ingenieria.png",
+      text: "Ciencias físicas e ingeniería",
+      type: "Tema",
+    },
+    {
+      id: "23",
+      img: "/assets/category/topic/ico-Ciencias-sociales.png",
+      text: "Ciencias Sociales",
+      type: "Tema",
+    },
+    {
+      id: "13",
+      img: "/assets/category/topic/ico-Desarrollo-personal.png",
+      text: "Desarrollo personal",
+      type: "Tema",
+    },
+    {
+      id: "45",
+      img: "/assets/category/topic/ico-Matematicas-y-logica.png",
+      text: "Matemáticas y lógica",
+      type: "Tema",
+    },
+    {
+      id: "5",
+      img: "/assets/category/topic/ico-Negocios.png",
+      text: "Negocios",
+      type: "Tema",
+    },
+    {
+      id: "11230",
+      img: "/assets/category/topic/ico-Salud.png",
+      text: "Biología y Ciencias de la Vida",
+      type: "Tema",
+    },
+    {
+      id: "9",
+      img: "/assets/category/topic/ico-Tecnologia-de-la-informacion.png",
+      text: "Tecnología de la información",
+      type: "Tema",
+    },
+  ],
 
-    Universidades: [
-      { img: "/assets/universities/icons/ico-Harvard.webp", text: "Harvard University", type: "Universidad", tag: "Harvard University" },
-      { img: "/assets/universities/icons/ico-Stanford-University.webp", text: "Stanford University", type: "Universidad", tag: "Stanford University" },
-      { img: "/assets/universities/icons/ico-Massachusetts-Institute.webp", text: "Massachusetts Institute of Technology", type: "Universidad", tag: "Massachusetts Institute of Technology" },
-      { img: "/assets/universities/icons/ico-Yale-University.webp", text: "Yale University", type: "Universidad", tag: "Yale University" },
-      { img: "/assets/universities/icons/ico-Columbia-University.webp", text: "Columbia University", type: "Universidad", tag: "Columbia University" },
-      { img: "/assets/universities/icons/ico-University-of-Michigan.webp", text: "University of Michigan", type: "Universidad", tag: "University of Michigan" },
-      { img: "/assets/universities/icons/ico-University-of-Illinois-Urbana-Champaign.webp", text: "University of Illinois Urbana-Champaign", type: "Universidad", tag: "University of Illinois Urbana-Champaign" },
-      { img: "/assets/universities/icons/ico-University-of-Pennsylvania.webp", text: "University of Pennsylvania", type: "Universidad", tag: "University of Pennsylvania" },
-      { img: "/assets/universities/icons/ico-The-University-of-Chicago.webp", text: "The University of Chicago", type: "Universidad", tag: "The University of Chicago" },
-      { img: "/assets/universities/icons/ico-Universidad-de-los-Andes.webp", text: "Universidad de los Andes", type: "Universidad", tag: "Universidad de los Andes" },
-      { img: "/assets/universities/icons/ico-Universidad-nacional-de-colombia.webp", text: "Universidad Nacional de Colombia", type: "Universidad", tag: "Universidad Nacional de Colombia" },
-      { img: "/assets/universities/icons/ico-Tecnologico-de-Monterrey.webp", text: "Tecnológico de Monterrey", type: "Universidad", tag: "Tecnológico de Monterrey" },
-      { img: "/assets/universities/icons/ico-Pontificia-Universidad-Catolica-de-Chile.webp", text: "Pontificia Universidad Católica de Chile", type: "Universidad", tag: "Pontificia Universidad Catolica de Chile" },
-      { img: "/assets/universities/icons/ico-Pontificia-Universidad-Catolica-del-Peru.webp", text: "Pontificia Universidad Católica del Perú", type: "Universidad", tag: "Pontificia Universidad Catolica de Peru" },
-      { img: "/assets/universities/icons/ico-Universidad-del-Rosario.webp", text: "Universidad del Rosario", type: "Universidad", tag: "Universidad del Rosario" },
-      { img: "/assets/universities/icons/ico-IE-Business-school.webp", text: "IE Business School", type: "Universidad", tag: "IE Business School" },
-      { img: "/assets/universities/icons/ico-Universidad-Tecnologica-de-Delft.webp", text: "Universidad Tecnológica de Delft", type: "Universidad", tag: "Universidad Tecnológica de Delft" },
-      { img: "/assets/universities/icons/ico-Imperial-College-de-Londres.webp", text: "Imperial College de Londres", type: "Universidad", tag: "Imperial College de Londres" },
-      { img: "/assets/universities/icons/ico-Peking-University.webp", text: "Peking University", type: "Universidad", tag: "Peking University" },
-      { img: "/assets/universities/icons/ico-National_University_of_Singapore.webp", text: "National University of Singapore", type: "Universidad", tag: "National University of Singapore" },
-      { img: "/assets/universities/icons/ico-Waseda.webp", text: "Universidad de Waseda", type: "Universidad", tag: "Universidad de Waseda" },
-      { img: "/assets/universities/icons/ico-u-tel-aviv.webp", text: "Universidad de Tel Aviv", type: "Universidad", tag: "Universidad de Tel Aviv" },
-    ],
+  Universidades: [
+    {
+      id: "9",
+      img: "/assets/universities/icons/ico-Harvard.webp",
+      text: "Harvard University",
+      type: "Universidad",
+    },
+    {
+      id: "128",
+      img: "/assets/universities/icons/ico-Stanford-University.webp",
+      text: "Stanford University",
+      type: "Universidad",
+    },
+    {
+      id: "131",
+      img: "/assets/universities/icons/ico-Massachusetts-Institute.webp",
+      text: "Massachusetts Institute of Technology",
+      type: "Universidad",
+    },
+    {
+      id: "10",
+      img: "/assets/universities/icons/ico-Yale-University.webp",
+      text: "Yale University",
+      type: "Universidad",
+    },
+    {
+      id: "129",
+      img: "/assets/universities/icons/ico-Columbia-University.webp",
+      text: "Columbia University",
+      type: "Universidad",
+    },
+    {
+      id: "7",
+      img: "/assets/universities/icons/ico-University-of-Michigan.webp",
+      text: "University of Michigan",
+      type: "Universidad",
+    },
+    {
+      id: "38",
+      img: "/assets/universities/icons/ico-University-of-Illinois-Urbana-Champaign.webp",
+      text: "University of Illinois Urbana-Champaign",
+      type: "Universidad",
+    },
+    {
+      id: "54",
+      img: "/assets/universities/icons/ico-University-of-Pennsylvania.webp",
+      text: "University of Pennsylvania",
+      type: "Universidad",
+    },
+    {
+      id: "132",
+      img: "/assets/universities/icons/ico-The-University-of-Chicago.webp",
+      text: "The University of Chicago",
+      type: "Universidad",
+    },
+    {
+      id: "25",
+      img: "/assets/universities/icons/ico-Universidad-de-los-Andes.webp",
+      text: "Universidad de los Andes",
+      type: "Universidad",
+    },
+    {
+      id: "5",
+      img: "/assets/universities/icons/ico-Universidad-nacional-de-colombia.webp",
+      text: "Universidad Nacional de Colombia",
+      type: "Universidad",
+    },
+    {
+      id: "37",
+      img: "/assets/universities/icons/ico-Tecnologico-de-Monterrey.webp",
+      text: "Tecnológico de Monterrey",
+      type: "Universidad",
+    },
+    {
+      id: "20",
+      img: "/assets/universities/icons/ico-Pontificia-Universidad-Catolica-de-Chile.webp",
+      text: "Pontificia Universidad Católica de Chile",
+      type: "Universidad",
+    },
+    {
+      id: "389",
+      img: "/assets/universities/icons/ico-Pontificia-Universidad-Catolica-del-Peru.webp",
+      text: "Pontificia Universidad Católica del Perú",
+      type: "Universidad",
+    },
+    {
+      id: "137",
+      img: "/assets/universities/icons/ico-Universidad-del-Rosario.webp",
+      text: "Universidad del Rosario",
+      type: "Universidad",
+    },
+    {
+      id: "2",
+      img: "/assets/universities/icons/ico-IE-Business-school.webp",
+      text: "IE Business School",
+      type: "Universidad",
+    },
+    {
+      id: "144",
+      img: "/assets/universities/icons/ico-Universidad-Tecnologica-de-Delft.webp",
+      text: "Universidad Tecnológica de Delft",
+      type: "Universidad",
+    },
+    {
+      id: "165",
+      img: "/assets/universities/icons/ico-Imperial-College-de-Londres.webp",
+      text: "Imperial College de Londres",
+      type: "Universidad",
+    },
+    {
+      id: "134",
+      img: "/assets/universities/icons/ico-Peking-University.webp",
+      text: "Peking University",
+      type: "Universidad",
+    },
+    {
+      id: "155",
+      img: "/assets/universities/icons/ico-National_University_of_Singapore.webp",
+      text: "National University of Singapore",
+      type: "Universidad",
+    },
+    {
+      id: "307",
+      img: "/assets/universities/icons/ico-Waseda.webp",
+      text: "Universidad de Waseda",
+      type: "Universidad",
+    },
+    {
+      id: "315",
+      img: "/assets/universities/icons/ico-u-tel-aviv.webp",
+      text: "Universidad de Tel Aviv",
+      type: "Universidad",
+    },
+  ],
 
-    Empresas: [
-      { img: "/assets/companies/icons/ico-Google-Cloud.png", text: "Google Cloud", type: "Empresa", tag: "Google Cloud" },
-      { img: "/assets/companies/icons/ico-IBM.png", text: "IBM", type: "Empresa", tag: "IBM" },
-      { img: "/assets/companies/icons/ico-Microsoft.png", text: "Microsoft", type: "Empresa", tag: "Microsoft" },
-      { img: "/assets/companies/icons/ico-meta.png", text: "Meta", type: "Empresa", tag: "Meta" },
-      { img: "/assets/companies/icons/ico-DeepLearning-AI.png", text: "DeepLearning.AI", type: "Empresa", tag: "DeepLearning.AI" },
-      { img: "/assets/companies/icons/ico-hubspot-academy.png", text: "HubSpot Academy", type: "Empresa", tag: "HubSpot Academy" },
-      { img: "/assets/companies/icons/ico-Salesforce.png", text: "Salesforce", type: "Empresa", tag: "Salesforce" },
-      { img: "/assets/companies/icons/ico-HP.png", text: "HP", type: "Empresa", tag: "HP" },
-      { img: "/assets/companies/icons/ico-oracle.png", text: "Oracle", type: "Empresa", tag: "Oracle" },
-      { img: "/assets/companies/icons/ico-UBITS.png", text: "UBITS", type: "Empresa", tag: "UBITS" },
-    ],
-  };
+  Empresas: [
+    {
+      id: "21",
+      img: "/assets/companies/icons/ico-Google-Cloud.png",
+      text: "Google Cloud",
+      type: "Empresa",
+    },
+    {
+      id: "26",
+      img: "/assets/companies/icons/ico-IBM.png",
+      text: "IBM",
+      type: "Empresa",
+    },
+    {
+      id: "13",
+      img: "/assets/companies/icons/ico-Microsoft.png",
+      text: "Microsoft",
+      type: "Empresa",
+    },
+    {
+      id: "52",
+      img: "/assets/companies/icons/ico-meta.png",
+      text: "Meta",
+      type: "Empresa",
+    },
+    {
+      id: "2",
+      img: "/assets/companies/icons/ico-DeepLearning-AI.png",
+      text: "DeepLearning.AI",
+      type: "Empresa",
+    },
+    {
+      id: "5",
+      img: "/assets/companies/icons/ico-hubspot-academy.png",
+      text: "HubSpot Academy",
+      type: "Empresa",
+    },
+    {
+      id: "8",
+      img: "/assets/companies/icons/ico-Salesforce.png",
+      text: "Salesforce",
+      type: "Empresa",
+    },
+    {
+      id: "36",
+      img: "/assets/companies/icons/ico-HP.png",
+      text: "HP",
+      type: "Empresa",
+    },
+    {
+      id: "119",
+      img: "/assets/companies/icons/ico-oracle.png",
+      text: "Oracle",
+      type: "Empresa",
+    },
+    {
+      id: "4",
+      img: "/assets/companies/icons/ico-UBITS.png",
+      text: "UBITS",
+      type: "Empresa",
+    },
+  ],
+};
 
   const getQueryKey = (category) => {
     const map = {
-      Tema: "Tema",
-      Universidad: "Universidad",
-      Empresa: "Empresa",
-      Plataforma: "Plataforma",
+      Tema: "tema_id",
+      Universidad: "universidad_id",
+      Empresa: "empresa_id",
+      Plataforma: "plataforma_id",
     };
 
     return map[category] || category;
@@ -104,24 +334,43 @@ const MenuTop = ({ toggleMenu }) => {
 
   const handleItemMenuClick = (category, item) => {
     const queryKey = getQueryKey(category);
-    const queryValue = item?.tag || item?.text || "";
 
-    if (!queryValue) return;
+    const isPlatform = category === "Plataforma";
+
+    const queryValue = isPlatform
+      ? item?.tag || item?.text || ""
+      : item?.id ?? "";
+
+    if (
+      queryValue === "" ||
+      queryValue === null ||
+      queryValue === undefined
+    ) {
+      console.warn(
+        `No se encontró valor para el filtro ${category}:`,
+        item
+      );
+      return;
+    }
 
     const params = new URLSearchParams();
 
+    // Mostrar certificaciones tanto en español como en inglés.
     params.append("idioma", "es");
+    params.append("idioma", "en");
 
-    const normalizedValue =
-      category === "Tema"
-        ? String(queryValue).trim().toLowerCase()
-        : String(queryValue).trim();
+    params.append(
+      queryKey,
+      String(queryValue).trim()
+    );
 
-    params.append(queryKey, normalizedValue);
     params.append("page", "1");
     params.append("page_size", "16");
 
-    navigateWithTransition(`/explora?${params.toString()}`);
+    navigateWithTransition(
+      `/explora?${params.toString()}`
+    );
+
     closeMenuIfMobile();
     setShowSubmenu(false);
   };
@@ -130,14 +379,34 @@ const MenuTop = ({ toggleMenu }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    navigateWithTransition("/explora?idioma=es&page=1&page_size=16");
+    const params = new URLSearchParams();
+
+    params.append("idioma", "es");
+    params.append("idioma", "en");
+    params.append("page", "1");
+    params.append("page_size", "16");
+
+    navigateWithTransition(
+      `/explora?${params.toString()}`
+    );
+
     closeMenuIfMobile();
     setShowSubmenu(false);
   };
 
   const handleMainItemClick = (item) => {
     if (item.isDropdown) {
-      navigateWithTransition("/explora?idioma=es&page=1&page_size=16");
+      const params = new URLSearchParams();
+
+      params.append("idioma", "es");
+      params.append("idioma", "en");
+      params.append("page", "1");
+      params.append("page_size", "16");
+
+      navigateWithTransition(
+        `/explora?${params.toString()}`
+      );
+
       closeMenuIfMobile();
       return;
     }
@@ -186,7 +455,7 @@ const MenuTop = ({ toggleMenu }) => {
 
                   <ul className="submenu-items">
                     {items.map((sub, idx) => (
-                      <li key={`${section}-${sub.tag}-${idx}`} className="submenu-item">
+                      <li key={`${section}-${sub.id || sub.tag || sub.text || idx}-${idx}`} className="submenu-item">
                         <a
                           href="#"
                           onClick={(e) => {

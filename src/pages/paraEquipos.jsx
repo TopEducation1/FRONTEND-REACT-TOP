@@ -156,10 +156,10 @@ function ParaEquipos () {
                         Para empresas
                     </span>
 
-                    <h2 className="!font-[Montserrat] text-[2rem] font-semibold leading-[1.2em] md:leading-[1.02em] text-[#0F090B] md:text-[3.2rem]">
+                    <h2 className="font-te text-[2rem] leading-[1.2em] md:leading-[1.02em] text-[#0F090B] md:text-[3.2rem]">
                         Crea tu propia
                         <br />
-                        <span className="font-te-it !text-[2.5rem] md:!text-[2.8rem]">universidad corporativa</span>
+                        <span className="font-te-it ">universidad corporativa</span>
                     </h2>
 
                     <p className="mt-8 max-w-[610px] !font-['Montserrat'] text-[1rem] leading-[1.5em] text-neutral-600 lg:max-w-none">
@@ -169,8 +169,7 @@ function ParaEquipos () {
                     </p>
 
                     <a
-                        href="https://meetings.hubspot.com/top-education-master"
-                        target="_blank"
+                        onClick={() => scrollToSection("demo-equipos")}
                         rel="noopener noreferrer"
                         className="mt-10 inline-flex items-center gap-3 rounded-full bg-[#2563EB] px-8 py-4 !font-['Montserrat'] text-[16px] font-bold text-white shadow-[0_18px_45px_rgba(25,65,207,0.30)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#1941CF] "
                     >
@@ -347,7 +346,7 @@ function ParaEquipos () {
                     <h2 className="!font-[Montserrat] text-[2rem] font-semibold leading-[1.05em] text-[#0F090B] md:text-[2.8rem]">
                         Potencia las habilidades
                         <br />
-                        <span className="font-te-it">blandas</span> de tu equipo
+                        blandas de tu equipo
                     </h2>
 
                     <p className="mt-2 max-w-[600px] font-['Montserrat'] text-[1.12rem] leading-[1.5em] text-neutral-600">
@@ -510,7 +509,7 @@ function ParaEquipos () {
                     </span>
 
                     <h2 className="!font-[Montserrat] text-[2rem] font-semibold leading-[1em] text-[#0F090B] md:text-[2.8rem]">
-                    <span className="font-te-it !text-[3rem]">Reserva</span> una demostración empresarial
+                    Reserva una demostración empresarial
                     </h2>
 
                     <p className="mx-auto mt-3 max-w-[720px] font-['Montserrat'] text-[1rem] leading-[1.5em] text-neutral-600">

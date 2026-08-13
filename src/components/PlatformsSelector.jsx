@@ -36,10 +36,18 @@ const PlatformsSelector = ({ platforms = [] }) => {
     const queryParams = new URLSearchParams();
 
     for (const [cat, tag] of Object.entries(tagsObject || {})) {
-      if (tag) queryParams.append(cat, tag);
+      if (tag) {
+        queryParams.append(cat, tag);
+      }
     }
 
-    navigateWithTransition(`/explora/filter?${queryParams.toString()}`);
+    // Filtro fijo de idioma para cualquier item.
+    queryParams.append("idioma", "es");
+    queryParams.append("idioma", "en");
+
+    navigateWithTransition(
+      `/explora/filter?${queryParams.toString()}`
+    );
   };
 
   const customCounts = {

@@ -1510,14 +1510,17 @@ function LibraryPage({ showRoutes = true }) {
             <div className="flex flex-wrap items-center gap-2 md:gap-4">
               {[
                 {
+                  id:"2",
                   name: "Coursera",
                   img: "/assets/platforms/coursera-logo.png",
                 },
                 {
+                  id:"1",
                   name: "EdX",
                   img: "/assets/platforms/edx-logo.png",
                 },
                 {
+                  id:"3",
                   name: "MasterClass",
                   img: "/assets/platforms/masterclass-logo.png",
                 },
@@ -1526,7 +1529,7 @@ function LibraryPage({ showRoutes = true }) {
                   type="button"
                   key={platform.name}
                   onClick={() =>
-                    handleBannerClick("plataforma", platform.name)
+                    handleBannerClick("plataforma_id", platform.id)
                   }
                   disabled={!isReady}
                   className="flex h-8 py-1 items-center rounded-[25px] bg-[#F5F3EE] px-4 md:px-4 transition hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(0,0,0,0.12)] disabled:cursor-not-allowed disabled:opacity-50"
