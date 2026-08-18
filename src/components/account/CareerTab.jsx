@@ -343,6 +343,44 @@ function normalizeLevelStatus(value, fallback = "Disponible") {
   return fallback;
 }
 
+function getTaxonomyLabel(value) {
+  if (value == null) return "";
+
+  if (typeof value === "string" || typeof value === "number") {
+    return String(value).trim();
+  }
+
+  if (typeof value === "object") {
+    return String(
+      value.name ||
+        value.nombre ||
+        value.translation ||
+        value.translate ||
+        value.label ||
+        value.title ||
+        ""
+    ).trim();
+  }
+
+  return "";
+}
+
+function getCourseSkillNames(course = {}) {
+  const rawValues = [
+    ...(Array.isArray(course.skills) ? course.skills : []),
+    ...(Array.isArray(course.topics) ? course.topics : []),
+    ...(course.topic ? [course.topic] : []),
+  ];
+
+  return Array.from(
+    new Set(
+      rawValues
+        .map(getTaxonomyLabel)
+        .filter(Boolean)
+    )
+  );
+}
+
 function normalizeCourse(course = {}) {
   const url =
     course.url ||
@@ -376,6 +414,9 @@ function normalizeCourse(course = {}) {
     duration: course.duration || course.tiempo || "",
     language: course.language || course.lenguaje || "",
     image: course.image || course.imagen || "",
+    skills: Array.isArray(course.skills) ? course.skills : [],
+    topics: Array.isArray(course.topics) ? course.topics : [],
+    topic: course.topic || null,
     order: Number(course.order || 1),
     routeLevel: Number(course.routeLevel || course.route_level || 1),
     available:
@@ -424,14 +465,29 @@ function mergeCareerPlanWithUserData(staticPlan, careerData, selectedPlanKey) {
       return {
         ...staticLevel,
         courses: [],
+        totalCourses: 0,
+        visibleCoursesCount: 0,
         coursesLabel: "0 disponibles",
+        skills: [],
         status: staticLevel.id === 1 ? "En progreso" : "Disponible",
       };
     }
 
-    const realCourses = Array.isArray(realLevel.courses)
+    const allRealCourses = Array.isArray(realLevel.courses)
       ? realLevel.courses.map(normalizeCourse)
       : [];
+
+    // Plan de Carrera muestra máximo 3 certificaciones por nivel.
+    const visibleCourses = allRealCourses.slice(0, 3);
+
+    // Las etiquetas salen de las mismas certificaciones visibles.
+    const realSkills = Array.from(
+      new Set(
+        visibleCourses.flatMap((course) =>
+          getCourseSkillNames(course)
+        )
+      )
+    ).slice(0, 4);
 
     const realProviders = Array.from(
       new Set(
@@ -439,18 +495,17 @@ function mergeCareerPlanWithUserData(staticPlan, careerData, selectedPlanKey) {
           ...(Array.isArray(realLevel.providers)
             ? realLevel.providers
             : []),
-          ...realCourses.map((course) => course.provider),
+          ...allRealCourses.map((course) => course.provider),
         ].filter(Boolean)
       )
     );
 
-    const realSkills = Array.from(
-      new Set(
-        realCourses.flatMap((course) =>
-          Array.isArray(course.skills) ? course.skills : []
-        )
-      )
-    ).slice(0, 4);
+    const totalCourses = Number(
+      realLevel.coursesTotal ??
+        realLevel.totalCourses ??
+        realLevel.total ??
+        allRealCourses.length
+    );
 
     return {
       ...staticLevel,
@@ -467,11 +522,12 @@ function mergeCareerPlanWithUserData(staticPlan, careerData, selectedPlanKey) {
         realProviders.length > 0
           ? realProviders.join(" · ")
           : staticLevel.catalogLabel,
-      skills:
-        realSkills.length > 0 ? realSkills : staticLevel.skills,
-      courses: realCourses,
-      coursesLabel: `${realCourses.length} ${
-        realCourses.length === 1 ? "disponible" : "disponibles"
+      skills: realSkills,
+      courses: visibleCourses,
+      totalCourses,
+      visibleCoursesCount: visibleCourses.length,
+      coursesLabel: `${totalCourses} ${
+        totalCourses === 1 ? "disponible" : "disponibles"
       }`,
       emptyMessage:
         "No encontramos cursos recomendados para este nivel en tu ruta actual.",
@@ -489,7 +545,13 @@ function mergeCareerPlanWithUserData(staticPlan, careerData, selectedPlanKey) {
   const coursesTotal = Number(
     backendRoute.coursesTotal ??
       mergedLevels.reduce(
-        (sum, level) => sum + level.courses.length,
+        (sum, level) =>
+          sum +
+          Number(
+            level.totalCourses ??
+              level.courses?.length ??
+              0
+          ),
         0
       )
   );
@@ -524,8 +586,14 @@ function mergeCareerPlanWithUserData(staticPlan, careerData, selectedPlanKey) {
       },
     ],
     levels: mergedLevels,
+    domains: buildDynamicDomains({
+      careerData,
+      mergedLevels,
+      fallbackDomains: staticPlan.domains || [],
+    }),
   };
 }
+
 
 function safePlanKey(value) {
   return PLAN_ORDER.includes(value) ? value : "free";
@@ -715,7 +783,24 @@ function LevelDetail({ level, isCurrentUserPlan }) {
         {level.skills.map((skill, index) => <span key={`${skill}-${index}`} className="rounded-full border border-black/10 bg-white px-3 py-1.5 !font-['Montserrat'] text-xs text-[#806B5F]">{skill}</span>)}
       </div>
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-        <h4 className="!font-['Montserrat'] text-xs font-black uppercase tracking-[0.08em] text-[#111111]">Cursos en este nivel — {level.coursesLabel}</h4>
+        <div>
+          <h4 className="!font-['Montserrat'] text-xs font-black uppercase tracking-[0.08em] text-[#111111]">
+            Cursos en este nivel — {level.coursesLabel}
+          </h4>
+
+          {Number(level.totalCourses || 0) > Number(level.courses?.length || 0) && (
+            <p className="mt-1 !font-['Montserrat'] text-[11px] text-[#806B5F]">
+              Mostrando {level.courses.length} recomendaciones destacadas.{" "}
+              <a
+                href="/account?tab=courses"
+                className="font-black text-[#1941CF]"
+              >
+                Ver todos los cursos →
+              </a>
+            </p>
+          )}
+        </div>
+
         <ProviderBadge>{level.catalogLabel}</ProviderBadge>
       </div>
       {level.courses.length ? (
@@ -918,23 +1003,196 @@ function IncludesCard({ includes, onPlanAction, onComparePlans, planKey }) {
   );
 }
 
+
+function normalizeDomainName(value) {
+  return getTaxonomyLabel(value);
+}
+
+function collectRouteDomainNames(careerData, levels = []) {
+  const backendRoute = careerData?.route || {};
+
+  const explicitRouteDomains = [
+    ...(Array.isArray(backendRoute.domains) ? backendRoute.domains : []),
+    ...(Array.isArray(backendRoute.topics) ? backendRoute.topics : []),
+    ...(Array.isArray(backendRoute.skills) ? backendRoute.skills : []),
+  ];
+
+  const courseDomains = levels.flatMap((level) =>
+    (Array.isArray(level.courses) ? level.courses : []).flatMap((course) => [
+      ...(Array.isArray(course.skills) ? course.skills : []),
+      ...(Array.isArray(course.topics) ? course.topics : []),
+      ...(course.topic ? [course.topic] : []),
+    ])
+  );
+
+  return Array.from(
+    new Set(
+      [...explicitRouteDomains, ...courseDomains]
+        .map(normalizeDomainName)
+        .filter(Boolean)
+    )
+  );
+}
+
+function buildDynamicDomains({
+  careerData,
+  mergedLevels,
+  fallbackDomains = [],
+}) {
+  const backendRoute = careerData?.route || {};
+
+  const rawDomains = Array.isArray(backendRoute.domains)
+    ? backendRoute.domains
+    : [];
+
+  const routeDomainNames = collectRouteDomainNames(
+    careerData,
+    mergedLevels
+  );
+
+  const routeDomainSet = new Set(
+    routeDomainNames.map((name) => String(name).toLowerCase())
+  );
+
+  /*
+   * Si backend ya devuelve el mapa completo de dominios con valores,
+   * usamos esa información como fuente principal.
+   */
+  const normalizedBackendDomains = rawDomains
+    .map((domain) => {
+      const name = normalizeDomainName(domain);
+
+      if (!name) return null;
+
+      const value = Number(
+        domain?.value ??
+          domain?.percentage ??
+          domain?.percent ??
+          domain?.coverage ??
+          domain?.score ??
+          0
+      );
+
+      const inRoute =
+        domain?.inRoute ??
+        domain?.in_route ??
+        routeDomainSet.has(name.toLowerCase());
+
+      return {
+        name,
+        value: Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0,
+        inRoute: Boolean(inRoute),
+      };
+    })
+    .filter(Boolean);
+
+  if (normalizedBackendDomains.length) {
+    return normalizedBackendDomains;
+  }
+
+  /*
+   * Si backend todavía no entrega un mapa de dominio cuantificado,
+   * construimos uno dinámico únicamente con los dominios presentes
+   * en la ruta. En ese caso marcamos + ruta y usamos una cobertura
+   * derivada del peso relativo dentro de la ruta.
+   */
+  if (routeDomainNames.length) {
+    const counts = new Map();
+
+    mergedLevels.forEach((level) => {
+      (level.courses || []).forEach((course) => {
+        getCourseSkillNames(course).forEach((name) => {
+          const key = name.toLowerCase();
+          counts.set(key, (counts.get(key) || 0) + 1);
+        });
+      });
+    });
+
+    const maxCount = Math.max(
+      1,
+      ...Array.from(counts.values())
+    );
+
+    return routeDomainNames.map((name) => {
+      const count = counts.get(name.toLowerCase()) || 1;
+      const value = Math.round((count / maxCount) * 100);
+
+      return {
+        name,
+        value,
+        inRoute: true,
+      };
+    });
+  }
+
+  /*
+   * Solo como respaldo visual, conservamos el mapa estático del plan,
+   * pero sin inventar + ruta.
+   */
+  return (fallbackDomains || []).map((domain) => ({
+    ...domain,
+    inRoute: false,
+  }));
+}
+
 function DomainsCard({ domains }) {
+  const items = Array.isArray(domains) ? domains : [];
+
   return (
     <section className="rounded-[20px] border border-black/10 bg-white p-5 shadow-[0_8px_22px_rgba(0,0,0,0.05)]">
-      <h3 className="!font-['Montserrat'] text-lg font-black text-[#111111]">🗺️ Mapa de Dominios</h3>
-      <p className="!font-['Montserrat'] text-sm text-[#806B5F]">Tu cobertura actual en los 11 dominios</p>
-      <div className="mt-5 max-h-[420px] space-y-3 overflow-y-auto pr-2">
-        {domains.map((domain) => (
-          <div key={domain.name} className="grid grid-cols-[minmax(0,1fr)_64px_34px] items-center gap-3">
-            <div className="flex min-w-0 items-center gap-2">
-              <span className="truncate !font-['Montserrat'] text-xs text-[#111111]">{domain.name}</span>
-              {domain.inRoute && <span className="shrink-0 rounded-full bg-[#E7EAFE] px-2 py-0.5 !font-['Montserrat'] text-[9px] font-bold text-[#1941CF]">• ruta</span>}
+      <h3 className="!font-['Montserrat'] text-lg font-black text-[#111111]">
+        🗺️ Mapa de Dominios
+      </h3>
+
+      <p className="!font-['Montserrat'] text-sm text-[#806B5F]">
+        Dominios y habilidades relacionados con tu ruta actual
+      </p>
+
+      {items.length ? (
+        <div className="mt-5 max-h-[420px] space-y-3 overflow-y-auto pr-2">
+          {items.map((domain) => (
+            <div
+              key={domain.name}
+              className="grid grid-cols-[minmax(0,1fr)_64px_34px] items-center gap-3"
+            >
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="truncate !font-['Montserrat'] text-xs text-[#111111]">
+                  {domain.name}
+                </span>
+
+                {domain.inRoute && (
+                  <span className="shrink-0 rounded-full bg-[#E7EAFE] px-2 py-0.5 !font-['Montserrat'] text-[9px] font-bold text-[#1941CF]">
+                    + ruta
+                  </span>
+                )}
+              </div>
+
+              <div className="h-1.5 overflow-hidden rounded-full bg-neutral-200">
+                <div
+                  className="h-full rounded-full bg-[#1941CF]"
+                  style={{
+                    width: `${Math.max(
+                      0,
+                      Math.min(100, Number(domain.value) || 0)
+                    )}%`,
+                  }}
+                />
+              </div>
+
+              <span className="!font-['Montserrat'] text-[10px] font-bold text-[#1941CF]">
+                {Math.max(
+                  0,
+                  Math.min(100, Number(domain.value) || 0)
+                )}%
+              </span>
             </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-neutral-200"><div className="h-full rounded-full bg-[#1941CF]" style={{ width: `${domain.value}%` }} /></div>
-            <span className="!font-['Montserrat'] text-[10px] font-bold text-[#1941CF]">{domain.value}%</span>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="mt-5 rounded-[14px] border border-black/10 bg-[#F6F4EF] p-4 !font-['Montserrat'] text-xs text-[#806B5F]">
+          Aún no hay dominios suficientes para construir el mapa de tu ruta.
+        </div>
+      )}
     </section>
   );
 }
@@ -1057,89 +1315,11 @@ export default function CareerTab({
     );
   }, [selectedPlanKey, mergedPlan.levels]);
 
-    const personalizedTopics = useMemo(() => {
-    const backendTopics = Array.isArray(
-      careerData?.route?.topics
-    )
-      ? careerData.route.topics
-      : [];
-
-    const localTopics = Array.isArray(
-      learningRoute?.topics
-    )
-      ? learningRoute.topics
-      : [];
-
-    const source =
-      backendTopics.length > 0
-        ? backendTopics
-        : localTopics;
-
-    return Array.from(
-      new Set(
-        source
-          .map((topic) => {
-            // Si backend devuelve simplemente:
-            // ["Data Science", "Business", ...]
-            if (
-              typeof topic === "string" ||
-              typeof topic === "number"
-            ) {
-              return String(topic).trim();
-            }
-
-            // Si en algún momento devuelve objetos.
-            if (topic && typeof topic === "object") {
-              return String(
-                topic.name ||
-                  topic.nombre ||
-                  topic.translation ||
-                  topic.translate ||
-                  topic.label ||
-                  ""
-              ).trim();
-            }
-
-            return "";
-          })
-          .filter(Boolean)
-      )
-    );
-  }, [
-    careerData?.route?.topics,
-    learningRoute?.topics,
-  ]);
-
-  const visiblePlan = useMemo(() => {
-    if (!mergedPlan.levels?.length) {
-      return mergedPlan;
-    }
-
     /*
-     * Las etiquetas mostradas debajo de cada nivel
-     * representan las habilidades/temas seleccionados
-     * originalmente por el usuario.
-     *
-     * NO deben obtenerse de las skills de los cursos,
-     * porque esas skills describen cada certificación
-     * recomendada y pueden ser distintas.
-     */
-    if (!personalizedTopics.length) {
-      return mergedPlan;
-    }
-
-    return {
-      ...mergedPlan,
-
-      levels: mergedPlan.levels.map((level) => ({
-        ...level,
-
-        // Las mismas selecciones originales se muestran
-        // en los tres niveles de la ruta.
-        skills: personalizedTopics,
-      })),
-    };
-  }, [mergedPlan, personalizedTopics]);
+   * mergedPlan ya contiene máximo 3 certificaciones visibles por nivel
+   * y skills dinámicas calculadas desde esas mismas certificaciones.
+   */
+  const visiblePlan = mergedPlan;
 
   const selectedLevel =
     visiblePlan.levels.find(
