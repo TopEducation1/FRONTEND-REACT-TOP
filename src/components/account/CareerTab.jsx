@@ -1363,13 +1363,13 @@ export default function CareerTab({
             </span>
           )}
 
-          <span className="w-fit rounded-full bg-[#E9ECF8] px-4 py-2 !font-['Montserrat'] text-xs font-black text-[#1941CF]">
+          <span className="w-fit rounded-full bg-[#CFFAFE] !flex gap-2 px-4 py-2 !font-['Montserrat'] text-xs font-black text-[#0891B2]">
               <img
                 src="/assets/logos/topo-contenedor-claro.png"
                 alt="Logo Topo"
                 className="
                   !rounded-full overflow-hidden
-                  w-[20px]
+                  w-[20px] !-my-1
                   h-auto
                 "
               /> Análisis de Topo

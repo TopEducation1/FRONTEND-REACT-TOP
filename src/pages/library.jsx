@@ -29,6 +29,29 @@ const DEFAULT_SELECTED_TAGS = {
   idioma: ["es"],
 };
 
+const LOADING_STATUS_MESSAGES = [
+  {
+    title: "Buscando el mejor contenido para ti",
+    description:
+      "Estamos revisando certificaciones relacionadas con los filtros seleccionados.",
+  },
+  {
+    title: "Afinando tu búsqueda",
+    description:
+      "Combinamos temas, habilidades, idioma y proveedores para obtener resultados más relevantes.",
+  },
+  {
+    title: "Encontrando las mejores coincidencias",
+    description:
+      "Estamos priorizando contenido que se ajuste mejor a lo que quieres aprender.",
+  },
+  {
+    title: "Preparando tus resultados",
+    description:
+      "Organizamos las certificaciones para mostrarte primero las opciones más útiles.",
+  },
+];
+
 const normalizeNumericIds = (values = []) => {
   return [
     ...new Set(
@@ -91,6 +114,7 @@ function LibraryPage({ showRoutes = true }) {
 
   const [loading, setLoading] = useState(true);
   const [isReady, setIsReady] = useState(false);
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const [debouncedSelectedTags] = useDebounce(selectedTags, 350);
 
   const certificationsRef = useRef(null);
@@ -1121,6 +1145,31 @@ function LibraryPage({ showRoutes = true }) {
     run();
   }, [location.pathname, location.search]);
 
+  useEffect(() => {
+    if (!loading) {
+      setLoadingMessageIndex(0);
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setLoadingMessageIndex(
+        (currentIndex) =>
+          (currentIndex + 1) %
+          LOADING_STATUS_MESSAGES.length
+      );
+    }, 1900);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [loading]);
+
+  const activeLoadingMessage =
+    LOADING_STATUS_MESSAGES[
+      loadingMessageIndex %
+        LOADING_STATUS_MESSAGES.length
+    ];
+
   const handlePageChange = (newPage) => {
     if (!isReady || loading) return;
     if (newPage < 1 || newPage > pagination.total_pages) return;
@@ -1597,104 +1646,146 @@ function LibraryPage({ showRoutes = true }) {
             </aside>
 
             <main className="min-w-0 px-2 md:px-0">
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex min-h-[30px] flex-wrap gap-2">
-                  {selectedKnowledgeDomains.length === 0 &&
-                  (
-                    Object.keys(visibleSelectedTags).length ===
-                      0 ||
-                    Object.values(
-                      visibleSelectedTags
-                    ).every(
-                      (tags) =>
-                        !Array.isArray(tags) ||
-                        tags.length === 0
-                    )
-                  ) ? (
-                    <p className="text-sm text-neutral-500">
-                      Aún no has seleccionado filtros
-                    </p>
-                  ) : (
-                    <>
-                      {/* Tags compactos de dominio */}
-                      {selectedKnowledgeDomains.map(
-                        (domain) => (
-                          <div
-                            key={`domain-${domain.id}`}
-                            className="flex items-center gap-2 rounded-full border border-[#1941CF]/20 bg-[#EEF2FF] py-1 pl-4 pr-2 text-sm font-semibold text-[#1941CF] shadow-sm"
-                          >
-                            <span>{domain.title}</span>
+              <div className="mb-3">
+                {loading ? (
+                  <div
+                    className="relative overflow-hidden rounded-[20px] border border-[#1941CF]/15 bg-[linear-gradient(135deg,#F6F8FF_0%,#FFFFFF_55%,#F3F8F5_100%)] px-5 py-4 shadow-[0_12px_35px_rgba(25,65,207,0.07)]"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    <div className="pointer-events-none absolute -right-12 -top-16 h-36 w-36 rounded-full bg-[#2563EB]/8 blur-2xl" />
 
-                            <button
-                              type="button"
-                              onClick={() =>
-                                removeKnowledgeDomain(
-                                  domain
-                                )
-                              }
-                              disabled={!isReady}
-                              aria-label={`Eliminar dominio ${domain.title}`}
-                              className="flex h-5 w-5 items-center justify-center rounded-full bg-white/80 text-xs leading-[0.8em] text-[#1941CF] transition hover:bg-[#1941CF] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-                            >
-                              ×
-                            </button>
-                          </div>
+                    <div className="relative flex items-center gap-4">
+                      <div className="relative grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#1941CF]/10">
+                        <span className="absolute h-11 w-11 animate-ping rounded-full bg-[#1941CF]/10" />
+                        <span className="relative h-5 w-5 animate-spin rounded-full border-2 border-[#1941CF]/20 border-t-[#1941CF]" />
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <div key={loadingMessageIndex}>
+                          <p className="!font-['Montserrat'] text-[14px] font-bold text-[#111111] md:text-[15px]">
+                            {activeLoadingMessage.title}
+                          </p>
+
+                          <p className="mt-0.5 !font-['Montserrat'] text-[12px] leading-[1.35em] text-neutral-500 md:text-[13px]">
+                            {activeLoadingMessage.description}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
+                        {LOADING_STATUS_MESSAGES.map((_, index) => (
+                          <span
+                            key={index}
+                            className={`h-1.5 rounded-full transition-all duration-300 ${
+                              index === loadingMessageIndex
+                                ? "w-5 bg-[#1941CF]"
+                                : "w-1.5 bg-[#1941CF]/20"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex min-h-[30px] flex-wrap gap-2">
+                      {selectedKnowledgeDomains.length === 0 &&
+                      (
+                        Object.keys(visibleSelectedTags).length ===
+                          0 ||
+                        Object.values(
+                          visibleSelectedTags
+                        ).every(
+                          (tags) =>
+                            !Array.isArray(tags) ||
+                            tags.length === 0
                         )
-                      )}
+                      ) ? (
+                        <p className="text-sm text-neutral-500">
+                          Aún no has seleccionado filtros
+                        </p>
+                      ) : (
+                        <>
+                          {selectedKnowledgeDomains.map(
+                            (domain) => (
+                              <div
+                                key={`domain-${domain.id}`}
+                                className="flex items-center gap-2 rounded-full border border-[#1941CF]/20 bg-[#EEF2FF] py-1 pl-4 pr-2 text-sm font-semibold text-[#1941CF] shadow-sm"
+                              >
+                                <span>{domain.title}</span>
 
-                      {/* Resto de filtros no incluidos en dominios */}
-                      {Object.entries(
-                        visibleSelectedTags
-                      ).flatMap(([category, tags]) =>
-                        (tags || []).map(
-                          (tag, tagIndex) => (
-                            <div
-                              key={`${category}-${tagIndex}-${getTagUrlValue(
-                                category,
-                                tag
-                              )}`}
-                              className="flex items-center gap-2 rounded-full border border-black/10 bg-[#F5F3EE] py-1 pl-4 pr-2 text-sm font-medium text-neutral-800 shadow-sm"
-                            >
-                              <span>
-                                {getTagLabel(
-                                  category,
-                                  tag
-                                )}
-                              </span>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    removeKnowledgeDomain(
+                                      domain
+                                    )
+                                  }
+                                  disabled={!isReady}
+                                  aria-label={`Eliminar dominio ${domain.title}`}
+                                  className="flex h-5 w-5 items-center justify-center rounded-full bg-white/80 text-xs leading-[0.8em] text-[#1941CF] transition hover:bg-[#1941CF] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            )
+                          )}
 
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  removeSelectedTag(
+                          {Object.entries(
+                            visibleSelectedTags
+                          ).flatMap(([category, tags]) =>
+                            (tags || []).map(
+                              (tag, tagIndex) => (
+                                <div
+                                  key={`${category}-${tagIndex}-${getTagUrlValue(
                                     category,
                                     tag
-                                  )
-                                }
-                                disabled={!isReady}
-                                aria-label={`Eliminar filtro ${getTagLabel(
-                                  category,
-                                  tag
-                                )}`}
-                                className="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-100 text-xs leading-[0.8em] text-neutral-500 transition hover:bg-neutral-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-                              >
-                                ×
-                              </button>
-                            </div>
-                          )
-                        )
-                      )}
-                    </>
-                  )}
-                </div>
+                                  )}`}
+                                  className="flex items-center gap-2 rounded-full border border-black/10 bg-[#F5F3EE] py-1 pl-4 pr-2 text-sm font-medium text-neutral-800 shadow-sm"
+                                >
+                                  <span>
+                                    {getTagLabel(
+                                      category,
+                                      tag
+                                    )}
+                                  </span>
 
-                <button
-                  type="button"
-                  onClick={clearAllTags}
-                  disabled={!isReady || loading}
-                  className="rounded-full bg-[#111111] px-5 py-2 text-sm font-bold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  Limpiar filtros
-                </button>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      removeSelectedTag(
+                                        category,
+                                        tag
+                                      )
+                                    }
+                                    disabled={!isReady}
+                                    aria-label={`Eliminar filtro ${getTagLabel(
+                                      category,
+                                      tag
+                                    )}`}
+                                    className="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-100 text-xs leading-[0.8em] text-neutral-500 transition hover:bg-neutral-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              )
+                            )
+                          )}
+                        </>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={clearAllTags}
+                      disabled={!isReady || loading}
+                      className="rounded-full bg-[#111111] px-5 py-2 text-sm font-bold text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Limpiar filtros
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div ref={certificationsRef}>
