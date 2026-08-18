@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Topo - marca grafica en contenedor
+  Manual de marca v0.3, pag. 09.
+  Contenedor 512 x 512, radio 138 (27 % del lado, del token de radio 0.75rem).
+  Simbolo al 54.5 % del contenedor, trazo resultante 14.76.
+  Variante CLARA: fondo Tinte #CFFAFE, marca en Firma #0891B2.
+  El color va fijo porque el archivo incluye el fondo. Monocromo:
+  curvas y punto del mismo color.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Topo">
+  <rect width="512" height="512" rx="138" ry="138" fill="#CFFAFE"/>
+  <g transform="translate(143.455 116.518) scale(0.7380) translate(-354 -91)" fill="none">
+    <g stroke="#0891B2" stroke-width="20" stroke-linecap="round">
+      <path d="M364 101 Q590 280 364 459" opacity="0.25"/>
+      <path d="M442 140 Q606 280 442 420" opacity="0.55"/>
+      <path d="M520 186 Q621 280 520 374" opacity="1"/>
+    </g>
+    <circle cx="645" cy="280" r="14" fill="#0891B2"/>
+  </g>
+</svg>

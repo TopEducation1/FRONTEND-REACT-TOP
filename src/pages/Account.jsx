@@ -683,11 +683,19 @@ const TABS = [
 function StarMark({ small = false }) {
   return (
     <div
-      className={`grid place-items-center rounded-full bg-[linear-gradient(135deg,#2563EB,#145C5B)] text-white shadow-[0_14px_38px_rgba(25,65,207,0.35)] ${
+      className={`grid place-items-center rounded-full shadow-[0_14px_38px_rgba(207, 249, 253,0.35)] ${
         small ? "!h-9 !w-9 text-sm" : "!h-12 !w-12 text-lg"
       }`}
     >
-      ★
+      <img
+        src="/assets/logos/topo-contenedor-claro.png"
+        alt="Logo Topo"
+        className="
+          !rounded-full overflow-hidden
+          w-[50px]
+          h-auto
+        "
+      />
     </div>
   );
 }
@@ -1719,7 +1727,14 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/55 px-5 backdrop-blur-sm">
           <div className="w-full max-w-[520px] rounded-[30px] bg-white p-8 text-center shadow-[0_35px_100px_rgba(0,0,0,0.28)]">
             <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#2563EB]/10 text-[#2563EB]">
-              <span className="animate-pulse text-4xl">★</span>
+              <span className="animate-pulse"><img
+                src="/assets/logos/logo-topo.png"
+                alt="Logo Topo"
+                className="
+                  w-[150px]
+                  h-auto
+                "
+              /></span>
             </div>
 
             <h2 className="mt-5 !font-['Montserrat'] text-2xl font-black text-[#111111]">

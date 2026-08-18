@@ -625,7 +625,15 @@ function PlanSelector({ selectedPlan, onChange }) {
 function TopoMessage({ title, description, highlight }) {
   return (
     <section className="relative mt-4 rounded-[20px] border border-[#1941CF]/20 bg-[#EEF1F8] px-5 py-5 pl-16 md:ml-12 md:pl-5">
-      <div className="absolute left-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-[linear-gradient(135deg,#3159E8,#145C5B)] text-white shadow-[0_10px_28px_rgba(25,65,207,0.35)] md:-left-12">★</div>
+      <div className="absolute left-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-[linear-gradient(135deg,#3159E8,#145C5B)] text-white shadow-[0_10px_28px_rgba(25,65,207,0.35)] md:-left-12"><img
+                src="/assets/logos/topo-contenedor-claro.png"
+                alt="Logo Topo"
+                className="
+                  !rounded-full overflow-hidden
+                  w-[50px]
+                  h-auto
+                "
+              /></div>
       <h2 className="!font-['Montserrat'] text-base font-black text-[#111111]">{title}</h2>
       <p className="mt-1 !font-['Montserrat'] text-sm leading-relaxed text-neutral-500">{description}</p>
       {highlight && <p className="mt-1 !font-['Montserrat'] text-sm font-bold text-[#1941CF]">{highlight}</p>}
@@ -817,7 +825,15 @@ function LevelDetail({ level, isCurrentUserPlan }) {
         <div className="mt-4 flex flex-col gap-3 rounded-[14px] border border-black/10 bg-white px-4 py-3 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap items-center gap-4">
             <strong className="!font-['Montserrat'] text-xs text-[#111111]">{level.footer.title}</strong>
-            {level.footer.analysis && <span className="!font-['Montserrat'] text-[11px] text-[#4BBF72]">★ {level.footer.analysis}</span>}
+            {level.footer.analysis && <span className="!font-['Montserrat'] text-[11px] text-[#4BBF72]"><img
+                src="/assets/logos/ico-topo.png"
+                alt="Logo Topo"
+                className="
+                  w-[30px]
+                  rounded-full overflow-hidden
+                  h-auto
+                "
+              /> {level.footer.analysis}</span>}
             <span className="!font-['Montserrat'] text-[11px] text-[#806B5F]">{level.footer.benefit}</span>
           </div>
           {level.footer.action && <a href={level.footer.url || "#"} className="!font-['Montserrat'] text-xs font-black text-[#1941CF]">{level.footer.action} →</a>}
@@ -1348,7 +1364,15 @@ export default function CareerTab({
           )}
 
           <span className="w-fit rounded-full bg-[#E9ECF8] px-4 py-2 !font-['Montserrat'] text-xs font-black text-[#1941CF]">
-            ★ Análisis de Topo
+              <img
+                src="/assets/logos/topo-contenedor-claro.png"
+                alt="Logo Topo"
+                className="
+                  !rounded-full overflow-hidden
+                  w-[20px]
+                  h-auto
+                "
+              /> Análisis de Topo
           </span>
         </div>
       </div>

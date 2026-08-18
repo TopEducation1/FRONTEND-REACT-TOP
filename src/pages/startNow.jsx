@@ -153,15 +153,23 @@ const StarLogo = ({ size = "lg" }) => {
         isSmall ? "h-16 w-16" : "h-32 w-32"
       }`}
     >
-      <span className="absolute h-full w-full animate-[topoWave_2.4s_ease-out_infinite] rounded-full bg-[#2563EB]/10" />
-      <span className="absolute h-full w-full animate-[topoWave_2.4s_ease-out_infinite_0.8s] rounded-full bg-[#2563EB]/10" />
+      <span className="absolute h-full w-full animate-[topoWave_2.4s_ease-out_infinite] rounded-full bg-[#67E8F9]/10" />
+      <span className="absolute h-full w-full animate-[topoWave_2.4s_ease-out_infinite_0.8s] rounded-full bg-[#67E8F9]/10" />
 
       <div
-        className={`relative z-10 grid place-items-center rounded-full bg-[linear-gradient(135deg,#2563EB_0%,#2563EB_45%,#165C5B_100%)] text-white shadow-[0_18px_55px_rgba(25,65,207,0.35)] ${
+        className={`relative z-10 grid place-items-center rounded-full bg-[linear-gradient(135deg,#67E8F9_0%,#67E8F9_45%,#67E8F9_100%)] text-white shadow-[0_18px_55px_rgba(103,232,249,0.35)] ${
           isSmall ? "h-14 w-14 text-2xl" : "h-24 w-24 text-5xl"
         }`}
       >
-        ★
+        <img
+          src="/assets/logos/topo-contenedor-claro.png"
+          alt="Logo Topo"
+          className="
+            !rounded-full overflow-hidden
+            w-full
+            h-auto
+          "
+        />
       </div>
     </div>
   );
