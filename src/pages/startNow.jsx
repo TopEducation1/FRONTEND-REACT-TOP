@@ -823,11 +823,11 @@ function StartNowContent() {
   ] = useState([]);
 
   /*
-   * Selección contractual para TOP_EDUCATION_FREE:
-   * exactamente un curso por cada nivel.
+   * Experiencias elegibles para TOP_EDUCATION_FREE.
    *
-   * Se mantiene separada de las recomendaciones visuales,
-   * que pueden contener hasta nueve cursos.
+   * Provienen del catálogo Free Tier y pueden ser una o más.
+   * Se mantienen separadas tanto de la ruta completa como
+   * de las nueve recomendaciones visuales.
    */
   const [freeCoursesForMx, setFreeCoursesForMx] = useState([]);
   const phoneCodes = [
@@ -1212,12 +1212,26 @@ function StartNowContent() {
 
       isFree: true,
       available: course.available !== false,
-      preview: course.preview || {
-        type: course.preview_type || course.previewType || null,
-        url: course.preview_url || course.previewUrl || null,
+      preview: {
+        type:
+          course.preview?.type ||
+          course.preview_type ||
+          course.previewType ||
+          null,
+        url:
+          course.preview?.url ||
+          course.preview_url ||
+          course.previewUrl ||
+          null,
         validatedAt:
+          course.preview?.validatedAt ||
           course.preview_validated_at ||
           course.previewValidatedAt ||
+          null,
+        countryCode:
+          course.preview?.countryCode ||
+          course.preview_country_code ||
+          course.previewCountryCode ||
           null,
       },
       previewType:
@@ -1234,6 +1248,11 @@ function StartNowContent() {
         course.preview?.validatedAt ||
         course.preview_validated_at ||
         course.previewValidatedAt ||
+        null,
+      previewCountryCode:
+        course.preview?.countryCode ||
+        course.preview_country_code ||
+        course.previewCountryCode ||
         null,
 
       colombiaCertificationId:
@@ -1389,18 +1408,26 @@ function StartNowContent() {
       course.id ||
       null;
 
-    const preview = course.preview || {
+    const preview = {
       type:
+        course.preview?.type ||
         course.previewType ||
         course.preview_type ||
         null,
       url:
+        course.preview?.url ||
         course.previewUrl ||
         course.preview_url ||
         null,
       validatedAt:
+        course.preview?.validatedAt ||
         course.previewValidatedAt ||
         course.preview_validated_at ||
+        null,
+      countryCode:
+        course.preview?.countryCode ||
+        course.previewCountryCode ||
+        course.preview_country_code ||
         null,
     };
 
@@ -1430,6 +1457,8 @@ function StartNowContent() {
         preview?.url || null,
       previewValidatedAt:
         preview?.validatedAt || null,
+      previewCountryCode:
+        preview?.countryCode || null,
       isFree: true,
     };
   };
@@ -1448,7 +1477,10 @@ function StartNowContent() {
       goal: form.goal,
       topics: form.topics,
       selected_plan: selectedPlan || "free",
-      selected_paid_plan: selectedPaidPlan || "free",
+      selected_paid_plan:
+        selectedPlan === "free" || !selectedPlan
+          ? null
+          : selectedPaidPlan,
       package_code: getPackageCode(
         selectedPaidPlan || "free",
         selectedPlan || "free"
@@ -1909,7 +1941,7 @@ function StartNowContent() {
     recommendedCourses:
       (
         isFree
-          ? freeCoursesForMx.slice(0, 3)
+          ? freeCoursesForMx
           : (
               completeRecommendedCourses.length
                 ? completeRecommendedCourses
@@ -2198,34 +2230,41 @@ function StartNowContent() {
        * El endpoint entrega free_courses en la raíz.
        * Como respaldo, elegimos el primer curso de cada nivel.
        */
+      /*
+       * El endpoint entrega free_courses en la raíz.
+       *
+       * Estos cursos provienen del catálogo oficial Free Tier.
+       * Ya no existe una regla contractual de exactamente tres
+       * ni de uno por nivel.
+       */
       const rawFreeCourses = Array.isArray(
         recommendationsRes?.free_courses
       )
         ? recommendationsRes.free_courses
         : Array.isArray(recData?.free_courses)
         ? recData.free_courses
-        : [
-            nextRecommendedByLevel.level_1[0],
-            nextRecommendedByLevel.level_2[0],
-            nextRecommendedByLevel.level_3[0],
-          ].filter(Boolean);
+        : [];
 
-      const freeCoursesPayload = rawFreeCourses
-        .slice(0, 3)
-        .map((course, index) => {
+      const freeCoursesPayload = rawFreeCourses.map(
+        (course, index) => {
           const fallbackRouteLevel =
             Number(
               course?.routeLevel ||
                 course?.route_level
             ) ||
-            index + 1;
+            ((index % 3) + 1);
+
+          const fallbackOrder =
+            Number(course?.order || 0) ||
+            Math.floor(index / 3) + 1;
 
           return normalizeCourseForPayload(
             course,
             fallbackRouteLevel,
-            1
+            fallbackOrder
           );
-        });
+        }
+      );
 
       if (
         flattenedRecommendations.length < 3
@@ -2257,9 +2296,9 @@ function StartNowContent() {
         }
       );
 
-      if (freeCoursesPayload.length !== 3) {
+      if (!freeCoursesPayload.length) {
         throw new Error(
-          "No se pudieron seleccionar exactamente tres cursos para el plan Free."
+          "No se encontraron experiencias elegibles para el plan Free."
         );
       }
 
@@ -2310,8 +2349,8 @@ function StartNowContent() {
             flattenedRecommendations,
 
           /*
-           * Exactamente tres cursos, uno por nivel,
-           * para TOP_EDUCATION_FREE.
+           * Experiencias elegibles del catálogo Free Tier.
+           * Puede existir una o más.
            */
           free_courses:
             freeCoursesPayload,
@@ -2361,7 +2400,7 @@ function StartNowContent() {
           selected_plan: finalPlan,
           selected_paid_plan:
             finalPlan === "free"
-              ? "free"
+              ? null
               : selectedPaidPlan,
           stripe_subscription_id:
             subscriptionData?.stripe_subscription_id,
@@ -2384,21 +2423,36 @@ function StartNowContent() {
         .trim()
         .toUpperCase();
 
-      const validMxStatuses = new Set([
+      const successfulMxStatuses = new Set([
         "APPLIED",
         "DUPLICATE",
       ]);
 
-      if (!validMxStatuses.has(mxStatus)) {
+      const pendingMxStatuses = new Set([
+        "ACCEPTED",
+        "PENDING",
+        "PROCESSING",
+        "QUEUED",
+      ]);
+
+      const mxAccepted =
+        successfulMxStatuses.has(mxStatus) ||
+        pendingMxStatuses.has(mxStatus);
+
+      if (!mxAccepted) {
         if (mxStatus === "RETRYABLE_ERROR") {
           throw new Error(
-            "MX presentó un error temporal. El acceso debe reintentarse con el mismo evento."
+            "MX presentó un error temporal. El acceso será reintentado automáticamente."
           );
         }
 
-        if (mxStatus === "PERMANENT_ERROR") {
+        if (
+          mxStatus === "PERMANENT_ERROR" ||
+          mxStatus === "REJECTED" ||
+          mxStatus === "INVALID"
+        ) {
           throw new Error(
-            "MX rechazó el acceso por un error permanente en el contrato o los datos."
+            "MX rechazó el acceso por un error permanente en los datos o la configuración."
           );
         }
 
@@ -2413,7 +2467,7 @@ function StartNowContent() {
         selected_plan: finalPlan,
         selected_paid_plan:
           finalPlan === "free"
-            ? "free"
+            ? null
             : selectedPaidPlan,
         status:
           finalPlan === "free"
