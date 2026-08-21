@@ -51,16 +51,6 @@ function hasActiveMxAccess(me, learningRoute) {
   );
 }
 
-function getMxMagicLink(me, learningRoute) {
-  return (
-    me?.mx_magic_link ||
-    me?.magic_link ||
-    me?.mx?.magicLink ||
-    learningRoute?.mx_magic_link ||
-    learningRoute?.magicLink ||
-    ""
-  );
-}
 
 async function getJSON(url) {
   const res = await fetch(url, {
@@ -109,10 +99,38 @@ async function postJSON(url, body = {}) {
   });
 
   const text = await res.text();
-  const data = text ? JSON.parse(text) : {};
+
+  let data = {};
+
+  try {
+    data = text
+      ? JSON.parse(text)
+      : {};
+  } catch {
+    throw new Error(
+      `El servidor devolvió una respuesta no válida. HTTP ${res.status}`
+    );
+  }
 
   if (!res.ok || data?.ok === false) {
-    throw new Error(data?.error || data?.detail || `HTTP ${res.status}`);
+    const error = new Error(
+      data?.message ||
+      data?.detail ||
+      data?.error ||
+      `HTTP ${res.status}`
+    );
+
+    error.code =
+      data?.error ||
+      "http_error";
+
+    error.status =
+      res.status;
+
+    error.data =
+      data;
+
+    throw error;
   }
 
   return data;
@@ -757,28 +775,134 @@ function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl, learni
 
   const goToMxApp = async () => {
     if (!mxAccessActive) {
-      toast.error("Tu acceso está inactivo o suspendido. Actualiza tu membresía para ingresar a la app.");
+      toast.error(
+        "Tu acceso está inactivo o suspendido. Actualiza tu membresía para ingresar a la app."
+      );
+
       return;
+    }
+
+    if (openingMxApp) {
+      return;
+    }
+
+    /*
+    * Abrimos la pestaña inmediatamente dentro del evento
+    * del usuario para evitar bloqueos de popup mientras
+    * esperamos que MX genere el nuevo Magic Link.
+    */
+    const mxWindow = window.open(
+      "",
+      "_blank"
+    );
+
+    if (!mxWindow) {
+      toast.error(
+        "Tu navegador bloqueó la nueva pestaña. Habilita las ventanas emergentes para Top Education e intenta nuevamente."
+      );
+
+      return;
+    }
+
+    /*
+    * Mientras generamos el enlace mostramos una pantalla
+    * mínima en la nueva pestaña.
+    */
+    try {
+      mxWindow.document.title =
+        "Top Education";
+
+      mxWindow.document.body.innerHTML = `
+        <div
+          style="
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:#F6F4EF;
+            font-family:Arial,sans-serif;
+            color:#111111;
+          "
+        >
+          <div style="text-align:center;padding:32px;">
+            <div
+              style="
+                width:48px;
+                height:48px;
+                margin:0 auto 18px;
+                border-radius:50%;
+                background:#2563EB;
+              "
+            ></div>
+
+            <strong style="font-size:18px;">
+              Preparando tu acceso...
+            </strong>
+
+            <p
+              style="
+                margin-top:8px;
+                color:#777;
+                font-size:14px;
+              "
+            >
+              Estamos generando un acceso seguro a la plataforma.
+            </p>
+          </div>
+        </div>
+      `;
+    } catch {
+      // No bloqueamos el flujo si el navegador
+      // impide modificar temporalmente la pestaña.
     }
 
     setOpeningMxApp(true);
 
     try {
-      const res = await postJSON(`${backendBaseUrl}/api/account/mx/magic-link/refresh/`);
-      const magicLink = res?.data?.magic_link || res?.data?.magicLink || res?.magicLink;
+      const res = await postJSON(
+        `${backendBaseUrl}/api/account/mx/magic-link/refresh/`
+      );
+
+      const magicLink =
+        res?.data?.magic_link ||
+        res?.data?.magicLink ||
+        res?.magic_link ||
+        res?.magicLink ||
+        "";
 
       if (!magicLink) {
-        toast.error("No se pudo generar el acceso a la app.");
-        return;
+        throw new Error(
+          "No se pudo generar el acceso a la plataforma."
+        );
       }
 
-      window.open(magicLink, "_blank", "noopener,noreferrer");
+      /*
+      * El backend acaba de generar un Magic Link nuevo
+      * single-use. Navegamos la pestaña que ya estaba abierta.
+      */
+      mxWindow.location.replace(
+        magicLink
+      );
     } catch (error) {
-      toast.error(error?.message || "Tu acceso está inactivo o suspendido. Actualiza tu membresía.");
+      /*
+      * Si MX o Colombia fallan, cerramos la pestaña vacía
+      * para no dejar una ventana abandonada.
+      */
+      try {
+        mxWindow.close();
+      } catch {
+        // noop
+      }
+
+      toast.error(
+        error?.message ||
+          "No fue posible generar tu acceso a la plataforma."
+      );
     } finally {
       setOpeningMxApp(false);
     }
   };
+
   const handleLogout = async () => {
     try {
       localStorage.removeItem("token");
@@ -854,10 +978,19 @@ function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl, learni
         <button
           type="button"
           onClick={goToMxApp}
-          disabled={openingMxApp}
+          disabled={
+            openingMxApp ||
+            !mxAccessActive
+          }
           className={`flex w-full items-center justify-between rounded-[18px] p-3 !font-['Montserrat'] text-white shadow-[0_14px_35px_rgba(92,199,129,0.28)] ${
-            mxAccessActive ? "bg-[#63BE79]" : "bg-neutral-400 cursor-not-allowed"
-          } ${openingMxApp ? "opacity-70" : ""}`}
+            mxAccessActive
+              ? "bg-[#63BE79]"
+              : "bg-neutral-400 cursor-not-allowed"
+          } ${
+            openingMxApp
+              ? "opacity-70 cursor-wait"
+              : ""
+          }`}
         >
           <span className="flex items-center gap-3">
             <span className="grid h-9 w-9 place-items-center rounded-[12px] bg-white/18">↗</span>

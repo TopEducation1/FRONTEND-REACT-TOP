@@ -18,7 +18,7 @@ function BlogPage() {
       />
 
       <section className="pt-32 pb-20 px-8 bg-[#FFFFFF]">
-        <div className="container m-auto mx-auto gap-2 sect-h-pequ">
+        <div className="max-w-8xl m-auto mx-auto gap-2 sect-h-pequ">
           <div className="text-center mb-14">
             <h1 className="text-[#0F090B] text-7xl font-normal font-[Lora] text-center leading-[1em] z-10 relative sm:text-6xl md:text-6xl lg:text-6xl xl:text-8xl">
               <span className="font-te-it !text-[3.8rem] leading-[1em]">
@@ -37,7 +37,7 @@ function BlogPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {[
               {
                 type: "Guía",
@@ -79,6 +79,15 @@ function BlogPage() {
                 image:
                   "/assets/content/resources/eBook-Capacitacion-empresarial-del futuro.webp",
               },
+              {
+                type: "Guía",
+                color: "bg-[#5CC781]",
+                title: "Como elegir tu proxima certificación",
+                link: "https://info.top.education/certificaciones",
+                image:
+                  "/assets/content/resources/guia-5-pasos-para-elegir-tu-proxima-certificacion.png",
+              },
+              
             ].map((item, index) => (
               <a
                 key={index}
