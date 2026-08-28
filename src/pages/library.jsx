@@ -1673,7 +1673,7 @@ function LibraryPage({ showRoutes = true }) {
                         </div>
                       </div>
 
-                      <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
+                      {/*<div className="hidden shrink-0 items-center gap-1.5 sm:flex">
                         {LOADING_STATUS_MESSAGES.map((_, index) => (
                           <span
                             key={index}
@@ -1684,7 +1684,7 @@ function LibraryPage({ showRoutes = true }) {
                             }`}
                           />
                         ))}
-                      </div>
+                      </div>*/}
                     </div>
                   </div>
                 ) : (

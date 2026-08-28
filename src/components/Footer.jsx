@@ -1,4 +1,7 @@
+import React, { useState } from "react";
+import PrivacyPolicyModal from "./PrivacyPolicyModal";
 const Footer = () => {
+  const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
   const socialLinks = [
     {
       href: "https://www.instagram.com/topeducationofficial/",
@@ -36,7 +39,7 @@ const Footer = () => {
     },
   ];
 
-  return (
+  return (<>
     <footer
       id="footerPage"
       className="wrapper relative bg-[#0F090D] px-6 py-8"
@@ -44,12 +47,13 @@ const Footer = () => {
       <div className="container mx-auto">
         <div className="grid items-center gap-8 md:grid-cols-3">
           <div className="flex flex-col items-center text-center md:items-start md:text-left">
-            <a
-              href="/politicas-privacidad"
+            <button
+            type="button"
+              onClick={() => setPrivacyModalOpen(true)}
               className="text-[16px] font-semibold text-white transition-colors duration-300 hover:text-[#5CC781]"
             >
               Políticas de privacidad
-            </a>
+            </button>
 
             <p className="mt-0 text-[12px] text-[#F8F7F4]/80">
               Todos los derechos reservados |{" "}
@@ -110,6 +114,11 @@ const Footer = () => {
         </div>
       </div>
     </footer>
+    <PrivacyPolicyModal
+        isOpen={privacyModalOpen}
+        onClose={() => setPrivacyModalOpen(false)}
+      />
+    </>
   );
 };
 

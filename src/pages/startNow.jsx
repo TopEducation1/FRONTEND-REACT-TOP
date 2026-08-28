@@ -353,18 +353,18 @@ const getPasswordStrength = (password = "") => {
   if (score <= 1) {
     return {
       score,
-      label: "Muy débil",
-      color: "bg-[#F6C344]",
-      textColor: "text-[#C69200]",
+      label: "Débil",
+      color: "bg-[#d33b3e]",
+      textColor: "text-[#d33b3e]",
     };
   }
 
   if (score === 2) {
     return {
       score,
-      label: "Débil",
-      color: "bg-[#F5A623]",
-      textColor: "text-[#D98200]",
+      label: "Regular",
+      color: "bg-[#ffb300]",
+      textColor: "text-[#ffb300]",
     };
   }
 
@@ -2827,14 +2827,14 @@ function StartNowContent() {
                   <ArrowIcon />
                 </button>
 
-                <button
+                {/*<button
                   ref={introVideoButtonRef}
                   type="button"
                   onClick={openIntroVideo}
                   className="rounded-full border border-black/10 bg-white px-4 py-2 md:px-8 md:py-4 !font-['Montserrat'] text-lg font-medium text-neutral-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-[#F8F7F3] hover:text-black"
                 >
                   Conocer más
-                </button>
+                </button>*/}
               </div>
 
               <button
@@ -3893,7 +3893,6 @@ function StartNowContent() {
                   value={`${form.first_name} ${form.last_name}`.trim()}
                   onChange={() => {}}
                   placeholder="Como aparece en la tarjeta"
-                  readOnly
                 />
 
                 <FormSelect

@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Seo from "../components/Seo";
 import getBlogBySlug from "../services/getBlogBySlug";
 import LatestBlogsGrid from "../components/cafam/LatestBlogsGrid";
+import ResourcesGrid from "../components/ResourcesGrid";
 import SuggestedCertifications from "../components/suggestedCertifications";
 import ShareButtons from "../components/ShareButtons";
 import RightPop from "../components/RightPop";
@@ -684,6 +685,15 @@ const BlogDetailPage = () => {
                   </div>
                 </div>
 
+                <div className="mt-5 rounded-[28px] border border-black/10 bg-white p-5 shadow-[0_18px_60px_rgba(0,0,0,0.05)]">
+                  <h2 className="mb-2 !font-['Montserrat'] text-[1.35rem] font-bold tracking-[-0.03em] text-[#111111]">
+                    Recursos para descargar
+                  </h2>
+
+                  <ResourcesGrid limit={6} />
+
+                </div>
+
                 <div className="rounded-[28px] border border-black/10 bg-white p-5 shadow-[0_18px_60px_rgba(0,0,0,0.05)]">
                   <h2 className="mb-2 !font-['Montserrat'] text-[1.35rem] font-bold tracking-[-0.03em] text-[#111111]">
                     Te puede interesar
@@ -698,6 +708,8 @@ const BlogDetailPage = () => {
                     Explora más certificaciones
                   </Link>
                 </div>
+
+
               </div>
             </aside>
           </div>
