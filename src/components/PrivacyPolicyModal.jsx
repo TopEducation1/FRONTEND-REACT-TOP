@@ -155,7 +155,7 @@ const PrivacyPolicyModal = ({ isOpen, onClose }) => {
         {/* Imagen */}
         <div className="mt-auto flex w-full justify-center pt-7">
           <img
-            src="/assets/Piezas/subinfo-2.png"
+            src="/assets/content/resources/privacy-policies.webp"
             alt="Estamos preparando nuestro aviso de privacidad"
             className="
               h-auto
