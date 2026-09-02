@@ -43,7 +43,7 @@ function BlogPage() {
                 type: "Guía",
                 color: "bg-[#5CC781]",
                 title: "Cómo encontrar trabajo con poca experiencia",
-                link: "https://info.top.education/como-encontrar-trabajo-con-poca-experiencia",
+                link: "https://Info.top.education/como-encontrar-trabajo-con-poca-experiencia-lp",
                 image:
                   "/assets/content/resources/Guia-Como-encontrar trabajo-con-poca-experiencia.webp",
               },
@@ -51,7 +51,7 @@ function BlogPage() {
                 type: "eBook",
                 color: "bg-[#1941cf]",
                 title: "Construye tu marca personal con éxito",
-                link: "https://info.top.education/ebook-construye-tu-marca-personal-con-exito",
+                link: "https://info.top.education/construye-tu-marca-personal-con-exito",
                 image:
                   "/assets/content/resources/eBook-Construye-tu-marca-personal-con-exito.webp",
               },
@@ -59,7 +59,7 @@ function BlogPage() {
                 type: "eBook",
                 color: "bg-[#1941cf]",
                 title: "Crea tu ruta de aprendizaje virtual personalizada",
-                link: "https://info.top.education/ebook-crea-tu-ruta-de-aprendizaje-virtual-personalizada",
+                link: "https://info.top.education/crea-tu-ruta-de-aprendizaje-virtual-personalizada-lp",
                 image:
                   "/assets/content/resources/eBook-Crea-tu-ruta-de-aprendizaje-virtual-personalizada.webp",
               },
@@ -67,7 +67,7 @@ function BlogPage() {
                 type: "eBook",
                 color: "bg-[#1941cf]",
                 title: "Estrategias para aprender online",
-                link: "https://info.top.education/estrategias-para-aprender-online",
+                link: "https://info.top.education/estrategias-para-aprender-online-lp",
                 image:
                   "/assets/content/resources/eBook-Estrategias-para-aprender-online.webp",
               },
@@ -75,7 +75,7 @@ function BlogPage() {
                 type: "Paper",
                 color: "bg-[#034694]",
                 title: "Capacitación empresarial del futuro",
-                link: "https://info.top.education/capacitacion-empresarial-del-futuro-e-learning",
+                link: "https://info.top.education/capacitacion-empresarial-para-el-futuro",
                 image:
                   "/assets/content/resources/eBook-Capacitacion-empresarial-del futuro.webp",
               },
@@ -83,7 +83,7 @@ function BlogPage() {
                 type: "Guía",
                 color: "bg-[#5CC781]",
                 title: "Como elegir tu proxima certificación",
-                link: "https://info.top.education/certificaciones",
+                link: "https://info.top.education/elige-tu-proxima-certificacion",
                 image:
                   "/assets/content/resources/guia-5-pasos-para-elegir-tu-proxima-certificacion.png",
               },
