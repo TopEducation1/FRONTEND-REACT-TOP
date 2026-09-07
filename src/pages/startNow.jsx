@@ -608,6 +608,7 @@ const PLANS = {
     name: "Top Education Free",
     shortName: "Free",
     tier: "FREE",
+    cardImage: "/assets/plans/Paquete-free.png",
 
     monthly: {
       selectionValue: "free",
@@ -648,6 +649,7 @@ const PLANS = {
     name: "Top Education Básico",
     shortName: "Básico",
     tier: "BASIC",
+    cardImage: "/assets/plans/Paquete-basico.png",
 
     monthly: {
       selectionValue: "monthly_basic",
@@ -665,10 +667,11 @@ const PLANS = {
       billingPeriod: "ANNUAL",
     },
 
-    trialDays: 7,
-    lifecycleStatus: "TRIALING",
-    status: "pro_trialing",
-    buttonText: "Comenzar prueba gratuita",
+    // BASIC NO TIENE TRIAL
+    trialDays: 0,
+    lifecycleStatus: "ACTIVE",
+    status: "active",
+    buttonText: "Comenzar ahora",
 
     features: [
       { label: "Cursos recomendados", included: true },
@@ -689,6 +692,7 @@ const PLANS = {
     shortName: "X",
     tier: "X",
     popular: true,
+    cardImage: "/assets/plans/Paquete-x.png",
 
     monthly: {
       selectionValue: "monthly_x",
@@ -729,6 +733,7 @@ const PLANS = {
     name: "Top Education Plus",
     shortName: "Plus",
     tier: "PLUS",
+    cardImage: "/assets/plans/Paquete-plus.png",
 
     monthly: {
       selectionValue: "monthly_plus",
@@ -3487,7 +3492,7 @@ function StartNowContent() {
                         setStep(isFreePlan ? "createPassword" : "proPayment");
                       }}
                       disabled={loading}
-                      className={`relative flex min-h-[550px] flex-col rounded-[26px] px-6 py-8 text-left transition duration-300 hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-60 ${
+                      className={`relative flex h-full min-h-[720px] flex-col rounded-[26px] px-6 py-8 text-left transition duration-300 hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-60 ${
                         isPopular
                           ? "bg-[#2438C8] text-white shadow-[0_26px_70px_rgba(36,56,200,0.30)]"
                           : "border border-black/10 bg-white text-[#111111] shadow-[0_16px_45px_rgba(0,0,0,0.06)]"
@@ -3504,7 +3509,25 @@ function StartNowContent() {
                           + MÁS POPULAR
                         </span>
                       )}
-
+                      <div className="mb-5 flex justify-center">
+                        <div
+                          className={`flex h-[175px] w-[175px] items-center justify-center overflow-hidden rounded-[24px] ${
+                            isPopular
+                              ? "bg-white/10"
+                              : "border border-black/5 bg-[#F8F8F8]"
+                          }`}
+                        >
+                          <img
+                            src={planConfig.cardImage}
+                            alt={planConfig.shortName}
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+                        </div>
+                      </div>
                       {isFreePlan && (
                         <span className="!font-['Montserrat'] text-sm font-black uppercase text-[#5CC781]">
                           Comenzar gratis
@@ -3589,7 +3612,7 @@ function StartNowContent() {
                       </ul>
 
                       <div
-                        className={`mt-auto rounded-[18px] px-5 py-4 text-center !font-['Montserrat'] font-black ${
+                        className={`mt-auto rounded-[18px] px-3 py-3 text-center !font-['Montserrat'] font-black ${
                           isPopular
                             ? "bg-white text-[#2438C8]"
                             : isFreePlan
@@ -3604,7 +3627,28 @@ function StartNowContent() {
                 })}
               </div>
             </section>
+            {form.topics.length > 0 && (
+              <section className="mt-8 rounded-[24px] border border-black/10 bg-white px-6 py-7 shadow-[0_12px_35px_rgba(0,0,0,0.05)] md:px-8">
+                <h3 className="!font-['Montserrat'] text-[1.2rem] font-black text-[#111111] md:text-[1.35rem]">
+                  Habilidades que Desbloquearás
+                </h3>
 
+                <div className="mt-5 flex flex-wrap gap-3">
+                  {form.topics.map((topic) => (
+                    <div
+                      key={topic}
+                      className="inline-flex items-center gap-3 rounded-full border border-[#5CC781]/25 bg-[#5CC781]/[0.08] px-5 py-3 !font-['Montserrat'] text-[14px] font-bold text-[#111111] md:px-6 md:text-[15px]"
+                    >
+                      <span className="text-lg font-black text-[#111111]">
+                        ✓
+                      </span>
+
+                      <span>{topic}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
             <section className="mt-16 rounded-[28px] border border-black/10 bg-white p-7 shadow-[0_18px_50px_rgba(0,0,0,0.05)] md:p-10">
               <h3 className="text-center !font-['Montserrat'] text-2xl font-black text-[#111111]">
                 Comparativa rápida
@@ -3891,7 +3935,6 @@ function StartNowContent() {
                 <FormInput
                   label="Nombre del titular"
                   value={`${form.first_name} ${form.last_name}`.trim()}
-                  onChange={() => {}}
                   placeholder="Como aparece en la tarjeta"
                 />
 
