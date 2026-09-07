@@ -868,6 +868,9 @@ function StartNowContent() {
     goal: "",
     password: "",
     confirm_password: "",
+
+    // NUEVO
+    card_holder_name: "",
   });
 
   const backendBaseUrl = useMemo(() => {
@@ -1723,6 +1726,19 @@ function StartNowContent() {
       route_id: routeId || "",
     });
   }, [form, selectedPlan, selectedPaidPlan, billingCycle, routeId]);
+
+  useEffect(() => {
+    if (form.card_holder_name) return;
+
+    const fullName = `${form.first_name} ${form.last_name}`.trim();
+
+    if (!fullName) return;
+
+    setForm((prev) => ({
+      ...prev,
+      card_holder_name: fullName,
+    }));
+  }, [form.first_name, form.last_name, form.card_holder_name]);
 
   useEffect(() => {
     const video = introVideoRef.current;
@@ -2607,7 +2623,9 @@ function StartNowContent() {
         payment_method: {
           card,
           billing_details: {
-            name: `${form.first_name} ${form.last_name}`.trim(),
+            name:
+              form.card_holder_name?.trim() ||
+              `${form.first_name} ${form.last_name}`.trim(),
             email: form.email,
           },
         },
@@ -3934,8 +3952,15 @@ function StartNowContent() {
 
                 <FormInput
                   label="Nombre del titular"
-                  value={`${form.first_name} ${form.last_name}`.trim()}
+                  value={form.card_holder_name}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      card_holder_name: e.target.value,
+                    }))
+                  }
                   placeholder="Como aparece en la tarjeta"
+                  required
                 />
 
                 <FormSelect
