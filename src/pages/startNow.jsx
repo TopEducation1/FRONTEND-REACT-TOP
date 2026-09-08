@@ -662,8 +662,8 @@ const PLANS = {
     yearly: {
       selectionValue: "yearly_basic",
       packageCode: "TOP_EDUCATION_BASIC_ANNUAL",
-      price: 199,
-      displayPrice: "$17",
+      price: 192,
+      displayPrice: "$16",
       billingPeriod: "ANNUAL",
     },
 
@@ -705,7 +705,7 @@ const PLANS = {
     yearly: {
       selectionValue: "yearly_x",
       packageCode: "TOP_EDUCATION_X_ANNUAL",
-      price: 299,
+      price: 300,
       displayPrice: "$25",
       billingPeriod: "ANNUAL",
     },
@@ -746,7 +746,7 @@ const PLANS = {
     yearly: {
       selectionValue: "yearly_plus",
       packageCode: "TOP_EDUCATION_PLUS_ANNUAL",
-      price: 499,
+      price: 504,
       displayPrice: "$42",
       billingPeriod: "ANNUAL",
     },
