@@ -652,12 +652,12 @@ const PLANS = {
     cardImage: "/assets/plans/Paquete-basico.png",
 
     monthly: {
-      selectionValue: "monthly_basic",
-      packageCode: "TOP_EDUCATION_BASIC_MONTHLY",
-      price: 19,
-      displayPrice: "$19",
-      billingPeriod: "MONTHLY",
-    },
+  selectionValue: "monthly_basic",
+  packageCode: "TOP_EDUCATION_BASIC_MONTHLY",
+  price: 1,
+  displayPrice: "$1",
+  billingPeriod: "MONTHLY",
+},
 
     yearly: {
       selectionValue: "yearly_basic",
