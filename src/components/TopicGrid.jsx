@@ -20,6 +20,7 @@ import { useNavigate } from "react-router-dom";
 
 const GRID_COL_CLASSES = `
   relative
+  overflow-visible
   grid
   grid-cols-1
   gap-3
@@ -27,18 +28,6 @@ const GRID_COL_CLASSES = `
   lg:grid-cols-3
   xl:grid-cols-4
 `;
-
-
-const CARD_TRANSITION = {
-  duration: 0.18,
-  ease: [0.22, 1, 0.36, 1],
-};
-
-
-const OVERLAY_TRANSITION = {
-  duration: 0.18,
-  ease: [0.22, 1, 0.36, 1],
-};
 
 
 export default function TopicGrid({
@@ -63,7 +52,9 @@ export default function TopicGrid({
 
   useEffect(() => {
     const computeCols = () => {
-      if (typeof window === "undefined") return;
+      if (typeof window === "undefined") {
+        return;
+      }
 
       const width = window.innerWidth;
 
@@ -84,7 +75,9 @@ export default function TopicGrid({
 
 
     const detectTouch = () => {
-      if (typeof window === "undefined") return;
+      if (typeof window === "undefined") {
+        return;
+      }
 
       setIsTouch(
         "ontouchstart" in window ||
@@ -96,11 +89,7 @@ export default function TopicGrid({
     computeCols();
     detectTouch();
 
-    window.addEventListener(
-      "resize",
-      computeCols,
-      { passive: true }
-    );
+    window.addEventListener("resize", computeCols);
 
     return () => {
       window.removeEventListener(
@@ -157,7 +146,10 @@ export default function TopicGrid({
           return;
         }
 
-        queryParams.set(key, value);
+        queryParams.set(
+          key,
+          value
+        );
       });
 
 
@@ -170,17 +162,21 @@ export default function TopicGrid({
 
 
   // ==========================================================
-  // GRID CLASSES
+  // GRID
   // ==========================================================
 
   const colClass = useMemo(() => {
-    if (!columns || columns === 5) {
+    if (
+      !columns ||
+      columns === 5
+    ) {
       return GRID_COL_CLASSES;
     }
 
     const map = {
       2: `
         relative
+        overflow-visible
         grid
         grid-cols-1
         gap-3
@@ -189,6 +185,7 @@ export default function TopicGrid({
 
       3: `
         relative
+        overflow-visible
         grid
         grid-cols-1
         gap-3
@@ -198,6 +195,7 @@ export default function TopicGrid({
 
       4: `
         relative
+        overflow-visible
         grid
         grid-cols-1
         gap-3
@@ -208,6 +206,7 @@ export default function TopicGrid({
 
       6: `
         relative
+        overflow-visible
         grid
         grid-cols-1
         gap-3
@@ -218,7 +217,10 @@ export default function TopicGrid({
       `,
     };
 
-    return map[columns] || GRID_COL_CLASSES;
+    return (
+      map[columns] ||
+      GRID_COL_CLASSES
+    );
   }, [columns]);
 
 
@@ -279,7 +281,6 @@ function TopicCard({
   const [canNext, setCanNext] =
     useState(false);
 
-
   const trackRef = useRef(null);
 
 
@@ -287,13 +288,34 @@ function TopicCard({
   // ITEMS
   // ==========================================================
 
-  const relatedItems = useMemo(
-    () =>
-      topic?.items ||
-      topic?.universities ||
-      [],
-    [topic]
-  );
+  const relatedItems = useMemo(() => {
+    if (
+      Array.isArray(topic?.items) &&
+      topic.items.length
+    ) {
+      return topic.items;
+    }
+
+    if (
+      Array.isArray(topic?.universities) &&
+      topic.universities.length
+    ) {
+      return topic.universities;
+    }
+
+    if (
+      Array.isArray(topic?.companies) &&
+      topic.companies.length
+    ) {
+      return topic.companies;
+    }
+
+    return [];
+  }, [
+    topic?.items,
+    topic?.universities,
+    topic?.companies,
+  ]);
 
 
   const isElevated =
@@ -301,13 +323,12 @@ function TopicCard({
       ? isActive
       : isHovered;
 
-
   const showOverlay =
     isElevated;
 
 
   // ==========================================================
-  // PARALLAX
+  // PARALLAX SUAVE
   // ==========================================================
 
   const evenColumn =
@@ -322,17 +343,17 @@ function TopicCard({
     shouldReduceMotion
       ? [0, 0]
       : evenColumn
-        ? [3, -5]
-        : [-4, 4]
+        ? [4, -8]
+        : [-8, 4]
   );
 
 
   const y = useSpring(
     yRaw,
     {
-      stiffness: 170,
-      damping: 30,
-      mass: 0.12,
+      stiffness: 150,
+      damping: 28,
+      mass: 0.15,
     }
   );
 
@@ -351,34 +372,66 @@ function TopicCard({
       el.clientWidth;
 
     setCanPrev(
-      el.scrollLeft > 4
+      el.scrollLeft > 6
     );
 
     setCanNext(
+      maxScroll > 6 &&
       el.scrollLeft <
-        maxScroll - 4
+        maxScroll - 6
     );
   }, []);
 
 
+  // recalcular cada vez que abre overlay
   useEffect(() => {
-    const frame =
-      requestAnimationFrame(
-        updateButtons
-      );
+    if (!showOverlay) {
+      return;
+    }
+
+    let frame1;
+    let frame2;
+
+    frame1 =
+      requestAnimationFrame(() => {
+        frame2 =
+          requestAnimationFrame(() => {
+            updateButtons();
+          });
+      });
 
     return () => {
-      cancelAnimationFrame(frame);
+      cancelAnimationFrame(frame1);
+
+      if (frame2) {
+        cancelAnimationFrame(frame2);
+      }
     };
   }, [
-    relatedItems.length,
     showOverlay,
+    relatedItems.length,
     updateButtons,
   ]);
 
 
+  // también recalcular resize
+  useEffect(() => {
+    window.addEventListener(
+      "resize",
+      updateButtons
+    );
+
+    return () => {
+      window.removeEventListener(
+        "resize",
+        updateButtons
+      );
+    };
+  }, [updateButtons]);
+
+
   // ==========================================================
-  // SLIDER SCROLL
+  // SLIDER
   // ==========================================================
 
   const scrollByAmount =
@@ -390,22 +443,11 @@ function TopicCard({
         if (!el) return;
 
 
-        const cardWidth = 78;
-        const gap = 12;
-
-        const visibleItems =
-          Math.max(
-            1,
-            Math.floor(
-              el.clientWidth /
-                (cardWidth + gap)
-            )
-          );
-
-
         const amount =
-          visibleItems *
-          (cardWidth + gap);
+          Math.max(
+            100,
+            el.clientWidth * 0.8
+          );
 
 
         el.scrollBy({
@@ -421,7 +463,7 @@ function TopicCard({
 
         window.setTimeout(
           updateButtons,
-          320
+          350
         );
       },
       [
@@ -438,8 +480,9 @@ function TopicCard({
   const handleTopicClick =
     useCallback(() => {
       if (isTouch) {
-        setIsActive((current) =>
-          !current
+        setIsActive(
+          (current) =>
+            !current
         );
 
         return;
@@ -447,14 +490,18 @@ function TopicCard({
 
 
       if (topic?.filter) {
-        onFilter(topic.filter);
+        onFilter(
+          topic.filter
+        );
+
         return;
       }
 
 
       if (topic?.id) {
         onFilter({
-          tema_id: topic.id,
+          tema_id:
+            topic.id,
         });
       }
     }, [
@@ -485,7 +532,10 @@ function TopicCard({
 
 
         if (item?.filter) {
-          onFilter(item.filter);
+          onFilter(
+            item.filter
+          );
+
           return;
         }
 
@@ -519,6 +569,22 @@ function TopicCard({
             empresa_id:
               item.id,
           });
+
+          return;
+        }
+
+
+        if (
+          item?.id &&
+          topic?.id
+        ) {
+          onFilter({
+            tema_id:
+              topic.id,
+
+            item_id:
+              item.id,
+          });
         }
       },
       [
@@ -538,43 +604,38 @@ function TopicCard({
 
 
   // ==========================================================
-  // ANIMATIONS
+  // ANIMATION
   // ==========================================================
-
-  const cardVariants = {
-    initial: {
-      opacity: 0,
-      y: 8,
-    },
-
-    visible: {
-      opacity: 1,
-      y: 0,
-    },
-  };
-
 
   const overlayVariants = {
     hidden: {
-      opacity: 0,
       y: "100%",
+      opacity: 0,
     },
 
     visible: {
+      y: 0,
       opacity: 1,
-      y: "0%",
 
       transition:
         shouldReduceMotion
           ? {
               duration: 0,
             }
-          : OVERLAY_TRANSITION,
+          : {
+              duration: 0.18,
+              ease: [
+                0.22,
+                1,
+                0.36,
+                1,
+              ],
+            },
     },
 
     exit: {
-      opacity: 0,
       y: "100%",
+      opacity: 0,
 
       transition:
         shouldReduceMotion
@@ -590,40 +651,25 @@ function TopicCard({
 
 
   // ==========================================================
-  // HOVER
-  // ==========================================================
-
-  const handleMouseEnter =
-    useCallback(() => {
-      if (isTouch) return;
-
-      setIsHovered(true);
-    }, [isTouch]);
-
-
-  const handleMouseLeave =
-    useCallback(() => {
-      if (isTouch) return;
-
-      setIsHovered(false);
-    }, [isTouch]);
-
-
-  // ==========================================================
   // RENDER
   // ==========================================================
 
   return (
     <motion.article
-      variants={cardVariants}
-      initial="initial"
-      animate="visible"
+      initial={{
+        opacity: 0,
+        y: 10,
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+      }}
       transition={{
         duration: 0.22,
         ease: "easeOut",
         delay:
           Math.min(
-            idx * 0.02,
+            idx * 0.025,
             0.12
           ),
       }}
@@ -632,22 +678,22 @@ function TopicCard({
 
         zIndex:
           isElevated
-            ? 5
+            ? 20
             : 1,
       }}
-      onMouseEnter={
-        handleMouseEnter
-      }
-      onMouseLeave={
-        handleMouseLeave
-      }
+      onMouseEnter={() => {
+        if (!isTouch) {
+          setIsHovered(true);
+        }
+      }}
+      onMouseLeave={() => {
+        if (!isTouch) {
+          setIsHovered(false);
+        }
+      }}
       className={`
+        group
         relative
-        isolate
-
-        min-h-[220px]
-
-        overflow-hidden
 
         rounded-[28px]
 
@@ -656,7 +702,7 @@ function TopicCard({
 
         bg-white
 
-        shadow-[0_10px_35px_rgba(0,0,0,0.045)]
+        shadow-[0_10px_40px_rgba(0,0,0,0.04)]
 
         transition-[box-shadow,border-color]
         duration-150
@@ -666,7 +712,7 @@ function TopicCard({
           isElevated
             ? `
               border-black/10
-              shadow-[0_18px_45px_rgba(0,0,0,0.10)]
+              shadow-[0_18px_55px_rgba(0,0,0,0.10)]
             `
             : ""
         }
@@ -682,19 +728,21 @@ function TopicCard({
           scale:
             isElevated &&
             !shouldReduceMotion
-              ? 1.012
+              ? 1.01
               : 1,
         }}
-        transition={
-          CARD_TRANSITION
-        }
+        transition={{
+          duration: 0.16,
+          ease: "easeOut",
+        }}
         className="
           relative
           z-[1]
-
-          flex
           min-h-[220px]
-          flex-col
+
+          overflow-hidden
+
+          rounded-[28px]
         "
       >
 
@@ -703,120 +751,150 @@ function TopicCard({
           onClick={
             handleTopicClick
           }
+          className="
+            block
+            w-full
+          "
           aria-label={`Abrir ${
             topic?.name ||
             "tema"
           }`}
-          className="
-            flex
-            w-full
-            flex-1
-            flex-col
-            items-center
-            justify-center
-
-            px-6
-            pb-5
-            pt-8
-
-            focus:outline-none
-          "
         >
-
-          {/* ICON */}
 
           <div
             className="
-              mb-5
               flex
-              h-[72px]
-              w-[72px]
+              min-h-[155px]
+              w-full
+
+              flex-col
               items-center
               justify-center
 
-              rounded-2xl
-
-              transition-transform
-              duration-150
-              ease-out
+              px-6
+              pb-5
+              pt-8
             "
-            style={{
-              backgroundColor:
-                `${
-                  topic?.color ||
-                  "#5CC781"
-                }22`,
-            }}
           >
+
+            {/* ICON */}
 
             <div
               className="
+                mb-5
+
                 flex
-                h-12
-                w-12
+                h-[72px]
+                w-[72px]
+
                 items-center
                 justify-center
 
-                rounded-full
+                rounded-2xl
               "
               style={{
                 backgroundColor:
-                  topic?.color ||
-                  "#5CC781",
+                  `${
+                    topic?.color ||
+                    "#5CC781"
+                  }22`,
               }}
             >
 
-              {imageUrl ? (
-                <>
-                  <img
-                    src={
-                      imageUrl
-                    }
-                    alt={
-                      topic?.name ||
-                      ""
-                    }
-                    className={`
-                      h-10
-                      w-10
-                      object-contain
+              <div
+                className="
+                  flex
+                  h-12
+                  w-12
 
-                      ${
-                        /\.svg(?:$|[?#])/i.test(
-                          imageUrl
-                        )
-                          ? "brightness-500"
-                          : ""
+                  items-center
+                  justify-center
+
+                  rounded-full
+                "
+                style={{
+                  backgroundColor:
+                    topic?.color ||
+                    "#5CC781",
+                }}
+              >
+
+                {imageUrl ? (
+                  <>
+                    <img
+                      src={imageUrl}
+                      alt={
+                        topic?.name ||
+                        ""
                       }
-                    `}
-                    loading="lazy"
-                    draggable="false"
-                    onError={
-                      (event) => {
-                        event.currentTarget.style.display =
-                          "none";
+                      className={`
+                        h-10
+                        w-10
 
-                        const fallback =
-                          event
-                            .currentTarget
-                            .nextElementSibling;
+                        object-contain
 
-                        if (fallback) {
-                          fallback.style.display =
-                            "grid";
+                        ${
+                          /\.svg(?:$|[?#])/i.test(
+                            imageUrl
+                          )
+                            ? "brightness-500"
+                            : ""
+                        }
+                      `}
+                      loading="lazy"
+                      draggable="false"
+                      onError={
+                        (event) => {
+                          event.currentTarget.style.display =
+                            "none";
+
+                          const fallback =
+                            event
+                              .currentTarget
+                              .nextElementSibling;
+
+                          if (
+                            fallback
+                          ) {
+                            fallback.style.display =
+                              "grid";
+                          }
                         }
                       }
-                    }
-                  />
+                    />
 
+                    <span
+                      style={{
+                        display:
+                          "none",
+                      }}
+                      className="
+                        h-10
+                        w-10
+                        place-items-center
+
+                        rounded-full
+
+                        text-base
+                        font-semibold
+                        text-white
+                      "
+                    >
+                      {(
+                        topic?.name ||
+                        "T"
+                      )
+                        .charAt(0)
+                        .toUpperCase()}
+                    </span>
+                  </>
+                ) : (
                   <span
-                    style={{
-                      display:
-                        "none",
-                    }}
                     className="
+                      grid
                       h-10
                       w-10
+
                       place-items-center
 
                       rounded-full
@@ -824,8 +902,6 @@ function TopicCard({
                       text-base
                       font-semibold
                       text-white
-
-                      !font-[Montserrat]
                     "
                   >
                     {(
@@ -835,32 +911,9 @@ function TopicCard({
                       .charAt(0)
                       .toUpperCase()}
                   </span>
-                </>
-              ) : (
-                <span
-                  className="
-                    grid
-                    h-10
-                    w-10
-                    place-items-center
+                )}
 
-                    rounded-full
-
-                    text-base
-                    font-semibold
-                    text-white
-
-                    !font-[Montserrat]
-                  "
-                >
-                  {(
-                    topic?.name ||
-                    "T"
-                  )
-                    .charAt(0)
-                    .toUpperCase()}
-                </span>
-              )}
+              </div>
 
             </div>
 
@@ -869,12 +922,10 @@ function TopicCard({
         </button>
 
 
-        {/* TITLE */}
-
         <div
           className="
             px-5
-            pb-6
+            pb-5
           "
         >
           <h3
@@ -905,11 +956,10 @@ function TopicCard({
 
       <AnimatePresence
         initial={false}
-        mode="sync"
       >
         {showOverlay && (
           <motion.div
-            key="topic-overlay"
+            key="overlay"
             variants={
               overlayVariants
             }
@@ -919,32 +969,31 @@ function TopicCard({
             className="
               absolute
               inset-0
-              z-20
+
+              z-10
 
               flex
               items-end
 
-              overflow-hidden
+              overflow-visible
 
               rounded-[28px]
 
-              pointer-events-auto
+              pointer-events-none
             "
-            style={{
-              willChange:
-                "transform, opacity",
-            }}
           >
 
             <div
               className="
+                pointer-events-auto
+
                 relative
 
                 w-full
 
-                rounded-t-[26px]
+                rounded-[28px]
 
-                border-t
+                border
                 border-black/5
 
                 bg-[#F6F4EF]/[0.98]
@@ -953,7 +1002,7 @@ function TopicCard({
                 pb-4
                 pt-4
 
-                shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.25)]
+                shadow-[0_12px_40px_rgba(0,0,0,0.14)]
 
                 backdrop-blur-md
               "
@@ -993,7 +1042,6 @@ function TopicCard({
 
                   text-[0.95rem]
                   font-semibold
-                  leading-5
 
                   text-[#0F090B]
                 "
@@ -1010,7 +1058,7 @@ function TopicCard({
                     mx-auto
                     mt-1
 
-                    max-w-[92%]
+                    max-w-[90%]
 
                     text-center
 
@@ -1028,64 +1076,21 @@ function TopicCard({
 
 
               {/* ================================================= */}
-              {/* INTERNAL SLIDER */}
+              {/* SLIDER */}
               {/* ================================================= */}
 
               {relatedItems.length >
-                0 && (
+              0 ? (
                 <div
                   className="
                     relative
+
                     mt-4
                     w-full
+
+                    overflow-visible
                   "
                 >
-
-                  {/* FADE LEFT */}
-
-                  {canPrev && (
-                    <div
-                      className="
-                        pointer-events-none
-
-                        absolute
-                        bottom-0
-                        left-0
-                        top-0
-                        z-10
-
-                        w-10
-
-                        bg-gradient-to-r
-                        from-[#F6F4EF]
-                        to-transparent
-                      "
-                    />
-                  )}
-
-
-                  {/* FADE RIGHT */}
-
-                  {canNext && (
-                    <div
-                      className="
-                        pointer-events-none
-
-                        absolute
-                        bottom-0
-                        right-0
-                        top-0
-                        z-10
-
-                        w-10
-
-                        bg-gradient-to-l
-                        from-[#F6F4EF]
-                        to-transparent
-                      "
-                    />
-                  )}
-
 
                   {/* PREV */}
 
@@ -1100,13 +1105,14 @@ function TopicCard({
                     aria-label="Anterior"
                     className="
                       absolute
-                      left-1
+                      left-0
                       top-1/2
+
                       z-30
 
                       flex
-                      h-8
-                      w-8
+                      h-9
+                      w-9
 
                       -translate-y-1/2
 
@@ -1116,11 +1122,13 @@ function TopicCard({
                       rounded-full
 
                       border
-                      border-black/5
+                      border-black/10
 
-                      bg-white/95
+                      bg-white
 
-                      text-xl
+                      text-2xl
+                      leading-none
+
                       text-black
 
                       shadow-md
@@ -1129,15 +1137,12 @@ function TopicCard({
                       duration-150
 
                       hover:scale-105
-                      hover:bg-white
-
-                      active:scale-95
 
                       disabled:
                       pointer-events-none
 
                       disabled:
-                      opacity-0
+                      opacity-20
                     "
                   >
                     ‹
@@ -1157,13 +1162,14 @@ function TopicCard({
                     aria-label="Siguiente"
                     className="
                       absolute
-                      right-1
+                      right-0
                       top-1/2
+
                       z-30
 
                       flex
-                      h-8
-                      w-8
+                      h-9
+                      w-9
 
                       -translate-y-1/2
 
@@ -1173,11 +1179,13 @@ function TopicCard({
                       rounded-full
 
                       border
-                      border-black/5
+                      border-black/10
 
-                      bg-white/95
+                      bg-white
 
-                      text-xl
+                      text-2xl
+                      leading-none
+
                       text-black
 
                       shadow-md
@@ -1186,15 +1194,12 @@ function TopicCard({
                       duration-150
 
                       hover:scale-105
-                      hover:bg-white
-
-                      active:scale-95
 
                       disabled:
                       pointer-events-none
 
                       disabled:
-                      opacity-0
+                      opacity-20
                     "
                   >
                     ›
@@ -1209,13 +1214,11 @@ function TopicCard({
                       updateButtons
                     }
                     className="
-                      relative
-                      z-20
-
                       overflow-x-auto
 
-                      px-10
-                      py-3
+                      px-11
+                      pb-3
+                      pt-3
 
                       scroll-smooth
 
@@ -1223,8 +1226,6 @@ function TopicCard({
                       snap-mandatory
 
                       overscroll-x-contain
-
-                      touch-pan-x
 
                       [&::-webkit-scrollbar]:
                       hidden
@@ -1241,8 +1242,11 @@ function TopicCard({
                     <ul
                       className="
                         flex
+
                         min-w-max
+
                         items-center
+
                         gap-3
                       "
                     >
@@ -1285,7 +1289,9 @@ function TopicCard({
                                   shouldReduceMotion
                                     ? undefined
                                     : {
-                                        y: -2,
+                                        y:
+                                          -3,
+
                                         scale:
                                           1.025,
                                       }
@@ -1301,20 +1307,15 @@ function TopicCard({
                                   ease:
                                     "easeOut",
                                 }}
-                                title={
-                                  item?.name
-                                }
-                                aria-label={
-                                  item?.name
-                                }
                                 className="
                                   group/related
 
                                   relative
 
                                   grid
-                                  h-[76px]
-                                  w-[76px]
+
+                                  h-[78px]
+                                  w-[78px]
 
                                   place-items-center
 
@@ -1332,6 +1333,12 @@ function TopicCard({
 
                                   hover:shadow-md
                                 "
+                                title={
+                                  item?.name
+                                }
+                                aria-label={
+                                  item?.name
+                                }
                               >
 
                                 {/* IMAGE */}
@@ -1347,8 +1354,8 @@ function TopicCard({
                                         ""
                                       }
                                       className="
-                                        max-h-[74%]
-                                        max-w-[74%]
+                                        max-h-[78%]
+                                        max-w-[78%]
 
                                         rounded-sm
 
@@ -1360,6 +1367,7 @@ function TopicCard({
                                         (
                                           event
                                         ) => {
+
                                           event.currentTarget.style.display =
                                             "none";
 
@@ -1384,8 +1392,8 @@ function TopicCard({
                                           "none",
                                       }}
                                       className="
-                                        h-10
-                                        w-10
+                                        h-11
+                                        w-11
 
                                         place-items-center
 
@@ -1396,8 +1404,6 @@ function TopicCard({
                                         text-sm
                                         font-semibold
                                         text-white
-
-                                        !font-[Montserrat]
                                       "
                                     >
                                       {(
@@ -1415,8 +1421,8 @@ function TopicCard({
                                   <span
                                     className="
                                       grid
-                                      h-10
-                                      w-10
+                                      h-11
+                                      w-11
 
                                       place-items-center
 
@@ -1427,8 +1433,6 @@ function TopicCard({
                                       text-sm
                                       font-semibold
                                       text-white
-
-                                      !font-[Montserrat]
                                     "
                                   >
                                     {(
@@ -1452,15 +1456,15 @@ function TopicCard({
 
                                     absolute
 
-                                    bottom-[calc(100%+7px)]
                                     left-1/2
+                                    top-[calc(100%+6px)]
+
                                     z-40
 
                                     w-max
-                                    max-w-[145px]
+                                    max-w-[140px]
 
                                     -translate-x-1/2
-                                    translate-y-1
 
                                     rounded-lg
 
@@ -1477,13 +1481,10 @@ function TopicCard({
 
                                     opacity-0
 
-                                    shadow-lg
+                                    shadow-md
 
-                                    transition-all
-                                    duration-150
-
-                                    group-hover/related:
-                                    translate-y-0
+                                    transition-opacity
+                                    duration-100
 
                                     group-hover/related:
                                     opacity-100
@@ -1505,6 +1506,25 @@ function TopicCard({
 
                   </div>
 
+                </div>
+              ) : (
+                <div
+                  className="
+                    mt-4
+                    rounded-2xl
+
+                    bg-black/[0.03]
+
+                    px-4
+                    py-4
+
+                    text-center
+
+                    text-[0.7rem]
+                    text-black/50
+                  "
+                >
+                  No hay elementos relacionados disponibles.
                 </div>
               )}
 
