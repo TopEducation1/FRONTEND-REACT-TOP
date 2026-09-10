@@ -23,7 +23,6 @@ const GRID_COL_CLASSES = `
   grid
   grid-cols-1
   gap-3
-
   md:grid-cols-3
   lg:grid-cols-3
   xl:grid-cols-4
@@ -31,13 +30,13 @@ const GRID_COL_CLASSES = `
 
 
 const CARD_TRANSITION = {
-  duration: 0.22,
+  duration: 0.18,
   ease: [0.22, 1, 0.36, 1],
 };
 
 
 const OVERLAY_TRANSITION = {
-  duration: 0.2,
+  duration: 0.18,
   ease: [0.22, 1, 0.36, 1],
 };
 
@@ -47,17 +46,11 @@ export default function TopicGrid({
   columns = 5,
 }) {
   const navigate = useNavigate();
-
   const containerRef = useRef(null);
 
-  const {
-    scrollYProgress,
-  } = useScroll({
+  const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: [
-      "start end",
-      "end start",
-    ],
+    offset: ["start end", "end start"],
   });
 
   const [colCount, setColCount] = useState(5);
@@ -70,9 +63,7 @@ export default function TopicGrid({
 
   useEffect(() => {
     const computeCols = () => {
-      if (typeof window === "undefined") {
-        return;
-      }
+      if (typeof window === "undefined") return;
 
       const width = window.innerWidth;
 
@@ -93,9 +84,7 @@ export default function TopicGrid({
 
 
     const detectTouch = () => {
-      if (typeof window === "undefined") {
-        return;
-      }
+      if (typeof window === "undefined") return;
 
       setIsTouch(
         "ontouchstart" in window ||
@@ -107,15 +96,11 @@ export default function TopicGrid({
     computeCols();
     detectTouch();
 
-
     window.addEventListener(
       "resize",
       computeCols,
-      {
-        passive: true,
-      }
+      { passive: true }
     );
-
 
     return () => {
       window.removeEventListener(
@@ -127,14 +112,12 @@ export default function TopicGrid({
 
 
   // ==========================================================
-  // NAVEGACIÓN
+  // NAVIGATION
   // ==========================================================
 
   const navigateWithTransition = useCallback(
     (path) => {
-      if (!path) {
-        return;
-      }
+      if (!path) return;
 
       if (
         typeof document !== "undefined" &&
@@ -158,40 +141,24 @@ export default function TopicGrid({
       const queryParams =
         new URLSearchParams();
 
-      queryParams.set(
-        "idioma",
-        "es"
-      );
-
-      queryParams.set(
-        "page",
-        "1"
-      );
-
-      queryParams.set(
-        "page_size",
-        "16"
-      );
+      queryParams.set("idioma", "es");
+      queryParams.set("page", "1");
+      queryParams.set("page_size", "16");
 
 
       Object.entries(
         filtersObject || {}
-      ).forEach(
-        ([key, value]) => {
-          if (
-            value === undefined ||
-            value === null ||
-            value === ""
-          ) {
-            return;
-          }
-
-          queryParams.set(
-            key,
-            value
-          );
+      ).forEach(([key, value]) => {
+        if (
+          value === undefined ||
+          value === null ||
+          value === ""
+        ) {
+          return;
         }
-      );
+
+        queryParams.set(key, value);
+      });
 
 
       navigateWithTransition(
@@ -203,14 +170,11 @@ export default function TopicGrid({
 
 
   // ==========================================================
-  // GRID
+  // GRID CLASSES
   // ==========================================================
 
   const colClass = useMemo(() => {
-    if (
-      !columns ||
-      columns === 5
-    ) {
+    if (!columns || columns === 5) {
       return GRID_COL_CLASSES;
     }
 
@@ -254,10 +218,7 @@ export default function TopicGrid({
       `,
     };
 
-    return (
-      map[columns] ||
-      GRID_COL_CLASSES
-    );
+    return map[columns] || GRID_COL_CLASSES;
   }, [columns]);
 
 
@@ -266,36 +227,32 @@ export default function TopicGrid({
       ref={containerRef}
       className={colClass}
     >
-      {topics.map(
-        (topic, idx) => (
-          <TopicCard
-            key={
-              topic.id ??
-              `${topic.name}-${idx}`
-            }
-            topic={topic}
-            idx={idx}
-            colCount={colCount}
-            isTouch={isTouch}
-            onFilter={
-              handleItemMenuClick
-            }
-            navigateWithTransition={
-              navigateWithTransition
-            }
-            scrollYProgress={
-              scrollYProgress
-            }
-          />
-        )
-      )}
+      {topics.map((topic, idx) => (
+        <TopicCard
+          key={
+            topic.id ??
+            `${topic.name}-${idx}`
+          }
+          topic={topic}
+          idx={idx}
+          colCount={colCount}
+          isTouch={isTouch}
+          onFilter={handleItemMenuClick}
+          navigateWithTransition={
+            navigateWithTransition
+          }
+          scrollYProgress={
+            scrollYProgress
+          }
+        />
+      ))}
     </div>
   );
 }
 
 
 // ============================================================
-// CARD
+// TOPIC CARD
 // ============================================================
 
 function TopicCard({
@@ -316,12 +273,18 @@ function TopicCard({
   const [isHovered, setIsHovered] =
     useState(false);
 
+  const [canPrev, setCanPrev] =
+    useState(false);
+
+  const [canNext, setCanNext] =
+    useState(false);
+
 
   const trackRef = useRef(null);
 
 
   // ==========================================================
-  // RELATED ITEMS
+  // ITEMS
   // ==========================================================
 
   const relatedItems = useMemo(
@@ -344,7 +307,7 @@ function TopicCard({
 
 
   // ==========================================================
-  // PARALLAX MUY SUTIL
+  // PARALLAX
   // ==========================================================
 
   const evenColumn =
@@ -367,46 +330,35 @@ function TopicCard({
   const y = useSpring(
     yRaw,
     {
-      stiffness: 160,
+      stiffness: 170,
       damping: 30,
-      mass: 0.15,
+      mass: 0.12,
     }
   );
 
 
   // ==========================================================
-  // CAROUSEL
+  // SLIDER STATE
   // ==========================================================
 
-  const [canPrev, setCanPrev] =
-    useState(false);
+  const updateButtons = useCallback(() => {
+    const el = trackRef.current;
 
-  const [canNext, setCanNext] =
-    useState(false);
+    if (!el) return;
 
+    const maxScroll =
+      el.scrollWidth -
+      el.clientWidth;
 
-  const updateButtons =
-    useCallback(() => {
-      const el =
-        trackRef.current;
+    setCanPrev(
+      el.scrollLeft > 4
+    );
 
-      if (!el) {
-        return;
-      }
-
-      const maxScroll =
-        el.scrollWidth -
-        el.clientWidth;
-
-      setCanPrev(
-        el.scrollLeft > 4
-      );
-
-      setCanNext(
-        el.scrollLeft <
-          maxScroll - 4
-      );
-    }, []);
+    setCanNext(
+      el.scrollLeft <
+        maxScroll - 4
+    );
+  }, []);
 
 
   useEffect(() => {
@@ -415,15 +367,19 @@ function TopicCard({
         updateButtons
       );
 
-    return () =>
-      cancelAnimationFrame(
-        frame
-      );
+    return () => {
+      cancelAnimationFrame(frame);
+    };
   }, [
     relatedItems.length,
+    showOverlay,
     updateButtons,
   ]);
 
+
+  // ==========================================================
+  // SLIDER SCROLL
+  // ==========================================================
 
   const scrollByAmount =
     useCallback(
@@ -431,18 +387,25 @@ function TopicCard({
         const el =
           trackRef.current;
 
-        if (!el) {
-          return;
-        }
+        if (!el) return;
+
+
+        const cardWidth = 78;
+        const gap = 12;
+
+        const visibleItems =
+          Math.max(
+            1,
+            Math.floor(
+              el.clientWidth /
+                (cardWidth + gap)
+            )
+          );
 
 
         const amount =
-          Math.max(
-            100,
-            Math.round(
-              el.clientWidth * 0.75
-            )
-          );
+          visibleItems *
+          (cardWidth + gap);
 
 
         el.scrollBy({
@@ -458,7 +421,7 @@ function TopicCard({
 
         window.setTimeout(
           updateButtons,
-          280
+          320
         );
       },
       [
@@ -469,15 +432,14 @@ function TopicCard({
 
 
   // ==========================================================
-  // CLICK TOPIC
+  // TOPIC CLICK
   // ==========================================================
 
   const handleTopicClick =
     useCallback(() => {
       if (isTouch) {
-        setIsActive(
-          (current) =>
-            !current
+        setIsActive((current) =>
+          !current
         );
 
         return;
@@ -485,18 +447,14 @@ function TopicCard({
 
 
       if (topic?.filter) {
-        onFilter(
-          topic.filter
-        );
-
+        onFilter(topic.filter);
         return;
       }
 
 
       if (topic?.id) {
         onFilter({
-          tema_id:
-            topic.id,
+          tema_id: topic.id,
         });
       }
     }, [
@@ -507,7 +465,7 @@ function TopicCard({
 
 
   // ==========================================================
-  // CLICK RELATED
+  // RELATED CLICK
   // ==========================================================
 
   const handleRelatedClick =
@@ -527,10 +485,7 @@ function TopicCard({
 
 
         if (item?.filter) {
-          onFilter(
-            item.filter
-          );
-
+          onFilter(item.filter);
           return;
         }
 
@@ -575,7 +530,15 @@ function TopicCard({
 
 
   // ==========================================================
-  // ANIMACIONES
+  // IMAGE
+  // ==========================================================
+
+  const imageUrl =
+    topic?.img || null;
+
+
+  // ==========================================================
+  // ANIMATIONS
   // ==========================================================
 
   const cardVariants = {
@@ -593,13 +556,13 @@ function TopicCard({
 
   const overlayVariants = {
     hidden: {
-      y: "102%",
       opacity: 0,
+      y: "100%",
     },
 
     visible: {
-      y: "0%",
       opacity: 1,
+      y: "0%",
 
       transition:
         shouldReduceMotion
@@ -610,8 +573,8 @@ function TopicCard({
     },
 
     exit: {
-      y: "102%",
       opacity: 0,
+      y: "100%",
 
       transition:
         shouldReduceMotion
@@ -619,60 +582,11 @@ function TopicCard({
               duration: 0,
             }
           : {
-              duration: 0.14,
-              ease: [
-                0.4,
-                0,
-                1,
-                1,
-              ],
+              duration: 0.12,
+              ease: "easeIn",
             },
     },
   };
-
-
-  const contentVariants = {
-    hidden: {
-      opacity: 0,
-      y: 8,
-    },
-
-    visible: {
-      opacity: 1,
-      y: 0,
-
-      transition:
-        shouldReduceMotion
-          ? {
-              duration: 0,
-            }
-          : {
-              duration: 0.16,
-              delay: 0.03,
-              ease: "easeOut",
-            },
-    },
-  };
-
-
-  // ==========================================================
-  // IMAGE
-  // ==========================================================
-
-  /*
-   * IMPORTANTE:
-   * Ya no cambiamos:
-   *
-   * app.top.education
-   *       ↓
-   * top.education
-   *
-   * MEDIA está siendo servido correctamente
-   * desde app.top.education.
-   */
-
-  const imageUrl =
-    topic?.img || null;
 
 
   // ==========================================================
@@ -680,23 +594,19 @@ function TopicCard({
   // ==========================================================
 
   const handleMouseEnter =
-    () => {
-      if (isTouch) {
-        return;
-      }
+    useCallback(() => {
+      if (isTouch) return;
 
       setIsHovered(true);
-    };
+    }, [isTouch]);
 
 
   const handleMouseLeave =
-    () => {
-      if (isTouch) {
-        return;
-      }
+    useCallback(() => {
+      if (isTouch) return;
 
       setIsHovered(false);
-    };
+    }, [isTouch]);
 
 
   // ==========================================================
@@ -709,12 +619,21 @@ function TopicCard({
       initial="initial"
       animate="visible"
       transition={{
-        ...CARD_TRANSITION,
+        duration: 0.22,
+        ease: "easeOut",
         delay:
           Math.min(
-            idx * 0.025,
-            0.15
+            idx * 0.02,
+            0.12
           ),
+      }}
+      style={{
+        y,
+
+        zIndex:
+          isElevated
+            ? 5
+            : 1,
       }}
       onMouseEnter={
         handleMouseEnter
@@ -722,14 +641,6 @@ function TopicCard({
       onMouseLeave={
         handleMouseLeave
       }
-      style={{
-        y,
-
-        zIndex:
-          isElevated
-            ? 10
-            : 1,
-      }}
       className={`
         relative
         isolate
@@ -748,7 +659,7 @@ function TopicCard({
         shadow-[0_10px_35px_rgba(0,0,0,0.045)]
 
         transition-[box-shadow,border-color]
-        duration-200
+        duration-150
         ease-out
 
         ${
@@ -763,7 +674,7 @@ function TopicCard({
     >
 
       {/* ==================================================== */}
-      {/* BASE CARD */}
+      {/* BASE */}
       {/* ==================================================== */}
 
       <motion.div
@@ -771,7 +682,7 @@ function TopicCard({
           scale:
             isElevated &&
             !shouldReduceMotion
-              ? 1.015
+              ? 1.012
               : 1,
         }}
         transition={
@@ -782,7 +693,6 @@ function TopicCard({
           z-[1]
 
           flex
-          h-full
           min-h-[220px]
           flex-col
         "
@@ -793,7 +703,10 @@ function TopicCard({
           onClick={
             handleTopicClick
           }
-          aria-label={`Abrir ${topic?.name || "tema"}`}
+          aria-label={`Abrir ${
+            topic?.name ||
+            "tema"
+          }`}
           className="
             flex
             w-full
@@ -824,7 +737,7 @@ function TopicCard({
               rounded-2xl
 
               transition-transform
-              duration-200
+              duration-150
               ease-out
             "
             style={{
@@ -845,8 +758,6 @@ function TopicCard({
                 justify-center
 
                 rounded-full
-
-                text-white
               "
               style={{
                 backgroundColor:
@@ -856,79 +767,100 @@ function TopicCard({
             >
 
               {imageUrl ? (
-                <img
-                  src={
-                    imageUrl
-                  }
-                  alt={
-                    topic?.name ||
-                    ""
-                  }
-                  className={`
-                    h-10
-                    w-10
-                    object-contain
-
-                    ${
-                      /\.svg(?:$|[?#])/i.test(
-                        imageUrl
-                      )
-                        ? "brightness-500"
-                        : ""
+                <>
+                  <img
+                    src={
+                      imageUrl
                     }
-                  `}
-                  loading="lazy"
-                  draggable="false"
-                  onError={
-                    (event) => {
-                      event.currentTarget.style.display =
-                        "none";
+                    alt={
+                      topic?.name ||
+                      ""
+                    }
+                    className={`
+                      h-10
+                      w-10
+                      object-contain
 
-                      const fallback =
-                        event
-                          .currentTarget
-                          .nextElementSibling;
+                      ${
+                        /\.svg(?:$|[?#])/i.test(
+                          imageUrl
+                        )
+                          ? "brightness-500"
+                          : ""
+                      }
+                    `}
+                    loading="lazy"
+                    draggable="false"
+                    onError={
+                      (event) => {
+                        event.currentTarget.style.display =
+                          "none";
 
-                      if (
-                        fallback
-                      ) {
-                        fallback.style.display =
-                          "grid";
+                        const fallback =
+                          event
+                            .currentTarget
+                            .nextElementSibling;
+
+                        if (fallback) {
+                          fallback.style.display =
+                            "grid";
+                        }
                       }
                     }
-                  }
-                />
-              ) : null}
+                  />
 
+                  <span
+                    style={{
+                      display:
+                        "none",
+                    }}
+                    className="
+                      h-10
+                      w-10
+                      place-items-center
 
-              <span
-                style={{
-                  display:
-                    imageUrl
-                      ? "none"
-                      : "grid",
-                }}
-                className="
-                  h-10
-                  w-10
-                  place-items-center
+                      rounded-full
 
-                  rounded-full
+                      text-base
+                      font-semibold
+                      text-white
 
-                  text-base
-                  font-semibold
-                  text-white
+                      !font-[Montserrat]
+                    "
+                  >
+                    {(
+                      topic?.name ||
+                      "T"
+                    )
+                      .charAt(0)
+                      .toUpperCase()}
+                  </span>
+                </>
+              ) : (
+                <span
+                  className="
+                    grid
+                    h-10
+                    w-10
+                    place-items-center
 
-                  !font-[Montserrat]
-                "
-              >
-                {(
-                  topic?.name ||
-                  "T"
-                )
-                  .charAt(0)
-                  .toUpperCase()}
-              </span>
+                    rounded-full
+
+                    text-base
+                    font-semibold
+                    text-white
+
+                    !font-[Montserrat]
+                  "
+                >
+                  {(
+                    topic?.name ||
+                    "T"
+                  )
+                    .charAt(0)
+                    .toUpperCase()}
+                </span>
+              )}
 
             </div>
 
@@ -948,6 +880,7 @@ function TopicCard({
           <h3
             className="
               px-4
+
               text-center
 
               !font-[Montserrat]
@@ -995,8 +928,6 @@ function TopicCard({
 
               rounded-[28px]
 
-              bg-black/[0.02]
-
               pointer-events-auto
             "
             style={{
@@ -1005,12 +936,7 @@ function TopicCard({
             }}
           >
 
-            <motion.div
-              variants={
-                contentVariants
-              }
-              initial="hidden"
-              animate="visible"
+            <div
               className="
                 relative
 
@@ -1023,8 +949,8 @@ function TopicCard({
 
                 bg-[#F6F4EF]/[0.98]
 
-                px-4
-                pb-5
+                px-3
+                pb-4
                 pt-4
 
                 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.25)]
@@ -1083,6 +1009,7 @@ function TopicCard({
                   className="
                     mx-auto
                     mt-1
+
                     max-w-[92%]
 
                     text-center
@@ -1100,7 +1027,9 @@ function TopicCard({
               )}
 
 
-              {/* RELATED */}
+              {/* ================================================= */}
+              {/* INTERNAL SLIDER */}
+              {/* ================================================= */}
 
               {relatedItems.length >
                 0 && (
@@ -1112,106 +1041,164 @@ function TopicCard({
                   "
                 >
 
-                  {/* PREV */}
+                  {/* FADE LEFT */}
 
                   {canPrev && (
-                    <button
-                      type="button"
-                      onClick={
-                        () =>
-                          scrollByAmount(
-                            -1
-                          )
-                      }
-                      aria-label="Anterior"
+                    <div
                       className="
+                        pointer-events-none
+
                         absolute
+                        bottom-0
                         left-0
-                        top-1/2
-                        z-20
+                        top-0
+                        z-10
 
-                        flex
-                        h-8
-                        w-8
-                        -translate-y-1/2
-                        items-center
-                        justify-center
+                        w-10
 
-                        rounded-full
-
-                        border
-                        border-black/5
-
-                        bg-white/95
-
-                        text-xl
-                        text-black
-
-                        shadow-md
-
-                        transition
-                        duration-150
-
-                        hover:scale-105
-                        hover:bg-white
-
-                        active:scale-95
+                        bg-gradient-to-r
+                        from-[#F6F4EF]
+                        to-transparent
                       "
-                    >
-                      ‹
-                    </button>
+                    />
                   )}
+
+
+                  {/* FADE RIGHT */}
+
+                  {canNext && (
+                    <div
+                      className="
+                        pointer-events-none
+
+                        absolute
+                        bottom-0
+                        right-0
+                        top-0
+                        z-10
+
+                        w-10
+
+                        bg-gradient-to-l
+                        from-[#F6F4EF]
+                        to-transparent
+                      "
+                    />
+                  )}
+
+
+                  {/* PREV */}
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      scrollByAmount(-1)
+                    }
+                    disabled={
+                      !canPrev
+                    }
+                    aria-label="Anterior"
+                    className="
+                      absolute
+                      left-1
+                      top-1/2
+                      z-30
+
+                      flex
+                      h-8
+                      w-8
+
+                      -translate-y-1/2
+
+                      items-center
+                      justify-center
+
+                      rounded-full
+
+                      border
+                      border-black/5
+
+                      bg-white/95
+
+                      text-xl
+                      text-black
+
+                      shadow-md
+
+                      transition-all
+                      duration-150
+
+                      hover:scale-105
+                      hover:bg-white
+
+                      active:scale-95
+
+                      disabled:
+                      pointer-events-none
+
+                      disabled:
+                      opacity-0
+                    "
+                  >
+                    ‹
+                  </button>
 
 
                   {/* NEXT */}
 
-                  {canNext && (
-                    <button
-                      type="button"
-                      onClick={
-                        () =>
-                          scrollByAmount(
-                            1
-                          )
-                      }
-                      aria-label="Siguiente"
-                      className="
-                        absolute
-                        right-0
-                        top-1/2
-                        z-20
+                  <button
+                    type="button"
+                    onClick={() =>
+                      scrollByAmount(1)
+                    }
+                    disabled={
+                      !canNext
+                    }
+                    aria-label="Siguiente"
+                    className="
+                      absolute
+                      right-1
+                      top-1/2
+                      z-30
 
-                        flex
-                        h-8
-                        w-8
-                        -translate-y-1/2
-                        items-center
-                        justify-center
+                      flex
+                      h-8
+                      w-8
 
-                        rounded-full
+                      -translate-y-1/2
 
-                        border
-                        border-black/5
+                      items-center
+                      justify-center
 
-                        bg-white/95
+                      rounded-full
 
-                        text-xl
-                        text-black
+                      border
+                      border-black/5
 
-                        shadow-md
+                      bg-white/95
 
-                        transition
-                        duration-150
+                      text-xl
+                      text-black
 
-                        hover:scale-105
-                        hover:bg-white
+                      shadow-md
 
-                        active:scale-95
-                      "
-                    >
-                      ›
-                    </button>
-                  )}
+                      transition-all
+                      duration-150
+
+                      hover:scale-105
+                      hover:bg-white
+
+                      active:scale-95
+
+                      disabled:
+                      pointer-events-none
+
+                      disabled:
+                      opacity-0
+                    "
+                  >
+                    ›
+                  </button>
 
 
                   {/* TRACK */}
@@ -1222,17 +1209,32 @@ function TopicCard({
                       updateButtons
                     }
                     className="
+                      relative
+                      z-20
+
                       overflow-x-auto
+
+                      px-10
+                      py-3
+
                       scroll-smooth
 
-                      px-8
-                      py-2
+                      snap-x
+                      snap-mandatory
 
-                      [&::-webkit-scrollbar]:hidden
+                      overscroll-x-contain
+
+                      touch-pan-x
+
+                      [&::-webkit-scrollbar]:
+                      hidden
                     "
                     style={{
                       scrollbarWidth:
                         "none",
+
+                      WebkitOverflowScrolling:
+                        "touch",
                     }}
                   >
 
@@ -1241,9 +1243,10 @@ function TopicCard({
                         flex
                         min-w-max
                         items-center
-                        gap-2.5
+                        gap-3
                       "
                     >
+
                       {relatedItems.map(
                         (
                           item,
@@ -1267,8 +1270,10 @@ function TopicCard({
                               }
                               className="
                                 shrink-0
+                                snap-start
                               "
                             >
+
                               <motion.button
                                 type="button"
                                 onClick={() =>
@@ -1281,6 +1286,8 @@ function TopicCard({
                                     ? undefined
                                     : {
                                         y: -2,
+                                        scale:
+                                          1.025,
                                       }
                                 }
                                 whileTap={{
@@ -1289,7 +1296,7 @@ function TopicCard({
                                 }}
                                 transition={{
                                   duration:
-                                    0.14,
+                                    0.12,
 
                                   ease:
                                     "easeOut",
@@ -1306,11 +1313,10 @@ function TopicCard({
                                   relative
 
                                   grid
-                                  h-[70px]
-                                  w-[70px]
-                                  place-items-center
+                                  h-[76px]
+                                  w-[76px]
 
-                                  overflow-visible
+                                  place-items-center
 
                                   rounded-2xl
 
@@ -1328,85 +1334,114 @@ function TopicCard({
                                 "
                               >
 
+                                {/* IMAGE */}
+
                                 {item?.img ? (
-                                  <img
-                                    src={
-                                      item.img
-                                    }
-                                    alt={
-                                      item?.name ||
-                                      ""
-                                    }
-                                    className="
-                                      max-h-[75%]
-                                      max-w-[75%]
+                                  <>
+                                    <img
+                                      src={
+                                        item.img
+                                      }
+                                      alt={
+                                        item?.name ||
+                                        ""
+                                      }
+                                      className="
+                                        max-h-[74%]
+                                        max-w-[74%]
 
-                                      rounded-sm
+                                        rounded-sm
 
-                                      object-contain
-                                    "
-                                    loading="lazy"
-                                    draggable="false"
-                                    onError={
-                                      (
-                                        event
-                                      ) => {
-
-                                        event.currentTarget.style.display =
-                                          "none";
-
-                                        const fallback =
+                                        object-contain
+                                      "
+                                      loading="lazy"
+                                      draggable="false"
+                                      onError={
+                                        (
                                           event
-                                            .currentTarget
-                                            .nextElementSibling;
+                                        ) => {
+                                          event.currentTarget.style.display =
+                                            "none";
 
-                                        if (
-                                          fallback
-                                        ) {
-                                          fallback.style.display =
-                                            "grid";
+                                          const fallback =
+                                            event
+                                              .currentTarget
+                                              .nextElementSibling;
+
+                                          if (
+                                            fallback
+                                          ) {
+                                            fallback.style.display =
+                                              "grid";
+                                          }
                                         }
                                       }
-                                    }
-                                  />
-                                ) : null}
+                                    />
 
+                                    <span
+                                      style={{
+                                        display:
+                                          "none",
+                                      }}
+                                      className="
+                                        h-10
+                                        w-10
 
-                                {/* FALLBACK */}
+                                        place-items-center
 
-                                <span
-                                  style={{
-                                    display:
-                                      item?.img
-                                        ? "none"
-                                        : "grid",
-                                  }}
-                                  className="
-                                    h-10
-                                    w-10
-                                    place-items-center
+                                        rounded-full
 
-                                    rounded-full
+                                        bg-[#2563EB]
 
-                                    bg-[#2563EB]
+                                        text-sm
+                                        font-semibold
+                                        text-white
 
-                                    text-sm
-                                    font-semibold
-                                    text-white
+                                        !font-[Montserrat]
+                                      "
+                                    >
+                                      {(
+                                        item?.initial ||
+                                        item?.name ||
+                                        "T"
+                                      )
+                                        .charAt(
+                                          0
+                                        )
+                                        .toUpperCase()}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span
+                                    className="
+                                      grid
+                                      h-10
+                                      w-10
 
-                                    !font-[Montserrat]
-                                  "
-                                >
-                                  {(
-                                    item?.initial ||
-                                    item?.name ||
-                                    "T"
-                                  )
-                                    .charAt(
-                                      0
+                                      place-items-center
+
+                                      rounded-full
+
+                                      bg-[#2563EB]
+
+                                      text-sm
+                                      font-semibold
+                                      text-white
+
+                                      !font-[Montserrat]
+                                    "
+                                  >
+                                    {(
+                                      item?.initial ||
+                                      item?.name ||
+                                      "T"
                                     )
-                                    .toUpperCase()}
-                                </span>
+                                      .charAt(
+                                        0
+                                      )
+                                      .toUpperCase()}
+                                  </span>
+                                )}
 
 
                                 {/* TOOLTIP */}
@@ -1416,12 +1451,13 @@ function TopicCard({
                                     pointer-events-none
 
                                     absolute
-                                    bottom-[calc(100%+6px)]
+
+                                    bottom-[calc(100%+7px)]
                                     left-1/2
-                                    z-30
+                                    z-40
 
                                     w-max
-                                    max-w-[130px]
+                                    max-w-[145px]
 
                                     -translate-x-1/2
                                     translate-y-1
@@ -1459,10 +1495,12 @@ function TopicCard({
                                 </span>
 
                               </motion.button>
+
                             </li>
                           );
                         }
                       )}
+
                     </ul>
 
                   </div>
@@ -1470,7 +1508,7 @@ function TopicCard({
                 </div>
               )}
 
-            </motion.div>
+            </div>
 
           </motion.div>
         )}
