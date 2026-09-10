@@ -43,7 +43,7 @@ function BlogPage() {
                 type: "Guía",
                 color: "bg-[#5CC781]",
                 title: "Cómo encontrar trabajo con poca experiencia",
-                link: "https://Info.top.education/como-encontrar-trabajo-con-poca-experiencia-lp",
+                link: "https://info.top.education/landing-como-encontrar-trabajo-con-poca-experiencia",
                 image:
                   "/assets/content/resources/Guia-Como-encontrar trabajo-con-poca-experiencia.webp",
               },
@@ -51,7 +51,7 @@ function BlogPage() {
                 type: "eBook",
                 color: "bg-[#1941cf]",
                 title: "Construye tu marca personal con éxito",
-                link: "https://info.top.education/construye-tu-marca-personal-con-exito",
+                link: "https://info.top.education/landing-construye-tu-marca-personal-con-exito",
                 image:
                   "/assets/content/resources/eBook-Construye-tu-marca-personal-con-exito.webp",
               },
@@ -59,7 +59,7 @@ function BlogPage() {
                 type: "eBook",
                 color: "bg-[#1941cf]",
                 title: "Crea tu ruta de aprendizaje virtual personalizada",
-                link: "https://info.top.education/crea-tu-ruta-de-aprendizaje-virtual-personalizada-lp",
+                link: "https://info.top.education/landing-crea-tu-ruta-de-aprendizaje-virtual-personalizada",
                 image:
                   "/assets/content/resources/eBook-Crea-tu-ruta-de-aprendizaje-virtual-personalizada.webp",
               },
@@ -67,7 +67,7 @@ function BlogPage() {
                 type: "eBook",
                 color: "bg-[#1941cf]",
                 title: "Estrategias para aprender online",
-                link: "https://info.top.education/estrategias-para-aprender-online-lp",
+                link: "https://info.top.education/landing-estrategias-para-aprender-online",
                 image:
                   "/assets/content/resources/eBook-Estrategias-para-aprender-online.webp",
               },
@@ -75,7 +75,7 @@ function BlogPage() {
                 type: "Paper",
                 color: "bg-[#034694]",
                 title: "Capacitación empresarial del futuro",
-                link: "https://info.top.education/capacitacion-empresarial-para-el-futuro",
+                link: "https://info.top.education/landing-capacitacion-empresarial-para-el-futuro",
                 image:
                   "/assets/content/resources/eBook-Capacitacion-empresarial-del futuro.webp",
               },
