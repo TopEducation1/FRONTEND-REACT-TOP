@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+
 import {
   motion,
   AnimatePresence,
@@ -6,22 +7,36 @@ import {
   useTransform,
   useSpring,
 } from "framer-motion";
+
 import { useNavigate } from "react-router-dom";
+
 
 const GRID_COL_CLASSES =
   "relative overflow-visible grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 lg:gap-3";
 
-export default function TopicGrid({ topics = [], columns = 5 }) {
+
+export default function TopicGrid({
+  topics = [],
+  columns = 5,
+}) {
   const navigate = useNavigate();
   const containerRef = useRef(null);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "end start"],
+    offset: [
+      "start end",
+      "end start",
+    ],
   });
 
   const [colCount, setColCount] = useState(5);
   const [touch, setTouch] = useState(false);
+
+
+  // ============================================================
+  // RESPONSIVE
+  // ============================================================
 
   useEffect(() => {
     const computeCols = () => {
@@ -47,7 +62,9 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
       setColCount(base);
     };
 
+
     computeCols();
+
 
     setTouch(
       typeof window !== "undefined" &&
@@ -57,10 +74,12 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
         )
     );
 
+
     window.addEventListener(
       "resize",
       computeCols
     );
+
 
     return () =>
       window.removeEventListener(
@@ -68,6 +87,11 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
         computeCols
       );
   }, [columns]);
+
+
+  // ============================================================
+  // NAVIGATION
+  // ============================================================
 
   function navigateWithTransition(path) {
     if (document.startViewTransition) {
@@ -79,26 +103,17 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
     }
   }
 
+
   const handleItemMenuClick = (
     filtersObject
   ) => {
     const queryParams =
       new URLSearchParams();
 
-    queryParams.set(
-      "idioma",
-      "es"
-    );
+    queryParams.set("idioma", "es");
+    queryParams.set("page", "1");
+    queryParams.set("page_size", "16");
 
-    queryParams.set(
-      "page",
-      "1"
-    );
-
-    queryParams.set(
-      "page_size",
-      "16"
-    );
 
     Object.entries(
       filtersObject || {}
@@ -119,10 +134,16 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
       }
     );
 
+
     navigateWithTransition(
       `/explora/filter?idioma=en&${queryParams.toString()}`
     );
   };
+
+
+  // ============================================================
+  // GRID
+  // ============================================================
 
   const colClass = useMemo(() => {
     if (
@@ -131,6 +152,7 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
     ) {
       return GRID_COL_CLASSES;
     }
+
 
     const map = {
       2:
@@ -146,11 +168,13 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
         "relative overflow-visible grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3",
     };
 
+
     return (
       map[columns] ||
       GRID_COL_CLASSES
     );
   }, [columns]);
+
 
   return (
     <div
@@ -185,6 +209,10 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
 }
 
 
+// ============================================================
+// CARD
+// ============================================================
+
 function TopicCard({
   topic,
   idx,
@@ -203,19 +231,50 @@ function TopicCard({
   const trackRef = useRef(null);
 
 
-  // =========================================================
-  // DATOS DEL SLIDER
-  // NO MODIFICAR:
-  // ESTA ES LA LÓGICA ORIGINAL QUE YA FUNCIONABA.
-  // =========================================================
+  // ============================================================
+  // RELATED ITEMS
+  //
+  // IMPORTANTE:
+  // no usar directamente:
+  //
+  // topic.items || topic.universities
+  //
+  // porque [] es truthy.
+  // ============================================================
 
-  const relatedItems = useMemo(
-    () =>
-      topic?.items ||
-      topic?.universities ||
-      [],
-    [topic]
-  );
+  const relatedItems = useMemo(() => {
+
+    if (
+      Array.isArray(topic?.items) &&
+      topic.items.length > 0
+    ) {
+      return topic.items;
+    }
+
+
+    if (
+      Array.isArray(topic?.universities) &&
+      topic.universities.length > 0
+    ) {
+      return topic.universities;
+    }
+
+
+    if (
+      Array.isArray(topic?.companies) &&
+      topic.companies.length > 0
+    ) {
+      return topic.companies;
+    }
+
+
+    return [];
+
+  }, [
+    topic?.items,
+    topic?.universities,
+    topic?.companies,
+  ]);
 
 
   const isElevated =
@@ -223,42 +282,44 @@ function TopicCard({
       ? isActive
       : isHovered;
 
+
   const showOverlay =
     isElevated;
 
 
-  // =========================================================
+  // ============================================================
   // PARALLAX
-  // Mismo efecto, recorrido menor.
-  // =========================================================
+  // ============================================================
 
   const evenColumn =
     colCount > 0
       ? (idx % colCount) % 2 === 0
       : true;
 
+
   const yRaw = useTransform(
     scrollYProgress,
     [0, 1],
+
     evenColumn
-      ? [6, -14]
-      : [-14, 6]
+      ? [5, -12]
+      : [-12, 5]
   );
+
 
   const y = useSpring(
     yRaw,
     {
-      stiffness: 120,
-      damping: 26,
-      mass: 0.15,
+      stiffness: 130,
+      damping: 28,
+      mass: 0.12,
     }
   );
 
 
-  // =========================================================
-  // CONTROLES DEL SLIDER
-  // LÓGICA ORIGINAL.
-  // =========================================================
+  // ============================================================
+  // SLIDER
+  // ============================================================
 
   const [canPrev, setCanPrev] =
     useState(false);
@@ -266,19 +327,25 @@ function TopicCard({
   const [canNext, setCanNext] =
     useState(true);
 
+
   const updateButtons = () => {
     const el =
       trackRef.current;
 
-    if (!el) return;
+    if (!el) {
+      return;
+    }
+
 
     const atStart =
       el.scrollLeft <= 8;
+
 
     const atEnd =
       el.scrollLeft +
         el.clientWidth >=
       el.scrollWidth - 8;
+
 
     setCanPrev(
       !atStart
@@ -289,9 +356,55 @@ function TopicCard({
     );
   };
 
+
   useEffect(() => {
     updateButtons();
   }, [
+    relatedItems.length,
+  ]);
+
+
+  /*
+   * El slider no existe todavía cuando
+   * el overlay está cerrado.
+   *
+   * Por eso recalculamos al abrir.
+   */
+  useEffect(() => {
+    if (!showOverlay) {
+      return;
+    }
+
+
+    const raf1 =
+      requestAnimationFrame(() => {
+
+        const raf2 =
+          requestAnimationFrame(() => {
+            updateButtons();
+          });
+
+
+        trackRef.current.__sliderRaf =
+          raf2;
+      });
+
+
+    return () => {
+      cancelAnimationFrame(
+        raf1
+      );
+
+      if (
+        trackRef.current?.__sliderRaf
+      ) {
+        cancelAnimationFrame(
+          trackRef.current.__sliderRaf
+        );
+      }
+    };
+  }, [
+    showOverlay,
     relatedItems.length,
   ]);
 
@@ -302,17 +415,23 @@ function TopicCard({
     const el =
       trackRef.current;
 
-    if (!el) return;
+
+    if (!el) {
+      return;
+    }
+
 
     const amount =
       Math.round(
         el.clientWidth
       ) * dir;
 
+
     el.scrollBy({
       left: amount,
       behavior: "smooth",
     });
+
 
     setTimeout(
       updateButtons,
@@ -321,10 +440,9 @@ function TopicCard({
   };
 
 
-  // =========================================================
-  // TOPIC CLICK
-  // ORIGINAL
-  // =========================================================
+  // ============================================================
+  // MAIN CLICK
+  // ============================================================
 
   const handleTopicClick =
     () => {
@@ -336,6 +454,7 @@ function TopicCard({
         return;
       }
 
+
       if (topic?.filter) {
         onFilter(
           topic.filter
@@ -343,6 +462,7 @@ function TopicCard({
 
         return;
       }
+
 
       if (topic?.id) {
         onFilter({
@@ -353,13 +473,13 @@ function TopicCard({
     };
 
 
-  // =========================================================
+  // ============================================================
   // RELATED CLICK
-  // ORIGINAL
-  // =========================================================
+  // ============================================================
 
   const handleRelatedClick =
     (item) => {
+
       if (
         item?.type ===
           "certification" &&
@@ -372,6 +492,7 @@ function TopicCard({
         return;
       }
 
+
       if (item?.filter) {
         onFilter(
           item.filter
@@ -379,6 +500,7 @@ function TopicCard({
 
         return;
       }
+
 
       if (
         item?.type ===
@@ -396,6 +518,7 @@ function TopicCard({
         return;
       }
 
+
       if (
         item?.type ===
           "company" &&
@@ -412,14 +535,14 @@ function TopicCard({
     };
 
 
-  // =========================================================
-  // ENTRADA DE CARD
-  // =========================================================
+  // ============================================================
+  // CARD ENTRY
+  // ============================================================
 
   const cardVariants = {
     initial: {
       opacity: 0,
-      y: 12,
+      y: 10,
     },
 
     in: {
@@ -429,18 +552,19 @@ function TopicCard({
   };
 
 
-  // =========================================================
+  // ============================================================
   // OVERLAY
   //
-  // ÚNICO CAMBIO IMPORTANTE:
-  // quitamos el spring lento.
-  // =========================================================
+  // tween rápido en lugar del spring original.
+  // ============================================================
 
   const overlaySlide = {
+
     hidden: {
       y: "100%",
-      opacity: 0.9,
+      opacity: 0,
     },
+
 
     visible: {
       y: 0,
@@ -448,7 +572,9 @@ function TopicCard({
 
       transition: {
         type: "tween",
+
         duration: 0.16,
+
         ease: [
           0.22,
           1,
@@ -458,22 +584,27 @@ function TopicCard({
       },
     },
 
+
     exit: {
       y: "100%",
       opacity: 0,
 
       transition: {
         type: "tween",
+
         duration: 0.09,
-        ease: "easeIn",
+
+        ease:
+          "easeIn",
       },
     },
+
   };
 
 
-  // =========================================================
-  // STAGGER
-  // =========================================================
+  // ============================================================
+  // INTERNAL CONTENT
+  // ============================================================
 
   const contentStagger = {
     hidden: {},
@@ -481,20 +612,22 @@ function TopicCard({
     visible: {
       transition: {
         staggerChildren:
-          0.02,
+          0.015,
 
         delayChildren:
-          0.02,
+          0.01,
       },
     },
   };
 
 
   const itemUp = {
+
     hidden: {
       opacity: 0,
-      y: 12,
+      y: 8,
     },
+
 
     visible: {
       opacity: 1,
@@ -502,20 +635,19 @@ function TopicCard({
 
       transition: {
         duration:
-          0.13,
+          0.11,
 
         ease:
           "easeOut",
       },
     },
+
   };
 
 
-  // =========================================================
+  // ============================================================
   // IMAGE
-  //
-  // ORIGINAL.
-  // =========================================================
+  // ============================================================
 
   const imageUrl =
     topic.img
@@ -526,21 +658,18 @@ function TopicCard({
       : null;
 
 
+  // ============================================================
+  // RENDER
+  // ============================================================
+
   return (
     <motion.article
 
       /*
-       * IMPORTANTE:
+       * NO layout.
        *
-       * Se quitó únicamente `layout`.
-       *
-       * Era una de las principales causas del conflicto,
-       * porque Framer Motion recalculaba transforms
-       * mientras la card también tenía:
-       *
-       * - parallax
-       * - hover scale
-       * - overlay
+       * Era una de las animaciones que
+       * interfería con parallax + hover.
        */
 
       variants={
@@ -552,14 +681,20 @@ function TopicCard({
       animate="in"
 
       transition={{
-        duration: 0.22,
-        ease: "easeOut",
+        duration:
+          0.2,
+
+        ease:
+          "easeOut",
       }}
 
       className="
         group
+
         relative
+
         rounded-[28px]
+
         bg-white
 
         border
@@ -571,7 +706,9 @@ function TopicCard({
         shadow-[0_18px_60px_rgba(0,0,0,0.08)]
 
         transition-shadow
+
         duration-150
+
         ease-out
       "
 
@@ -580,32 +717,44 @@ function TopicCard({
 
         zIndex:
           isElevated
-            ? 50
+            ? 100
             : 1,
 
         transformStyle:
           "preserve-3d",
       }}
 
-      onHoverStart={() =>
-        !isTouch &&
-        setIsHovered(true)
-      }
+      onHoverStart={() => {
+        if (!isTouch) {
+          setIsHovered(
+            true
+          );
+        }
+      }}
 
-      onHoverEnd={() =>
-        !isTouch &&
-        setIsHovered(false)
-      }
+      onHoverEnd={() => {
+        if (!isTouch) {
+          setIsHovered(
+            false
+          );
+        }
+      }}
 
-      onFocus={() =>
-        !isTouch &&
-        setIsHovered(true)
-      }
+      onFocus={() => {
+        if (!isTouch) {
+          setIsHovered(
+            true
+          );
+        }
+      }}
 
-      onBlur={() =>
-        !isTouch &&
-        setIsHovered(false)
-      }
+      onBlur={() => {
+        if (!isTouch) {
+          setIsHovered(
+            false
+          );
+        }
+      }}
 
       whileHover={
         !isTouch
@@ -617,9 +766,9 @@ function TopicCard({
       }
     >
 
-      {/* ==================================================== */}
-      {/* CONTENIDO PRINCIPAL */}
-      {/* ==================================================== */}
+      {/* ====================================================== */}
+      {/* CARD */}
+      {/* ====================================================== */}
 
       <button
         type="button"
@@ -633,12 +782,15 @@ function TopicCard({
           handleTopicClick
         }
 
-        aria-label={`Abrir ${topic.name}`}
+        aria-label={`Abrir ${
+          topic.name
+        }`}
       >
 
         <div
           className="
             relative
+
             w-full
 
             min-h-[150px]
@@ -654,13 +806,16 @@ function TopicCard({
             pb-5
 
             transition-transform
+
             duration-150
+
             ease-out
 
             group-hover:
             scale-[1.01]
 
             will-change-transform
+
             transform-gpu
           "
         >
@@ -675,6 +830,7 @@ function TopicCard({
                 rounded-2xl
 
                 flex
+
                 items-center
                 justify-center
 
@@ -698,6 +854,7 @@ function TopicCard({
                   rounded-full
 
                   flex
+
                   justify-center
                   items-center
                 "
@@ -721,6 +878,7 @@ function TopicCard({
                   className={`
                     w-10
                     h-10
+
                     object-contain
 
                     ${
@@ -757,6 +915,7 @@ function TopicCard({
                 rounded-2xl
 
                 flex
+
                 items-center
                 justify-center
 
@@ -780,6 +939,7 @@ function TopicCard({
                   rounded-full
 
                   flex
+
                   justify-center
                   items-center
 
@@ -815,9 +975,9 @@ function TopicCard({
       </button>
 
 
-      {/* ==================================================== */}
-      {/* NOMBRE */}
-      {/* ==================================================== */}
+      {/* ====================================================== */}
+      {/* TITLE */}
+      {/* ====================================================== */}
 
       <div
         className="
@@ -845,15 +1005,17 @@ function TopicCard({
             px-4
           "
         >
+
           {topic.name}
+
         </h3>
 
       </div>
 
 
-      {/* ==================================================== */}
+      {/* ====================================================== */}
       {/* OVERLAY */}
-      {/* ==================================================== */}
+      {/* ====================================================== */}
 
       <AnimatePresence
         initial={false}
@@ -870,7 +1032,7 @@ function TopicCard({
               inset-x-0
               bottom-0
 
-              z-[60]
+              z-[110]
 
               h-full
 
@@ -903,6 +1065,7 @@ function TopicCard({
 
               className="
                 relative
+
                 w-full
 
                 rounded-t-[28px]
@@ -917,7 +1080,9 @@ function TopicCard({
                 shadow-[0_-8px_30px_-10px_rgba(0,0,0,0.25)]
 
                 pt-4
+
                 pb-20
+
                 px-3
 
                 flex
@@ -926,9 +1091,12 @@ function TopicCard({
               "
             >
 
+              {/* HANDLE */}
+
               <div
                 className="
                   mb-2
+
                   h-1.5
                   w-12
 
@@ -938,6 +1106,8 @@ function TopicCard({
                 "
               />
 
+
+              {/* TITLE */}
 
               <motion.h4
                 variants={
@@ -966,9 +1136,13 @@ function TopicCard({
                   handleTopicClick
                 }
               >
+
                 {topic.name}
+
               </motion.h4>
 
+
+              {/* DESCRIPTION */}
 
               {topic.description && (
 
@@ -991,18 +1165,18 @@ function TopicCard({
                     max-w-[88%]
                   "
                 >
+
                   {
                     topic.description
                   }
+
                 </motion.p>
 
               )}
 
 
               {/* ================================================= */}
-              {/* SLIDER
-                  ESTE BLOQUE SE CONSERVA CON LA ESTRUCTURA ORIGINAL
-              */}
+              {/* SLIDER */}
               {/* ================================================= */}
 
               <motion.div
@@ -1020,6 +1194,7 @@ function TopicCard({
                   -translate-x-1/2
 
                   w-[108%]
+
                   md:w-[150%]
 
                   bottom-0
@@ -1032,7 +1207,7 @@ function TopicCard({
                   "
                 >
 
-                  {/* PREV */}
+                  {/* LEFT */}
 
                   <button
                     type="button"
@@ -1079,6 +1254,7 @@ function TopicCard({
                       leading-[1em]
 
                       hover:bg-white
+
                       hover:text-black
 
                       disabled:
@@ -1090,6 +1266,7 @@ function TopicCard({
 
                     aria-label="Anterior"
                   >
+
                     <span
                       className="
                         leading-0
@@ -1099,10 +1276,11 @@ function TopicCard({
                     >
                       ‹
                     </span>
+
                   </button>
 
 
-                  {/* NEXT */}
+                  {/* RIGHT */}
 
                   <button
                     type="button"
@@ -1149,6 +1327,7 @@ function TopicCard({
                       leading-[1em]
 
                       hover:bg-white
+
                       hover:text-black
 
                       disabled:
@@ -1160,6 +1339,7 @@ function TopicCard({
 
                     aria-label="Siguiente"
                   >
+
                     <span
                       className="
                         leading-0
@@ -1169,10 +1349,13 @@ function TopicCard({
                     >
                       ›
                     </span>
+
                   </button>
 
 
+                  {/* =============================================== */}
                   {/* TRACK */}
+                  {/* =============================================== */}
 
                   <div
                     ref={
@@ -1237,6 +1420,7 @@ function TopicCard({
                               u
                             }`;
 
+
                           return (
 
                             <li
@@ -1246,19 +1430,15 @@ function TopicCard({
 
                               className="
                                 snap-start
+
                                 shrink-0
                               "
                             >
 
                               <motion.button
-
-                                /*
-                                 * SOLAMENTE se reduce
-                                 * la intensidad del hover.
-                                 */
-
                                 whileHover={{
                                   y: -3,
+
                                   scale:
                                     1.02,
                                 }}
@@ -1288,6 +1468,7 @@ function TopicCard({
                                   relative
 
                                   grid
+
                                   place-items-center
 
                                   rounded-2xl
@@ -1319,6 +1500,8 @@ function TopicCard({
                                 }
                               >
 
+                                {/* IMAGE */}
+
                                 {item?.img ? (
 
                                   <img
@@ -1332,6 +1515,7 @@ function TopicCard({
 
                                     className="
                                       max-w-[80%]
+
                                       max-h-[80%]
 
                                       rounded-sm
@@ -1347,10 +1531,12 @@ function TopicCard({
                                         e.currentTarget.style.display =
                                           "none";
 
+
                                         const fallback =
                                           e
                                             .currentTarget
                                             .nextElementSibling;
+
 
                                         if (
                                           fallback
@@ -1364,6 +1550,8 @@ function TopicCard({
 
                                 ) : null}
 
+
+                                {/* FALLBACK */}
 
                                 <span
                                   style={{
@@ -1398,13 +1586,13 @@ function TopicCard({
                                     item?.name ||
                                     "T"
                                   )
-                                    .charAt(
-                                      0
-                                    )
+                                    .charAt(0)
                                     .toUpperCase()}
 
                                 </span>
 
+
+                                {/* LABEL */}
 
                                 <span
                                   className="
@@ -1452,9 +1640,11 @@ function TopicCard({
                                     scale-100
                                   "
                                 >
+
                                   {
                                     item?.name
                                   }
+
                                 </span>
 
                               </motion.button>
