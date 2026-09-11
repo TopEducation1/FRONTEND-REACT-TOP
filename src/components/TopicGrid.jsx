@@ -20,14 +20,12 @@ export default function TopicGrid({
   columns = 5,
 }) {
   const navigate = useNavigate();
+
   const containerRef = useRef(null);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: [
-      "start end",
-      "end start",
-    ],
+    offset: ["start end", "end start"],
   });
 
   const [colCount, setColCount] = useState(5);
@@ -48,13 +46,25 @@ export default function TopicGrid({
       let base = 1;
 
       if (w >= 1280) {
-        base = Math.min(columns || 5, 5);
+        base = Math.min(
+          columns || 5,
+          5
+        );
       } else if (w >= 1024) {
-        base = Math.min(columns || 5, 4);
+        base = Math.min(
+          columns || 5,
+          4
+        );
       } else if (w >= 768) {
-        base = Math.min(columns || 5, 3);
+        base = Math.min(
+          columns || 5,
+          3
+        );
       } else if (w >= 640) {
-        base = Math.min(columns || 5, 2);
+        base = Math.min(
+          columns || 5,
+          2
+        );
       } else {
         base = 1;
       }
@@ -81,20 +91,28 @@ export default function TopicGrid({
     );
 
 
-    return () =>
+    return () => {
       window.removeEventListener(
         "resize",
         computeCols
       );
+    };
   }, [columns]);
 
 
   // ============================================================
-  // NAVIGATION
+  // NAVEGACIÓN
   // ============================================================
 
   function navigateWithTransition(path) {
-    if (document.startViewTransition) {
+    if (!path) {
+      return;
+    }
+
+    if (
+      typeof document !== "undefined" &&
+      document.startViewTransition
+    ) {
       document.startViewTransition(
         () => navigate(path)
       );
@@ -110,9 +128,20 @@ export default function TopicGrid({
     const queryParams =
       new URLSearchParams();
 
-    queryParams.set("idioma", "es");
-    queryParams.set("page", "1");
-    queryParams.set("page_size", "16");
+    queryParams.set(
+      "idioma",
+      "es"
+    );
+
+    queryParams.set(
+      "page",
+      "1"
+    );
+
+    queryParams.set(
+      "page_size",
+      "16"
+    );
 
 
     Object.entries(
@@ -142,39 +171,44 @@ export default function TopicGrid({
 
 
   // ============================================================
-  // GRID
+  // COLUMNAS
   // ============================================================
 
-  const colClass = useMemo(() => {
-    if (
-      !columns ||
-      columns === 5
-    ) {
-      return GRID_COL_CLASSES;
-    }
+  const colClass =
+    useMemo(() => {
+      if (
+        !columns ||
+        columns === 5
+      ) {
+        return GRID_COL_CLASSES;
+      }
 
 
-    const map = {
-      2:
-        "relative overflow-visible grid grid-cols-1 sm:grid-cols-2 gap-3",
+      const map = {
+        2:
+          "relative overflow-visible grid grid-cols-1 sm:grid-cols-2 gap-3",
 
-      3:
-        "relative overflow-visible grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3",
+        3:
+          "relative overflow-visible grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3",
 
-      4:
-        "relative overflow-visible grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3",
+        4:
+          "relative overflow-visible grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3",
 
-      6:
-        "relative overflow-visible grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3",
-    };
+        6:
+          "relative overflow-visible grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3",
+      };
 
 
-    return (
-      map[columns] ||
-      GRID_COL_CLASSES
-    );
-  }, [columns]);
+      return (
+        map[columns] ||
+        GRID_COL_CLASSES
+      );
+    }, [columns]);
 
+
+  // ============================================================
+  // RENDER
+  // ============================================================
 
   return (
     <div
@@ -210,7 +244,7 @@ export default function TopicGrid({
 
 
 // ============================================================
-// CARD
+// TOPIC CARD
 // ============================================================
 
 function TopicCard({
@@ -228,53 +262,21 @@ function TopicCard({
   const [isHovered, setIsHovered] =
     useState(false);
 
+
   const trackRef = useRef(null);
 
 
   // ============================================================
   // RELATED ITEMS
-  //
-  // IMPORTANTE:
-  // no usar directamente:
-  //
-  // topic.items || topic.universities
-  //
-  // porque [] es truthy.
   // ============================================================
 
-  const relatedItems = useMemo(() => {
-
-    if (
-      Array.isArray(topic?.items) &&
-      topic.items.length > 0
-    ) {
-      return topic.items;
-    }
-
-
-    if (
-      Array.isArray(topic?.universities) &&
-      topic.universities.length > 0
-    ) {
-      return topic.universities;
-    }
-
-
-    if (
-      Array.isArray(topic?.companies) &&
-      topic.companies.length > 0
-    ) {
-      return topic.companies;
-    }
-
-
-    return [];
-
-  }, [
-    topic?.items,
-    topic?.universities,
-    topic?.companies,
-  ]);
+  const relatedItems = useMemo(
+    () =>
+      topic?.items ||
+      topic?.universities ||
+      [],
+    [topic]
+  );
 
 
   const isElevated =
@@ -289,6 +291,8 @@ function TopicCard({
 
   // ============================================================
   // PARALLAX
+  //
+  // Mismo concepto original, pero menos agresivo.
   // ============================================================
 
   const evenColumn =
@@ -310,15 +314,15 @@ function TopicCard({
   const y = useSpring(
     yRaw,
     {
-      stiffness: 130,
-      damping: 28,
-      mass: 0.12,
+      stiffness: 120,
+      damping: 26,
+      mass: 0.15,
     }
   );
 
 
   // ============================================================
-  // SLIDER
+  // SLIDER CONTROLS
   // ============================================================
 
   const [canPrev, setCanPrev] =
@@ -365,10 +369,10 @@ function TopicCard({
 
 
   /*
-   * El slider no existe todavía cuando
-   * el overlay está cerrado.
+   * Cuando el overlay aparece,
+   * el track ya tiene dimensiones reales.
    *
-   * Por eso recalculamos al abrir.
+   * Recalculamos flechas.
    */
   useEffect(() => {
     if (!showOverlay) {
@@ -376,32 +380,18 @@ function TopicCard({
     }
 
 
-    const raf1 =
-      requestAnimationFrame(() => {
-
-        const raf2 =
-          requestAnimationFrame(() => {
-            updateButtons();
-          });
-
-
-        trackRef.current.__sliderRaf =
-          raf2;
-      });
+    const frame =
+      requestAnimationFrame(
+        () => {
+          updateButtons();
+        }
+      );
 
 
     return () => {
       cancelAnimationFrame(
-        raf1
+        frame
       );
-
-      if (
-        trackRef.current?.__sliderRaf
-      ) {
-        cancelAnimationFrame(
-          trackRef.current.__sliderRaf
-        );
-      }
     };
   }, [
     showOverlay,
@@ -441,7 +431,7 @@ function TopicCard({
 
 
   // ============================================================
-  // MAIN CLICK
+  // CLICK PRINCIPAL
   // ============================================================
 
   const handleTopicClick =
@@ -474,7 +464,7 @@ function TopicCard({
 
 
   // ============================================================
-  // RELATED CLICK
+  // CLICK RELATED
   // ============================================================
 
   const handleRelatedClick =
@@ -536,13 +526,13 @@ function TopicCard({
 
 
   // ============================================================
-  // CARD ENTRY
+  // ANIMACIÓN CARD
   // ============================================================
 
   const cardVariants = {
     initial: {
       opacity: 0,
-      y: 10,
+      y: 12,
     },
 
     in: {
@@ -553,13 +543,12 @@ function TopicCard({
 
 
   // ============================================================
-  // OVERLAY
+  // ANIMACIÓN OVERLAY
   //
-  // tween rápido en lugar del spring original.
+  // Cambiamos spring por tween corto.
   // ============================================================
 
   const overlaySlide = {
-
     hidden: {
       y: "100%",
       opacity: 0,
@@ -572,7 +561,6 @@ function TopicCard({
 
       transition: {
         type: "tween",
-
         duration: 0.16,
 
         ease: [
@@ -591,19 +579,15 @@ function TopicCard({
 
       transition: {
         type: "tween",
-
         duration: 0.09,
-
-        ease:
-          "easeIn",
+        ease: "easeIn",
       },
     },
-
   };
 
 
   // ============================================================
-  // INTERNAL CONTENT
+  // CONTENIDO INTERNO
   // ============================================================
 
   const contentStagger = {
@@ -622,10 +606,9 @@ function TopicCard({
 
 
   const itemUp = {
-
     hidden: {
       opacity: 0,
-      y: 8,
+      y: 10,
     },
 
 
@@ -635,13 +618,12 @@ function TopicCard({
 
       transition: {
         duration:
-          0.11,
+          0.12,
 
         ease:
           "easeOut",
       },
     },
-
   };
 
 
@@ -659,17 +641,19 @@ function TopicCard({
 
 
   // ============================================================
-  // RENDER
+  // RENDER CARD
   // ============================================================
 
   return (
     <motion.article
 
       /*
-       * NO layout.
+       * IMPORTANTE:
        *
-       * Era una de las animaciones que
-       * interfería con parallax + hover.
+       * Se eliminó layout.
+       *
+       * Era una de las causas de conflicto
+       * con transform + parallax + hover.
        */
 
       variants={
@@ -681,11 +665,8 @@ function TopicCard({
       animate="in"
 
       transition={{
-        duration:
-          0.2,
-
-        ease:
-          "easeOut",
+        duration: 0.22,
+        ease: "easeOut",
       }}
 
       className="
@@ -717,7 +698,7 @@ function TopicCard({
 
         zIndex:
           isElevated
-            ? 100
+            ? 50
             : 1,
 
         transformStyle:
@@ -726,33 +707,25 @@ function TopicCard({
 
       onHoverStart={() => {
         if (!isTouch) {
-          setIsHovered(
-            true
-          );
+          setIsHovered(true);
         }
       }}
 
       onHoverEnd={() => {
         if (!isTouch) {
-          setIsHovered(
-            false
-          );
+          setIsHovered(false);
         }
       }}
 
       onFocus={() => {
         if (!isTouch) {
-          setIsHovered(
-            true
-          );
+          setIsHovered(true);
         }
       }}
 
       onBlur={() => {
         if (!isTouch) {
-          setIsHovered(
-            false
-          );
+          setIsHovered(false);
         }
       }}
 
@@ -766,9 +739,9 @@ function TopicCard({
       }
     >
 
-      {/* ====================================================== */}
-      {/* CARD */}
-      {/* ====================================================== */}
+      {/* ==================================================== */}
+      {/* CARD PRINCIPAL */}
+      {/* ==================================================== */}
 
       <button
         type="button"
@@ -975,9 +948,9 @@ function TopicCard({
       </button>
 
 
-      {/* ====================================================== */}
+      {/* ==================================================== */}
       {/* TITLE */}
-      {/* ====================================================== */}
+      {/* ==================================================== */}
 
       <div
         className="
@@ -1013,9 +986,9 @@ function TopicCard({
       </div>
 
 
-      {/* ====================================================== */}
+      {/* ==================================================== */}
       {/* OVERLAY */}
-      {/* ====================================================== */}
+      {/* ==================================================== */}
 
       <AnimatePresence
         initial={false}
@@ -1032,7 +1005,7 @@ function TopicCard({
               inset-x-0
               bottom-0
 
-              z-[110]
+              z-[60]
 
               h-full
 
@@ -1058,10 +1031,26 @@ function TopicCard({
             }}
           >
 
+            {/* ================================================= */}
+            {/* CONTENIDO OVERLAY */}
+            {/* ================================================= */}
+
             <motion.div
               variants={
                 contentStagger
               }
+
+              /*
+               * ESTA ES LA CORRECCIÓN CLAVE.
+               *
+               * Antes los hijos tenían variants
+               * pero el padre no siempre entraba
+               * explícitamente en "visible".
+               */
+
+              initial="hidden"
+
+              animate="visible"
 
               className="
                 relative
@@ -1184,6 +1173,17 @@ function TopicCard({
                   itemUp
                 }
 
+                /*
+                 * También forzamos visible aquí.
+                 *
+                 * Esto evita que se quede en
+                 * opacity:0 por herencia de variants.
+                 */
+
+                initial="hidden"
+
+                animate="visible"
+
                 className="
                   pointer-events-none
 
@@ -1207,7 +1207,7 @@ function TopicCard({
                   "
                 >
 
-                  {/* LEFT */}
+                  {/* PREV */}
 
                   <button
                     type="button"
@@ -1253,6 +1253,9 @@ function TopicCard({
 
                       leading-[1em]
 
+                      transition-colors
+                      duration-100
+
                       hover:bg-white
 
                       hover:text-black
@@ -1280,7 +1283,7 @@ function TopicCard({
                   </button>
 
 
-                  {/* RIGHT */}
+                  {/* NEXT */}
 
                   <button
                     type="button"
@@ -1326,6 +1329,9 @@ function TopicCard({
 
                       leading-[1em]
 
+                      transition-colors
+                      duration-100
+
                       hover:bg-white
 
                       hover:text-black
@@ -1353,9 +1359,9 @@ function TopicCard({
                   </button>
 
 
-                  {/* =============================================== */}
+                  {/* ================================================= */}
                   {/* TRACK */}
-                  {/* =============================================== */}
+                  {/* ================================================= */}
 
                   <div
                     ref={
@@ -1436,6 +1442,7 @@ function TopicCard({
                             >
 
                               <motion.button
+
                                 whileHover={{
                                   y: -3,
 
@@ -1592,7 +1599,7 @@ function TopicCard({
                                 </span>
 
 
-                                {/* LABEL */}
+                                {/* TOOLTIP */}
 
                                 <span
                                   className="
