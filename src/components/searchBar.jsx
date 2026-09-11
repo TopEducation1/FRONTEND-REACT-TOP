@@ -14,7 +14,7 @@ import CertificationsList from "../components/layoutCertifications";
 
 
 const MIN_SEARCH_LENGTH = 2;
-const SEARCH_DEBOUNCE = 350;
+const SEARCH_DEBOUNCE_MS = 350;
 
 
 const SearchBar = ({
@@ -37,63 +37,104 @@ const SearchBar = ({
     setResultsVisible,
   ] = useState(false);
 
-  const [isFixed, setIsFixed] =
-    useState(false);
-
   const [
     hasSearched,
     setHasSearched,
   ] = useState(false);
 
-
   const [debouncedText] =
     useDebounce(
       text,
-      SEARCH_DEBOUNCE
+      SEARCH_DEBOUNCE_MS
     );
 
-
-  const location = useLocation();
+  const location =
+    useLocation();
 
   const requestIdRef =
     useRef(0);
 
 
-  // =========================================================
+  // ============================================================
   // HELPERS
-  // =========================================================
+  // ============================================================
 
-  const getTagUrlValue = (
-    category,
+  const getTagId = (
     tag
   ) => {
-    if (!tag) {
+    if (
+      tag === null ||
+      tag === undefined
+    ) {
+      return null;
+    }
+
+    if (
+      typeof tag === "object"
+    ) {
+      const value =
+        tag.id ??
+        tag.value_id ??
+        null;
+
+      if (
+        value === null ||
+        value === undefined ||
+        value === ""
+      ) {
+        return null;
+      }
+
+      const parsed =
+        Number(value);
+
+      return Number.isFinite(
+        parsed
+      )
+        ? parsed
+        : null;
+    }
+
+    const parsed =
+      Number(tag);
+
+    return Number.isFinite(
+      parsed
+    )
+      ? parsed
+      : null;
+  };
+
+
+  const getTagText = (
+    tag
+  ) => {
+    if (
+      tag === null ||
+      tag === undefined
+    ) {
       return "";
     }
 
     if (
-      category === "idioma"
+      typeof tag === "string"
     ) {
-      return typeof tag ===
-        "string"
-        ? tag.trim()
-        : "";
+      return tag.trim();
     }
 
     if (
-      typeof tag ===
-      "object"
+      typeof tag === "number"
     ) {
-      return (
-        tag.id ||
-        tag.slug ||
-        tag.nombre ||
-        ""
-      );
+      return "";
     }
 
     return String(
-      tag
+      tag.slug ??
+      tag.value ??
+      tag.code ??
+      tag.nombre ??
+      tag.name ??
+      ""
     ).trim();
   };
 
@@ -119,89 +160,172 @@ const SearchBar = ({
       tag.nombre ||
       tag.name ||
       tag.slug ||
+      tag.code ||
       tag.id ||
       ""
     );
   };
 
 
-  // =========================================================
-  // FILTROS ACTIVOS
-  // =========================================================
+  const uniqueValues = (
+    values
+  ) => {
+    return [
+      ...new Set(
+        (values || []).filter(
+          (value) =>
+            value !== null &&
+            value !== undefined &&
+            value !== ""
+        )
+      ),
+    ];
+  };
+
+
+  const extractIds = (
+    tags
+  ) => {
+    return uniqueValues(
+      (tags || [])
+        .map(getTagId)
+        .filter(
+          (value) =>
+            value !== null
+        )
+    );
+  };
+
+
+  const extractTextsWithoutId =
+    (tags) => {
+      return uniqueValues(
+        (tags || [])
+          .filter(
+            (tag) =>
+              getTagId(tag) ===
+              null
+          )
+          .map(getTagText)
+          .filter(Boolean)
+      );
+    };
+
+
+  // ============================================================
+  // FILTROS
+  // ============================================================
 
   const activeFilters =
     useMemo(() => {
-      return {
-        idioma:
+      const idiomas =
+        uniqueValues(
           (
             selectedTags?.idioma ||
             []
-          ).map(
-            (tag) =>
-              getTagUrlValue(
-                "idioma",
-                tag
-              )
+          )
+            .map(
+              (tag) => {
+                if (
+                  typeof tag ===
+                  "string"
+                ) {
+                  return tag
+                    .trim()
+                    .toLowerCase();
+                }
+
+                return String(
+                  tag?.code ??
+                  tag?.value ??
+                  tag?.slug ??
+                  tag?.nombre ??
+                  ""
+                )
+                  .trim()
+                  .toLowerCase();
+              }
+            )
+            .filter(Boolean)
+        );
+
+      const plataformas =
+        selectedTags?.plataforma ||
+        [];
+
+      const empresas =
+        selectedTags?.empresas ||
+        [];
+
+      const universidades =
+        selectedTags?.universidades ||
+        [];
+
+      const temas =
+        selectedTags?.temas ||
+        [];
+
+      const habilidades =
+        selectedTags?.habilidades ||
+        [];
+
+
+      return {
+        idioma:
+          idiomas,
+
+        plataforma_id:
+          extractIds(
+            plataformas
           ),
 
-        Plataforma:
-          (
-            selectedTags?.plataforma ||
-            []
-          ).map(
-            (tag) =>
-              getTagUrlValue(
-                "plataforma",
-                tag
-              )
+        plataforma:
+          extractTextsWithoutId(
+            plataformas
           ),
 
-        Empresa:
-          (
-            selectedTags?.empresas ||
-            []
-          ).map(
-            (tag) =>
-              getTagUrlValue(
-                "empresas",
-                tag
-              )
+        empresa_id:
+          extractIds(
+            empresas
           ),
 
-        Universidad:
-          (
-            selectedTags?.universidades ||
-            []
-          ).map(
-            (tag) =>
-              getTagUrlValue(
-                "universidades",
-                tag
-              )
+        empresas:
+          extractTextsWithoutId(
+            empresas
           ),
 
-        Tema:
-          (
-            selectedTags?.temas ||
-            []
-          ).map(
-            (tag) =>
-              getTagUrlValue(
-                "temas",
-                tag
-              )
+        universidad_id:
+          extractIds(
+            universidades
           ),
 
-        Habilidad:
-          (
-            selectedTags?.habilidades ||
-            []
-          ).map(
-            (tag) =>
-              getTagUrlValue(
-                "habilidades",
-                tag
-              )
+        universidades:
+          extractTextsWithoutId(
+            universidades
+          ),
+
+        /*
+         * Tema y habilidad ahora
+         * apuntan ambos a Skills.
+         */
+        tema_id:
+          extractIds(
+            temas
+          ),
+
+        temas:
+          extractTextsWithoutId(
+            temas
+          ),
+
+        habilidad_id:
+          extractIds(
+            habilidades
+          ),
+
+        habilidades:
+          extractTextsWithoutId(
+            habilidades
           ),
       };
     }, [selectedTags]);
@@ -216,6 +340,10 @@ const SearchBar = ({
       [activeFilters]
     );
 
+
+  // ============================================================
+  // BADGES
+  // ============================================================
 
   const activeFiltersSummary =
     useMemo(() => {
@@ -303,56 +431,62 @@ const SearchBar = ({
     }, [selectedTags]);
 
 
-  // =========================================================
+  // ============================================================
+  // ESTADO DERIVADO
+  // ============================================================
+
+  const cleanText =
+    text.trim();
+
+  const hasMinimumCharacters =
+    cleanText.length >=
+    MIN_SEARCH_LENGTH;
+
+  /*
+   * La barra SOLO pasa a fixed desde
+   * dos caracteres.
+   */
+  const isFixed =
+    hasMinimumCharacters;
+
+
+  // ============================================================
   // INPUT
-  // =========================================================
+  // ============================================================
 
   const handleWriting = (
     event
   ) => {
-    const newText =
+    const value =
       event.target.value;
 
-    const cleanText =
-      newText.trim();
-
-
     setText(
-      newText
+      value
     );
 
     setError(
       null
     );
 
-
     /*
-     * La barra solamente pasa a fixed
-     * desde 2 caracteres.
-     */
-    setIsFixed(
-      cleanText.length >=
-        MIN_SEARCH_LENGTH
-    );
-
-
-    /*
-     * Si el usuario vuelve de 2 caracteres
-     * a 1 o 0 cerramos TODO inmediatamente,
-     * sin esperar el debounce.
+     * Si baja de 2 caracteres:
+     *
+     * - cerramos resultados inmediatamente;
+     * - cancelamos respuestas pendientes;
+     * - limpiamos estado.
      */
     if (
-      cleanText.length <
+      value.trim().length <
       MIN_SEARCH_LENGTH
     ) {
       requestIdRef.current += 1;
 
-      setLoading(
-        false
-      );
-
       setResults(
         []
+      );
+
+      setLoading(
+        false
       );
 
       setHasSearched(
@@ -366,17 +500,12 @@ const SearchBar = ({
   };
 
 
-  // =========================================================
-  // LIMPIAR
-  // =========================================================
+  // ============================================================
+  // CLEAR
+  // ============================================================
 
   const handleClear = () => {
-    /*
-     * Invalida cualquier request
-     * que todavía esté pendiente.
-     */
     requestIdRef.current += 1;
-
 
     setText(
       ""
@@ -402,18 +531,13 @@ const SearchBar = ({
       false
     );
 
-    setIsFixed(
-      false
-    );
-
-
     FilterBySearch.clearCache();
   };
 
 
-  // =========================================================
+  // ============================================================
   // SEARCH DESDE URL
-  // =========================================================
+  // ============================================================
 
   useEffect(() => {
     const params =
@@ -426,8 +550,9 @@ const SearchBar = ({
         "search"
       );
 
-
-    if (searchQuery) {
+    if (
+      searchQuery
+    ) {
       const decoded =
         decodeURIComponent(
           searchQuery
@@ -436,40 +561,27 @@ const SearchBar = ({
       setText(
         decoded
       );
-
-
-      setIsFixed(
-        decoded
-          .trim()
-          .length >=
-          MIN_SEARCH_LENGTH
-      );
     }
   }, [location.search]);
 
 
-  // =========================================================
-  // INVALIDAR CACHE SI CAMBIAN FILTROS
-  // =========================================================
+  // ============================================================
+  // FILTROS CAMBIAN
+  // ============================================================
 
   useEffect(() => {
     FilterBySearch.clearCache();
   }, [activeFiltersKey]);
 
 
-  // =========================================================
-  // BÚSQUEDA
-  // =========================================================
+  // ============================================================
+  // SEARCH
+  // ============================================================
 
   useEffect(() => {
     const searchValue =
       debouncedText.trim();
 
-
-    /*
-     * No realizamos absolutamente
-     * ninguna búsqueda antes de 2 letras.
-     */
     if (
       searchValue.length <
       MIN_SEARCH_LENGTH
@@ -501,37 +613,39 @@ const SearchBar = ({
         const currentRequestId =
           ++requestIdRef.current;
 
+        /*
+         * Abrimos el contenedor cuando
+         * realmente empieza la búsqueda.
+         */
+        setResultsVisible(
+          true
+        );
+
+        setLoading(
+          true
+        );
+
+        setError(
+          null
+        );
+
+        setHasSearched(
+          false
+        );
+
 
         try {
-          setLoading(
-            true
-          );
-
-          setError(
-            null
-          );
-
-          setHasSearched(
-            true
-          );
-
-
           const data =
             await FilterBySearch.getResults(
               searchValue,
               {
                 limit: 12,
-
                 filters:
                   activeFilters,
               }
             );
 
 
-          /*
-           * Evita que una respuesta vieja
-           * reemplace una búsqueda más nueva.
-           */
           if (
             currentRequestId !==
             requestIdRef.current
@@ -547,6 +661,10 @@ const SearchBar = ({
               ? data.results
               : []
           );
+
+          setHasSearched(
+            true
+          );
         } catch (err) {
           if (
             currentRequestId !==
@@ -555,17 +673,18 @@ const SearchBar = ({
             return;
           }
 
-
           console.error(
             "Error al buscar certificaciones:",
             err
           );
 
-
           setResults(
             []
           );
 
+          setHasSearched(
+            true
+          );
 
           setError(
             "Ocurrió un error al realizar la búsqueda."
@@ -584,72 +703,59 @@ const SearchBar = ({
 
 
     fetchResults();
+
   }, [
     debouncedText,
     activeFiltersKey,
   ]);
 
 
-  // =========================================================
-  // VISIBILIDAD DE RESULTADOS
-  // =========================================================
+  // ============================================================
+  // SI SE BORRA A < 2 LETRAS
+  // ============================================================
 
   useEffect(() => {
-    const searchValue =
-      debouncedText.trim();
-
-
-    /*
-     * El overlay solo puede abrirse
-     * desde dos caracteres.
-     */
-    const shouldShow =
-      searchValue.length >=
-        MIN_SEARCH_LENGTH &&
-      (
-        loading ||
-        results.length > 0 ||
-        hasSearched
+    if (
+      text.trim().length <
+      MIN_SEARCH_LENGTH
+    ) {
+      setResultsVisible(
+        false
       );
+    }
+  }, [text]);
 
 
-    setResultsVisible(
-      shouldShow
-    );
-  }, [
-    debouncedText,
-    loading,
-    results,
-    hasSearched,
-  ]);
-
-
-  // =========================================================
-  // BLOQUEO DEL BODY
-  // =========================================================
+  // ============================================================
+  // BODY
+  // ============================================================
 
   useEffect(() => {
-    document.body.style.overflow =
+    if (
       resultsVisible
-        ? "hidden"
-        : "auto";
-
+    ) {
+      document.body.style.overflow =
+        "hidden";
+    } else {
+      document.body.style.overflow =
+        "";
+    }
 
     return () => {
       document.body.style.overflow =
-        "auto";
+        "";
     };
   }, [resultsVisible]);
 
 
-  // =========================================================
+  // ============================================================
   // RENDER
-  // =========================================================
+  // ============================================================
 
   return (
     <>
       {/* ==================================================== */}
-      {/* SEARCH BAR */}
+      {/* SEARCH */}
       {/* ==================================================== */}
 
       <div
@@ -676,30 +782,20 @@ const SearchBar = ({
         <div
           className="
             group
-
             flex
             h-[50px]
             w-full
-
             items-center
             gap-3
-
             rounded-[25px]
-
             border
             border-black/10
-
             bg-white
-
             px-4
-
             shadow-[0_12px_40px_rgba(0,0,0,0.04)]
-
             transition-all
             duration-300
-
             focus-within:border-[#1941cf]/40
-
             focus-within:shadow-[0_18px_50px_rgba(87,80,255,0.10)]
           "
         >
@@ -708,20 +804,16 @@ const SearchBar = ({
               h-5
               w-5
               shrink-0
-
               text-neutral-400
-
               transition
-
               group-focus-within:text-[#1941cf]
             "
           />
 
-
           <input
             type="text"
 
-            placeholder="Busca por tema, habilidad, universidad o empresa"
+            placeholder="Busca certificaciones, habilidades, universidades, empresas o plataformas"
 
             name="text"
 
@@ -730,19 +822,13 @@ const SearchBar = ({
             className="
               h-full
               w-full
-
               bg-transparent
-
               text-[15px]
               text-neutral-800
-
               border-0
-
               focus:ring-0
               active:ring-0
-
               outline-none
-
               placeholder:text-neutral-400
             "
 
@@ -755,7 +841,6 @@ const SearchBar = ({
             }
           />
 
-
           {text && (
             <button
               onClick={
@@ -766,22 +851,14 @@ const SearchBar = ({
 
               className="
                 grid
-
                 h-8
                 w-8
-
                 shrink-0
-
                 place-items-center
-
                 rounded-full
-
                 bg-neutral-100
-
                 text-neutral-500
-
                 transition
-
                 hover:bg-neutral-900
                 hover:text-white
               "
@@ -797,50 +874,35 @@ const SearchBar = ({
             </button>
           )}
 
-
           <button
             type="button"
 
             className="
               hidden
-
               h-10
-
               -mr-3
-
               shrink-0
-
               items-center
               justify-center
-
               rounded-full
-
               bg-[#111111]
-
               px-5
-
               text-sm
-
               font-bold
-
               text-white
-
               transition
-
               hover:bg-black
-
               sm:flex
             "
           >
             Buscar
           </button>
-
         </div>
       </div>
 
 
       {/* ==================================================== */}
-      {/* RESULTS OVERLAY */}
+      {/* OVERLAY */}
       {/* ==================================================== */}
 
       {resultsVisible && (
@@ -848,18 +910,12 @@ const SearchBar = ({
           className="
             fixed
             inset-0
-
             z-[70]
-
             overflow-y-auto
-
             bg-[#F8F7F4]/95
-
             px-4
             pb-10
-
             pt-[180px]
-
             backdrop-blur-md
           "
 
@@ -872,17 +928,14 @@ const SearchBar = ({
               max-w-[1200px]
             "
           >
-
             {/* HEADER */}
 
             <div
               className="
                 mb-6
-
                 flex
                 items-center
                 justify-between
-
                 gap-4
               "
             >
@@ -890,15 +943,12 @@ const SearchBar = ({
                 <p
                   className="
                     text-sm
-
                     font-semibold
-
                     text-neutral-900
                   "
                 >
                   Resultados de búsqueda
                 </p>
-
 
                 <p
                   className="
@@ -915,11 +965,10 @@ const SearchBar = ({
                       text-neutral-900
                     "
                   >
-                    “{debouncedText}”
+                    “{debouncedText.trim()}”
                   </span>
                 </p>
               </div>
-
 
               <button
                 type="button"
@@ -930,24 +979,15 @@ const SearchBar = ({
 
                 className="
                   grid
-
                   h-10
                   w-10
-
                   shrink-0
-
                   place-items-center
-
                   rounded-full
-
                   bg-white
-
                   text-neutral-600
-
                   shadow-[0_10px_30px_rgba(0,0,0,0.08)]
-
                   transition
-
                   hover:bg-neutral-900
                   hover:text-white
                 "
@@ -961,12 +1001,11 @@ const SearchBar = ({
                   "
                 />
               </button>
-
             </div>
 
 
             {/* ================================================= */}
-            {/* FILTROS ACTIVOS */}
+            {/* FILTROS */}
             {/* ================================================= */}
 
             {activeFiltersSummary.length >
@@ -974,10 +1013,8 @@ const SearchBar = ({
               <div
                 className="
                   mb-5
-
                   flex
                   flex-wrap
-
                   gap-2
                 "
               >
@@ -991,21 +1028,14 @@ const SearchBar = ({
 
                       className="
                         rounded-full
-
                         border
                         border-black/10
-
                         bg-white
-
                         px-3
                         py-1.5
-
                         text-[12px]
-
                         font-medium
-
                         text-neutral-600
-
                         shadow-sm
                       "
                     >
@@ -1025,13 +1055,9 @@ const SearchBar = ({
               <div
                 className="
                   grid
-
                   grid-cols-1
-
                   gap-5
-
                   sm:grid-cols-2
-
                   xl:grid-cols-4
                 "
               >
@@ -1044,23 +1070,17 @@ const SearchBar = ({
 
                       className="
                         w-full
-
                         animate-pulse
-
                         rounded-[18px]
-
                         border
                         border-black/10
-
                         bg-white
                       "
                     >
                       <div
                         className="
                           h-[180px]
-
                           rounded-t-[18px]
-
                           bg-neutral-200
                         "
                       />
@@ -1104,23 +1124,14 @@ const SearchBar = ({
               </div>
             ) : error ? (
 
-              /* ================================================= */
-              /* ERROR */
-              /* ================================================= */
-
               <div
                 className="
                   rounded-[24px]
-
                   bg-white
-
                   p-8
-
                   text-center
-
                   text-sm
                   text-red-500
-
                   shadow-[0_16px_50px_rgba(0,0,0,0.04)]
                 "
               >
@@ -1128,24 +1139,16 @@ const SearchBar = ({
               </div>
 
             ) : (
-              results.length === 0 &&
-              hasSearched
+              hasSearched &&
+              results.length === 0
             ) ? (
-
-              /* ================================================= */
-              /* EMPTY */
-              /* ================================================= */
 
               <div
                 className="
                   rounded-[24px]
-
                   bg-white
-
                   p-10
-
                   text-center
-
                   shadow-[0_16px_50px_rgba(0,0,0,0.04)]
                 "
               >
@@ -1159,11 +1162,9 @@ const SearchBar = ({
                   No encontramos resultados
                 </h3>
 
-
                 <p
                   className="
                     mt-2
-
                     text-sm
                     text-neutral-500
                   "
@@ -1175,17 +1176,13 @@ const SearchBar = ({
                       text-neutral-800
                     "
                   >
-                    {debouncedText}
+                    {debouncedText.trim()}
                   </strong>
                   .
                 </p>
               </div>
 
             ) : (
-
-              /* ================================================= */
-              /* RESULTS */
-              /* ================================================= */
 
               <CertificationsList
                 certifications={
@@ -1194,7 +1191,6 @@ const SearchBar = ({
               />
 
             )}
-
           </div>
         </div>
       )}
