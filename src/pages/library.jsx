@@ -741,30 +741,108 @@ function LibraryPage({ showRoutes = true }) {
     [location.pathname]
   );
 
-  const loadLatestCertifications = useCallback(async () => {
-    setLoading(true);
+  const loadLatestCertifications =
+  useCallback(
+    async (
+      page = 1,
+      pageSize = 16
+    ) => {
+      const requestId =
+        ++requestSeqRef.current;
 
-    try {
-      const response = await axios.get(endpoints.latest_certifications);
-      const rows = Array.isArray(response.data) ? response.data : [];
+      setLoading(true);
 
-      setSelectedTags({});
-      setCertifications(rows);
+      try {
+        const response =
+          await axios.get(
+            endpoints.latest_certifications,
+            {
+              params: {
+                page,
+                page_size: pageSize,
+              },
+            }
+          );
 
-      setPagination({
-        count: rows.length,
-        current_page: 1,
-        page_size: rows.length || 16,
-        total_pages: 1,
-        has_next: false,
-        has_previous: false,
-      });
-    } catch {
-      setCertifications([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        if (
+          requestId !==
+          requestSeqRef.current
+        ) {
+          return;
+        }
+
+        const data =
+          response?.data || {};
+
+        const rows =
+          Array.isArray(
+            data?.results
+          )
+            ? data.results
+            : [];
+
+        setSelectedTags({});
+
+        setCertifications(
+          rows
+        );
+
+        setPagination({
+          count:
+            data.count ?? 0,
+
+          current_page:
+            data.current_page ??
+            page,
+
+          page_size:
+            data.page_size ??
+            pageSize,
+
+          total_pages:
+            data.total_pages ??
+            1,
+
+          has_next:
+            !!data.has_next,
+
+          has_previous:
+            !!data.has_previous,
+        });
+      } catch (error) {
+        if (
+          requestId !==
+          requestSeqRef.current
+        ) {
+          return;
+        }
+
+        console.error(
+          "Error cargando certificaciones recientes:",
+          error
+        );
+
+        setCertifications([]);
+
+        setPagination({
+          count: 0,
+          current_page: 1,
+          page_size: pageSize,
+          total_pages: 1,
+          has_next: false,
+          has_previous: false,
+        });
+      } finally {
+        if (
+          requestId ===
+          requestSeqRef.current
+        ) {
+          setLoading(false);
+        }
+      }
+    },
+    []
+  );
 
   const loadCertifications = useCallback(async (page, pageSize, tags) => {
     const requestId = ++requestSeqRef.current;
@@ -1116,12 +1194,40 @@ function LibraryPage({ showRoutes = true }) {
       isHydratingFromUrlRef.current = true;
       setIsReady(false);
 
-      if (params.get("latest") === "1") {
-        await loadLatestCertifications();
+      if (
+        params.get("latest") === "1"
+      ) {
+        const pageFromURL =
+          Math.max(
+            1,
+            parseInt(
+              params.get("page"),
+              10
+            ) || 1
+          );
 
-        isHydratingFromUrlRef.current = false;
-        firstLoadDoneRef.current = true;
+        const pageSizeFromURL =
+          Math.max(
+            1,
+            parseInt(
+              params.get("page_size"),
+              10
+            ) || 16
+          );
+
+        await loadLatestCertifications(
+          pageFromURL,
+          pageSizeFromURL
+        );
+
+        isHydratingFromUrlRef.current =
+          false;
+
+        firstLoadDoneRef.current =
+          true;
+
         setIsReady(true);
+
         return;
       }
 
@@ -1170,23 +1276,66 @@ function LibraryPage({ showRoutes = true }) {
         LOADING_STATUS_MESSAGES.length
     ];
 
-  const handlePageChange = (newPage) => {
-    if (!isReady || loading) return;
-    if (newPage < 1 || newPage > pagination.total_pages) return;
+  const handlePageChange = (
+    newPage
+  ) => {
+    if (
+      !isReady ||
+      loading
+    ) {
+      return;
+    }
 
-    const nextUrl = buildUrlFromTags(
-      debouncedSelectedTags,
-      newPage,
-      16,
-      location.pathname
+    if (
+      newPage < 1 ||
+      newPage >
+        pagination.total_pages
+    ) {
+      return;
+    }
+
+    const params =
+      new URLSearchParams(
+        location.search
+      );
+
+    const isLatest =
+      params.get("latest") ===
+      "1";
+
+    const currentPageSize =
+      pagination.page_size || 16;
+
+    let nextUrl;
+
+    if (isLatest) {
+      nextUrl =
+        `${location.pathname}` +
+        `?latest=1` +
+        `&page=${newPage}` +
+        `&page_size=${currentPageSize}`;
+    } else {
+      nextUrl =
+        buildUrlFromTags(
+          debouncedSelectedTags,
+          newPage,
+          currentPageSize,
+          location.pathname
+        );
+    }
+
+    navigate(
+      nextUrl,
+      {
+        replace: false,
+      }
     );
 
-    navigate(nextUrl, { replace: false });
-
-    certificationsRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    certificationsRef.current
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
   };
 
   const PaginationControls = () => {
@@ -1360,7 +1509,6 @@ function LibraryPage({ showRoutes = true }) {
     );
 
     const isLatestView =
-      location.pathname === "/explora/filter" ||
       params.get("latest") === "1";
 
     const ignoredParams = new Set([
