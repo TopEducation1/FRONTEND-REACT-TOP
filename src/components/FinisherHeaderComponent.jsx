@@ -11,10 +11,6 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
-
-
-
-
 ReactModal.setAppElement("#root");
 
 const FinisherHeaderComponent = () => {
@@ -184,9 +180,9 @@ const FinisherHeaderComponent = () => {
             }}
             className="flex flex-row justify-center gap-2 md:gap-4 mt-8 w-full"
           >
-            <button
+            {/*<button
               type="button"
-              /*onClick={() => navigateWithTransition("/empieza-ahora")} */
+              onClick={() => navigateWithTransition("/empieza-ahora")}
               className=" bg-[#0F090B] hover:bg-black text-white flex items-center gap-2 px-4 py-2 md:px-8 md:py-4 rounded-full text-[15px] font-medium transition-all duration-300 shadow-[0_10px_40px_rgba(0,0,0,0.08)]
               "
             >
@@ -196,7 +192,7 @@ const FinisherHeaderComponent = () => {
                 strokeWidth={2}
                 className="translate-y-[1px]"
               />
-            </button>
+            </button>*/}
 
             <button
               ref={buttonRef}

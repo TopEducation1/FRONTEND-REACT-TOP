@@ -721,7 +721,7 @@ function HomePage() {
           <HeroSlider />
         </div>
       </section>
-      <section className="bg-[#F5F3EE] px-4 py-16 md:py-24">
+      {/*<section className="bg-[#F5F3EE] px-4 py-16 md:py-24">
         <div className="mx-auto max-w-[920px]">
           <div className="relative overflow-hidden rounded-[28px] bg-[#1941cf] px-6 py-16 text-center shadow-[0_28px_80px_rgba(87,80,255,0.22)] md:rounded-[32px] md:px-12 md:py-15">
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.08)_0%,transparent_45%,rgba(0,0,0,0.08)_100%)]" />
@@ -735,7 +735,7 @@ function HomePage() {
                 Únete a miles de personas que ya aprenden con los mejores del mundo.
               </p>
               <form
-                /*onSubmit={handleStartNow}*/
+                onSubmit={handleStartNow}
                 className="mx-auto mt-10 flex w-full max-w-[620px] flex-col gap-3 sm:flex-row sm:items-center sm:justify-center"
               >
                 <input
@@ -757,7 +757,7 @@ function HomePage() {
             </div>
           </div>
         </div>
-      </section>
+      </section>*/}
     </>
   );
 }
