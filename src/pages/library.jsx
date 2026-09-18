@@ -6,9 +6,7 @@ import React, {
   useRef,
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import tagFilterService from "../services/filterByTagsTesting";
 import CertificationsList from "../components/layoutCertifications";
-import CertificationsFetcher from "../services/certificationsFetcher";
 import { useDebounce } from "use-debounce";
 import IndexCategories from "../components/IndexCategories";
 import SearchBar from "../components/searchBar";
@@ -98,6 +96,123 @@ const buildDomainSkillTag = (skillId) => ({
   parent: null,
 });
 
+
+const normalizeCatalogArray = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.results)) return data.results;
+  return [];
+};
+
+const flattenUniversitiesCatalog = (data) => {
+  if (Array.isArray(data)) return data;
+  if (!data || typeof data !== "object") return [];
+
+  return Object.values(data).flatMap((items) =>
+    Array.isArray(items) ? items : []
+  );
+};
+
+const normalizeUniversitiesByRegion = (data) => {
+  if (Array.isArray(data)) {
+    return {
+      Universidades: data,
+    };
+  }
+
+  if (!data || typeof data !== "object") return {};
+
+  return data;
+};
+
+const isActiveSkillCatalogItem = (item) =>
+  item?.estado === true ||
+  item?.estado === 1 ||
+  item?.estado === "1";
+
+let filterCatalogBundleCache = null;
+let filterCatalogBundlePromise = null;
+
+const fetchCatalogData = async (url, fallback) => {
+  if (!url) return fallback;
+
+  try {
+    const response = await axios.get(url);
+    return response?.data ?? fallback;
+  } catch (error) {
+    console.error(
+      `Error cargando catálogo ${url}:`,
+      error
+    );
+    return fallback;
+  }
+};
+
+const getFilterCatalogBundle = async () => {
+  if (filterCatalogBundleCache) {
+    return filterCatalogBundleCache;
+  }
+
+  if (filterCatalogBundlePromise) {
+    return filterCatalogBundlePromise;
+  }
+
+  filterCatalogBundlePromise = Promise.all([
+    fetchCatalogData(endpoints.filterSkills, []),
+    fetchCatalogData(endpoints.filterCompanies, []),
+    fetchCatalogData(endpoints.filterPlatforms, []),
+    fetchCatalogData(endpoints.filterUniversitiesRegion, {}),
+    fetchCatalogData(endpoints.certification_languages, []),
+  ])
+    .then(
+      ([
+        skillsRaw,
+        companiesRaw,
+        platformsRaw,
+        universitiesRaw,
+        languagesRaw,
+      ]) => {
+        const skills = normalizeCatalogArray(
+          skillsRaw
+        ).filter(isActiveSkillCatalogItem);
+
+        const companies =
+          normalizeCatalogArray(companiesRaw);
+
+        const platforms =
+          normalizeCatalogArray(platformsRaw);
+
+        const universitiesByRegion =
+          normalizeUniversitiesByRegion(
+            universitiesRaw
+          );
+
+        const universities =
+          flattenUniversitiesCatalog(
+            universitiesByRegion
+          );
+
+        const languages =
+          normalizeCatalogArray(languagesRaw);
+
+        filterCatalogBundleCache = {
+          skills,
+          companies,
+          platforms,
+          universities,
+          universitiesByRegion,
+          languages,
+        };
+
+        return filterCatalogBundleCache;
+      }
+    )
+    .finally(() => {
+      filterCatalogBundlePromise = null;
+    });
+
+  return filterCatalogBundlePromise;
+};
+
 function LibraryPage({ showRoutes = true }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -111,6 +226,14 @@ function LibraryPage({ showRoutes = true }) {
     plataforma: [],
     aliados: [],
   });
+  const [
+    universitiesByRegion,
+    setUniversitiesByRegion,
+  ] = useState({});
+  const [
+    languagesCatalog,
+    setLanguagesCatalog,
+  ] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [isReady, setIsReady] = useState(false);
@@ -121,6 +244,8 @@ function LibraryPage({ showRoutes = true }) {
   const isHydratingFromUrlRef = useRef(false);
   const firstLoadDoneRef = useRef(false);
   const requestSeqRef = useRef(0);
+  const hydrationSeqRef = useRef(0);
+  const catalogBundleRef = useRef(null);
 
   const [pagination, setPagination] = useState({
     count: 0,
@@ -130,16 +255,6 @@ function LibraryPage({ showRoutes = true }) {
     has_next: false,
     has_previous: false,
   });
-
-  const flattenUniversitiesByRegion = (data) => {
-    if (Array.isArray(data)) return data;
-
-    if (!data || typeof data !== "object") return [];
-
-    return Object.values(data).flatMap((items) =>
-      Array.isArray(items) ? items : []
-    );
-  };
 
   function normalizeCategoryKey(key) {
     const map = {
@@ -482,84 +597,98 @@ function LibraryPage({ showRoutes = true }) {
     return tags;
   }
 
-  const loadSkillsCatalog = useCallback(async () => {
-    try {
-      const response = await axios.get(endpoints.filterSkills);
+  const applyCatalogBundle = useCallback(
+    (bundle) => {
+      if (!bundle) return null;
 
-      const safeData = Array.isArray(response.data)
-        ? response.data
-        : Array.isArray(response.data?.results)
-        ? response.data.results
-        : [];
+      catalogBundleRef.current = bundle;
 
-      const activeSkills = safeData.filter(
-        (item) =>
-          item?.estado === true ||
-          item?.estado === 1 ||
-          item?.estado === "1"
+      setSkillsCatalog(
+        Array.isArray(bundle.skills)
+          ? bundle.skills
+          : []
       );
 
-      setSkillsCatalog(activeSkills);
-      return activeSkills;
-    } catch {
-      setSkillsCatalog([]);
-      return [];
-    }
-  }, []);
-
-  const fetchOptionalCatalog = async (possibleEndpoints = []) => {
-    const url = possibleEndpoints.find(Boolean);
-
-    if (!url) return [];
-
-    try {
-      const response = await axios.get(url);
-      return response.data;
-    } catch {
-      return [];
-    }
-  };
-
-  const loadFilterCatalogs = useCallback(
-    async () => {
-      const [
-        universidadesRaw,
-        empresas,
-        plataforma,
-      ] = await Promise.all([
-        fetchOptionalCatalog([
-          endpoints.filterUniversitiesRegion,
-        ]),
-        fetchOptionalCatalog([
-          endpoints.filterCompanies,
-        ]),
-        fetchOptionalCatalog([
-          endpoints.filterPlatforms,
-        ]),
-      ]);
-
-      const catalogs = {
-        universidades:
-          flattenUniversitiesByRegion(
-            universidadesRaw
-          ),
-        empresas: Array.isArray(empresas)
-          ? empresas
+      setFilterCatalogs({
+        universidades: Array.isArray(
+          bundle.universities
+        )
+          ? bundle.universities
           : [],
-        plataforma: Array.isArray(plataforma)
-          ? plataforma
+        empresas: Array.isArray(
+          bundle.companies
+        )
+          ? bundle.companies
           : [],
-        aliados: Array.isArray(plataforma)
-          ? plataforma
+        plataforma: Array.isArray(
+          bundle.platforms
+        )
+          ? bundle.platforms
           : [],
-      };
+        aliados: Array.isArray(
+          bundle.platforms
+        )
+          ? bundle.platforms
+          : [],
+      });
 
-      setFilterCatalogs(catalogs);
+      setUniversitiesByRegion(
+        bundle.universitiesByRegion &&
+          typeof bundle.universitiesByRegion ===
+            "object"
+          ? bundle.universitiesByRegion
+          : {}
+      );
 
-      return catalogs;
+      setLanguagesCatalog(
+        Array.isArray(bundle.languages)
+          ? bundle.languages
+          : []
+      );
+
+      return bundle;
     },
     []
   );
+
+  const ensureCatalogsLoaded = useCallback(
+    async () => {
+      if (catalogBundleRef.current) {
+        return catalogBundleRef.current;
+      }
+
+      const bundle =
+        await getFilterCatalogBundle();
+
+      return (
+        applyCatalogBundle(bundle) ||
+        bundle
+      );
+    },
+    [applyCatalogBundle]
+  );
+
+  /*
+   * Los catálogos se cargan una sola vez desde LibraryPage.
+   * getFilterCatalogBundle mantiene una caché/promesa a nivel de módulo,
+   * por lo que React StrictMode tampoco duplica las peticiones.
+   *
+   * Esta carga NO bloquea la consulta de certificaciones.
+   */
+  useEffect(() => {
+    let cancelled = false;
+
+    getFilterCatalogBundle().then(
+      (bundle) => {
+        if (cancelled) return;
+        applyCatalogBundle(bundle);
+      }
+    );
+
+    return () => {
+      cancelled = true;
+    };
+  }, [applyCatalogBundle]);
 
   const findCatalogMatch = (catalog, rawTag) => {
     if (!Array.isArray(catalog) || catalog.length === 0) return null;
@@ -615,105 +744,165 @@ function LibraryPage({ showRoutes = true }) {
 
   const hydrateTagsFromCatalogs = useCallback(
     async (tags) => {
-      if (!tags) return { ...DEFAULT_SELECTED_TAGS };
+      if (!tags) {
+        return {
+          ...DEFAULT_SELECTED_TAGS,
+        };
+      }
 
-      const needsSkills =
-      (Array.isArray(tags.temas) && tags.temas.length > 0) ||
-      (Array.isArray(tags.habilidades) &&
-        tags.habilidades.length > 0);
+      const bundle =
+        catalogBundleRef.current ||
+        (await ensureCatalogsLoaded());
 
-      const needsExtraCatalogs = [
-        "universidades",
-        "empresas",
-        "plataforma",
-        "aliados",
-      ].some((key) => Array.isArray(tags[key]) && tags[key].length > 0);
+      const skills = Array.isArray(
+        bundle?.skills
+      )
+        ? bundle.skills
+        : [];
 
-      const skills =
-        needsSkills && skillsCatalog.length === 0
-          ? await loadSkillsCatalog()
-          : skillsCatalog;
-
-      const catalogs =
-        needsExtraCatalogs &&
-        Object.values(filterCatalogs).every((list) => list.length === 0)
-          ? await loadFilterCatalogs()
-          : filterCatalogs;
+      const catalogs = {
+        universidades: Array.isArray(
+          bundle?.universities
+        )
+          ? bundle.universities
+          : [],
+        empresas: Array.isArray(
+          bundle?.companies
+        )
+          ? bundle.companies
+          : [],
+        plataforma: Array.isArray(
+          bundle?.platforms
+        )
+          ? bundle.platforms
+          : [],
+        aliados: Array.isArray(
+          bundle?.platforms
+        )
+          ? bundle.platforms
+          : [],
+      };
 
       const hydrated = {};
 
-      Object.entries(tags).forEach(([category, values]) => {
-        const normalizedCategory = normalizeCategoryKey(category);
+      Object.entries(tags).forEach(
+        ([category, values]) => {
+          const normalizedCategory =
+            normalizeCategoryKey(category);
 
-        hydrated[normalizedCategory] = (values || []).map((tag) => {
-          if (
-            normalizedCategory === "idioma" ||
-            normalizedCategory === "tipo_certificacion" ||
-            normalizedCategory === "nivel_certificacion"
-          ) {
-            return tag;
-          }
+          hydrated[normalizedCategory] = (
+            values || []
+          ).map((tag) => {
+            if (
+              normalizedCategory ===
+                "idioma" ||
+              normalizedCategory ===
+                "tipo_certificacion" ||
+              normalizedCategory ===
+                "nivel_certificacion"
+            ) {
+              return tag;
+            }
 
-          if (
-            normalizedCategory === "temas" ||
-            normalizedCategory === "habilidades"
-          ) {
-            const id = typeof tag === "object" ? tag.id : "";
-            const slug =
-              typeof tag === "object"
-                ? tag.slug
-                : String(tag).trim();
+            if (
+              normalizedCategory ===
+                "temas" ||
+              normalizedCategory ===
+                "habilidades"
+            ) {
+              const id =
+                typeof tag === "object"
+                  ? tag.id
+                  : "";
 
-            const expectedType =
-              normalizedCategory === "habilidades"
-                ? "habilidad"
-                : "tema";
+              const slug =
+                typeof tag === "object"
+                  ? tag.slug
+                  : String(tag).trim();
 
-            const matchedSkill = skills.find((skill) => {
-              const skillType = String(skill.skill_type || "")
-                .trim()
-                .toLowerCase();
+              const expectedType =
+                normalizedCategory ===
+                "habilidades"
+                  ? "habilidad"
+                  : "tema";
 
-              const matchType =
-                skillType === expectedType ||
-                skillType === "";
+              const matchedSkill =
+                skills.find((skill) => {
+                  const skillType = String(
+                    skill.skill_type || ""
+                  )
+                    .trim()
+                    .toLowerCase();
 
-              const matchId =
-                id &&
-                String(skill.id || "").trim() ===
-                  String(id).trim();
+                  const matchType =
+                    skillType ===
+                      expectedType ||
+                    skillType === "";
 
-              const matchSlug =
-                slug &&
-                String(skill.slug || "").trim() ===
-                  String(slug).trim();
+                  const matchId =
+                    id &&
+                    String(
+                      skill.id || ""
+                    ).trim() ===
+                      String(id).trim();
 
-              return matchType && (matchId || matchSlug);
-            });
+                  const matchSlug =
+                    slug &&
+                    String(
+                      skill.slug || ""
+                    ).trim() ===
+                      String(
+                        slug
+                      ).trim();
 
-            if (!matchedSkill) return tag;
+                  return (
+                    matchType &&
+                    (matchId ||
+                      matchSlug)
+                  );
+                });
 
-            return {
-              id: matchedSkill.id,
-              nombre: matchedSkill.nombre,
-              translate: matchedSkill.translate,
-              slug: matchedSkill.slug,
-              skill_type: matchedSkill.skill_type,
-              parent: matchedSkill.parent ?? null,
-            };
-          }
+              if (!matchedSkill) {
+                return tag;
+              }
 
-          const matched = findCatalogMatch(catalogs[normalizedCategory], tag);
+              return {
+                id: matchedSkill.id,
+                nombre:
+                  matchedSkill.nombre,
+                translate:
+                  matchedSkill.translate,
+                slug:
+                  matchedSkill.slug,
+                skill_type:
+                  matchedSkill.skill_type,
+                parent:
+                  matchedSkill.parent ??
+                  null,
+              };
+            }
 
-          if (!matched) return tag;
+            const matched =
+              findCatalogMatch(
+                catalogs[
+                  normalizedCategory
+                ],
+                tag
+              );
 
-          return normalizeCatalogItem(matched, tag);
-        });
-      });
+            if (!matched) return tag;
+
+            return normalizeCatalogItem(
+              matched,
+              tag
+            );
+          });
+        }
+      );
 
       return hydrated;
     },
-    [skillsCatalog, filterCatalogs, loadSkillsCatalog, loadFilterCatalogs]
+    [ensureCatalogsLoaded]
   );
 
   const buildUrlFromTags = useCallback(
@@ -844,51 +1033,146 @@ function LibraryPage({ showRoutes = true }) {
     []
   );
 
-  const loadCertifications = useCallback(async (page, pageSize, tags) => {
-    const requestId = ++requestSeqRef.current;
+  const loadCertificationsFromSearch =
+    useCallback(
+      async (
+        search,
+        page = 1,
+        pageSize = 16
+      ) => {
+        const requestId =
+          ++requestSeqRef.current;
 
-    setLoading(true);
+        setLoading(true);
 
-    try {
-      const fetchData =
-        Object.keys(tags || {}).length > 0
-          ? await tagFilterService.filterByTags(tags, page, pageSize)
-          : await CertificationsFetcher.getAllCertifications(page, pageSize);
+        try {
+          const params =
+            new URLSearchParams(
+              search || ""
+            );
 
-      if (requestId !== requestSeqRef.current) return;
+          /*
+           * Estos parámetros son de navegación/UI
+           * y no forman parte del filtro del backend.
+           */
+          params.delete("latest");
+          params.delete("clear");
 
-      if (fetchData && Array.isArray(fetchData.results)) {
-        setCertifications(fetchData.results);
+          params.set(
+            "page",
+            String(page)
+          );
 
-        setPagination({
-          count: fetchData.count ?? 0,
-          current_page: fetchData.current_page || page,
-          page_size: fetchData.page_size || pageSize,
-          total_pages: fetchData.total_pages || 1,
-          has_next: !!fetchData.has_next,
-          has_previous: !!fetchData.has_previous,
-        });
-      } else {
-        setCertifications([]);
+          params.set(
+            "page_size",
+            String(pageSize)
+          );
 
-        setPagination({
-          count: 0,
-          current_page: 1,
-          page_size: pageSize,
-          total_pages: 1,
-          has_next: false,
-          has_previous: false,
-        });
-      }
-    } catch {
-      if (requestId !== requestSeqRef.current) return;
-      setCertifications([]);
-    } finally {
-      if (requestId === requestSeqRef.current) {
-        setLoading(false);
-      }
-    }
-  }, []);
+          const query =
+            params.toString();
+
+          const url =
+            `${endpoints.certificaciones_filter}` +
+            (query ? `?${query}` : "");
+
+          const response =
+            await fetch(url, {
+              method: "GET",
+              headers: {
+                Accept:
+                  "application/json",
+              },
+            });
+
+          if (!response.ok) {
+            throw new Error(
+              `HTTP error! status: ${response.status}`
+            );
+          }
+
+          const fetchData =
+            await response.json();
+
+          if (
+            requestId !==
+            requestSeqRef.current
+          ) {
+            return;
+          }
+
+          if (
+            fetchData &&
+            Array.isArray(
+              fetchData.results
+            )
+          ) {
+            setCertifications(
+              fetchData.results
+            );
+
+            setPagination({
+              count:
+                fetchData.count ?? 0,
+              current_page:
+                fetchData.current_page ||
+                page,
+              page_size:
+                fetchData.page_size ||
+                pageSize,
+              total_pages:
+                fetchData.total_pages ||
+                1,
+              has_next:
+                !!fetchData.has_next,
+              has_previous:
+                !!fetchData.has_previous,
+            });
+          } else {
+            setCertifications([]);
+
+            setPagination({
+              count: 0,
+              current_page: 1,
+              page_size: pageSize,
+              total_pages: 1,
+              has_next: false,
+              has_previous: false,
+            });
+          }
+        } catch (error) {
+          if (
+            requestId !==
+            requestSeqRef.current
+          ) {
+            return;
+          }
+
+          console.error(
+            "Error cargando certificaciones filtradas:",
+            error
+          );
+
+          setCertifications([]);
+
+          setPagination({
+            count: 0,
+            current_page: 1,
+            page_size: pageSize,
+            total_pages: 1,
+            has_next: false,
+            has_previous: false,
+          });
+        } finally {
+          if (
+            requestId ===
+            requestSeqRef.current
+          ) {
+            setLoading(false);
+          }
+        }
+      },
+      []
+    );
 
   const addTagAndNavigate = useCallback(
     (category, tag) => {
@@ -1197,6 +1481,8 @@ function LibraryPage({ showRoutes = true }) {
       if (
         params.get("latest") === "1"
       ) {
+        ++hydrationSeqRef.current;
+
         const pageFromURL =
           Math.max(
             1,
@@ -1237,11 +1523,46 @@ function LibraryPage({ showRoutes = true }) {
       const pageFromURL = parseInt(params.get("page"), 10) || 1;
       const pageSizeFromURL = parseInt(params.get("page_size"), 10) || 16;
 
-      const hydratedFilters = await hydrateTagsFromCatalogs(filtersFromURL);
+      /*
+       * Mostramos inmediatamente los filtros tal como vienen en la URL.
+       * La hidratación (nombres, iconos, objetos completos) ocurre en
+       * paralelo y ya no bloquea la consulta de certificaciones.
+       */
+      setSelectedTags(filtersFromURL);
 
-      setSelectedTags(hydratedFilters);
+      const hydrationId =
+        ++hydrationSeqRef.current;
 
-      await loadCertifications(pageFromURL, pageSizeFromURL, hydratedFilters);
+      const certificationsPromise =
+        loadCertificationsFromSearch(
+          location.search,
+          pageFromURL,
+          pageSizeFromURL
+        );
+
+      hydrateTagsFromCatalogs(
+        filtersFromURL
+      )
+        .then((hydratedFilters) => {
+          if (
+            hydrationId !==
+            hydrationSeqRef.current
+          ) {
+            return;
+          }
+
+          setSelectedTags(
+            hydratedFilters
+          );
+        })
+        .catch((error) => {
+          console.error(
+            "Error hidratando filtros desde la URL:",
+            error
+          );
+        });
+
+      await certificationsPromise;
 
       isHydratingFromUrlRef.current = false;
       firstLoadDoneRef.current = true;
@@ -1789,6 +2110,11 @@ function LibraryPage({ showRoutes = true }) {
                   onDomainSelect={handleDomainSelect}
                   selectedTags={selectedTags}
                   disabled={!isReady}
+                  skills={skillsCatalog}
+                  empresas={filterCatalogs.empresas}
+                  plataformas={filterCatalogs.plataforma}
+                  idiomas={languagesCatalog}
+                  universidadesPorRegion={universitiesByRegion}
                 />
               </div>
             </aside>

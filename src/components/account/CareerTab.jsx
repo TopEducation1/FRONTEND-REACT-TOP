@@ -601,8 +601,8 @@ function safePlanKey(value) {
 
 function PlanSelector({ selectedPlan, onChange }) {
   return (
-    <section className="rounded-[20px] border border-black/10 bg-white p-4 shadow-[0_10px_28px_rgba(0,0,0,0.06)] md:p-5">
-      <span className="!font-['Montserrat'] text-[11px] font-black uppercase tracking-[0.16em] text-[#7A6252]">
+    <section className="rounded-[18px] border border-[#E1E6EF] bg-white p-4 shadow-[0_10px_28px_rgba(27,39,67,0.05)] md:p-5">
+      <span className="!font-['Montserrat'] text-[10px] font-bold uppercase tracking-[0.16em] text-[#71809A]">
         Elige un plan para ver tu ruta
       </span>
       <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4">
@@ -611,7 +611,7 @@ function PlanSelector({ selectedPlan, onChange }) {
           return (
             <button key={key} type="button" onClick={() => onChange(key)}
               className={`rounded-[16px] border px-4 py-3 !font-['Montserrat'] text-sm font-black transition ${
-                active ? "border-[#100A0D] bg-[#100A0D] text-white" : "border-black/10 bg-white text-[#6E5B4E] hover:border-[#1941CF]/40 hover:text-[#1941CF]"
+                active ? "border-transparent bg-[linear-gradient(110deg,#172A4D_0%,#4669A9_100%)] text-white shadow-[0_10px_24px_rgba(39,67,118,0.18)]" : "border-[#E1E6EF] bg-[#FBFCFE] text-[#4B586D] hover:border-[#BFCBE0] hover:bg-white hover:text-[#355A98]"
               }`}>
               {CAREER_PLANS[key].selectorLabel}
             </button>
@@ -624,19 +624,10 @@ function PlanSelector({ selectedPlan, onChange }) {
 
 function TopoMessage({ title, description, highlight }) {
   return (
-    <section className="relative mt-4 rounded-[20px] border border-[#1941CF]/20 bg-[#EEF1F8] px-5 py-5 pl-16 md:ml-12 md:pl-5">
-      <div className="absolute left-4 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-[linear-gradient(135deg,#3159E8,#145C5B)] text-white shadow-[0_10px_28px_rgba(25,65,207,0.35)] md:-left-12"><img
-                src="/assets/logos/topo-contenedor-claro.png"
-                alt="Logo Topo"
-                className="
-                  !rounded-full overflow-hidden
-                  w-[50px]
-                  h-auto
-                "
-              /></div>
-      <h2 className="!font-['Montserrat'] text-base font-black text-[#111111]">{title}</h2>
-      <p className="mt-1 !font-['Montserrat'] text-sm leading-relaxed text-neutral-500">{description}</p>
-      {highlight && <p className="mt-1 !font-['Montserrat'] text-sm font-bold text-[#1941CF]">{highlight}</p>}
+    <section className="relative mt-4 overflow-visible rounded-[20px] border border-[#DCE5F1] bg-[linear-gradient(110deg,#F0F6FF_0%,#E7FAFC_100%)] px-5 py-5 shadow-[0_8px_24px_rgba(27,39,67,0.035)] ">
+      <h2 className="!font-['Montserrat'] text-[15px] font-semibold text-[#172033]">{title}</h2>
+      <p className="!font-['Montserrat'] text-[13px] leading-relaxed text-[#71809A]">{description}</p>
+      {highlight && <p className="mt-1 !font-['Montserrat'] text-[13px] font-semibold text-[#355A98]">{highlight}</p>}
     </section>
   );
 }
@@ -645,9 +636,9 @@ function StatsGrid({ stats }) {
   return (
     <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
       {stats.map((stat) => (
-        <article key={`${stat.value}-${stat.label}`} className="rounded-[18px] border border-black/10 bg-white px-5 py-5 text-center shadow-[0_8px_22px_rgba(0,0,0,0.05)]">
-          <strong className="block !font-['Montserrat'] text-xl font-black text-[#111111]">{stat.value}</strong>
-          <span className="mt-1 block !font-['Montserrat'] text-xs text-[#806B5F]">{stat.label}</span>
+        <article key={`${stat.value}-${stat.label}`} className="relative overflow-hidden rounded-[18px] border border-[#E1E6EF] bg-white px-5 py-5 text-center shadow-[0_8px_24px_rgba(27,39,67,0.045)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(27,39,67,0.075)]">
+          <strong className="block !font-['Montserrat'] text-[20px] font-semibold tracking-[-0.03em] text-[#172033]">{stat.value}</strong>
+          <span className="mt-1 block !font-['Montserrat'] text-[11px] text-[#8490A3]">{stat.label}</span>
         </article>
       ))}
     </div>
@@ -655,24 +646,24 @@ function StatsGrid({ stats }) {
 }
 
 function ProviderBadge({ children }) {
-  return <span className="rounded-full border border-[#0458FF] px-2 py-0.5 !font-['Montserrat'] text-[10px] font-bold text-[#0458FF]">{children}</span>;
+  return <span className="rounded-full border border-[#D8E1F0] bg-[#F7F9FD] px-2.5 py-1 !font-['Montserrat'] text-[9px] font-semibold text-[#3E5E95]">{children}</span>;
 }
 
 function CareerTimeline({ levels, selectedLevelId, onSelect }) {
   return (
-    <div className="grid grid-cols-1 gap-4 px-5 py-6 md:grid-cols-3 md:px-12">
+    <div className="grid grid-cols-1 gap-2 px-4 py-5 sm:px-6 md:grid-cols-3 md:gap-0 md:px-8 md:py-7">
       {levels.map((level, index) => {
         const active = selectedLevelId === level.id;
         return (
-          <button key={level.id} type="button" onClick={() => onSelect(level.id)} className="group relative flex min-w-0 flex-col items-center text-center">
-            {index < levels.length - 1 && <span className="absolute left-[64%] top-6 hidden h-px w-[72%] bg-[#AFC0FF] md:block" />}
+          <button key={level.id} type="button" onClick={() => onSelect(level.id)} className="group relative flex min-w-0 items-center gap-3 rounded-[16px] px-3 py-3 text-left transition hover:bg-[#F8FAFD] md:flex-col md:gap-0 md:bg-transparent md:px-2 md:py-0 md:text-center md:hover:bg-transparent">
+            {index < levels.length - 1 && <span className="absolute left-[58%] top-6 hidden h-px w-[84%] bg-[#D4DDEA] md:block" />}
             <span className={`relative z-10 grid h-12 w-12 place-items-center rounded-full border-2 !font-['Montserrat'] text-sm font-black transition ${
-              active ? "border-[#1941CF] bg-[#1941CF] text-white shadow-[0_10px_24px_rgba(25,65,207,0.25)]" : "border-neutral-200 bg-white text-[#76675D]"
+              active ? "border-transparent bg-[linear-gradient(135deg,#172A4D_0%,#486BAA_100%)] text-white shadow-[0_10px_24px_rgba(37,60,105,0.24)]" : "border-[#DDE3EC] bg-white text-[#66738A] group-hover:border-[#B6C5DB]"
             }`}>{level.number}</span>
-            <strong className="mt-2 !font-['Montserrat'] text-sm font-black text-[#111111]">{level.title}</strong>
-            <span className="!font-['Montserrat'] text-xs text-[#806B5F]">{level.level}</span>
+            <strong className="mt-2 !font-['Montserrat'] text-sm font-semibold text-[#172033]">{level.title}</strong>
+            <span className="!font-['Montserrat'] text-[11px] text-[#8A95A7]">{level.level}</span>
             <span className={`mt-1 rounded-full px-3 py-1 !font-['Montserrat'] text-[10px] font-bold ${
-              level.status === "En progreso" ? "bg-[#E8ECFF] text-[#1941CF]" : "bg-[#EAF8EF] text-[#4BBF72]"
+              level.status === "En progreso" ? "bg-[#E9EFFA] text-[#3D6099]" : "bg-[#EDF8F1] text-[#4A9668]"
             }`}>{level.status}</span>
             <div className="mt-2 flex flex-wrap justify-center gap-1">
               {level.providers.map((provider) => <ProviderBadge key={provider}>{provider}</ProviderBadge>)}
@@ -690,14 +681,14 @@ function CourseCard({ course, isCurrentUserPlan }) {
 
   return (
     <article
-      className={`overflow-hidden rounded-[16px] border bg-white ${
+      className={`group overflow-hidden rounded-[18px] border bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(31,47,78,0.09)] ${
         course.available === false
-          ? "border-red-200 opacity-75"
-          : "border-black/10"
+          ? "border-[#F0D8D8] opacity-75"
+          : "border-[#E1E6EF]"
       }`}
     >
       {course.image && (
-        <div className="h-32 overflow-hidden bg-[#F3F4F8]">
+        <div className="h-32 overflow-hidden bg-[linear-gradient(135deg,#EEF3F9,#F8FAFD)]">
           <img
             src={course.image}
             alt={course.title}
@@ -712,7 +703,7 @@ function CourseCard({ course, isCurrentUserPlan }) {
 
       <div className="p-4">
         <div className="flex items-start justify-between gap-3">
-          <span className="rounded-full bg-[#EEF2FF] px-2 py-1 !font-['Montserrat'] text-[9px] font-black text-[#0458FF]">
+          <span className="rounded-full border border-[#D8E1F0] bg-[#F7F9FD] px-2.5 py-1 !font-['Montserrat'] text-[9px] font-semibold text-[#3E5E95]">
             {course.provider}
           </span>
 
@@ -723,12 +714,12 @@ function CourseCard({ course, isCurrentUserPlan }) {
           )}
         </div>
 
-        <h4 className="mt-2 !font-['Montserrat'] text-sm font-black text-[#111111]">
+        <h4 className="mt-2 !font-['Montserrat'] text-sm font-semibold text-[#172033]">
           {course.title}
         </h4>
 
         {course.institution && (
-          <p className="mt-0.5 !font-['Montserrat'] text-[11px] text-[#806B5F]">
+          <p className="mt-0.5 !font-['Montserrat'] text-[11px] text-[#8490A3]">
             {course.institution}
           </p>
         )}
@@ -764,7 +755,7 @@ function CourseCard({ course, isCurrentUserPlan }) {
                 ? "noopener noreferrer"
                 : undefined
             }
-            className="mt-4 inline-flex !font-['Montserrat'] text-xs font-black text-[#1941CF]"
+            className="mt-4 inline-flex !font-['Montserrat'] text-[11px] font-semibold text-[#355A98]"
           >
             {isCurrentUserPlan ? "Abrir curso" : "Ver curso"} →
           </a>
@@ -780,28 +771,28 @@ function CourseCard({ course, isCurrentUserPlan }) {
 
 
 function LevelDetail({ level, isCurrentUserPlan }) {
-  if (!level) return <div className="border-t border-black/10 p-8 text-center !font-['Montserrat'] text-neutral-500">Agrega los niveles de este plan en CAREER_PLANS.</div>;
+  if (!level) return <div className="border-t border-[#E1E6EF] p-8 text-center !font-['Montserrat'] text-neutral-500">Agrega los niveles de este plan en CAREER_PLANS.</div>;
   return (
-    <div className="border-t border-black/10 px-5 py-6 md:px-7">
-      <h3 className="!font-['Montserrat'] text-base font-black text-[#111111]">
-        {level.number} · {level.title} <span className="font-normal text-[#806B5F]">— {level.level}</span>
+    <div className="border-t border-[#E7EBF1] bg-[#FCFDFE] px-5 py-6 md:px-7">
+      <h3 className="!font-['Montserrat'] text-[15px] font-semibold text-[#172033]">
+        {level.number} · {level.title} <span className="font-normal text-[#8490A3]">— {level.level}</span>
       </h3>
-      <p className="mt-1 !font-['Montserrat'] text-sm text-[#806B5F]">{level.description}</p>
+      <p className="mt-1.5 !font-['Montserrat'] text-[13px] text-[#8490A3]">{level.description}</p>
       <div className="mt-4 flex flex-wrap gap-2">
-        {level.skills.map((skill, index) => <span key={`${skill}-${index}`} className="rounded-full border border-black/10 bg-white px-3 py-1.5 !font-['Montserrat'] text-xs text-[#806B5F]">{skill}</span>)}
+        {level.skills.map((skill, index) => <span key={`${skill}-${index}`} className="rounded-full border border-[#E1E6EF] bg-white px-3 py-1.5 !font-['Montserrat'] text-[10px] font-medium text-[#66738A]">{skill}</span>)}
       </div>
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h4 className="!font-['Montserrat'] text-xs font-black uppercase tracking-[0.08em] text-[#111111]">
+          <h4 className="!font-['Montserrat'] text-[10px] font-bold uppercase tracking-[0.12em] text-[#76849A]">
             Cursos en este nivel — {level.coursesLabel}
           </h4>
 
           {Number(level.totalCourses || 0) > Number(level.courses?.length || 0) && (
-            <p className="mt-1 !font-['Montserrat'] text-[11px] text-[#806B5F]">
+            <p className="mt-1 !font-['Montserrat'] text-[10px] text-[#8490A3]">
               Mostrando {level.courses.length} recomendaciones destacadas.{" "}
               <a
                 href="/account?tab=courses"
-                className="font-black text-[#1941CF]"
+                className="font-semibold text-[#355A98]"
               >
                 Ver todos los cursos →
               </a>
@@ -816,16 +807,16 @@ function LevelDetail({ level, isCurrentUserPlan }) {
           {level.courses.map((course, index) => <CourseCard key={`${course.idInterno || course.title}-${index}`} course={course} isCurrentUserPlan={isCurrentUserPlan} />)}
         </div>
       ) : (
-        <div className="mt-4 rounded-[16px] border border-black/10 bg-white px-5 py-5 text-center">
-          <span className="!font-['Montserrat'] text-sm text-[#806B5F]">{level.emptyMessage}</span>{" "}
-          {level.emptyAction && <a href={level.emptyUrl || "#"} className="!font-['Montserrat'] text-base font-black text-[#1941CF]">{level.emptyAction} →</a>}
+        <div className="mt-4 rounded-[16px] border border-dashed border-[#D8DFE9] bg-white px-5 py-6 text-center">
+          <span className="!font-['Montserrat'] text-[11px] text-[#8490A3]">{level.emptyMessage}</span>{" "}
+          {level.emptyAction && <a href={level.emptyUrl || "#"} className="!font-['Montserrat'] text-[12px] font-semibold text-[#355A98]">{level.emptyAction} →</a>}
         </div>
       )}
       {level.footer && (
-        <div className="mt-4 flex flex-col gap-3 rounded-[14px] border border-black/10 bg-white px-4 py-3 md:flex-row md:items-center md:justify-between">
+        <div className="mt-4 flex flex-col gap-3 rounded-[14px] border border-[#E3E8F0] bg-white px-4 py-3 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap items-center gap-4">
-            <strong className="!font-['Montserrat'] text-xs text-[#111111]">{level.footer.title}</strong>
-            {level.footer.analysis && <span className="!font-['Montserrat'] text-[11px] text-[#4BBF72]"><img
+            <strong className="!font-['Montserrat'] text-[10px] font-semibold text-[#344158]">{level.footer.title}</strong>
+            {level.footer.analysis && <span className="inline-flex items-center gap-1.5 !font-['Montserrat'] text-[10px] font-medium text-[#47729B]"><img
                 src="/assets/logos/ico-topo.png"
                 alt="Logo Topo"
                 className="
@@ -834,9 +825,9 @@ function LevelDetail({ level, isCurrentUserPlan }) {
                   h-auto
                 "
               /> {level.footer.analysis}</span>}
-            <span className="!font-['Montserrat'] text-[11px] text-[#806B5F]">{level.footer.benefit}</span>
+            <span className="!font-['Montserrat'] text-[10px] text-[#8490A3]">{level.footer.benefit}</span>
           </div>
-          {level.footer.action && <a href={level.footer.url || "#"} className="!font-['Montserrat'] text-xs font-black text-[#1941CF]">{level.footer.action} →</a>}
+          {level.footer.action && <a href={level.footer.url || "#"} className="!font-['Montserrat'] text-[10px] font-semibold text-[#355A98]">{level.footer.action} →</a>}
         </div>
       )}
     </div>
@@ -851,7 +842,7 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
     : [];
 
   return (
-    <section className="mt-5 rounded-[20px] border border-[#1941CF]/20 bg-[#F1F2F6] p-5 md:p-6">
+    <section className="mt-5 rounded-[22px] border border-[#E1E6EF] bg-white p-5 shadow-[0_10px_30px_rgba(27,39,67,0.05)] md:p-6">
       <TopoMessage
         title={potential.title}
         description={potential.description}
@@ -904,16 +895,16 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
             <div key={skill.name}>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <strong className="!font-['Montserrat'] text-sm text-[#111111]">
+                  <strong className="!font-['Montserrat'] text-sm text-[#172033]">
                     {skill.name}
                   </strong>
 
-                  <span className="rounded-full bg-[#E2E7FA] px-2 py-1 !font-['Montserrat'] text-[10px] font-bold text-[#1941CF]">
+                  <span className="rounded-full bg-[#EEF2F8] px-2.5 py-1 !font-['Montserrat'] text-[9px] font-semibold text-[#4A6695]">
                     {skill.badge}
                   </span>
                 </div>
 
-                <strong className="!font-['Montserrat'] text-xs text-[#1941CF]">
+                <strong className="!font-['Montserrat'] text-[10px] font-semibold text-[#48679D]">
                   {currentHours}h de aprendizaje
                 </strong>
               </div>
@@ -924,7 +915,7 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
                * Gris: capacidad restante de la escala.
                */}
               <div
-                className="mt-2 flex h-3 overflow-hidden rounded-full bg-[#DADBDF]"
+                className="mt-2 flex h-2.5 overflow-hidden rounded-full bg-[#E7EAF0]"
                 role="progressbar"
                 aria-label={`Progreso de ${skill.name}`}
                 aria-valuemin={0}
@@ -932,7 +923,7 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
                 aria-valuenow={currentHours}
               >
                 <div
-                  className="h-full shrink-0 bg-[#1941CF]"
+                  className="h-full shrink-0 bg-[linear-gradient(90deg,#172A4D_0%,#4D71AE_100%)]"
                   style={{
                     width: `${currentPercent}%`,
                   }}
@@ -952,9 +943,9 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
                 )}
               </div>
 
-              <p className="mt-1 !font-['Montserrat'] text-[11px] text-[#806B5F]">
+              <p className="mt-1 !font-['Montserrat'] text-[10px] text-[#8490A3]">
                 {skill.nextText}{" "}
-                <strong className="text-[#1941CF]">
+                <strong className="text-[#48679D]">
                   ({skill.gain})
                 </strong>
               </p>
@@ -964,13 +955,13 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
       </div>
 
       {potential.cta && (
-        <div className="mt-5 flex flex-col gap-4 rounded-[16px] border border-[#1941CF]/15 bg-white p-4 md:flex-row md:items-center md:justify-between">
+        <div className="mt-6 flex flex-col gap-4 rounded-[18px] border border-[#DCE5F1] bg-[linear-gradient(110deg,#F5F8FC_0%,#EEF6FA_100%)] p-4 md:flex-row md:items-center md:justify-between md:p-5">
           <div>
-            <h3 className="!font-['Montserrat'] text-base font-black text-[#111111]">
+            <h3 className="!font-['Montserrat'] text-[15px] font-semibold text-[#172033]">
               {potential.cta.title}
             </h3>
 
-            <p className="mt-1 !font-['Montserrat'] text-sm text-[#806B5F]">
+            <p className="mt-1.5 !font-['Montserrat'] text-[13px] text-[#8490A3]">
               {potential.cta.description}
             </p>
           </div>
@@ -983,7 +974,7 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
                   potential.cta.targetPlan
                 )
               }
-              className="rounded-[16px] bg-[#1941CF] px-5 py-3 !font-['Montserrat'] text-sm font-black text-white"
+              className="rounded-[13px] bg-[linear-gradient(110deg,#172A4D_0%,#4669A9_100%)] px-5 py-3 !font-['Montserrat'] text-[11px] font-semibold text-white shadow-[0_10px_24px_rgba(39,67,118,0.18)] transition hover:-translate-y-0.5"
             >
               {potential.cta.button}
             </button>
@@ -991,7 +982,7 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
             <button
               type="button"
               onClick={onComparePlans}
-              className="mt-2 block w-full !font-['Montserrat'] text-sm text-[#6E5B4E]"
+              className="mt-2 block w-full !font-['Montserrat'] text-[10px] font-medium text-[#66738A] hover:text-[#355A98]"
             >
               {potential.cta.secondary}
             </button>
@@ -1005,15 +996,15 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
 
 function IncludesCard({ includes, onPlanAction, onComparePlans, planKey }) {
   return (
-    <section className="rounded-[20px] border border-black/10 bg-white p-5 shadow-[0_8px_22px_rgba(0,0,0,0.05)]">
-      <h3 className="!font-['Montserrat'] text-lg font-black text-[#111111]">{includes.title}</h3>
-      <p className="!font-['Montserrat'] text-sm text-[#806B5F]">{includes.subtitle}</p>
+    <section className="rounded-[20px] border border-[#E1E6EF] bg-white p-5 shadow-[0_8px_24px_rgba(27,39,67,0.045)]">
+      <h3 className="!font-['Montserrat'] text-[15px] font-semibold text-[#172033]">{includes.title}</h3>
+      <p className="!font-['Montserrat'] text-[11px] text-[#8490A3]">{includes.subtitle}</p>
       <ul className="mt-5 space-y-3">
-        {includes.items.map((item) => <li key={item} className="flex gap-3 !font-['Montserrat'] text-sm text-[#6E5B4E]"><span className="font-black text-[#4BBF72]">✓</span>{item}</li>)}
+        {includes.items.map((item) => <li key={item} className="flex gap-3 !font-['Montserrat'] text-[11px] leading-relaxed text-[#59667A]"><span className="font-semibold text-[#438C60]">✓</span>{item}</li>)}
       </ul>
       <div className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <button type="button" onClick={() => onPlanAction?.(planKey)} className="rounded-[15px] bg-[#1941CF] px-4 py-3 !font-['Montserrat'] text-sm font-black text-white">{includes.primaryButton}</button>
-        <button type="button" onClick={onComparePlans} className="rounded-[15px] border border-black/10 bg-white px-4 py-3 !font-['Montserrat'] text-sm font-black text-[#111111]">{includes.secondaryButton}</button>
+        <button type="button" onClick={() => onPlanAction?.(planKey)} className="rounded-[13px] bg-[linear-gradient(110deg,#172A4D_0%,#4669A9_100%)] px-4 py-3 !font-['Montserrat'] text-[11px] font-semibold text-white shadow-[0_8px_20px_rgba(39,67,118,0.14)]">{includes.primaryButton}</button>
+        <button type="button" onClick={onComparePlans} className="rounded-[13px] border border-[#DCE2EC] bg-white px-4 py-3 !font-['Montserrat'] text-[11px] font-semibold text-[#435069] transition hover:bg-[#F8FAFD]">{includes.secondaryButton}</button>
       </div>
     </section>
   );
@@ -1155,12 +1146,12 @@ function DomainsCard({ domains }) {
   const items = Array.isArray(domains) ? domains : [];
 
   return (
-    <section className="rounded-[20px] border border-black/10 bg-white p-5 shadow-[0_8px_22px_rgba(0,0,0,0.05)]">
-      <h3 className="!font-['Montserrat'] text-lg font-black text-[#111111]">
+    <section className="rounded-[20px] border border-[#E1E6EF] bg-white p-5 shadow-[0_8px_24px_rgba(27,39,67,0.045)]">
+      <h3 className="!font-['Montserrat'] text-[15px] font-semibold text-[#172033]">
         🗺️ Mapa de Dominios
       </h3>
 
-      <p className="!font-['Montserrat'] text-sm text-[#806B5F]">
+      <p className="!font-['Montserrat'] text-[11px] text-[#8490A3]">
         Dominios y habilidades relacionados con tu ruta actual
       </p>
 
@@ -1172,20 +1163,20 @@ function DomainsCard({ domains }) {
               className="grid grid-cols-[minmax(0,1fr)_64px_34px] items-center gap-3"
             >
               <div className="flex min-w-0 items-center gap-2">
-                <span className="truncate !font-['Montserrat'] text-xs text-[#111111]">
+                <span className="truncate !font-['Montserrat'] text-[10px] font-medium text-[#4B586D]">
                   {domain.name}
                 </span>
 
                 {domain.inRoute && (
-                  <span className="shrink-0 rounded-full bg-[#E7EAFE] px-2 py-0.5 !font-['Montserrat'] text-[9px] font-bold text-[#1941CF]">
+                  <span className="shrink-0 rounded-full bg-[#EAF0F8] px-2 py-0.5 !font-['Montserrat'] text-[8px] font-semibold text-[#48679D]">
                     + ruta
                   </span>
                 )}
               </div>
 
-              <div className="h-1.5 overflow-hidden rounded-full bg-neutral-200">
+              <div className="h-1.5 overflow-hidden rounded-full bg-[#E9ECF1]">
                 <div
-                  className="h-full rounded-full bg-[#1941CF]"
+                  className="h-full rounded-full bg-[linear-gradient(90deg,#172A4D_0%,#5276B2_100%)]"
                   style={{
                     width: `${Math.max(
                       0,
@@ -1195,7 +1186,7 @@ function DomainsCard({ domains }) {
                 />
               </div>
 
-              <span className="!font-['Montserrat'] text-[10px] font-bold text-[#1941CF]">
+              <span className="!font-['Montserrat'] text-[9px] font-semibold text-[#48679D]">
                 {Math.max(
                   0,
                   Math.min(100, Number(domain.value) || 0)
@@ -1205,7 +1196,7 @@ function DomainsCard({ domains }) {
           ))}
         </div>
       ) : (
-        <div className="mt-5 rounded-[14px] border border-black/10 bg-[#F6F4EF] p-4 !font-['Montserrat'] text-xs text-[#806B5F]">
+        <div className="mt-5 rounded-[14px] border border-dashed border-[#D9E0EA] bg-[#FAFBFD] p-4 !font-['Montserrat'] text-[11px] text-[#8490A3]">
           Aún no hay dominios suficientes para construir el mapa de tu ruta.
         </div>
       )}
@@ -1347,23 +1338,23 @@ export default function CareerTab({
     <div className="w-full pb-8">
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <h1 className="!font-['Montserrat'] text-[2rem] font-bold leading-[1.05em] text-[#111111]">
+          <h1 className="!font-['Montserrat'] text-[1.9rem] font-semibold leading-[1.05em] tracking-[-0.035em] text-[#172033]">
             Plan de Carrera
           </h1>
 
-          <p className="mt-1 !font-['Montserrat'] text-sm text-[#806B5F]">
+          <p className="mt-1.5 !font-['Montserrat'] text-[13px] text-[#8490A3]">
             Tu hoja de ruta profesional personalizada por Topo
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {visiblePlan.isCurrentUserPlan && (
-            <span className="w-fit rounded-full bg-[#EAF8EF] px-4 py-2 !font-['Montserrat'] text-xs font-black text-[#31985A]">
+            <span className="w-fit rounded-full border border-[#D9EBDD] bg-[#F0F8F2] px-4 py-2 !font-['Montserrat'] text-[10px] font-semibold text-[#4C8B61]">
               ✓ Tu plan actual
             </span>
           )}
 
-          <span className="w-fit rounded-full bg-[#CFFAFE] !flex gap-2 px-4 py-2 !font-['Montserrat'] text-xs font-black text-[#0891B2]">
+          <span className="w-fit rounded-full border border-[#D8E7EE] bg-[#EAF8FA] !flex items-center gap-2 px-4 py-2 !font-['Montserrat'] text-[10px] font-semibold text-[#3D7190]">
               <img
                 src="/assets/logos/topo-contenedor-claro.png"
                 alt="Logo Topo"
@@ -1378,7 +1369,7 @@ export default function CareerTab({
       </div>
 
       {careerError && (
-        <div className="mb-4 rounded-[16px] border border-amber-200 bg-amber-50 px-4 py-3 !font-['Montserrat'] text-sm text-amber-700">
+        <div className="mb-4 rounded-[15px] border border-[#E8DDBD] bg-[#FFF9E8] px-4 py-3 !font-['Montserrat'] text-[11px] text-[#866E31]">
           {careerError} Se mostrará la configuración general del plan.
         </div>
       )}
@@ -1395,7 +1386,7 @@ export default function CareerTab({
           {[1, 2, 3].map((item) => (
             <div
               key={item}
-              className="h-[92px] animate-pulse rounded-[18px] bg-neutral-200"
+              className="h-[92px] animate-pulse rounded-[18px] border border-[#E7EBF1] bg-[#EEF1F5]"
             />
           ))}
         </div>
@@ -1403,7 +1394,7 @@ export default function CareerTab({
         <StatsGrid stats={visiblePlan.stats} />
       )}
 
-      <section className="mt-4 overflow-hidden rounded-[20px] border border-black/10 bg-white shadow-[0_8px_24px_rgba(0,0,0,0.05)]">
+      <section className="mt-4 overflow-hidden rounded-[22px] border border-[#E1E6EF] bg-white shadow-[0_10px_30px_rgba(27,39,67,0.05)]">
         <CareerTimeline
           levels={visiblePlan.levels}
           selectedLevelId={selectedLevelId}

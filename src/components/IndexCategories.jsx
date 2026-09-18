@@ -1,11 +1,8 @@
 import React, {
-  useEffect,
   useState,
   useRef,
   useMemo,
 } from "react";
-
-import endpoints from "../config/api";
 
 import {
   KNOWLEDGE_DOMAINS,
@@ -16,6 +13,11 @@ const IndexCategories = ({
   onDomainSelect,
   selectedTags,
   disabled = false,
+  skills = [],
+  empresas = [],
+  plataformas = [],
+  idiomas = [],
+  universidadesPorRegion = {},
 }) => {
   const [openSection, setOpenSection] = useState(null);
   const [openChildMenu, setOpenChildMenu] = useState(null);
@@ -24,12 +26,7 @@ const IndexCategories = ({
   const [mobileOpenSection, setMobileOpenSection] = useState(null);
   const [mobileOpenChild, setMobileOpenChild] = useState(null);
 
-  const [skills, setSkills] = useState([]);
-  const [empresas, setEmpresas] = useState([]);
-  const [plataformas, setPlataformas] = useState([]);
-  const [idiomas, setIdiomas] = useState([]);
   const [showOtherLanguages, setShowOtherLanguages] = useState(false);
-  const [universidadesPorRegion, setUniversidadesPorRegion] = useState({});
 
   const indexRef = useRef(null);
   const certificationTypeOptions = [
@@ -69,9 +66,6 @@ const IndexCategories = ({
     return "";
   };
   
-  const isSkillActive = (item) =>
-    item?.estado === true || item?.estado === 1 || item?.estado === "1";
-
   const getSkillLabel = (item) =>
     item?.translate && item.translate.trim() !== ""
       ? item.translate
@@ -133,65 +127,6 @@ const IndexCategories = ({
         String(selectedValue).trim().toLowerCase() ===
         String(value).trim().toLowerCase()
     );
-  useEffect(() => {
-    fetch(endpoints.filterSkills)
-      .then((res) => res.json())
-      .then((data) => {
-        const safeData = Array.isArray(data)
-          ? data
-          : Array.isArray(data?.results)
-          ? data.results
-          : [];
-
-        setSkills(safeData.filter((item) => isSkillActive(item)));
-      })
-      .catch(() => setSkills([]));
-
-    fetch(endpoints.filterCompanies)
-      .then((res) => res.json())
-      .then((data) => {
-        const safeData = Array.isArray(data)
-          ? data
-          : Array.isArray(data?.results)
-          ? data.results
-          : [];
-
-        setEmpresas(safeData);
-      })
-      .catch(() => setEmpresas([]));
-
-    fetch(endpoints.filterPlatforms)
-      .then((res) => res.json())
-      .then((data) => {
-        const safeData = Array.isArray(data)
-          ? data
-          : Array.isArray(data?.results)
-          ? data.results
-          : [];
-
-        setPlataformas(safeData);
-      })
-      .catch(() => setPlataformas([]));
-
-    fetch(endpoints.filterUniversitiesRegion)
-      .then((res) => res.json())
-      .then((data) => setUniversidadesPorRegion(data || {}))
-      .catch(() => setUniversidadesPorRegion({}));
-
-    fetch(endpoints.certification_languages)
-      .then((res) => res.json())
-      .then((data) => {
-        const safeData = Array.isArray(data)
-          ? data
-          : Array.isArray(data?.results)
-          ? data.results
-          : [];
-
-        setIdiomas(safeData);
-      })
-      .catch(() => setIdiomas([]));
-  }, []);
-
   const hasIcon = (item) => {
     const icon = item?.skill_ico || item?.skill_img;
     return (

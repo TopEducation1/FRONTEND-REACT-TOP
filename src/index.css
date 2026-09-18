@@ -29,8 +29,34 @@
   --mobil: 480px;
   --mobil-h: 590px;
 }
-::-webkit-scrollbar {
+/*::-webkit-scrollbar {
   display: none;
+}*/
+/* Scrollbar global */
+html {
+  height: auto;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #9ca8b8 #f2f4f7;
+  scrollbar-gutter: stable;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F3F5F8;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #AEB8C7;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7D8BA0;
 }
 @view-transition {
   navigation: auto;
@@ -89,11 +115,13 @@ html.lenis {
 }
 
 body {
-  /*overscroll-behavior: none;*/
   margin: 0;
   padding: 0;
   background: var(--blanco);
-  overflow: hidden;
+
+  /* Evitamos scroll horizontal, pero permitimos el vertical */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 #form-clientify .main-container .container{
@@ -127,7 +155,7 @@ body {
 /** {
   scrollbar-width: none;
   -ms-overflow-style: none;
-}*/
+}
 .subprimery::-webkit-scrollbar {
     width: 8px;
 }
@@ -135,7 +163,7 @@ body {
 .subprimery::-webkit-scrollbar-thumb {
     background-color: rgba(255,255,255,0.3);
     border-radius: 4px;
-}
+}*/
 h1{
   font-family: 'That That New Regular';
 }

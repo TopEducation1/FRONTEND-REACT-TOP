@@ -1,11 +1,21 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Mail, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Mail,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 
 function getCookie(name) {
   const v = `; ${document.cookie}`;
   const parts = v.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(";").shift();
+
+  if (parts.length === 2) {
+    return parts.pop().split(";").shift();
+  }
+
   return "";
 }
 
@@ -13,26 +23,28 @@ async function safeReadJson(res) {
   const text = await res.text();
   const ct = (res.headers.get("content-type") || "").toLowerCase();
   const isJson = ct.includes("application/json");
-  return { isJson, text, json: isJson ? JSON.parse(text) : null };
-}
 
-function BrandPulseIcon() {
-  return (
-    <div className="relative mx-auto grid h-[92px] w-[92px] place-items-center">
-      <span className="absolute h-full w-full animate-[topPulse_2.5s_ease-out_infinite] rounded-full bg-[#3046E8]/10" />
-      <span className="absolute h-full w-full animate-[topPulse_2.5s_ease-out_infinite_0.8s] rounded-full bg-[#3046E8]/10" />
+  let json = null;
 
-      <div className="relative z-10 grid h-[74px] w-[74px] place-items-center rounded-full bg-[linear-gradient(135deg,#4B3BFF_0%,#3046E8_48%,#165C5B_100%)] text-white shadow-[0_18px_55px_rgba(48,70,232,0.32)]">
-        <Mail size={32} strokeWidth={2.4} />
-      </div>
-    </div>
-  );
+  if (isJson && text) {
+    try {
+      json = JSON.parse(text);
+    } catch {
+      json = null;
+    }
+  }
+
+  return {
+    isJson,
+    text,
+    json,
+  };
 }
 
 export default function ForgotPassword() {
   const API = useMemo(() => {
     const fromEnv = process.env.REACT_APP_API_URL || "";
-    return (fromEnv).replace(/\/+$/, "");
+    return fromEnv.replace(/\/+$/, "");
   }, []);
 
   const [email, setEmail] = useState("");
@@ -44,16 +56,21 @@ export default function ForgotPassword() {
     await fetch(`${API}/api/auth/csrf/`, {
       method: "GET",
       credentials: "include",
-      headers: { Accept: "application/json" },
+      headers: {
+        Accept: "application/json",
+      },
     });
   }
 
   const onSubmit = async (e) => {
     e.preventDefault();
+
     setErr("");
     setOkMsg("");
 
-    if (!email.trim()) {
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanEmail) {
       setErr("Ingresa tu correo electrónico.");
       return;
     }
@@ -62,157 +79,195 @@ export default function ForgotPassword() {
 
     try {
       await ensureCsrf();
+
       const csrftoken = getCookie("csrftoken");
 
-      const res = await fetch(`${API}/api/auth/password/reset/`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          "X-CSRFToken": csrftoken,
-        },
-        body: JSON.stringify({ email: email.trim().toLowerCase() }),
-      });
+      const res = await fetch(
+        `${API}/api/auth/password/reset/`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "X-CSRFToken": csrftoken,
+          },
+          body: JSON.stringify({
+            email: cleanEmail,
+          }),
+        }
+      );
 
-      const { isJson, json, text } = await safeReadJson(res);
+      const { isJson, json, text } =
+        await safeReadJson(res);
 
       if (isJson && (json?.ok === false || !res.ok)) {
-        throw new Error(json?.error || `HTTP_${res.status}`);
+        throw new Error(
+          json?.error ||
+            json?.message ||
+            json?.detail ||
+            `HTTP_${res.status}`
+        );
       }
 
       if (!isJson && !res.ok) {
-        throw new Error(`Error HTTP_${res.status}: ${text.slice(0, 120)}`);
+        throw new Error(
+          `Error HTTP_${res.status}: ${text.slice(0, 120)}`
+        );
       }
 
       setOkMsg(
         "Si el correo existe, te enviaremos un enlace para restablecer tu contraseña."
       );
+
       setEmail("");
     } catch (e2) {
-      setErr(e2?.message || "No se pudo enviar el correo de recuperación.");
+      setErr(
+        e2?.message ||
+          "No se pudo enviar el correo de recuperación."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F6F4EF] px-5 py-20 md:py-24 text-[#111111]">
-      <style>
-        {`
-          @keyframes topPulse {
-            0% { transform: scale(.65); opacity: .32; }
-            70% { opacity: .10; }
-            100% { transform: scale(1.75); opacity: 0; }
-          }
+    <main className="min-h-screen bg-[#F4F6F9] px-4 py-8 font-['Montserrat'] text-[#172033] md:px-6 md:py-12">
+      <section className="mx-auto flex min-h-[calc(100vh-64px)] w-full max-w-[560px] items-center justify-center">
+        <div className="w-full rounded-[26px] border border-[#E4E8EF] bg-white p-6 shadow-[0_24px_80px_rgba(17,29,49,0.10)] md:p-8">
 
-          .forgot-dot-grid {
-            background-image: radial-gradient(rgba(48,70,232,.22) 1px, transparent 1px);
-            background-size: 22px 22px;
-          }
-        `}
-      </style>
+          {/* ENCABEZADO */}
+          <div className="flex items-start gap-4">
+            <div className="relative grid h-[45px] w-[45px] shrink-0 place-items-center">
+              <span className="grid h-12 w-12 place-items-center rounded-[13px] bg-[#111D31] !font-['Montserrat'] text-[19px] font-bold text-white">
+                T
+              </span>
+            </div>
 
-      <div className="forgot-dot-grid absolute inset-0 opacity-[0.22]" />
-      <div className="pointer-events-none absolute left-1/2 top-[15%] h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[#3046E8]/10 blur-[120px]" />
+            <div className="min-w-0 pt-0.5">
+              <span className="text-[9px] font-semibold uppercase text-[#41679F]">
+                Recupera tu acceso
+              </span>
 
-      <section className="relative z-10 w-full max-w-[560px]">
-        <div className="text-center">
-          <BrandPulseIcon />
+              <h1 className="text-[1.9rem] font-semibold leading-tight !font-['Montserrat'] text-[#172033] md:text-[2rem]">
+                Restablece tu contraseña
+              </h1>
 
-          <p className="mt-5 !font-['Montserrat'] text-[13px] font-semibold uppercase tracking-[0.18em] text-[#3046E8]">
-            Recupera tu acceso
-          </p>
+              <p className="max-w-[390px] text-[11px] leading-[1.2] text-[#7D8798] md:text-[12px]">
+                Ingresa tu correo electrónico y te enviaremos las instrucciones para crear una nueva contraseña.
+              </p>
+            </div>
+          </div>
 
-          <h1 className="mt-2 !font-['Montserrat'] text-[2.35rem] font-semibold leading-tight tracking-[-0.04em] text-[#080808]">
-            Restablece tu contraseña
-          </h1>
+          {/* FORMULARIO */}
+          <form
+            onSubmit={onSubmit}
+            className="mt-4"
+            noValidate
+          >
+            <label
+              htmlFor="forgot-email"
+              className="block text-[11px] font-semibold text-[#354156]"
+            >
+              Correo electrónico
+            </label>
 
-          <p className="mx-auto mt-4 max-w-[580px] !font-['Montserrat'] text-[1.05rem] leading-[1.5em] text-neutral-600">
-            Ingresa tu correo electrónico y te enviaremos las instrucciones para crear una nueva contraseña.
-          </p>
-        </div>
-
-        <form
-          onSubmit={onSubmit}
-          className="mt-9 rounded-[28px] bg-white p-7 shadow-[0_28px_80px_rgba(0,0,0,0.08)] md:p-9"
-        >
-          <label className="block !font-['Montserrat'] text-[16px] font-semibold text-[#111111]">
-            Correo electrónico
-
-            <div className="relative mt-3">
+            <div className="relative mt-1">
               <Mail
-                size={20}
-                className="pointer-events-none absolute left-6 top-1/2 -translate-y-1/2 text-neutral-400"
+                size={17}
+                strokeWidth={1.7}
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#8A94A6]"
               />
 
               <input
+                id="forgot-email"
                 type="email"
-                className="
-                  w-full rounded-[22px] border border-black/10 bg-white
-                  px-14 py-4 !font-['Montserrat'] text-[17px] text-[#111111]
-                  outline-none transition-all duration-300
-                  placeholder:text-neutral-300
-                  focus:border-[#3046E8]
-                  focus:ring-4 focus:ring-[#3046E8]/15
-                "
+                className="h-[50px] w-full rounded-[13px] border border-[#DEE3EB] bg-[#F9FAFC] pl-11 pr-4 text-[13px] text-[#172033] outline-none transition placeholder:text-[#A7AFBC] hover:border-[#CFD6E0] focus:border-[#91A7C5] focus:bg-white focus:ring-4 focus:ring-[#41679F]/[0.06]"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
+                inputMode="email"
                 placeholder="tu@correo.com"
+                disabled={loading}
+                required
               />
             </div>
-          </label>
 
-          {err && (
-            <div className="mt-5 flex items-start gap-3 rounded-[18px] border border-red-100 bg-red-50 px-5 py-4 !font-['Montserrat'] text-sm font-semibold text-red-600">
-              <AlertCircle size={18} className="mt-[1px] shrink-0" />
-              <span>{err}</span>
+            {err && (
+              <div
+                role="alert"
+                aria-live="polite"
+                className="mt-4 flex items-start gap-2 rounded-[12px] border border-[#F0CCCC] bg-[#FFF7F7] px-4 py-3 text-[10.5px] font-medium leading-relaxed text-[#B84D4D]"
+              >
+                <AlertCircle
+                  size={16}
+                  className="mt-[1px] shrink-0"
+                />
+
+                <span>{err}</span>
+              </div>
+            )}
+
+            {okMsg && (
+              <div
+                role="status"
+                aria-live="polite"
+                className="mt-4 flex items-start gap-2 rounded-[12px] border border-[#CFE5D5] bg-[#F3FAF5] px-4 py-3 text-[10.5px] font-medium leading-relaxed text-[#43845A]"
+              >
+                <CheckCircle
+                  size={16}
+                  className="mt-[1px] shrink-0"
+                />
+
+                <span>{okMsg}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-6 flex h-[48px] w-full items-center justify-center gap-2 rounded-[12px] bg-[linear-gradient(135deg,#111D31_0%,#41679F_100%)] px-5 text-[12px] font-semibold text-white shadow-[0_10px_28px_rgba(29,53,87,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(29,53,87,0.27)] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+            >
+              {loading && (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              )}
+
+              {loading
+                ? "Enviando..."
+                : "Enviar enlace"}
+
+              {!loading && (
+                <ArrowRight
+                  size={15}
+                  strokeWidth={1.8}
+                />
+              )}
+            </button>
+
+            <div className="my-3 flex items-center gap-3">
+              <span className="h-px flex-1 bg-[#E8ECF1]" />
+              <span className="text-[9px] uppercase tracking-[0.12em] text-[#A1A9B6]">
+                Acceso
+              </span>
+              <span className="h-px flex-1 bg-[#E8ECF1]" />
             </div>
-          )}
 
-          {okMsg && (
-            <div className="mt-5 flex items-start gap-3 rounded-[18px] border border-[#5CC781]/25 bg-[#5CC781]/10 px-5 py-4 !font-['Montserrat'] text-sm font-semibold text-[#2E9F58]">
-              <CheckCircle size={18} className="mt-[1px] shrink-0" />
-              <span>{okMsg}</span>
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="
-              mt-7 flex w-full items-center justify-center gap-3
-              rounded-[18px] bg-[#3046E8] px-8 py-5
-              !font-['Montserrat'] text-[17px] font-semibold text-white
-              shadow-[0_22px_50px_rgba(48,70,232,0.28)]
-              transition-all duration-300
-              hover:-translate-y-1 hover:bg-[#253ACF]
-              disabled:cursor-not-allowed disabled:opacity-60
-            "
-          >
-            {loading ? "Enviando..." : "Enviar enlace"}
-            {!loading && <ArrowRight size={19} />}
-          </button>
-
-          <div className="mt-7 flex justify-center">
             <Link
               to="/login"
-              className="
-                inline-flex items-center gap-2 rounded-full px-4 py-2
-                !font-['Montserrat'] text-sm font-semibold text-neutral-500
-                transition hover:bg-black/5 hover:text-[#111111]
-              "
+              className="flex h-[46px] w-full items-center justify-center gap-2 rounded-[12px] border border-[#DDE3EB] bg-white px-5 text-[11px] font-semibold text-[#354156] transition hover:border-[#C6D0DE] hover:bg-[#F8FAFC]"
             >
-              <ArrowLeft size={17} />
+              <ArrowLeft
+                size={15}
+                strokeWidth={1.8}
+              />
               Volver a iniciar sesión
             </Link>
-          </div>
-        </form>
+          </form>
 
-        <p className="mt-6 text-center !font-['Montserrat'] text-[13px] leading-[1.5em] text-neutral-400">
-          Por seguridad, no confirmaremos si el correo existe o no en nuestra plataforma.
-        </p>
+          <p className="mt-5 text-center text-[9.5px] leading-relaxed text-[#8A94A6]">
+            Por seguridad, no confirmaremos si el correo existe o no en nuestra plataforma.
+          </p>
+        </div>
       </section>
     </main>
   );

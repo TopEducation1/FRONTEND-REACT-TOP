@@ -27,6 +27,7 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import endpoints from "../config/api";
 import Seo from "../components/Seo";
+import TopoIntroFlow from "../components/TopoIntroFlow";
 ReactModal.setAppElement("#root");
 
 async function postJSON(url, body, { withCredentials = true } = {}) {
@@ -778,6 +779,7 @@ function StartNowContent() {
   const initialEmail = searchParams.get("email") || "";
 
   const [step, setStep] = useState("welcome");
+  const [showTopoIntro, setShowTopoIntro] = useState(false);
   const [routeId, setRouteId] = useState(null);
   const [progress, setProgress] = useState(0);
   const [selectedPlan, setSelectedPlan] = useState("");
@@ -2818,7 +2820,7 @@ function StartNowContent() {
             Enviar
           </button>
         </form>
-        {step === "welcome" && (
+        {step === "welcome" && !showTopoIntro && (
           <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-20 text-center">
             <div className="route-dot-grid absolute inset-0 opacity-[0.14]" />
 
@@ -2844,20 +2846,25 @@ function StartNowContent() {
                 <button
                   type="button"
                   onClick={() => setStep("info")}
-                  className="inline-flex items-center gap-3 rounded-full bg-[#2563EB] px-4 py-2 md:px-10 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_55px_rgba(25,65,207,0.30)] transition hover:-translate-y-1 hover:bg-[#1941CF]"
+                  className="inline-flex min-h-[58px] items-center justify-center gap-3 rounded-full bg-[#CBF6FA] px-8 !font-['Montserrat'] text-[1rem] font-semibold text-[#4798B7] shadow-[0_14px_28px_rgba(15,23,42,0.14)] transition hover:-translate-y-0.5 hover:bg-[#BDF0F5] md:px-10"
                 >
                   Crear mi ruta de aprendizaje
                   <ArrowIcon />
                 </button>
 
-                {/*<button
-                  ref={introVideoButtonRef}
+                <button
                   type="button"
-                  onClick={openIntroVideo}
-                  className="rounded-full border border-black/10 bg-white px-4 py-2 md:px-8 md:py-4 !font-['Montserrat'] text-lg font-medium text-neutral-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-[#F8F7F3] hover:text-black"
+                  onClick={() => {
+                    setShowTopoIntro(true);
+                    window.scrollTo({
+                      top: 0,
+                      behavior: "smooth",
+                    });
+                  }}
+                  className="rounded-full border border-black/10 bg-white px-4 min-h-[58px] md:px-8 !font-['Montserrat'] text-lg font-medium text-[#111D31] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#F8FAFC]"
                 >
-                  Conocer más
-                </button>*/}
+                  ¿Quién es Topo?
+                </button>
               </div>
 
               <button
@@ -2869,6 +2876,26 @@ function StartNowContent() {
               </button>
             </div>
           </section>
+        )}
+
+        {step === "welcome" && showTopoIntro && (
+          <TopoIntroFlow
+            onBackToWelcome={() => {
+              setShowTopoIntro(false);
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+              });
+            }}
+            onFinish={() => {
+              setShowTopoIntro(false);
+              setStep("info");
+              window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+              });
+            }}
+          />
         )}
 
         {step === "info" && (

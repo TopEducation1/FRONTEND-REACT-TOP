@@ -33,37 +33,111 @@ const Header = ({
   };
 
   useEffect(() => {
+    /*
+     * Si el Header está en una vista donde no mostramos MenuTop
+     * (por ejemplo StartNow), no necesitamos validar la sesión.
+     */
+    if (hideMenuTop) {
+      setUser(null);
+      setLoadingAuth(false);
+      return undefined;
+    }
+
+    /*
+     * Evita llamar /api/account/me/ en visitantes anónimos.
+     *
+     * Este indicador se debe guardar al hacer login exitoso:
+     *
+     * localStorage.setItem("top_education_authenticated", "1");
+     */
+    const hasAuthHint =
+      localStorage.getItem("top_education_authenticated") === "1";
+
+    if (!hasAuthHint) {
+      setUser(null);
+      setLoadingAuth(false);
+      return undefined;
+    }
+
     let mounted = true;
+    const controller = new AbortController();
 
-    fetch(`${API}/api/account/me/`, {
-      credentials: "include",
-      headers: { Accept: "application/json" },
-    })
-      .then(async (res) => {
-        if (res.status === 401) return null;
+    setLoadingAuth(true);
 
-        const ct = res.headers.get("content-type") || "";
-        if (!ct.includes("application/json")) return null;
-        if (!res.ok) return null;
+    const loadCurrentUser = async () => {
+      try {
+        const res = await fetch(`${API}/api/account/me/`, {
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+          },
+          signal: controller.signal,
+        });
 
-        return res.json();
-      })
-      .then((data) => {
+        /*
+         * Si el indicador local decía que había sesión, pero Django
+         * responde 401, la sesión expiró o ya no existe.
+         */
+        if (res.status === 401) {
+          localStorage.removeItem("top_education_authenticated");
+
+          if (mounted) {
+            setUser(null);
+          }
+
+          return;
+        }
+
+        const contentType =
+          res.headers.get("content-type") || "";
+
+        if (
+          !res.ok ||
+          !contentType.includes("application/json")
+        ) {
+          if (mounted) {
+            setUser(null);
+          }
+
+          return;
+        }
+
+        const data = await res.json();
+
         if (!mounted) return;
 
         if (data?.ok && data?.data) {
           setUser(data.data);
+
+          /*
+           * Refrescamos el indicador por si la sesión sigue activa.
+           */
+          localStorage.setItem("top_education_authenticated", "1");
         } else {
           setUser(null);
         }
-      })
-      .catch(() => setUser(null))
-      .finally(() => mounted && setLoadingAuth(false));
+      } catch (error) {
+        if (error?.name === "AbortError") {
+          return;
+        }
+
+        if (mounted) {
+          setUser(null);
+        }
+      } finally {
+        if (mounted) {
+          setLoadingAuth(false);
+        }
+      }
+    };
+
+    loadCurrentUser();
 
     return () => {
       mounted = false;
+      controller.abort();
     };
-  }, []);
+  }, [hideMenuTop]);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -93,6 +167,12 @@ const Header = ({
     } catch (e) {
       console.error("Logout error", e);
     } finally {
+      /*
+       * Quitamos el indicador local para que el Header no vuelva
+       * a consultar /api/account/me/ como si existiera una sesión.
+       */
+      localStorage.removeItem("top_education_authenticated");
+
       setUser(null);
       setOpenDropdown(false);
       navigateWithTransition("/login");
