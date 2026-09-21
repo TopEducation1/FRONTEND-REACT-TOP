@@ -381,6 +381,212 @@ function getCourseSkillNames(course = {}) {
   );
 }
 
+
+function formatCourseDuration(rawValue) {
+  if (rawValue === null || rawValue === undefined) return "";
+
+  const original = String(rawValue).trim();
+
+  if (!original) return "";
+
+  const invalidValues = new Set([
+    "none",
+    "null",
+    "undefined",
+    "x",
+    "n/a",
+    "na",
+    "uncategorized",
+  ]);
+
+  if (invalidValues.has(original.toLowerCase())) {
+    return "";
+  }
+
+  const pluralize = (value, singular, plural) =>
+    `${value} ${Number(value) === 1 ? singular : plural}`;
+
+  const formatSeconds = (secondsValue) => {
+    const totalSeconds = Math.max(
+      0,
+      Math.round(Number(secondsValue) || 0)
+    );
+
+    if (!totalSeconds) return "";
+
+    const WEEK = 7 * 24 * 60 * 60;
+    const DAY = 24 * 60 * 60;
+    const HOUR = 60 * 60;
+    const MINUTE = 60;
+
+    let remaining = totalSeconds;
+
+    const weeks = Math.floor(remaining / WEEK);
+    remaining %= WEEK;
+
+    const days = Math.floor(remaining / DAY);
+    remaining %= DAY;
+
+    const hours = Math.floor(remaining / HOUR);
+    remaining %= HOUR;
+
+    const minutes = Math.floor(remaining / MINUTE);
+    const seconds = remaining % MINUTE;
+
+    const parts = [];
+
+    if (weeks) {
+      parts.push(pluralize(weeks, "semana", "semanas"));
+    }
+
+    if (days) {
+      parts.push(pluralize(days, "día", "días"));
+    }
+
+    if (hours) {
+      parts.push(pluralize(hours, "hora", "horas"));
+    }
+
+    if (minutes) {
+      parts.push(pluralize(minutes, "minuto", "minutos"));
+    }
+
+    if (!parts.length && seconds) {
+      parts.push(pluralize(seconds, "segundo", "segundos"));
+    }
+
+    return parts.join(" ");
+  };
+
+  /*
+   * Valores numéricos puros y valores marcados explícitamente
+   * como segundos se convierten automáticamente.
+   *
+   * Ejemplos:
+   * 324000        -> 3 días 18 horas
+   * 7200 seconds  -> 2 horas
+   * 3600s         -> 1 hora
+   */
+  const secondsMatch = original.match(
+    /^(\d+(?:[.,]\d+)?)\s*(?:s|sec|secs|second|seconds|seg|segs|segundo|segundos)?$/i
+  );
+
+  if (secondsMatch) {
+    const numericValue = Number(
+      secondsMatch[1].replace(",", ".")
+    );
+
+    return formatSeconds(numericValue);
+  }
+
+  let value = original
+    .replace(/\s+/g, " ")
+    .trim();
+
+  /*
+   * Normaliza unidades ya expresadas en texto.
+   */
+  const unitPatterns = [
+    {
+      regex:
+        /(\d+(?:[.,]\d+)?)\s*(?:hours?|hrs?|h|horas?)\b/gi,
+      singular: "hora",
+      plural: "horas",
+    },
+    {
+      regex:
+        /(\d+(?:[.,]\d+)?)\s*(?:days?|días?|dias?)\b/gi,
+      singular: "día",
+      plural: "días",
+    },
+    {
+      regex:
+        /(\d+(?:[.,]\d+)?)\s*(?:weeks?|wks?|semanas?)\b/gi,
+      singular: "semana",
+      plural: "semanas",
+    },
+    {
+      regex:
+        /(\d+(?:[.,]\d+)?)\s*(?:months?|mos?|meses?|mes)\b/gi,
+      singular: "mes",
+      plural: "meses",
+    },
+    {
+      regex:
+        /(\d+(?:[.,]\d+)?)\s*(?:minutes?|mins?|minutos?|min)\b/gi,
+      singular: "minuto",
+      plural: "minutos",
+    },
+  ];
+
+  unitPatterns.forEach(({ regex, singular, plural }) => {
+    value = value.replace(regex, (_, amount) => {
+      const numericAmount = Number(
+        String(amount).replace(",", ".")
+      );
+
+      return `${amount} ${
+        numericAmount === 1 ? singular : plural
+      }`;
+    });
+  });
+
+  const phraseReplacements = [
+    [/\bapproximately\b/gi, "aproximadamente"],
+    [/\bapprox\.?\b/gi, "aprox."],
+    [/\babout\b/gi, "aprox."],
+    [/\bper week\b/gi, "por semana"],
+    [/\ba week\b/gi, "por semana"],
+    [/\/\s*week\b/gi, " por semana"],
+    [/\bweekly\b/gi, "por semana"],
+    [/\bper day\b/gi, "por día"],
+    [/\ba day\b/gi, "por día"],
+    [/\/\s*day\b/gi, " por día"],
+    [/\bdaily\b/gi, "por día"],
+    [/\bper month\b/gi, "por mes"],
+    [/\ba month\b/gi, "por mes"],
+    [/\/\s*month\b/gi, " por mes"],
+    [/\bmonthly\b/gi, "por mes"],
+    [/\bself[- ]paced\b/gi, "a tu propio ritmo"],
+    [/\bat your own pace\b/gi, "a tu propio ritmo"],
+    [/\bflexible schedule\b/gi, "horario flexible"],
+    [/\bfull time\b/gi, "tiempo completo"],
+    [/\bpart time\b/gi, "tiempo parcial"],
+  ];
+
+  phraseReplacements.forEach(([regex, replacement]) => {
+    value = value.replace(regex, replacement);
+  });
+
+  const looseUnitReplacements = [
+    [/\bhours?\b/gi, "horas"],
+    [/\bhrs?\b/gi, "horas"],
+    [/\bdays?\b/gi, "días"],
+    [/\bweeks?\b/gi, "semanas"],
+    [/\bwks?\b/gi, "semanas"],
+    [/\bmonths?\b/gi, "meses"],
+    [/\bminutes?\b/gi, "minutos"],
+    [/\bmins?\b/gi, "minutos"],
+    [/\bseconds?\b/gi, "segundos"],
+    [/\bsecs?\b/gi, "segundos"],
+  ];
+
+  looseUnitReplacements.forEach(([regex, replacement]) => {
+    value = value.replace(regex, replacement);
+  });
+
+  /*
+   * Ej.: "2 weeks at 10 hours a week"
+   * -> "2 semanas · 10 horas por semana"
+   */
+  value = value.replace(/\s+\bat\b\s+/gi, " · ");
+
+  return value
+    .replace(/\s+/g, " ")
+    .replace(/\s+([,.;:])/g, "$1")
+    .trim();
+}
+
 function normalizeCourse(course = {}) {
   const url =
     course.url ||
@@ -411,7 +617,15 @@ function normalizeCourse(course = {}) {
       course.university ||
       course.company ||
       "",
-    duration: course.duration || course.tiempo || "",
+    duration: formatCourseDuration(
+      course.duration ||
+        course.tiempo ||
+        course.tiempo_certificacion ||
+        course.duration_certificacion ||
+        course.duration_seconds ||
+        course.durationSeconds ||
+        ""
+    ),
     language: course.language || course.lenguaje || "",
     image: course.image || course.imagen || "",
     skills: Array.isArray(course.skills) ? course.skills : [],
@@ -624,21 +838,29 @@ function PlanSelector({ selectedPlan, onChange }) {
 
 function TopoMessage({ title, description, highlight }) {
   return (
-    <section className="relative mt-4 overflow-visible rounded-[20px] border border-[#DCE5F1] bg-[linear-gradient(110deg,#F0F6FF_0%,#E7FAFC_100%)] px-5 py-5 shadow-[0_8px_24px_rgba(27,39,67,0.035)] ">
-      <h2 className="!font-['Montserrat'] text-[15px] font-semibold text-[#172033]">{title}</h2>
-      <p className="!font-['Montserrat'] text-[13px] leading-relaxed text-[#71809A]">{description}</p>
-      {highlight && <p className="mt-1 !font-['Montserrat'] text-[13px] font-semibold text-[#355A98]">{highlight}</p>}
+    <section className="relative mt-4 overflow-visible rounded-[18px] border border-[#DCE5F1] bg-[linear-gradient(110deg,#F0F6FF_0%,#E7FAFC_100%)] px-4 py-4 shadow-[0_8px_24px_rgba(27,39,67,0.035)] sm:rounded-[20px] sm:px-5 sm:py-5">
+      <h2 className="!font-['Montserrat'] text-[14px] font-semibold leading-snug text-[#172033] sm:text-[15px]">{title}</h2>
+      <p className="mt-1 !font-['Montserrat'] text-[11px] leading-relaxed text-[#71809A] sm:text-[13px]">{description}</p>
+      {highlight && <p className="mt-1 !font-['Montserrat'] text-[11px] font-semibold leading-relaxed text-[#355A98] sm:text-[13px]">{highlight}</p>}
     </section>
   );
 }
 
 function StatsGrid({ stats }) {
   return (
-    <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+    <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
       {stats.map((stat) => (
-        <article key={`${stat.value}-${stat.label}`} className="relative overflow-hidden rounded-[18px] border border-[#E1E6EF] bg-white px-5 py-5 text-center shadow-[0_8px_24px_rgba(27,39,67,0.045)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(27,39,67,0.075)]">
-          <strong className="block !font-['Montserrat'] text-[20px] font-semibold tracking-[-0.03em] text-[#172033]">{stat.value}</strong>
-          <span className="mt-1 block !font-['Montserrat'] text-[11px] text-[#8490A3]">{stat.label}</span>
+        <article
+          key={`${stat.value}-${stat.label}`}
+          className="relative min-w-0 overflow-hidden rounded-[16px] border border-[#E1E6EF] bg-white px-2 py-4 text-center shadow-[0_8px_24px_rgba(27,39,67,0.045)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(27,39,67,0.075)] sm:rounded-[18px] sm:px-5 sm:py-5"
+        >
+          <strong className="block break-words !font-['Montserrat'] text-[15px] font-semibold leading-tight tracking-[-0.03em] text-[#172033] sm:text-[20px]">
+            {stat.value}
+          </strong>
+
+          <span className="mt-1 block break-words !font-['Montserrat'] text-[8.5px] leading-tight text-[#8490A3] sm:text-[11px]">
+            {stat.label}
+          </span>
         </article>
       ))}
     </div>
@@ -646,27 +868,74 @@ function StatsGrid({ stats }) {
 }
 
 function ProviderBadge({ children }) {
-  return <span className="rounded-full border border-[#D8E1F0] bg-[#F7F9FD] px-2.5 py-1 !font-['Montserrat'] text-[9px] font-semibold text-[#3E5E95]">{children}</span>;
+  return (
+    <span className="inline-flex max-w-full items-center rounded-full border border-[#D8E1F0] bg-[#F7F9FD] px-2.5 py-1 !font-['Montserrat'] text-[9px] font-semibold leading-tight text-[#3E5E95]">
+      <span className="truncate">{children}</span>
+    </span>
+  );
 }
 
 function CareerTimeline({ levels, selectedLevelId, onSelect }) {
   return (
-    <div className="grid grid-cols-1 gap-2 px-4 py-5 sm:px-6 md:grid-cols-3 md:gap-0 md:px-8 md:py-7">
+    <div className="grid grid-cols-1 gap-1.5 px-3 py-4 sm:px-5 md:grid-cols-3 md:gap-0 md:px-8 md:py-7">
       {levels.map((level, index) => {
         const active = selectedLevelId === level.id;
+
         return (
-          <button key={level.id} type="button" onClick={() => onSelect(level.id)} className="group relative flex min-w-0 items-center gap-3 rounded-[16px] px-3 py-3 text-left transition hover:bg-[#F8FAFD] md:flex-col md:gap-0 md:bg-transparent md:px-2 md:py-0 md:text-center md:hover:bg-transparent">
-            {index < levels.length - 1 && <span className="absolute left-[58%] top-6 hidden h-px w-[84%] bg-[#D4DDEA] md:block" />}
-            <span className={`relative z-10 grid h-12 w-12 place-items-center rounded-full border-2 !font-['Montserrat'] text-sm font-black transition ${
-              active ? "border-transparent bg-[linear-gradient(135deg,#172A4D_0%,#486BAA_100%)] text-white shadow-[0_10px_24px_rgba(37,60,105,0.24)]" : "border-[#DDE3EC] bg-white text-[#66738A] group-hover:border-[#B6C5DB]"
-            }`}>{level.number}</span>
-            <strong className="mt-2 !font-['Montserrat'] text-sm font-semibold text-[#172033]">{level.title}</strong>
-            <span className="!font-['Montserrat'] text-[11px] text-[#8A95A7]">{level.level}</span>
-            <span className={`mt-1 rounded-full px-3 py-1 !font-['Montserrat'] text-[10px] font-bold ${
-              level.status === "En progreso" ? "bg-[#E9EFFA] text-[#3D6099]" : "bg-[#EDF8F1] text-[#4A9668]"
-            }`}>{level.status}</span>
-            <div className="mt-2 flex flex-wrap justify-center gap-1">
-              {level.providers.map((provider) => <ProviderBadge key={provider}>{provider}</ProviderBadge>)}
+          <button
+            key={level.id}
+            type="button"
+            onClick={() => onSelect(level.id)}
+            className={`group relative flex min-w-0 items-center gap-3 rounded-[15px] border px-3 py-3 text-left transition md:flex-col md:gap-0 md:border-transparent md:bg-transparent md:px-2 md:py-0 md:text-center md:hover:bg-transparent ${
+              active
+                ? "border-[#D9E2EF] bg-[#F7F9FC]"
+                : "border-transparent hover:bg-[#F8FAFD]"
+            }`}
+          >
+            {index < levels.length - 1 && (
+              <span className="absolute left-[58%] top-6 hidden h-px w-[84%] bg-[#D4DDEA] md:block" />
+            )}
+
+            <span
+              className={`relative z-10 grid h-10 w-10 shrink-0 place-items-center rounded-full border-2 !font-['Montserrat'] text-[12px] font-black transition sm:h-11 sm:w-11 md:h-12 md:w-12 md:text-sm ${
+                active
+                  ? "border-transparent bg-[linear-gradient(135deg,#172A4D_0%,#486BAA_100%)] text-white shadow-[0_10px_24px_rgba(37,60,105,0.24)]"
+                  : "border-[#DDE3EC] bg-white text-[#66738A] group-hover:border-[#B6C5DB]"
+              }`}
+            >
+              {level.number}
+            </span>
+
+            <div className="min-w-0 flex-1 md:flex md:flex-col md:items-center">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 md:block">
+                <strong className="!font-['Montserrat'] text-[12px] font-semibold text-[#172033] sm:text-sm md:mt-2 md:block">
+                  {level.title}
+                </strong>
+
+                <span className="!font-['Montserrat'] text-[10px] text-[#8A95A7] sm:text-[11px] md:block">
+                  {level.level}
+                </span>
+              </div>
+
+              <div className="mt-1.5 flex flex-wrap items-center gap-1.5 md:mt-1 md:justify-center">
+                <span
+                  className={`rounded-full px-2.5 py-1 !font-['Montserrat'] text-[9px] font-bold sm:px-3 sm:text-[10px] ${
+                    level.status === "En progreso"
+                      ? "bg-[#E9EFFA] text-[#3D6099]"
+                      : "bg-[#EDF8F1] text-[#4A9668]"
+                  }`}
+                >
+                  {level.status}
+                </span>
+
+                <div className="flex min-w-0 flex-wrap gap-1 md:mt-1 md:justify-center">
+                  {level.providers.map((provider) => (
+                    <ProviderBadge key={provider}>
+                      {provider}
+                    </ProviderBadge>
+                  ))}
+                </div>
+              </div>
             </div>
           </button>
         );
@@ -675,65 +944,72 @@ function CareerTimeline({ levels, selectedLevelId, onSelect }) {
   );
 }
 
-
 function CourseCard({ course, isCurrentUserPlan }) {
   const hasUrl = course.url && course.url !== "#";
+  const displayDuration = formatCourseDuration(
+    course.duration ||
+      course.tiempo ||
+      course.tiempo_certificacion ||
+      ""
+  );
 
   return (
     <article
-      className={`group overflow-hidden rounded-[18px] border bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(31,47,78,0.09)] ${
+      className={`group min-w-0 overflow-hidden rounded-[16px] border bg-white transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgba(31,47,78,0.09)] sm:rounded-[18px] ${
         course.available === false
           ? "border-[#F0D8D8] opacity-75"
           : "border-[#E1E6EF]"
       }`}
     >
       {course.image && (
-        <div className="h-32 overflow-hidden bg-[linear-gradient(135deg,#EEF3F9,#F8FAFD)]">
+        <div className="h-28 overflow-hidden bg-[linear-gradient(135deg,#EEF3F9,#F8FAFD)] sm:h-32">
           <img
             src={course.image}
             alt={course.title}
             className="h-full w-full object-cover"
             loading="lazy"
             onError={(event) => {
-              event.currentTarget.parentElement.style.display = "none";
+              if (event.currentTarget.parentElement) {
+                event.currentTarget.parentElement.style.display = "none";
+              }
             }}
           />
         </div>
       )}
 
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-3">
-          <span className="rounded-full border border-[#D8E1F0] bg-[#F7F9FD] px-2.5 py-1 !font-['Montserrat'] text-[9px] font-semibold text-[#3E5E95]">
+      <div className="p-3.5 sm:p-4">
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <span className="max-w-full truncate rounded-full border border-[#D8E1F0] bg-[#F7F9FD] px-2.5 py-1 !font-['Montserrat'] text-[9px] font-semibold text-[#3E5E95]">
             {course.provider}
           </span>
 
-          {course.duration && (
-            <span className="!font-['Montserrat'] text-[10px] text-neutral-400">
-              {course.duration}
+          {displayDuration && (
+            <span className="shrink-0 !font-['Montserrat'] text-[9px] font-medium text-neutral-400 sm:text-[10px]">
+              {displayDuration}
             </span>
           )}
         </div>
 
-        <h4 className="mt-2 !font-['Montserrat'] text-sm font-semibold text-[#172033]">
+        <h4 className="mt-2 line-clamp-2 !font-['Montserrat'] text-[13px] font-semibold leading-snug text-[#172033] sm:text-sm">
           {course.title}
         </h4>
 
         {course.institution && (
-          <p className="mt-0.5 !font-['Montserrat'] text-[11px] text-[#8490A3]">
+          <p className="mt-0.5 truncate !font-['Montserrat'] text-[10px] text-[#8490A3] sm:text-[11px]">
             {course.institution}
           </p>
         )}
 
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="mt-2 flex flex-wrap gap-1.5 sm:gap-2">
           {course.language && (
-            <span className="rounded-full bg-neutral-100 px-2 py-1 !font-['Montserrat'] text-[9px] font-bold text-neutral-500">
+            <span className="rounded-full bg-neutral-100 px-2 py-1 !font-['Montserrat'] text-[8.5px] font-bold text-neutral-500 sm:text-[9px]">
               {course.language}
             </span>
           )}
 
           {isCurrentUserPlan && (
             <span
-              className={`rounded-full px-2 py-1 !font-['Montserrat'] text-[9px] font-bold ${
+              className={`rounded-full px-2 py-1 !font-['Montserrat'] text-[8.5px] font-bold sm:text-[9px] ${
                 course.available === false
                   ? "bg-red-50 text-red-500"
                   : "bg-[#EAF8EF] text-[#31985A]"
@@ -755,12 +1031,12 @@ function CourseCard({ course, isCurrentUserPlan }) {
                 ? "noopener noreferrer"
                 : undefined
             }
-            className="mt-4 inline-flex !font-['Montserrat'] text-[11px] font-semibold text-[#355A98]"
+            className="mt-3 inline-flex !font-['Montserrat'] text-[11px] font-semibold text-[#355A98] sm:mt-4"
           >
             {isCurrentUserPlan ? "Abrir curso" : "Ver curso"} →
           </a>
         ) : (
-          <span className="mt-4 inline-flex !font-['Montserrat'] text-xs font-bold text-neutral-400">
+          <span className="mt-3 inline-flex !font-['Montserrat'] text-[10px] font-bold text-neutral-400 sm:mt-4 sm:text-xs">
             Acceso no disponible
           </span>
         )}
@@ -769,26 +1045,50 @@ function CourseCard({ course, isCurrentUserPlan }) {
   );
 }
 
-
 function LevelDetail({ level, isCurrentUserPlan }) {
-  if (!level) return <div className="border-t border-[#E1E6EF] p-8 text-center !font-['Montserrat'] text-neutral-500">Agrega los niveles de este plan en CAREER_PLANS.</div>;
-  return (
-    <div className="border-t border-[#E7EBF1] bg-[#FCFDFE] px-5 py-6 md:px-7">
-      <h3 className="!font-['Montserrat'] text-[15px] font-semibold text-[#172033]">
-        {level.number} · {level.title} <span className="font-normal text-[#8490A3]">— {level.level}</span>
-      </h3>
-      <p className="mt-1.5 !font-['Montserrat'] text-[13px] text-[#8490A3]">{level.description}</p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        {level.skills.map((skill, index) => <span key={`${skill}-${index}`} className="rounded-full border border-[#E1E6EF] bg-white px-3 py-1.5 !font-['Montserrat'] text-[10px] font-medium text-[#66738A]">{skill}</span>)}
+  if (!level) {
+    return (
+      <div className="border-t border-[#E1E6EF] p-6 text-center !font-['Montserrat'] text-sm text-neutral-500 sm:p-8">
+        Agrega los niveles de este plan en CAREER_PLANS.
       </div>
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h4 className="!font-['Montserrat'] text-[10px] font-bold uppercase tracking-[0.12em] text-[#76849A]">
+    );
+  }
+
+  return (
+    <div className="border-t border-[#E7EBF1] bg-[#FCFDFE] px-4 py-5 sm:px-5 sm:py-6 md:px-7">
+      <h3 className="!font-['Montserrat'] text-[14px] font-semibold leading-snug text-[#172033] sm:text-[15px]">
+        {level.number} · {level.title}
+        <span className="mt-0.5 block font-normal text-[#8490A3] sm:mt-0 sm:inline">
+          {" "}— {level.level}
+        </span>
+      </h3>
+
+      <p className="mt-1.5 !font-['Montserrat'] text-[12px] leading-relaxed text-[#8490A3] sm:text-[13px]">
+        {level.description}
+      </p>
+
+      {level.skills?.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1.5 sm:mt-4 sm:gap-2">
+          {level.skills.map((skill, index) => (
+            <span
+              key={`${skill}-${index}`}
+              className="rounded-full border border-[#E1E6EF] bg-white px-2.5 py-1 !font-['Montserrat'] text-[9px] font-medium text-[#66738A] sm:px-3 sm:py-1.5 sm:text-[10px]"
+            >
+              {skill}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-4 flex flex-col gap-2 sm:mt-5 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
+        <div className="min-w-0">
+          <h4 className="!font-['Montserrat'] text-[9px] font-bold uppercase tracking-[0.1em] text-[#76849A] sm:text-[10px] sm:tracking-[0.12em]">
             Cursos en este nivel — {level.coursesLabel}
           </h4>
 
-          {Number(level.totalCourses || 0) > Number(level.courses?.length || 0) && (
-            <p className="mt-1 !font-['Montserrat'] text-[10px] text-[#8490A3]">
+          {Number(level.totalCourses || 0) >
+            Number(level.courses?.length || 0) && (
+            <p className="mt-1 !font-['Montserrat'] text-[9px] leading-relaxed text-[#8490A3] sm:text-[10px]">
               Mostrando {level.courses.length} recomendaciones destacadas.{" "}
               <a
                 href="/account?tab=courses"
@@ -800,34 +1100,69 @@ function LevelDetail({ level, isCurrentUserPlan }) {
           )}
         </div>
 
-        <ProviderBadge>{level.catalogLabel}</ProviderBadge>
+        <div className="max-w-full self-start sm:self-auto">
+          <ProviderBadge>{level.catalogLabel}</ProviderBadge>
+        </div>
       </div>
+
       {level.courses.length ? (
-        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {level.courses.map((course, index) => <CourseCard key={`${course.idInterno || course.title}-${index}`} course={course} isCurrentUserPlan={isCurrentUserPlan} />)}
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:mt-4 sm:grid-cols-2 xl:grid-cols-3">
+          {level.courses.map((course, index) => (
+            <CourseCard
+              key={`${course.idInterno || course.title}-${index}`}
+              course={course}
+              isCurrentUserPlan={isCurrentUserPlan}
+            />
+          ))}
         </div>
       ) : (
-        <div className="mt-4 rounded-[16px] border border-dashed border-[#D8DFE9] bg-white px-5 py-6 text-center">
-          <span className="!font-['Montserrat'] text-[11px] text-[#8490A3]">{level.emptyMessage}</span>{" "}
-          {level.emptyAction && <a href={level.emptyUrl || "#"} className="!font-['Montserrat'] text-[12px] font-semibold text-[#355A98]">{level.emptyAction} →</a>}
+        <div className="mt-4 rounded-[14px] border border-dashed border-[#D8DFE9] bg-white px-4 py-5 text-center sm:rounded-[16px] sm:px-5 sm:py-6">
+          <span className="!font-['Montserrat'] text-[10px] leading-relaxed text-[#8490A3] sm:text-[11px]">
+            {level.emptyMessage}
+          </span>{" "}
+
+          {level.emptyAction && (
+            <a
+              href={level.emptyUrl || "#"}
+              className="!font-['Montserrat'] text-[11px] font-semibold text-[#355A98] sm:text-[12px]"
+            >
+              {level.emptyAction} →
+            </a>
+          )}
         </div>
       )}
+
       {level.footer && (
-        <div className="mt-4 flex flex-col gap-3 rounded-[14px] border border-[#E3E8F0] bg-white px-4 py-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-wrap items-center gap-4">
-            <strong className="!font-['Montserrat'] text-[10px] font-semibold text-[#344158]">{level.footer.title}</strong>
-            {level.footer.analysis && <span className="inline-flex items-center gap-1.5 !font-['Montserrat'] text-[10px] font-medium text-[#47729B]"><img
-                src="/assets/logos/ico-topo.png"
-                alt="Logo Topo"
-                className="
-                  w-[30px]
-                  rounded-full overflow-hidden
-                  h-auto
-                "
-              /> {level.footer.analysis}</span>}
-            <span className="!font-['Montserrat'] text-[10px] text-[#8490A3]">{level.footer.benefit}</span>
+        <div className="mt-4 flex flex-col gap-2.5 rounded-[14px] border border-[#E3E8F0] bg-white px-3.5 py-3 sm:px-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 md:gap-4">
+            <strong className="!font-['Montserrat'] text-[9.5px] font-semibold text-[#344158] sm:text-[10px]">
+              {level.footer.title}
+            </strong>
+
+            {level.footer.analysis && (
+              <span className="inline-flex items-center gap-1.5 !font-['Montserrat'] text-[9.5px] font-medium text-[#47729B] sm:text-[10px]">
+                <img
+                  src="/assets/logos/ico-topo.png"
+                  alt="Logo Topo"
+                  className="h-auto w-[26px] overflow-hidden rounded-full sm:w-[30px]"
+                />
+                {level.footer.analysis}
+              </span>
+            )}
+
+            <span className="!font-['Montserrat'] text-[9.5px] text-[#8490A3] sm:text-[10px]">
+              {level.footer.benefit}
+            </span>
           </div>
-          {level.footer.action && <a href={level.footer.url || "#"} className="!font-['Montserrat'] text-[10px] font-semibold text-[#355A98]">{level.footer.action} →</a>}
+
+          {level.footer.action && (
+            <a
+              href={level.footer.url || "#"}
+              className="self-start !font-['Montserrat'] text-[10px] font-semibold text-[#355A98] md:self-auto"
+            >
+              {level.footer.action} →
+            </a>
+          )}
         </div>
       )}
     </div>
@@ -842,13 +1177,13 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
     : [];
 
   return (
-    <section className="mt-5 rounded-[22px] border border-[#E1E6EF] bg-white p-5 shadow-[0_10px_30px_rgba(27,39,67,0.05)] md:p-6">
+    <section className="mt-4 rounded-[18px] border border-[#E1E6EF] bg-white p-4 shadow-[0_10px_30px_rgba(27,39,67,0.05)] sm:mt-5 sm:rounded-[22px] sm:p-5 md:p-6">
       <TopoMessage
         title={potential.title}
         description={potential.description}
       />
 
-      <div className="mt-5 space-y-5">
+      <div className="mt-4 space-y-5 sm:mt-5">
         {skills.map((skill) => {
           const currentHours = Math.max(
             0,
@@ -860,11 +1195,6 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
             Number(skill.targetHours) || currentHours
           );
 
-          /*
-           * scaleMaxHours controla el ancho total de la barra.
-           * Puede definirse globalmente en potential o individualmente
-           * dentro de cada skill.
-           */
           const scaleMaxHours = Math.max(
             nextPlanHours,
             Number(skill.scaleMaxHours) ||
@@ -893,27 +1223,22 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
 
           return (
             <div key={skill.name}>
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <strong className="!font-['Montserrat'] text-sm text-[#172033]">
+              <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-2">
+                <div className="flex min-w-0 flex-wrap items-center gap-1.5 sm:gap-2">
+                  <strong className="!font-['Montserrat'] text-[12px] text-[#172033] sm:text-sm">
                     {skill.name}
                   </strong>
 
-                  <span className="rounded-full bg-[#EEF2F8] px-2.5 py-1 !font-['Montserrat'] text-[9px] font-semibold text-[#4A6695]">
+                  <span className="rounded-full bg-[#EEF2F8] px-2 py-1 !font-['Montserrat'] text-[8px] font-semibold text-[#4A6695] sm:px-2.5 sm:text-[9px]">
                     {skill.badge}
                   </span>
                 </div>
 
-                <strong className="!font-['Montserrat'] text-[10px] font-semibold text-[#48679D]">
+                <strong className="!font-['Montserrat'] text-[9px] font-semibold text-[#48679D] sm:text-[10px]">
                   {currentHours}h de aprendizaje
                 </strong>
               </div>
 
-              {/*
-               * Azul sólido: lo incluido en el plan seleccionado.
-               * Azul rayado: lo que podría alcanzar con el siguiente plan.
-               * Gris: capacidad restante de la escala.
-               */}
               <div
                 className="mt-2 flex h-2.5 overflow-hidden rounded-full bg-[#E7EAF0]"
                 role="progressbar"
@@ -943,30 +1268,34 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
                 )}
               </div>
 
-              <p className="mt-1 !font-['Montserrat'] text-[10px] text-[#8490A3]">
-                {skill.nextText}{" "}
-                <strong className="text-[#48679D]">
-                  ({skill.gain})
-                </strong>
-              </p>
+              {(skill.nextText || skill.gain) && (
+                <p className="mt-1 !font-['Montserrat'] text-[9px] leading-relaxed text-[#8490A3] sm:text-[10px]">
+                  {skill.nextText}{" "}
+                  {skill.gain && (
+                    <strong className="text-[#48679D]">
+                      ({skill.gain})
+                    </strong>
+                  )}
+                </p>
+              )}
             </div>
           );
         })}
       </div>
 
       {potential.cta && (
-        <div className="mt-6 flex flex-col gap-4 rounded-[18px] border border-[#DCE5F1] bg-[linear-gradient(110deg,#F5F8FC_0%,#EEF6FA_100%)] p-4 md:flex-row md:items-center md:justify-between md:p-5">
-          <div>
-            <h3 className="!font-['Montserrat'] text-[15px] font-semibold text-[#172033]">
+        <div className="mt-5 flex flex-col gap-4 rounded-[16px] border border-[#DCE5F1] bg-[linear-gradient(110deg,#F5F8FC_0%,#EEF6FA_100%)] p-4 sm:mt-6 sm:rounded-[18px] md:flex-row md:items-center md:justify-between md:p-5">
+          <div className="min-w-0">
+            <h3 className="!font-['Montserrat'] text-[14px] font-semibold leading-snug text-[#172033] sm:text-[15px]">
               {potential.cta.title}
             </h3>
 
-            <p className="mt-1.5 !font-['Montserrat'] text-[13px] text-[#8490A3]">
+            <p className="mt-1.5 !font-['Montserrat'] text-[11px] leading-relaxed text-[#8490A3] sm:text-[13px]">
               {potential.cta.description}
             </p>
           </div>
 
-          <div className="shrink-0 text-center">
+          <div className="w-full shrink-0 text-center md:w-auto">
             <button
               type="button"
               onClick={() =>
@@ -974,18 +1303,20 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
                   potential.cta.targetPlan
                 )
               }
-              className="rounded-[13px] bg-[linear-gradient(110deg,#172A4D_0%,#4669A9_100%)] px-5 py-3 !font-['Montserrat'] text-[11px] font-semibold text-white shadow-[0_10px_24px_rgba(39,67,118,0.18)] transition hover:-translate-y-0.5"
+              className="w-full rounded-[13px] bg-[linear-gradient(110deg,#172A4D_0%,#4669A9_100%)] px-5 py-3 !font-['Montserrat'] text-[11px] font-semibold text-white shadow-[0_10px_24px_rgba(39,67,118,0.18)] transition hover:-translate-y-0.5 md:w-auto"
             >
               {potential.cta.button}
             </button>
 
-            <button
-              type="button"
-              onClick={onComparePlans}
-              className="mt-2 block w-full !font-['Montserrat'] text-[10px] font-medium text-[#66738A] hover:text-[#355A98]"
-            >
-              {potential.cta.secondary}
-            </button>
+            {potential.cta.secondary && (
+              <button
+                type="button"
+                onClick={onComparePlans}
+                className="mt-2 block w-full !font-['Montserrat'] text-[10px] font-medium text-[#66738A] hover:text-[#355A98]"
+              >
+                {potential.cta.secondary}
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -993,23 +1324,51 @@ function PotentialSection({ potential, onPlanAction, onComparePlans }) {
   );
 }
 
-
 function IncludesCard({ includes, onPlanAction, onComparePlans, planKey }) {
   return (
-    <section className="rounded-[20px] border border-[#E1E6EF] bg-white p-5 shadow-[0_8px_24px_rgba(27,39,67,0.045)]">
-      <h3 className="!font-['Montserrat'] text-[15px] font-semibold text-[#172033]">{includes.title}</h3>
-      <p className="!font-['Montserrat'] text-[11px] text-[#8490A3]">{includes.subtitle}</p>
-      <ul className="mt-5 space-y-3">
-        {includes.items.map((item) => <li key={item} className="flex gap-3 !font-['Montserrat'] text-[11px] leading-relaxed text-[#59667A]"><span className="font-semibold text-[#438C60]">✓</span>{item}</li>)}
+    <section className="rounded-[18px] border border-[#E1E6EF] bg-white p-4 shadow-[0_8px_24px_rgba(27,39,67,0.045)] sm:rounded-[20px] sm:p-5">
+      <h3 className="!font-['Montserrat'] text-[14px] font-semibold text-[#172033] sm:text-[15px]">
+        {includes.title}
+      </h3>
+
+      <p className="mt-0.5 !font-['Montserrat'] text-[10px] text-[#8490A3] sm:text-[11px]">
+        {includes.subtitle}
+      </p>
+
+      <ul className="mt-4 space-y-2.5 sm:mt-5 sm:space-y-3">
+        {includes.items.map((item) => (
+          <li
+            key={item}
+            className="flex gap-2.5 !font-['Montserrat'] text-[10.5px] leading-relaxed text-[#59667A] sm:gap-3 sm:text-[11px]"
+          >
+            <span className="shrink-0 font-semibold text-[#438C60]">
+              ✓
+            </span>
+            <span>{item}</span>
+          </li>
+        ))}
       </ul>
-      <div className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <button type="button" onClick={() => onPlanAction?.(planKey)} className="rounded-[13px] bg-[linear-gradient(110deg,#172A4D_0%,#4669A9_100%)] px-4 py-3 !font-['Montserrat'] text-[11px] font-semibold text-white shadow-[0_8px_20px_rgba(39,67,118,0.14)]">{includes.primaryButton}</button>
-        <button type="button" onClick={onComparePlans} className="rounded-[13px] border border-[#DCE2EC] bg-white px-4 py-3 !font-['Montserrat'] text-[11px] font-semibold text-[#435069] transition hover:bg-[#F8FAFD]">{includes.secondaryButton}</button>
+
+      <div className="mt-5 grid grid-cols-1 gap-2 sm:mt-6 sm:grid-cols-2">
+        <button
+          type="button"
+          onClick={() => onPlanAction?.(planKey)}
+          className="rounded-[13px] bg-[linear-gradient(110deg,#172A4D_0%,#4669A9_100%)] px-4 py-3 !font-['Montserrat'] text-[11px] font-semibold text-white shadow-[0_8px_20px_rgba(39,67,118,0.14)]"
+        >
+          {includes.primaryButton}
+        </button>
+
+        <button
+          type="button"
+          onClick={onComparePlans}
+          className="rounded-[13px] border border-[#DCE2EC] bg-white px-4 py-3 !font-['Montserrat'] text-[11px] font-semibold text-[#435069] transition hover:bg-[#F8FAFD]"
+        >
+          {includes.secondaryButton}
+        </button>
       </div>
     </section>
   );
 }
-
 
 function normalizeDomainName(value) {
   return getTaxonomyLabel(value);
@@ -1146,64 +1505,70 @@ function DomainsCard({ domains }) {
   const items = Array.isArray(domains) ? domains : [];
 
   return (
-    <section className="rounded-[20px] border border-[#E1E6EF] bg-white p-5 shadow-[0_8px_24px_rgba(27,39,67,0.045)]">
-      <h3 className="!font-['Montserrat'] text-[15px] font-semibold text-[#172033]">
+    <section className="rounded-[18px] border border-[#E1E6EF] bg-white p-4 shadow-[0_8px_24px_rgba(27,39,67,0.045)] sm:rounded-[20px] sm:p-5">
+      <h3 className="!font-['Montserrat'] text-[14px] font-semibold text-[#172033] sm:text-[15px]">
         🗺️ Mapa de Dominios
       </h3>
 
-      <p className="!font-['Montserrat'] text-[11px] text-[#8490A3]">
+      <p className="mt-0.5 !font-['Montserrat'] text-[10px] leading-relaxed text-[#8490A3] sm:text-[11px]">
         Dominios y habilidades relacionados con tu ruta actual
       </p>
 
       {items.length ? (
-        <div className="mt-5 max-h-[420px] space-y-3 overflow-y-auto pr-2">
-          {items.map((domain) => (
-            <div
-              key={domain.name}
-              className="grid grid-cols-[minmax(0,1fr)_64px_34px] items-center gap-3"
-            >
-              <div className="flex min-w-0 items-center gap-2">
-                <span className="truncate !font-['Montserrat'] text-[10px] font-medium text-[#4B586D]">
-                  {domain.name}
-                </span>
+        <div className="mt-4 max-h-[420px] space-y-3 overflow-y-auto pr-1 sm:mt-5 sm:pr-2">
+          {items.map((domain) => {
+            const percentage = Math.max(
+              0,
+              Math.min(100, Number(domain.value) || 0)
+            );
 
-                {domain.inRoute && (
-                  <span className="shrink-0 rounded-full bg-[#EAF0F8] px-2 py-0.5 !font-['Montserrat'] text-[8px] font-semibold text-[#48679D]">
-                    + ruta
+            return (
+              <div
+                key={domain.name}
+                className="rounded-[12px] border border-[#EEF1F5] bg-[#FBFCFE] p-3 sm:grid sm:grid-cols-[minmax(0,1fr)_64px_34px] sm:items-center sm:gap-3 sm:border-0 sm:bg-transparent sm:p-0"
+              >
+                <div className="flex min-w-0 items-center justify-between gap-2 sm:justify-start">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="truncate !font-['Montserrat'] text-[10px] font-medium text-[#4B586D]">
+                      {domain.name}
+                    </span>
+
+                    {domain.inRoute && (
+                      <span className="shrink-0 rounded-full bg-[#EAF0F8] px-2 py-0.5 !font-['Montserrat'] text-[8px] font-semibold text-[#48679D]">
+                        + ruta
+                      </span>
+                    )}
+                  </div>
+
+                  <span className="shrink-0 !font-['Montserrat'] text-[9px] font-semibold text-[#48679D] sm:hidden">
+                    {percentage}%
                   </span>
-                )}
-              </div>
+                </div>
 
-              <div className="h-1.5 overflow-hidden rounded-full bg-[#E9ECF1]">
-                <div
-                  className="h-full rounded-full bg-[linear-gradient(90deg,#172A4D_0%,#5276B2_100%)]"
-                  style={{
-                    width: `${Math.max(
-                      0,
-                      Math.min(100, Number(domain.value) || 0)
-                    )}%`,
-                  }}
-                />
-              </div>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#E9ECF1] sm:mt-0">
+                  <div
+                    className="h-full rounded-full bg-[linear-gradient(90deg,#172A4D_0%,#5276B2_100%)]"
+                    style={{
+                      width: `${percentage}%`,
+                    }}
+                  />
+                </div>
 
-              <span className="!font-['Montserrat'] text-[9px] font-semibold text-[#48679D]">
-                {Math.max(
-                  0,
-                  Math.min(100, Number(domain.value) || 0)
-                )}%
-              </span>
-            </div>
-          ))}
+                <span className="hidden !font-['Montserrat'] text-[9px] font-semibold text-[#48679D] sm:block">
+                  {percentage}%
+                </span>
+              </div>
+            );
+          })}
         </div>
       ) : (
-        <div className="mt-5 rounded-[14px] border border-dashed border-[#D9E0EA] bg-[#FAFBFD] p-4 !font-['Montserrat'] text-[11px] text-[#8490A3]">
+        <div className="mt-4 rounded-[14px] border border-dashed border-[#D9E0EA] bg-[#FAFBFD] p-4 !font-['Montserrat'] text-[10.5px] leading-relaxed text-[#8490A3] sm:mt-5 sm:text-[11px]">
           Aún no hay dominios suficientes para construir el mapa de tu ruta.
         </div>
       )}
     </section>
   );
 }
-
 
 export default function CareerTab({
   learningRoute,
@@ -1335,32 +1700,32 @@ export default function CareerTab({
     ) || visiblePlan.levels[0];
 
   return (
-    <div className="w-full pb-8">
-      <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+    <div className="w-full min-w-0 overflow-x-hidden pb-6 sm:pb-8">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="!font-['Montserrat'] text-[1.9rem] font-semibold leading-[1.05em] tracking-[-0.035em] text-[#172033]">
+          <h1 className="!font-['Montserrat'] text-[1.55rem] font-semibold leading-[1.08em] tracking-[-0.035em] text-[#172033] sm:text-[1.9rem]">
             Plan de Carrera
           </h1>
 
-          <p className="mt-1.5 !font-['Montserrat'] text-[13px] text-[#8490A3]">
+          <p className="mt-1.5 !font-['Montserrat'] text-[11px] leading-relaxed text-[#8490A3] sm:text-[13px]">
             Tu hoja de ruta profesional personalizada por Topo
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           {visiblePlan.isCurrentUserPlan && (
-            <span className="w-fit rounded-full border border-[#D9EBDD] bg-[#F0F8F2] px-4 py-2 !font-['Montserrat'] text-[10px] font-semibold text-[#4C8B61]">
+            <span className="w-fit rounded-full border border-[#D9EBDD] bg-[#F0F8F2] px-3 py-1.5 !font-['Montserrat'] text-[9px] font-semibold text-[#4C8B61] sm:px-4 sm:py-2 sm:text-[10px]">
               ✓ Tu plan actual
             </span>
           )}
 
-          <span className="w-fit rounded-full border border-[#D8E7EE] bg-[#EAF8FA] !flex items-center gap-2 px-4 py-2 !font-['Montserrat'] text-[10px] font-semibold text-[#3D7190]">
+          <span className="!flex w-fit items-center gap-1.5 rounded-full border border-[#D8E7EE] bg-[#EAF8FA] px-3 py-1.5 !font-['Montserrat'] text-[9px] font-semibold text-[#3D7190] sm:gap-2 sm:px-4 sm:py-2 sm:text-[10px]">
               <img
                 src="/assets/logos/topo-contenedor-claro.png"
                 alt="Logo Topo"
                 className="
                   !rounded-full overflow-hidden
-                  w-[20px] !-my-1
+                  w-[18px] !-my-1 sm:w-[20px]
                   h-auto
                 "
               /> Análisis de Topo
@@ -1382,11 +1747,11 @@ export default function CareerTab({
       <TopoMessage {...visiblePlan.intro} />
 
       {careerLoading ? (
-        <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+        <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-3">
           {[1, 2, 3].map((item) => (
             <div
               key={item}
-              className="h-[92px] animate-pulse rounded-[18px] border border-[#E7EBF1] bg-[#EEF1F5]"
+              className="h-[78px] animate-pulse rounded-[16px] border border-[#E7EBF1] bg-[#EEF1F5] sm:h-[92px] sm:rounded-[18px]"
             />
           ))}
         </div>
@@ -1394,7 +1759,7 @@ export default function CareerTab({
         <StatsGrid stats={visiblePlan.stats} />
       )}
 
-      <section className="mt-4 overflow-hidden rounded-[22px] border border-[#E1E6EF] bg-white shadow-[0_10px_30px_rgba(27,39,67,0.05)]">
+      <section className="mt-4 min-w-0 overflow-hidden rounded-[18px] border border-[#E1E6EF] bg-white shadow-[0_10px_30px_rgba(27,39,67,0.05)] sm:rounded-[22px]">
         <CareerTimeline
           levels={visiblePlan.levels}
           selectedLevelId={selectedLevelId}
@@ -1415,7 +1780,7 @@ export default function CareerTab({
         onComparePlans={onComparePlans}
       />
 
-      <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:mt-5 lg:grid-cols-2">
         <IncludesCard
           includes={visiblePlan.includes}
           planKey={visiblePlan.key}

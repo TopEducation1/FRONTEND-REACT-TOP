@@ -109,6 +109,210 @@ const CertificationPageSkeleton = () => {
   );
 };
 
+
+const formatCertificationDuration = (rawValue) => {
+  if (rawValue === null || rawValue === undefined) return null;
+
+  const original = String(rawValue).trim();
+
+  if (!original) return null;
+
+  const normalizedInvalid = original.toLowerCase();
+
+  if (
+    [
+      "none",
+      "null",
+      "undefined",
+      "x",
+      "n/a",
+      "na",
+      "uncategorized",
+    ].includes(normalizedInvalid)
+  ) {
+    return null;
+  }
+
+  const pluralize = (value, singular, plural) =>
+    `${value} ${Number(value) === 1 ? singular : plural}`;
+
+  const formatSeconds = (secondsValue) => {
+    const totalSeconds = Math.max(
+      0,
+      Math.round(Number(secondsValue) || 0)
+    );
+
+    if (!totalSeconds) return null;
+
+    const WEEK = 7 * 24 * 60 * 60;
+    const DAY = 24 * 60 * 60;
+    const HOUR = 60 * 60;
+    const MINUTE = 60;
+
+    let remaining = totalSeconds;
+
+    const weeks = Math.floor(remaining / WEEK);
+    remaining %= WEEK;
+
+    const days = Math.floor(remaining / DAY);
+    remaining %= DAY;
+
+    const hours = Math.floor(remaining / HOUR);
+    remaining %= HOUR;
+
+    const minutes = Math.floor(remaining / MINUTE);
+    const seconds = remaining % MINUTE;
+
+    const parts = [];
+
+    if (weeks) {
+      parts.push(pluralize(weeks, "semana", "semanas"));
+    }
+
+    if (days) {
+      parts.push(pluralize(days, "día", "días"));
+    }
+
+    if (hours) {
+      parts.push(pluralize(hours, "hora", "horas"));
+    }
+
+    if (minutes) {
+      parts.push(pluralize(minutes, "minuto", "minutos"));
+    }
+
+    if (!parts.length && seconds) {
+      parts.push(pluralize(seconds, "segundo", "segundos"));
+    }
+
+    return parts.join(" ");
+  };
+
+  /*
+   * Casos que llegan como segundos:
+   *
+   * 324000
+   * 324000s
+   * 324000 s
+   * 324000 sec
+   * 324000 seconds
+   * 324000 segundos
+   */
+  const secondsMatch = original.match(
+    /^(\d+(?:[.,]\d+)?)\s*(?:s|sec|secs|second|seconds|seg|segs|segundo|segundos)?$/i
+  );
+
+  if (secondsMatch) {
+    const numericValue = Number(
+      secondsMatch[1].replace(",", ".")
+    );
+
+    return formatSeconds(numericValue);
+  }
+
+  let value = original
+    .replace(/\s+/g, " ")
+    .trim();
+
+  /*
+   * Normaliza duraciones que ya vienen expresadas en unidades.
+   */
+  const unitPatterns = [
+    {
+      regex:
+        /(\d+(?:[.,]\d+)?)\s*(?:hours?|hrs?|h|horas?)\b/gi,
+      singular: "hora",
+      plural: "horas",
+    },
+    {
+      regex:
+        /(\d+(?:[.,]\d+)?)\s*(?:days?|días?|dias?)\b/gi,
+      singular: "día",
+      plural: "días",
+    },
+    {
+      regex:
+        /(\d+(?:[.,]\d+)?)\s*(?:weeks?|wks?|semanas?)\b/gi,
+      singular: "semana",
+      plural: "semanas",
+    },
+    {
+      regex:
+        /(\d+(?:[.,]\d+)?)\s*(?:months?|mos?|meses?|mes)\b/gi,
+      singular: "mes",
+      plural: "meses",
+    },
+    {
+      regex:
+        /(\d+(?:[.,]\d+)?)\s*(?:minutes?|mins?|minutos?|min)\b/gi,
+      singular: "minuto",
+      plural: "minutos",
+    },
+  ];
+
+  unitPatterns.forEach(({ regex, singular, plural }) => {
+    value = value.replace(regex, (_, amount) => {
+      const numericAmount = Number(
+        String(amount).replace(",", ".")
+      );
+
+      return `${amount} ${
+        numericAmount === 1 ? singular : plural
+      }`;
+    });
+  });
+
+  /*
+   * Traducciones comunes de proveedores externos.
+   */
+  const phraseReplacements = [
+    [/\bapproximately\b/gi, "aproximadamente"],
+    [/\bapprox\.?\b/gi, "aprox."],
+    [/\babout\b/gi, "aprox."],
+    [/\bper week\b/gi, "por semana"],
+    [/\ba week\b/gi, "por semana"],
+    [/\bper day\b/gi, "por día"],
+    [/\ba day\b/gi, "por día"],
+    [/\bper month\b/gi, "por mes"],
+    [/\ba month\b/gi, "por mes"],
+    [/\bself[- ]paced\b/gi, "a tu propio ritmo"],
+    [/\bat your own pace\b/gi, "a tu propio ritmo"],
+    [/\bflexible schedule\b/gi, "horario flexible"],
+    [/\bfull time\b/gi, "tiempo completo"],
+    [/\bpart time\b/gi, "tiempo parcial"],
+  ];
+
+  phraseReplacements.forEach(([regex, replacement]) => {
+    value = value.replace(regex, replacement);
+  });
+
+  /*
+   * Traducción de unidades sueltas que puedan quedar en textos
+   * compuestos.
+   */
+  const looseUnitReplacements = [
+    [/\bhours?\b/gi, "horas"],
+    [/\bhrs?\b/gi, "horas"],
+    [/\bdays?\b/gi, "días"],
+    [/\bweeks?\b/gi, "semanas"],
+    [/\bwks?\b/gi, "semanas"],
+    [/\bmonths?\b/gi, "meses"],
+    [/\bminutes?\b/gi, "minutos"],
+    [/\bmins?\b/gi, "minutos"],
+    [/\bseconds?\b/gi, "segundos"],
+    [/\bsecs?\b/gi, "segundos"],
+  ];
+
+  looseUnitReplacements.forEach(([regex, replacement]) => {
+    value = value.replace(regex, replacement);
+  });
+
+  return value
+    .replace(/\s+/g, " ")
+    .replace(/\s+([,.;:])/g, "$1")
+    .trim();
+};
+
 const CertificationPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -336,6 +540,10 @@ const CertificationPage = () => {
   const level = isValidValue(certification?.nivel_certificacion)
     ? getLevelLabel(certification.nivel_certificacion)
     : null;
+
+  const certificationSchedule = formatCertificationDuration(
+    certification?.tiempo_certificacion
+  );
 
   const isCoursera =
     certification?.plataforma_certificacion?.nombre
@@ -769,11 +977,11 @@ const CertificationPage = () => {
                     </div>
                   )}
 
-                  {isValidValue(certification.tiempo_certificacion) && (
+                  {certificationSchedule && (
                     <div>
                       <h6 className={smallLabel}>Cronograma</h6>
                       <p className="font-['Montserrat'] text-[15px] font-medium text-neutral-800">
-                        {certification.tiempo_certificacion}
+                        {certificationSchedule}
                       </p>
                     </div>
                   )}
