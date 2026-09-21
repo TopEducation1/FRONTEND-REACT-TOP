@@ -1455,29 +1455,138 @@ function DashboardWelcomeModal({ open, onClose, defaultTab }) {
   ];
 
   return (
-    <div className="fixed inset-0 z-[150] flex items-center justify-center bg-[#0D1726]/50 px-4 backdrop-blur-[3px]">
-      <div className="relative w-full max-w-[720px] overflow-hidden rounded-[24px] border border-white/70 bg-white shadow-[0_30px_90px_rgba(13,26,45,0.28)]">
-        
-        {/* HEADER */}
-        <div className="relative overflow-hidden border-b border-[#E9EDF2] px-6 py-5">
-          <div className="pointer-events-none absolute right-0 top-0 h-[150px] w-[220px] translate-x-16 -translate-y-20 rounded-full bg-[#BDEFF5]/40 blur-3xl" />
+    <div
+      className="
+        fixed inset-0 z-[150]
+        flex items-end justify-center
+        bg-[#0D1726]/50
+        backdrop-blur-[3px]
 
-          <div className="relative flex items-start justify-between gap-5">
-            <div className="flex items-start gap-3">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[14px] bg-[linear-gradient(135deg,#1D3557,#4C74AE)] text-white shadow-[0_9px_20px_rgba(49,93,156,0.20)]">
-                <Star size={22} strokeWidth={1.9} />
+        sm:items-center
+        sm:px-4
+        sm:py-4
+      "
+    >
+      <div
+        className="
+          relative
+          flex
+          max-h-[calc(100dvh-10px)]
+          w-full
+          flex-col
+          overflow-hidden
+
+          rounded-t-[24px]
+          border border-white/70
+          bg-white
+          shadow-[0_30px_90px_rgba(13,26,45,0.28)]
+
+          sm:max-h-[calc(100dvh-32px)]
+          sm:max-w-[720px]
+          sm:rounded-[24px]
+        "
+      >
+        {/* =========================================================
+            HEADER
+        ========================================================= */}
+        <div
+          className="
+            relative
+            shrink-0
+            overflow-hidden
+            border-b border-[#E9EDF2]
+            px-4 py-4
+
+            sm:px-6
+            sm:py-5
+          "
+        >
+          <div
+            className="
+              pointer-events-none
+              absolute right-0 top-0
+              h-[130px] w-[190px]
+              translate-x-16 -translate-y-20
+              rounded-full
+              bg-[#BDEFF5]/40
+              blur-3xl
+
+              sm:h-[150px]
+              sm:w-[220px]
+            "
+          />
+
+          <div className="relative flex items-start justify-between gap-3 sm:gap-5">
+            <div className="flex min-w-0 items-start gap-3">
+              <span
+                className="
+                  grid
+                  h-10 w-10
+                  shrink-0
+                  place-items-center
+                  rounded-[12px]
+                  bg-[linear-gradient(135deg,#1D3557,#4C74AE)]
+                  text-white
+                  shadow-[0_9px_20px_rgba(49,93,156,0.20)]
+
+                  sm:h-11
+                  sm:w-11
+                  sm:rounded-[14px]
+                "
+              >
+                <Star
+                  size={20}
+                  strokeWidth={1.9}
+                  className="sm:h-[22px] sm:w-[22px]"
+                />
               </span>
 
-              <div>
-                <span className="!font-['Montserrat'] text-[10px] font-bold uppercase tracking-[0.16em] text-[#4C74AE]">
+              <div className="min-w-0">
+                <span
+                  className="
+                    !font-['Montserrat']
+                    text-[8px]
+                    font-bold
+                    uppercase
+                    tracking-[0.13em]
+                    text-[#4C74AE]
+
+                    sm:text-[10px]
+                    sm:tracking-[0.16em]
+                  "
+                >
                   Tu espacio de aprendizaje
                 </span>
 
-                <h2 className="mt-1 !font-['Montserrat'] text-[20px] font-bold leading-tight text-[#182235]">
+                <h2
+                  className="
+                    mt-0.5
+                    !font-['Montserrat']
+                    text-[17px]
+                    font-bold
+                    leading-[1.2]
+                    text-[#182235]
+
+                    sm:mt-1
+                    sm:text-[20px]
+                  "
+                >
                   ¡Bienvenido a tu dashboard!
                 </h2>
 
-                <p className="mt-1 !font-['Montserrat'] text-[12px] leading-relaxed text-[#7D8798]">
+                <p
+                  className="
+                    mt-1
+                    max-w-[520px]
+                    !font-['Montserrat']
+                    text-[10px]
+                    leading-[1.45]
+                    text-[#7D8798]
+
+                    sm:text-[12px]
+                    sm:leading-relaxed
+                  "
+                >
                   Conoce rápidamente las herramientas que tienes disponibles
                   para gestionar tu aprendizaje.
                 </p>
@@ -1487,59 +1596,160 @@ function DashboardWelcomeModal({ open, onClose, defaultTab }) {
             <button
               type="button"
               onClick={onClose}
-              className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F2F4F7] text-[#667085] transition hover:bg-[#E8ECF1] hover:text-[#26354A]"
+              className="
+                grid
+                h-8 w-8
+                shrink-0
+                place-items-center
+                rounded-full
+                bg-[#F2F4F7]
+                text-[#667085]
+                transition
+
+                hover:bg-[#E8ECF1]
+                hover:text-[#26354A]
+
+                sm:h-9
+                sm:w-9
+              "
               aria-label="Cerrar bienvenida"
             >
-              <X size={18} />
+              <X size={17} />
             </button>
           </div>
         </div>
 
-        {/* BODY */}
-        <div className="max-h-[calc(100vh-150px)] overflow-y-auto p-6">
-          
-          {/* OPCIONES */}
-          <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
+        {/* =========================================================
+            BODY CON SCROLL INTERNO
+        ========================================================= */}
+        <div
+          className="
+            min-h-0
+            flex-1
+            overflow-y-auto
+            overscroll-contain
+            px-4
+            pb-3
+            pt-4
+
+            sm:p-6
+          "
+          data-lenis-prevent
+        >
+          {/* =====================================================
+              OPCIONES
+          ===================================================== */}
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-2.5">
             {dashboardItems.map((item) => {
               const active = defaultTab === item.key;
 
               return (
                 <div
                   key={item.key}
-                  className={`group relative flex min-h-[94px] gap-3 overflow-hidden rounded-[16px] border p-3.5 transition-all duration-200 ${
-                    active
-                      ? "border-[#A9BAD4] bg-[linear-gradient(135deg,#F4F7FB,#EEF3FA)] shadow-[0_8px_24px_rgba(29,53,87,0.08)]"
-                      : "border-[#E5E9EF] bg-white hover:border-[#C9D3E0] hover:bg-[#FAFBFC]"
-                  }`}
+                  className={`
+                    group
+                    relative
+                    flex
+                    min-h-[78px]
+                    gap-2.5
+                    overflow-hidden
+                    rounded-[14px]
+                    border
+                    p-3
+                    transition-all
+                    duration-200
+
+                    sm:min-h-[94px]
+                    sm:gap-3
+                    sm:rounded-[16px]
+                    sm:p-3.5
+
+                    ${
+                      active
+                        ? "border-[#A9BAD4] bg-[linear-gradient(135deg,#F4F7FB,#EEF3FA)] shadow-[0_8px_24px_rgba(29,53,87,0.08)]"
+                        : "border-[#E5E9EF] bg-white hover:border-[#C9D3E0] hover:bg-[#FAFBFC]"
+                    }
+                  `}
                 >
                   {active && (
                     <span className="absolute left-0 top-0 h-full w-[3px] bg-[linear-gradient(180deg,#1D3557,#4C74AE)]" />
                   )}
 
                   <div
-                    className={`grid h-10 w-10 shrink-0 place-items-center rounded-[12px] transition ${
-                      active
-                        ? "bg-[linear-gradient(135deg,#1D3557,#4C74AE)] text-white shadow-[0_7px_18px_rgba(49,93,156,0.16)]"
-                        : "bg-[#F1F4F8] text-[#66768C] group-hover:bg-[#EAF0F7] group-hover:text-[#315D9C]"
-                    }`}
+                    className={`
+                      grid
+                      h-9 w-9
+                      shrink-0
+                      place-items-center
+                      rounded-[10px]
+                      transition
+
+                      sm:h-10
+                      sm:w-10
+                      sm:rounded-[12px]
+
+                      ${
+                        active
+                          ? "bg-[linear-gradient(135deg,#1D3557,#4C74AE)] text-white shadow-[0_7px_18px_rgba(49,93,156,0.16)]"
+                          : "bg-[#F1F4F8] text-[#66768C] group-hover:bg-[#EAF0F7] group-hover:text-[#315D9C]"
+                      }
+                    `}
                   >
                     {item.icon}
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="!font-['Montserrat'] text-[13px] font-bold text-[#202B3D]">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                      <h3
+                        className="
+                          !font-['Montserrat']
+                          text-[12px]
+                          font-bold
+                          leading-tight
+                          text-[#202B3D]
+
+                          sm:text-[13px]
+                        "
+                      >
                         {item.title}
                       </h3>
 
                       {active && (
-                        <span className="rounded-full bg-[#DDF4F7] px-2 py-0.5 !font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.08em] text-[#347486]">
+                        <span
+                          className="
+                            rounded-full
+                            bg-[#DDF4F7]
+                            px-1.5
+                            py-0.5
+                            !font-['Montserrat']
+                            text-[7px]
+                            font-bold
+                            uppercase
+                            tracking-[0.06em]
+                            text-[#347486]
+
+                            sm:px-2
+                            sm:text-[8px]
+                            sm:tracking-[0.08em]
+                          "
+                        >
                           Comienza aquí
                         </span>
                       )}
                     </div>
 
-                    <p className="mt-1 !font-['Montserrat'] text-[10.5px] leading-[1.45] text-[#7D8798]">
+                    <p
+                      className="
+                        mt-1
+                        !font-['Montserrat']
+                        text-[9.5px]
+                        leading-[1.4]
+                        text-[#7D8798]
+
+                        sm:text-[10.5px]
+                        sm:leading-[1.45]
+                      "
+                    >
                       {item.text}
                     </p>
                   </div>
@@ -1547,9 +1757,44 @@ function DashboardWelcomeModal({ open, onClose, defaultTab }) {
               );
             })}
 
-            {/* TOPO / CARD EXTRA PARA COMPLETAR GRID */}
-            <div className="relative flex min-h-[94px] gap-3 overflow-hidden rounded-[16px] border border-[#CDEBF0] bg-[linear-gradient(135deg,#F4FBFC,#EFF8FA)] p-3.5">
-              <div className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-full border border-[#BDEFF5] bg-[#D8F8FB]">
+            {/* ===================================================
+                TOPO
+            =================================================== */}
+            <div
+              className="
+                relative
+                flex
+                min-h-[78px]
+                gap-2.5
+                overflow-hidden
+                rounded-[14px]
+                border
+                border-[#CDEBF0]
+                bg-[linear-gradient(135deg,#F4FBFC,#EFF8FA)]
+                p-3
+
+                sm:min-h-[94px]
+                sm:gap-3
+                sm:rounded-[16px]
+                sm:p-3.5
+              "
+            >
+              <div
+                className="
+                  grid
+                  h-9 w-9
+                  shrink-0
+                  place-items-center
+                  overflow-hidden
+                  rounded-full
+                  border
+                  border-[#BDEFF5]
+                  bg-[#D8F8FB]
+
+                  sm:h-10
+                  sm:w-10
+                "
+              >
                 <img
                   src="/assets/logos/topo-contenedor-claro.png"
                   alt="Topo"
@@ -1558,11 +1803,31 @@ function DashboardWelcomeModal({ open, onClose, defaultTab }) {
               </div>
 
               <div className="min-w-0 flex-1">
-                <h3 className="!font-['Montserrat'] text-[13px] font-bold text-[#202B3D]">
+                <h3
+                  className="
+                    !font-['Montserrat']
+                    text-[12px]
+                    font-bold
+                    text-[#202B3D]
+
+                    sm:text-[13px]
+                  "
+                >
                   Topo te acompaña
                 </h3>
 
-                <p className="mt-1 !font-['Montserrat'] text-[10.5px] leading-[1.45] text-[#6F8390]">
+                <p
+                  className="
+                    mt-1
+                    !font-['Montserrat']
+                    text-[9.5px]
+                    leading-[1.4]
+                    text-[#6F8390]
+
+                    sm:text-[10.5px]
+                    sm:leading-[1.45]
+                  "
+                >
                   Recibe recomendaciones y orientación mientras avanzas en tu
                   ruta profesional.
                 </p>
@@ -1570,23 +1835,84 @@ function DashboardWelcomeModal({ open, onClose, defaultTab }) {
             </div>
           </div>
 
-          {/* RECOMENDACIÓN */}
-          <div className="mt-4 overflow-hidden rounded-[16px] border border-[#DDE5EF] bg-[#F8FAFC]">
-            <div className="flex items-start gap-3 p-4">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[11px] bg-[#E9F0F8] text-[#315D9C]">
-                <TrendingUp size={18} strokeWidth={1.9} />
+          {/* =====================================================
+              RECOMENDACIÓN
+          ===================================================== */}
+          <div
+            className="
+              mt-3
+              overflow-hidden
+              rounded-[14px]
+              border
+              border-[#DDE5EF]
+              bg-[#F8FAFC]
+
+              sm:mt-4
+              sm:rounded-[16px]
+            "
+          >
+            <div className="flex items-start gap-2.5 p-3 sm:gap-3 sm:p-4">
+              <span
+                className="
+                  grid
+                  h-8 w-8
+                  shrink-0
+                  place-items-center
+                  rounded-[10px]
+                  bg-[#E9F0F8]
+                  text-[#315D9C]
+
+                  sm:h-9
+                  sm:w-9
+                  sm:rounded-[11px]
+                "
+              >
+                <TrendingUp size={17} strokeWidth={1.9} />
               </span>
 
-              <div>
-                <span className="!font-['Montserrat'] text-[9px] font-bold uppercase tracking-[0.12em] text-[#607894]">
+              <div className="min-w-0">
+                <span
+                  className="
+                    !font-['Montserrat']
+                    text-[8px]
+                    font-bold
+                    uppercase
+                    tracking-[0.1em]
+                    text-[#607894]
+
+                    sm:text-[9px]
+                    sm:tracking-[0.12em]
+                  "
+                >
                   Recomendación
                 </span>
 
-                <h3 className="mt-0.5 !font-['Montserrat'] text-[13px] font-bold text-[#202B3D]">
+                <h3
+                  className="
+                    mt-0.5
+                    !font-['Montserrat']
+                    text-[12px]
+                    font-bold
+                    text-[#202B3D]
+
+                    sm:text-[13px]
+                  "
+                >
                   Comienza tu aprendizaje
                 </h3>
 
-                <p className="mt-1 !font-['Montserrat'] text-[11px] leading-relaxed text-[#7D8798]">
+                <p
+                  className="
+                    mt-1
+                    !font-['Montserrat']
+                    text-[9.5px]
+                    leading-[1.45]
+                    text-[#7D8798]
+
+                    sm:text-[11px]
+                    sm:leading-relaxed
+                  "
+                >
                   {defaultTab === "cv"
                     ? 'Empieza desde "Mi CV" para conocer mejor tu perfil y recibir recomendaciones antes de continuar.'
                     : 'Empieza desde "Plan de Carrera" para revisar tu ruta personalizada y los cursos recomendados para ti.'}
@@ -1595,14 +1921,65 @@ function DashboardWelcomeModal({ open, onClose, defaultTab }) {
             </div>
           </div>
 
-          {/* CTA */}
+          {/* Espacio para que el último contenido no quede tapado por CTA */}
+          <div className="h-3 sm:hidden" />
+        </div>
+
+        {/* =========================================================
+            CTA FIJO ABAJO
+        ========================================================= */}
+        <div
+          className="
+            shrink-0
+            border-t
+            border-[#E9EDF2]
+            bg-white/95
+            px-4
+            pb-[max(12px,env(safe-area-inset-bottom))]
+            pt-3
+            backdrop-blur
+
+            sm:border-t-0
+            sm:px-6
+            sm:pb-6
+            sm:pt-0
+          "
+        >
           <button
             type="button"
             onClick={onClose}
-            className="mt-4 flex h-[48px] w-full items-center justify-center gap-2 rounded-[14px] bg-[linear-gradient(135deg,#172A48,#41679F)] px-6 !font-['Montserrat'] text-[13px] font-bold text-white shadow-[0_10px_28px_rgba(29,53,87,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(29,53,87,0.28)]"
+            className="
+              flex
+              h-[46px]
+              w-full
+              items-center
+              justify-center
+              gap-2
+              rounded-[13px]
+              bg-[linear-gradient(135deg,#172A48,#41679F)]
+              px-5
+              !font-['Montserrat']
+              text-[12px]
+              font-bold
+              text-white
+              shadow-[0_10px_28px_rgba(29,53,87,0.22)]
+              transition-all
+              duration-200
+
+              hover:-translate-y-0.5
+              hover:shadow-[0_14px_32px_rgba(29,53,87,0.28)]
+
+              sm:h-[48px]
+              sm:rounded-[14px]
+              sm:px-6
+              sm:text-[13px]
+            "
           >
             Entendido, comenzar
-            <span className="text-[17px] font-normal">→</span>
+
+            <span className="text-[16px] font-normal sm:text-[17px]">
+              →
+            </span>
           </button>
         </div>
       </div>
