@@ -24,6 +24,7 @@ import {
   ChevronDown,
   ChevronRight,
   ChevronLeft,
+  UploadCloud,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import Seo from "../components/Seo";
@@ -1356,67 +1357,1140 @@ function MobileMenuDrawer({
   );
 }
 
-function HelpFormModal({ open, onClose }) {
-  if (!open) return null;
+const HELP_DESK_ALLOWED_TYPES = new Set([
+  "image/png",
+  "image/jpeg",
+  "application/pdf",
+]);
 
+const HELP_DESK_MAX_FILE_SIZE = 10 * 1024 * 1024;
+const HELP_DESK_MAX_FILES = 10;
+
+function extractHelpDeskArray(source, keys = []) {
+  for (const key of keys) {
+    const value = source?.[key];
+    if (Array.isArray(value)) return value;
+  }
+  return [];
+}
+
+function normalizeHelpDeskOption(item) {
+  if (typeof item === "string") {
+    return { value: item, label: item };
+  }
+
+  const value =
+    item?.value ??
+    item?.code ??
+    item?.id ??
+    item?.key ??
+    "";
+
+  const label =
+    item?.label ??
+    item?.name ??
+    item?.nombre ??
+    item?.title ??
+    value;
+
+  return {
+    value: String(value || "").trim(),
+    label: String(label || value || "").trim(),
+  };
+}
+
+function normalizeHelpDeskOptions(raw) {
+  const data = raw?.data ?? raw ?? {};
+
+  const categoryItems = extractHelpDeskArray(data, [
+    "categories",
+    "categoryOptions",
+    "category_options",
+    "reasons",
+    "motivos",
+  ]);
+
+  const priorityItems = extractHelpDeskArray(data, [
+    "priorities",
+    "priorityOptions",
+    "priority_options",
+    "scopes",
+    "scopeOptions",
+    "scope_options",
+    "impact",
+    "alcances",
+  ]);
+
+  return {
+    categories: categoryItems.map(normalizeHelpDeskOption).filter((item) => item.value),
+    priorities: priorityItems.map(normalizeHelpDeskOption).filter((item) => item.value),
+    limits: data?.limits || data?.constraints || {},
+  };
+}
+
+async function postHelpDeskJSON(url, body) {
+  const response = await fetch(url, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  const text = await response.text();
+  let data = {};
+
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    const error = new Error(
+      `El servidor devolvió una respuesta no válida. HTTP ${response.status}`
+    );
+    error.status = response.status;
+    throw error;
+  }
+
+  if (!response.ok || data?.ok === false) {
+    const error = new Error(
+      data?.message ||
+        data?.detail ||
+        (typeof data?.error === "string" ? data.error : "") ||
+        `HTTP ${response.status}`
+    );
+
+    error.status = response.status;
+    error.code =
+      typeof data?.error === "string"
+        ? data.error
+        : data?.error?.code || "http_error";
+    error.data = data;
+
+    throw error;
+  }
+
+  return {
+    status: response.status,
+    data,
+  };
+}
+
+async function uploadHelpDeskFileToS3(file, authorizationPayload) {
+  const payload = authorizationPayload?.data ?? authorizationPayload ?? {};
+  const upload = payload?.upload;
+  const uploadToken = payload?.uploadToken;
+
+  if (!uploadToken || !upload?.url || !upload?.fields) {
+    throw new Error(`No se recibió una autorización válida para ${file.name}.`);
+  }
+
+  const formData = new FormData();
+
+  Object.entries(upload.fields).forEach(([key, value]) => {
+    formData.append(key, String(value));
+  });
+
+  // El archivo debe ir al final del multipart, según el contrato de MX.
+  formData.append("file", file);
+
+  const response = await fetch(upload.url, {
+    method: upload.method || "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error(`No se pudo cargar ${file.name}.`);
+  }
+
+  return uploadToken;
+}
+
+function getHelpDeskInstitutionLabel(me, learningRoute) {
   return (
-    <div className="fixed inset-0 z-[150] flex items-center justify-center bg-[#0D1726]/50 px-4 backdrop-blur-[3px]">
-      <div className="relative w-full max-w-[720px] overflow-hidden rounded-[24px] border border-white/70 bg-white shadow-[0_30px_90px_rgba(13,26,45,0.28)]">
-        <div className="flex items-start justify-between border-b border-[#E9EDF2] px-6 py-5">
-          <div className="flex items-start gap-3">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[14px] bg-[linear-gradient(135deg,#1D3557,#4C74AE)] text-white shadow-[0_9px_20px_rgba(49,93,156,0.20)]">
-              <CircleHelp size={22} />
-            </span>
-            <div>
-              <h2 className="!font-['Montserrat'] text-[20px] font-bold text-[#182235]">
-                ¿Necesitas ayuda?
-              </h2>
-              <p className="mt-1 !font-['Montserrat'] text-[12px] text-[#7D8798]">
-                Este espacio queda preparado para embeber el formulario de soporte.
-              </p>
-            </div>
-          </div>
+    me?.institution_name ||
+    me?.institutionName ||
+    me?.institution?.name ||
+    learningRoute?.institution_name ||
+    learningRoute?.institutionName ||
+    learningRoute?.institution?.name ||
+    "Se completará automáticamente desde tu cuenta"
+  );
+}
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#F2F4F7] text-[#667085] transition hover:bg-[#E8ECF1]"
-            aria-label="Cerrar ayuda"
-          >
-            <X size={18} />
-          </button>
+function SupportRequestForm({
+  backendBaseUrl,
+  me,
+  learningRoute,
+  onSubmitted,
+}) {
+  const OPTIONS_URL = `${backendBaseUrl}/api/account/help-desk/options/`;
+  const ATTACHMENT_URL = `${backendBaseUrl}/api/account/help-desk/attachment-uploads/`;
+  const DIRECT_REQUEST_URL = `${backendBaseUrl}/api/account/help-desk/direct-requests/`;
+
+  const [catalog, setCatalog] = useState({
+    categories: [],
+    priorities: [],
+    limits: {},
+  });
+  const [loadingOptions, setLoadingOptions] = useState(true);
+  const [optionsError, setOptionsError] = useState("");
+
+  const [category, setCategory] = useState("");
+  const [priority, setPriority] = useState("");
+  const [contactEmail, setContactEmail] = useState(me?.email || "");
+  const [description, setDescription] = useState("");
+  const [files, setFiles] = useState([]);
+  const [formError, setFormError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
+  const [successData, setSuccessData] = useState(null);
+
+  const institutionLabel = getHelpDeskInstitutionLabel(me, learningRoute);
+
+  const loadOptions = async () => {
+    setLoadingOptions(true);
+    setOptionsError("");
+
+    try {
+      const response = await getJSON(OPTIONS_URL);
+      const normalized = normalizeHelpDeskOptions(response);
+
+      if (!normalized.categories.length || !normalized.priorities.length) {
+        throw new Error(
+          "La API de mesa de ayuda no devolvió las opciones esperadas."
+        );
+      }
+
+      setCatalog(normalized);
+    } catch (error) {
+      setCatalog({ categories: [], priorities: [], limits: {} });
+      setOptionsError(
+        error?.message || "No fue posible cargar las opciones de la mesa de ayuda."
+      );
+    } finally {
+      setLoadingOptions(false);
+    }
+  };
+
+  useEffect(() => {
+    loadOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [OPTIONS_URL]);
+
+  useEffect(() => {
+    if (!contactEmail && me?.email) {
+      setContactEmail(me.email);
+    }
+  }, [me?.email, contactEmail]);
+
+  const validateSelectedFiles = (selectedFiles) => {
+    if (selectedFiles.length > HELP_DESK_MAX_FILES) {
+      return `Puedes adjuntar máximo ${HELP_DESK_MAX_FILES} archivos.`;
+    }
+
+    for (const file of selectedFiles) {
+      if (!HELP_DESK_ALLOWED_TYPES.has(file.type)) {
+        return `${file.name}: solo se permiten PNG, JPG/JPEG y PDF.`;
+      }
+
+      if (file.size <= 0 || file.size > HELP_DESK_MAX_FILE_SIZE) {
+        return `${file.name}: cada archivo debe pesar máximo 10 MiB.`;
+      }
+    }
+
+    return "";
+  };
+
+  const handleFilesChange = (event) => {
+    const selectedFiles = Array.from(event.target.files || []);
+    const nextFiles = [...files, ...selectedFiles];
+    const validationError = validateSelectedFiles(nextFiles);
+
+    event.target.value = "";
+
+    if (validationError) {
+      setFormError(validationError);
+      return;
+    }
+
+    setFormError("");
+    setFiles(nextFiles);
+  };
+
+  const removeFile = (indexToRemove) => {
+    setFiles((current) => current.filter((_, index) => index !== indexToRemove));
+    setFormError("");
+  };
+
+  const resetForm = () => {
+    setCategory("");
+    setPriority("");
+    setContactEmail(me?.email || "");
+    setDescription("");
+    setFiles([]);
+    setFormError("");
+    setUploadProgress("");
+    setSuccessData(null);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (submitting) return;
+
+    setFormError("");
+
+    if (!category) {
+      setFormError("Selecciona el motivo de contacto.");
+      return;
+    }
+
+    if (!priority) {
+      setFormError("Selecciona a cuántas personas afecta la situación.");
+      return;
+    }
+
+    if (!contactEmail.trim()) {
+      setFormError("Ingresa un correo de contacto.");
+      return;
+    }
+
+    if (!description.trim()) {
+      setFormError("Describe qué necesitas resolver.");
+      return;
+    }
+
+    if (description.trim().length > 2000) {
+      setFormError("La descripción no puede superar 2.000 caracteres.");
+      return;
+    }
+
+    const validationError = validateSelectedFiles(files);
+    if (validationError) {
+      setFormError(validationError);
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const attachments = [];
+
+      // El contexto requester/institution NO sale del navegador.
+      // Nuestro backend lo resuelve desde la sesión del usuario.
+      for (let index = 0; index < files.length; index += 1) {
+        const file = files[index];
+
+        setUploadProgress(`Preparando archivo ${index + 1} de ${files.length}...`);
+
+        const authorization = await postHelpDeskJSON(ATTACHMENT_URL, {
+          file: {
+            name: file.name,
+            size: file.size,
+            contentType: file.type,
+          },
+        });
+
+        if (authorization.status !== 201) {
+          throw new Error(`No fue posible autorizar ${file.name}.`);
+        }
+
+        setUploadProgress(`Subiendo archivo ${index + 1} de ${files.length}...`);
+
+        const uploadToken = await uploadHelpDeskFileToS3(
+          file,
+          authorization.data
+        );
+
+        attachments.push({ uploadToken });
+      }
+
+      setUploadProgress("Enviando solicitud...");
+
+      const finalResponse = await postHelpDeskJSON(DIRECT_REQUEST_URL, {
+        contactEmail: contactEmail.trim(),
+        category,
+        priority,
+        description: description.trim(),
+        attachments,
+        clientContext: {
+          route: `${window.location.pathname}${window.location.search || ""}`.slice(0, 500),
+          userAgent: String(window.navigator.userAgent || "").slice(0, 500),
+        },
+      });
+
+      if (finalResponse.status !== 201) {
+        throw new Error("No pudimos confirmar el envío de la solicitud.");
+      }
+
+      const result = finalResponse.data?.data || {};
+
+      setSuccessData({
+        requestId: result?.requestId || "",
+        submittedAt: result?.submittedAt || new Date().toISOString(),
+        attachments: Array.isArray(result?.attachments) ? result.attachments : [],
+      });
+
+      setUploadProgress("");
+      toast.success("Solicitud enviada correctamente.");
+
+      if (typeof onSubmitted === "function") {
+        onSubmitted(result);
+      }
+    } catch (error) {
+      setUploadProgress("");
+
+      if (error?.status === 429) {
+        setFormError(
+          "Has realizado varios intentos. Espera un momento antes de volver a enviar."
+        );
+      } else if (error?.data?.ambiguous || error?.code === "submission_timeout") {
+        setFormError(
+          error?.message ||
+            "No pudimos confirmar si la solicitud fue recibida. No la reenviaremos automáticamente; puedes intentarlo manualmente después de verificar tu correo."
+        );
+      } else {
+        setFormError(
+          error?.message || "No fue posible enviar la solicitud. Conservamos tus datos para que puedas intentarlo nuevamente."
+        );
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (successData) {
+    return (
+      <div className="flex h-full min-h-[560px] flex-col items-center justify-center text-center">
+        <div className="grid h-16 w-16 place-items-center rounded-full bg-[#EAF8F2] text-[#2A8A63]">
+          <CheckCircle size={31} strokeWidth={1.8} />
         </div>
 
-        <div className="p-6">
-          <div className="grid min-h-[320px] place-items-center rounded-[20px] border border-dashed border-[#BFC9D6] bg-[#F8FAFC] px-6 py-10 text-center">
-            <div className="max-w-[440px]">
-              <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#E8F7FA] text-[#315D9C]">
-                <FileText size={25} />
-              </span>
-              <h3 className="mt-4 !font-['Montserrat'] text-[16px] font-bold text-[#202B3D]">
-                Formulario de soporte
-              </h3>
-              <p className="mt-2 !font-['Montserrat'] text-[12px] leading-relaxed text-[#7D8798]">
-                Aqui integraremos el embebido de la mesa de ayuda.
+        <span className="mt-5 !font-['Montserrat'] text-[10px] font-bold uppercase tracking-[0.16em] text-[#315D9C]">
+          Solicitud enviada
+        </span>
+
+        <h3 className="mt-2 max-w-[480px] !font-['Montserrat'] text-[28px] font-semibold leading-[1.15] tracking-[-0.035em] text-[#1E293B]">
+          Ya recibimos tu solicitud
+        </h3>
+
+        <p className="mt-3 max-w-[480px] !font-['Montserrat'] text-[11px] leading-[1.65] text-[#7D8798]">
+          El equipo de soporte responderá directamente al correo <strong>{contactEmail}</strong>.
+        </p>
+
+        {successData.requestId && (
+          <div className="mt-5 rounded-[14px] border border-[#DCE5F0] bg-[#F7FAFE] px-5 py-4">
+            <span className="block !font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.12em] text-[#8792A3]">
+              Referencia técnica
+            </span>
+            <strong className="mt-1 block break-all !font-['Montserrat'] text-[11px] text-[#315D9C]">
+              {successData.requestId}
+            </strong>
+          </div>
+        )}
+
+        <p className="mt-3 max-w-[460px] !font-['Montserrat'] text-[8px] leading-5 text-[#98A1AE]">
+          Esta referencia confirma el envío, pero no corresponde a un ticket consultable en la plataforma central.
+        </p>
+
+        <button
+          type="button"
+          onClick={resetForm}
+          className="mt-6 inline-flex h-10 items-center justify-center rounded-full bg-[#080A0E] px-7 !font-['Montserrat'] text-[10px] font-bold text-white transition hover:bg-[#18202C]"
+        >
+          Crear otra solicitud
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex h-full flex-col">
+      <div className="mb-7">
+        <span className="!font-['Montserrat'] text-[10px] font-bold uppercase tracking-[0.16em] text-[#315D9C]">
+          Mesa de ayuda
+        </span>
+
+        <h3 className="mt-2 !font-['Montserrat'] text-[28px] font-semibold leading-[1.12] tracking-[-0.035em] text-[#1E293B] sm:text-[32px]">
+          ¿Cómo podemos ayudarte?
+        </h3>
+
+        <p className="mt-2 max-w-[520px] !font-['Montserrat'] text-[11px] leading-[1.55] text-[#7D8798]">
+          Pediremos únicamente los datos necesarios para atender tu solicitud.
+        </p>
+      </div>
+
+      {optionsError && (
+        <div className="mb-4 rounded-[12px] border border-[#F1D2D2] bg-[#FFF7F7] px-4 py-3">
+          <div className="flex items-start gap-2">
+            <AlertCircle size={16} className="mt-0.5 shrink-0 text-[#C94B4B]" />
+            <div className="min-w-0">
+              <p className="!font-['Montserrat'] text-[9px] font-semibold leading-5 text-[#A43E3E]">
+                {optionsError}
               </p>
-
-              {/*
-                EJEMPLO PARA EL FORMULARIO FINAL:
-
-                <iframe
-                  src="https://TU-FORMULARIO-AQUI"
-                  title="Formulario de soporte Top Education"
-                  className="h-[520px] w-full rounded-[16px] border-0"
-                  loading="lazy"
-                />
-              */}
+              <button
+                type="button"
+                onClick={loadOptions}
+                className="mt-1 !font-['Montserrat'] text-[9px] font-bold text-[#315D9C]"
+              >
+                Reintentar
+              </button>
             </div>
           </div>
+        </div>
+      )}
+
+      <div className="grid gap-x-4 gap-y-4 sm:grid-cols-2">
+        <label className="block">
+          <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
+            Motivo de contacto
+          </span>
+
+          <div className="relative">
+            <select
+              value={category}
+              onChange={(event) => setCategory(event.target.value)}
+              disabled={loadingOptions || Boolean(optionsError)}
+              className="h-11 w-full appearance-none rounded-[10px] border border-[#D9E0E8] bg-white px-3 pr-9 !font-['Montserrat'] text-[11px] text-[#5C6677] outline-none transition focus:border-[#315D9C] focus:ring-2 focus:ring-[#315D9C]/10 disabled:bg-[#F4F6F8]"
+            >
+              <option value="" disabled>
+                {loadingOptions ? "Cargando opciones..." : "Selecciona una opción..."}
+              </option>
+
+              {catalog.categories.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+
+            <ChevronDown
+              size={15}
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8F99A8]"
+            />
+          </div>
+        </label>
+
+        <label className="block">
+          <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
+            Institución / Colegio
+          </span>
+
+          <input
+            type="text"
+            value={institutionLabel}
+            readOnly
+            disabled
+            className="h-11 w-full rounded-[10px] border border-[#D9E0E8] bg-[#F4F6F8] px-3 !font-['Montserrat'] text-[11px] text-[#667085] outline-none disabled:cursor-not-allowed"
+          />
+        </label>
+      </div>
+
+      <p className="mt-3 !font-['Montserrat'] text-[9px] leading-[1.55] text-[#7D8798]">
+        Solicitante e institución se completan en el backend desde tu sesión. El navegador nunca recibe la credencial de integración de México.
+      </p>
+
+      <label className="mt-4 block">
+        <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
+          Correo
+        </span>
+
+        <input
+          type="email"
+          value={contactEmail}
+          onChange={(event) => setContactEmail(event.target.value)}
+          maxLength={255}
+          required
+          placeholder="tu@correo.com"
+          className="h-11 w-full rounded-[10px] border border-[#D9E0E8] bg-white px-3 !font-['Montserrat'] text-[11px] text-[#404B5E] outline-none placeholder:text-[#9FA8B6] transition focus:border-[#315D9C] focus:ring-2 focus:ring-[#315D9C]/10"
+        />
+      </label>
+
+      <label className="mt-4 block">
+        <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
+          ¿A cuántas personas afecta?
+        </span>
+
+        <div className="relative">
+          <select
+            value={priority}
+            onChange={(event) => setPriority(event.target.value)}
+            disabled={loadingOptions || Boolean(optionsError)}
+            className="h-11 w-full appearance-none rounded-[10px] border border-[#D9E0E8] bg-white px-3 pr-9 !font-['Montserrat'] text-[11px] text-[#5C6677] outline-none transition focus:border-[#315D9C] focus:ring-2 focus:ring-[#315D9C]/10 disabled:bg-[#F4F6F8]"
+          >
+            <option value="" disabled>
+              {loadingOptions ? "Cargando opciones..." : "Selecciona una opción..."}
+            </option>
+
+            {catalog.priorities.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+
+          <ChevronDown
+            size={15}
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8F99A8]"
+          />
+        </div>
+      </label>
+
+      <label className="mt-4 block">
+        <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
+          ¿Qué necesitas resolver?
+        </span>
+
+        <textarea
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          rows={4}
+          maxLength={2000}
+          required
+          placeholder="Describe el problema, cuándo ocurrió y si hay algún mensaje de error..."
+          className="min-h-[116px] w-full resize-none rounded-[10px] border border-[#D9E0E8] bg-white px-3 py-3 !font-['Montserrat'] text-[11px] leading-[1.55] text-[#404B5E] outline-none placeholder:text-[#BAC1CB] transition focus:border-[#315D9C] focus:ring-2 focus:ring-[#315D9C]/10"
+        />
+
+        <span className="mt-1 block text-right !font-['Montserrat'] text-[8px] text-[#9AA3B0]">
+          {description.length}/2000
+        </span>
+      </label>
+
+      <div className="mt-4">
+        <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
+          Archivos adjuntos <span className="font-medium text-[#8B95A5]">(Opcional)</span>
+        </span>
+
+        <label className="group flex min-h-[94px] cursor-pointer flex-col items-center justify-center rounded-[12px] border border-dashed border-[#BFC8D4] bg-[#FCFDFE] px-5 py-4 text-center transition hover:border-[#315D9C]/55 hover:bg-[#F8FAFD]">
+          <input
+            type="file"
+            multiple
+            accept="image/png,image/jpeg,application/pdf,.png,.jpg,.jpeg,.pdf"
+            onChange={handleFilesChange}
+            disabled={submitting || files.length >= HELP_DESK_MAX_FILES}
+            className="hidden"
+          />
+
+          <span className="grid h-8 w-8 place-items-center rounded-[9px] bg-[#F0F3F7] text-[#687385] transition group-hover:bg-[#E8EEF7] group-hover:text-[#315D9C]">
+            <UploadCloud size={16} />
+          </span>
+
+          <span className="mt-2 !font-['Montserrat'] text-[10px] font-semibold text-[#4F5A6B]">
+            Haz clic para adjuntar archivos
+          </span>
+
+          <span className="mt-0.5 !font-['Montserrat'] text-[8px] text-[#9AA3B0]">
+            PNG, JPG o PDF · máximo 10 MiB por archivo · hasta 10 archivos.
+          </span>
+        </label>
+
+        {files.length > 0 && (
+          <div className="mt-2 space-y-1.5">
+            {files.map((file, index) => (
+              <div
+                key={`${file.name}-${file.size}-${index}`}
+                className="flex items-center justify-between gap-3 rounded-[10px] border border-[#E5E9EF] bg-white px-3 py-2"
+              >
+                <div className="min-w-0">
+                  <span className="block truncate !font-['Montserrat'] text-[9px] font-semibold text-[#475467]">
+                    {file.name}
+                  </span>
+                  <span className="!font-['Montserrat'] text-[8px] text-[#98A1AE]">
+                    {(file.size / 1024 / 1024).toFixed(2)} MiB
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => removeFile(index)}
+                  disabled={submitting}
+                  className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#F4F6F8] text-[#778191] hover:bg-[#FEEEEE] hover:text-[#C94B4B] disabled:opacity-50"
+                  aria-label={`Quitar ${file.name}`}
+                >
+                  <X size={13} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {formError && (
+        <div className="mt-4 flex items-start gap-2 rounded-[12px] border border-[#F1D2D2] bg-[#FFF7F7] px-4 py-3">
+          <AlertCircle size={15} className="mt-0.5 shrink-0 text-[#C94B4B]" />
+          <p className="!font-['Montserrat'] text-[9px] font-medium leading-5 text-[#A43E3E]">
+            {formError}
+          </p>
+        </div>
+      )}
+
+      <div className="mt-4 flex flex-col gap-3 border-t border-[#EDF0F4] pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <div className="flex items-center gap-1.5 !font-['Montserrat'] text-[8px] text-[#7C8797]">
+            <CircleHelp size={12} />
+            <span>No compartas contraseñas ni información sensible.</span>
+          </div>
+
+          {uploadProgress && (
+            <span className="mt-1 block !font-['Montserrat'] text-[8px] font-semibold text-[#315D9C]">
+              {uploadProgress}
+            </span>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          disabled={
+            submitting ||
+            loadingOptions ||
+            Boolean(optionsError) ||
+            !category ||
+            !priority ||
+            !contactEmail.trim() ||
+            !description.trim()
+          }
+          className="inline-flex h-10 items-center justify-center rounded-full bg-[#080A0E] px-7 !font-['Montserrat'] text-[10px] font-bold text-white shadow-[0_10px_24px_rgba(0,0,0,0.13)] transition hover:-translate-y-0.5 hover:bg-[#18202C] disabled:cursor-not-allowed disabled:opacity-45"
+        >
+          {submitting ? "Enviando..." : "Enviar solicitud"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function normalizeLocalHelpDeskRequests(raw) {
+  const items =
+    raw?.data?.results ??
+    raw?.data?.items ??
+    raw?.data ??
+    raw?.results ??
+    raw?.items ??
+    (Array.isArray(raw) ? raw : []);
+
+  return (Array.isArray(items) ? items : []).map((item) => ({
+    id: item?.id ?? item?.request_id ?? item?.requestId,
+    requestId: item?.request_id ?? item?.requestId ?? "",
+    category: item?.category ?? "",
+    priority: item?.priority ?? "",
+    contactEmail: item?.contact_email ?? item?.contactEmail ?? "",
+    description: item?.description ?? "",
+    institutionName: item?.institution_name ?? item?.institutionName ?? "",
+    attachments: Array.isArray(item?.attachments) ? item.attachments : [],
+    submittedAt: item?.submitted_at ?? item?.submittedAt ?? item?.created_at ?? item?.createdAt ?? null,
+    createdAt: item?.created_at ?? item?.createdAt ?? null,
+  }));
+}
+
+function formatHelpDeskDate(value) {
+  if (!value) return "—";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+
+  return date.toLocaleString("es-CO", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function MySupportRequests({ backendBaseUrl, refreshKey = 0 }) {
+  const REQUESTS_URL = `${backendBaseUrl}/api/account/help-desk/requests/`;
+
+  const [requests, setRequests] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const loadRequests = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await getJSON(REQUESTS_URL);
+      const normalized = normalizeLocalHelpDeskRequests(response);
+
+      setRequests(normalized);
+      setSelectedId((current) => {
+        if (current && normalized.some((item) => String(item.id) === String(current))) {
+          return current;
+        }
+        return normalized[0]?.id ?? null;
+      });
+    } catch (loadError) {
+      setRequests([]);
+      setSelectedId(null);
+      setError(
+        loadError?.message || "No fue posible cargar tus solicitudes enviadas."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadRequests();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [REQUESTS_URL, refreshKey]);
+
+  const selectedRequest =
+    requests.find((request) => String(request.id) === String(selectedId)) ||
+    requests[0] ||
+    null;
+
+  return (
+    <div className="min-h-[690px] bg-[#F8FAFC] px-5 pb-6 pt-[92px] sm:px-8 sm:pb-8 lg:px-10 lg:pt-[88px]">
+      <div className="mx-auto max-w-[1080px]">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <span className="!font-['Montserrat'] text-[10px] font-bold uppercase tracking-[0.16em] text-[#315D9C]">
+              Historial
+            </span>
+            <h3 className="mt-2 !font-['Montserrat'] text-[27px] font-semibold tracking-[-0.035em] text-[#1E293B] sm:text-[31px]">
+              Mis solicitudes
+            </h3>
+            <p className="mt-1 max-w-[620px] !font-['Montserrat'] text-[11px] leading-5 text-[#7D8798]">
+              Aquí verás las solicitudes que enviamos correctamente al equipo de soporte. Las respuestas llegan al correo indicado en cada solicitud.
+            </p>
+          </div>
+
+          <div className="rounded-full border border-[#E3E8EF] bg-white px-3 py-2 !font-['Montserrat'] text-[9px] font-semibold text-[#7B8595] shadow-sm">
+            {requests.length} {requests.length === 1 ? "solicitud" : "solicitudes"}
+          </div>
+        </div>
+
+        {error && (
+          <div className="mb-4 flex items-center justify-between gap-4 rounded-[14px] border border-[#F1D2D2] bg-[#FFF7F7] px-4 py-3">
+            <p className="!font-['Montserrat'] text-[9px] font-medium text-[#A43E3E]">
+              {error}
+            </p>
+            <button
+              type="button"
+              onClick={loadRequests}
+              className="shrink-0 !font-['Montserrat'] text-[9px] font-bold text-[#315D9C]"
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
+
+        {loading ? (
+          <div className="grid min-h-[460px] place-items-center rounded-[20px] border border-[#E3E8EF] bg-white">
+            <div className="text-center">
+              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[#D8E0EA] border-t-[#315D9C]" />
+              <p className="mt-3 !font-['Montserrat'] text-[9px] font-medium text-[#7D8798]">
+                Cargando solicitudes...
+              </p>
+            </div>
+          </div>
+        ) : requests.length === 0 ? (
+          <div className="grid min-h-[460px] place-items-center rounded-[20px] border border-[#E3E8EF] bg-white px-6 text-center shadow-[0_18px_45px_rgba(30,45,65,0.05)]">
+            <div className="max-w-[460px]">
+              <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-[#EEF4FD] text-[#315D9C]">
+                <CircleHelp size={22} />
+              </div>
+              <h4 className="mt-4 !font-['Montserrat'] text-[16px] font-bold text-[#253247]">
+                Aún no tienes solicitudes enviadas
+              </h4>
+              <p className="mt-2 !font-['Montserrat'] text-[10px] leading-5 text-[#7D8798]">
+                Cuando una solicitud sea confirmada por el servicio central con HTTP 201, aparecerá aquí como referencia de envío.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid overflow-hidden rounded-[20px] border border-[#E3E8EF] bg-white shadow-[0_18px_45px_rgba(30,45,65,0.07)] lg:grid-cols-[360px_minmax(0,1fr)]">
+            <div className="border-b border-[#E7EBF0] bg-[#FBFCFD] lg:border-b-0 lg:border-r">
+              <div className="border-b border-[#E7EBF0] px-4 py-4">
+                <strong className="!font-['Montserrat'] text-[11px] font-bold text-[#283548]">
+                  Solicitudes enviadas
+                </strong>
+                <p className="mt-1 !font-['Montserrat'] text-[9px] text-[#929BA8]">
+                  Selecciona una referencia para consultar lo que enviaste.
+                </p>
+              </div>
+
+              <div className="max-h-[520px] overflow-y-auto p-2.5">
+                {requests.map((request) => {
+                  const active = String(request.id) === String(selectedRequest?.id);
+
+                  return (
+                    <button
+                      key={request.id || request.requestId}
+                      type="button"
+                      onClick={() => setSelectedId(request.id)}
+                      className={`mb-2 w-full rounded-[14px] border p-3.5 text-left transition ${
+                        active
+                          ? "border-[#BFCFE6] bg-[#F1F6FD] shadow-[0_8px_20px_rgba(49,93,156,0.08)]"
+                          : "border-transparent bg-white hover:border-[#E4E9EF] hover:bg-[#F8FAFC]"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="max-w-[220px] truncate !font-['Montserrat'] text-[9px] font-bold text-[#315D9C]">
+                          {request.requestId || `Solicitud ${request.id}`}
+                        </span>
+                        <span className="inline-flex rounded-full border border-[#BDE9DA] bg-[#ECF8F3] px-2 py-1 !font-['Montserrat'] text-[8px] font-bold text-[#237A5A]">
+                          Enviado
+                        </span>
+                      </div>
+
+                      <strong className="mt-2 block truncate !font-['Montserrat'] text-[11px] font-bold text-[#253247]">
+                        {request.category || "Mesa de ayuda"}
+                      </strong>
+
+                      <span className="mt-1.5 block !font-['Montserrat'] text-[9px] text-[#8B95A4]">
+                        {formatHelpDeskDate(request.submittedAt)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {selectedRequest && (
+              <div className="flex min-h-[520px] flex-col">
+                <div className="border-b border-[#E7EBF0] px-5 py-5 sm:px-6">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.12em] text-[#8B95A4]">
+                        Referencia técnica
+                      </span>
+                      <h4 className="mt-1 break-all !font-['Montserrat'] text-[15px] font-bold text-[#315D9C]">
+                        {selectedRequest.requestId || "—"}
+                      </h4>
+                    </div>
+
+                    <span className="inline-flex rounded-full border border-[#BDE9DA] bg-[#ECF8F3] px-3 py-1.5 !font-['Montserrat'] text-[9px] font-bold text-[#237A5A]">
+                      Enviado
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex-1 bg-[#FCFDFE] px-5 py-5 sm:px-6">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-[14px] border border-[#E5E9EF] bg-white p-4">
+                      <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.1em] text-[#939CAA]">
+                        Motivo
+                      </span>
+                      <strong className="mt-1 block !font-['Montserrat'] text-[11px] text-[#2E3B4E]">
+                        {selectedRequest.category || "—"}
+                      </strong>
+                    </div>
+
+                    <div className="rounded-[14px] border border-[#E5E9EF] bg-white p-4">
+                      <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.1em] text-[#939CAA]">
+                        Alcance
+                      </span>
+                      <strong className="mt-1 block !font-['Montserrat'] text-[11px] text-[#2E3B4E]">
+                        {selectedRequest.priority || "—"}
+                      </strong>
+                    </div>
+
+                    <div className="rounded-[14px] border border-[#E5E9EF] bg-white p-4">
+                      <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.1em] text-[#939CAA]">
+                        Institución
+                      </span>
+                      <strong className="mt-1 block !font-['Montserrat'] text-[11px] text-[#2E3B4E]">
+                        {selectedRequest.institutionName || "—"}
+                      </strong>
+                    </div>
+
+                    <div className="rounded-[14px] border border-[#E5E9EF] bg-white p-4">
+                      <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.1em] text-[#939CAA]">
+                        Correo de respuesta
+                      </span>
+                      <strong className="mt-1 block break-all !font-['Montserrat'] text-[11px] text-[#2E3B4E]">
+                        {selectedRequest.contactEmail || "—"}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 rounded-[14px] border border-[#E5E9EF] bg-white p-4">
+                    <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.1em] text-[#939CAA]">
+                      Descripción enviada
+                    </span>
+                    <p className="mt-2 whitespace-pre-wrap !font-['Montserrat'] text-[10px] leading-6 text-[#5D6878]">
+                      {selectedRequest.description || "—"}
+                    </p>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-3 !font-['Montserrat'] text-[9px] text-[#7D8798]">
+                    <span>
+                      Enviado: {formatHelpDeskDate(selectedRequest.submittedAt)}
+                    </span>
+                    <span>
+                      Adjuntos: {selectedRequest.attachments.length}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="border-t border-[#E7EBF0] bg-white px-5 py-4 sm:px-6">
+                  <p className="!font-['Montserrat'] text-[9px] leading-5 text-[#7C8797]">
+                    Esta pantalla conserva una referencia local del envío. La API central no expone estados, conversación ni respuestas; cualquier respuesta llegará al correo indicado.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function HelpFormModal({
+  open,
+  onClose,
+  backendBaseUrl,
+  me,
+  learningRoute,
+}) {
+  const [helpView, setHelpView] = useState("help");
+  const [requestsRefreshKey, setRequestsRefreshKey] = useState(0);
+
+  useEffect(() => {
+    if (!open) {
+      setHelpView("help");
+    }
+  }, [open]);
+
+  if (!open) return null;
+
+  const isHelpCenter = helpView === "help";
+
+  const handleSubmitted = () => {
+    setRequestsRefreshKey((value) => value + 1);
+  };
+
+  return (
+    <div
+      className="
+        fixed inset-0 z-[150]
+        flex items-end justify-center
+        bg-[#0D1726]/55
+        backdrop-blur-[4px]
+
+        sm:items-center
+        sm:px-5
+        sm:py-5
+      "
+      role="dialog"
+      aria-modal="true"
+      aria-label="Mesa de ayuda"
+    >
+      <div
+        className="
+          relative
+          flex
+          max-h-[calc(100dvh-8px)]
+          w-full
+          flex-col
+          overflow-hidden
+          rounded-t-[26px]
+          border border-white/70
+          bg-white
+          shadow-[0_35px_100px_rgba(13,26,45,0.30)]
+
+          sm:max-h-[calc(100dvh-40px)]
+          sm:max-w-[1180px]
+          sm:rounded-[28px]
+        "
+      >
+        <div className="absolute left-4 top-4 z-40 sm:left-5 sm:top-5">
+          <div className="flex items-center rounded-full border border-[#DEE4EA] bg-white/95 p-1 shadow-[0_8px_25px_rgba(31,45,63,0.10)] backdrop-blur">
+            <button
+              type="button"
+              onClick={() => setHelpView("help")}
+              className={`rounded-full px-3.5 py-2 !font-['Montserrat'] text-[9px] font-bold transition sm:px-4 ${
+                isHelpCenter
+                  ? "bg-[#1D3557] text-white shadow-sm"
+                  : "text-[#6F7A8A] hover:bg-[#F3F6F9] hover:text-[#253247]"
+              }`}
+            >
+              Centro de ayuda
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setHelpView("requests")}
+              className={`rounded-full px-3.5 py-2 !font-['Montserrat'] text-[9px] font-bold transition sm:px-4 ${
+                !isHelpCenter
+                  ? "bg-[#1D3557] text-white shadow-sm"
+                  : "text-[#6F7A8A] hover:bg-[#F3F6F9] hover:text-[#253247]"
+              }`}
+            >
+              Mis solicitudes
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 z-40 grid h-9 w-9 place-items-center rounded-full border border-[#E6EAF0] bg-white/95 text-[#6B7482] shadow-sm backdrop-blur transition hover:bg-[#F3F5F8] hover:text-[#172033]"
+          aria-label="Cerrar mesa de ayuda"
+        >
+          <X size={18} />
+        </button>
+
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          {isHelpCenter ? (
+            <div className="grid min-h-full lg:grid-cols-[42%_58%]">
+              <div className="relative hidden min-h-[690px] overflow-hidden bg-[#F4F0EA] lg:block">
+                <div className="absolute inset-0">
+                  <div className="absolute -left-10 -top-8 h-32 w-32 rotate-[-12deg] rounded-[28px] border-2 border-dashed border-[#1D3557]/15" />
+                  <div className="absolute -right-8 top-20 h-28 w-28 rotate-[14deg] rounded-full border-2 border-dashed border-[#1D3557]/15" />
+                  <div className="absolute bottom-20 left-[-30px] h-36 w-36 rounded-full border-2 border-dashed border-[#315D9C]/15" />
+                  <div className="absolute bottom-[-42px] right-[-10px] h-44 w-44 rotate-[18deg] rounded-[34px] border-2 border-dashed border-[#315D9C]/15" />
+                </div>
+
+                <div className="relative flex h-full min-h-[690px] flex-col items-center justify-center px-10 pb-12 pt-[92px]">
+                  <div className="relative grid h-[300px] w-[300px] place-items-center">
+                    <span className="absolute h-[285px] w-[285px] rounded-full border border-[#9BB1C6]/30" />
+                    <span className="absolute h-[210px] w-[210px] rounded-full border border-[#9BB1C6]/35" />
+                    <span className="absolute h-[135px] w-[135px] rounded-full border border-[#9BB1C6]/40" />
+
+                    <img
+                      src="/assets/content/resources/Top-Renata-mesa-de-ayuda.png"
+                      alt="Asistente Top Education"
+                      className="relative z-10 h-[255px] w-auto object-contain"
+                    />
+                  </div>
+
+                  <div className="mt-5 w-full max-w-[350px] rounded-[14px] border border-[#E5E2DC] bg-white/90 px-3 py-4 text-center shadow-[0_12px_28px_rgba(41,46,54,0.08)] backdrop-blur">
+                    <strong className="block !font-['Montserrat'] text-[11px] font-bold text-[#263247]">
+                      Te acompañamos paso a paso
+                    </strong>
+                    <span className="mt-1 block !font-['Montserrat'] text-[9px] leading-[1.45] text-[#7B8491]">
+                      Tu solicitud será enviada al equipo de soporte. Las respuestas llegarán directamente al correo indicado.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-[#FBFCFD] px-5 pb-6 pt-[92px] sm:px-8 sm:pb-8 lg:px-12 lg:pb-10 lg:pt-[88px] xl:px-14">
+                <SupportRequestForm
+                  backendBaseUrl={backendBaseUrl}
+                  me={me}
+                  learningRoute={learningRoute}
+                  onSubmitted={handleSubmitted}
+                />
+              </div>
+            </div>
+          ) : (
+            <MySupportRequests
+              backendBaseUrl={backendBaseUrl}
+              refreshKey={requestsRefreshKey}
+            />
+          )}
         </div>
       </div>
     </div>
   );
 }
+
 
 function DashboardWelcomeModal({ open, onClose, defaultTab }) {
   if (!open) return null;
@@ -4613,6 +5687,9 @@ export default function Account() {
           <HelpFormModal
             open={showHelp}
             onClose={() => setShowHelp(false)}
+            backendBaseUrl={backendBaseUrl}
+            me={me}
+            learningRoute={learningRoute}
           />
 
           <DashboardWelcomeModal
