@@ -8,6 +8,10 @@ import {
 } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
+import {
+  buildExploreUrl,
+} from "../utils/exploreNavigation";
+
 const GRID_COL_CLASSES =
   "relative overflow-visible grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 lg:gap-3";
 
@@ -82,34 +86,23 @@ export default function TopicGrid({ topics = [], columns = 5 }) {
   const handleItemMenuClick = (
     filtersObject
   ) => {
-    const queryParams =
-      new URLSearchParams();
 
-    queryParams.set("idioma", "es");
-    queryParams.set("page", "1");
-    queryParams.set("page_size", "16");
+    const url =
+      buildExploreUrl(
+        filtersObject || {},
+        {
+          path:
+            "/explora/filter",
 
-    Object.entries(
-      filtersObject || {}
-    ).forEach(
-      ([key, value]) => {
-        if (
-          value === undefined ||
-          value === null ||
-          value === ""
-        ) {
-          return;
+          page: 1,
+
+          pageSize: 16,
         }
+      );
 
-        queryParams.set(
-          key,
-          value
-        );
-      }
-    );
 
     navigateWithTransition(
-      `/explora/filter?idioma=en&${queryParams.toString()}`
+      url
     );
   };
 

@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import {
+  buildExploreUrl,
+  getExploreFilterKey,
+} from "../utils/exploreNavigation";
 
 const ImageSlider3D = ({ images = [], action }) => {
   const navigate = useNavigate();
@@ -21,14 +25,78 @@ const ImageSlider3D = ({ images = [], action }) => {
     }
   }
 
-  const handleItemMenuClick = (category, tag) => {
-    if (!category || !tag || !action) return;
+  const handleItemMenuClick = (
+    image
+  ) => {
 
-    const categoryParam = category;
-    const tagParam = encodeURIComponent(tag);
+    if (
+      !image ||
+      !action
+    ) {
+      return;
+    }
 
-    const query = `idioma=en&idioma=es&${categoryParam}=${tagParam}&page=1&page_size=15`;
-    navigateWithTransition(`/${action}/filter?${query}`);
+
+    const filterKey =
+      getExploreFilterKey(
+        image.category
+      );
+
+
+    if (!filterKey) {
+
+      console.warn(
+        "[ImageSlider3D] " +
+        "Categoría sin mapping:",
+        image.category
+      );
+
+      return;
+    }
+
+
+    /*
+    * MUY IMPORTANTE:
+    *
+    * image.id = ID visual del slider.
+    *
+    * image.filterId =
+    * ID verdadero de Universidad,
+    * Empresa, Plataforma, etc.
+    */
+
+    if (!image.filterId) {
+
+      console.warn(
+        "[ImageSlider3D] " +
+        "Falta filterId para:",
+        image.link
+      );
+
+      return;
+    }
+
+
+    const url =
+      buildExploreUrl(
+        {
+          [filterKey]:
+            image.filterId,
+        },
+        {
+          path:
+            `/${action}/filter`,
+
+          page: 1,
+
+          pageSize: 16,
+        }
+      );
+
+
+    navigateWithTransition(
+      url
+    );
   };
 
   const handleNext = () => {
@@ -130,7 +198,11 @@ const ImageSlider3D = ({ images = [], action }) => {
             <button
               key={image?.id || `${image?.src}-${index}`}
               type="button"
-              onClick={() => handleItemMenuClick(image?.category, image?.link)}
+              onClick={() =>
+                handleItemMenuClick(
+                  image
+                )
+              }
               className="
                 absolute
                 h-[260px]

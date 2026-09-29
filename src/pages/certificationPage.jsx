@@ -1196,7 +1196,9 @@ const CertificationPage = () => {
                 <h2 className={sectionTitle}>Clases recomendadas para ti</h2>
 
                 <div className="mt-0">
-                  <CertificationSlider certification={certification} />
+                  <CertificationSlider
+                    slug={certification.slug || slug}
+                  />
                 </div>
               </div>
             </div>

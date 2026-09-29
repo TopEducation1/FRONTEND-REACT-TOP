@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
-import HorizontalScroll from "../components/HorizontalScroll";
+import ScrollReveal from "../components/ScrollReveal";
 import SearchLMT from "../components/SearchLMT";
 import RankingsGrid from "../components/RankingsGrid";
 import Seo from "../components/Seo";
@@ -257,115 +257,500 @@ export default function LoMasTop() {
         canonicalPath="/lo-mas-top"
       />
 
-      <section className="h-full w-screen flex-shrink-0 bg-gradient-to-t from-transparent to-[#1c1c1c]">
-        <HorizontalScroll>
-          <div className="flex w-[100vw] items-center justify-center px-5">
-            <div className="m-auto flex max-w-[100vw] flex-wrap lg:max-w-[1080px]">
-              <h1 className="relative z-10 block w-full text-center font-[Lora] text-[4rem] font-normal leading-[1.5em] text-[#F6F4EF] sm:text-[5rem] md:text-[5rem] lg:w-[30%] lg:text-left lg:text-[5rem] xl:text-[6rem]">
-                Lo más <br />
-                <span className="font-te-it text-[8rem] lg:text-[10rem]">
+      {/* ======================================================= */}
+      {/* HERO */}
+      {/* ======================================================= */}
+
+      <section
+        className="
+          relative
+          overflow-hidden
+          bg-gradient-to-b
+          from-[#111111]
+          via-[#1c1c1c]
+          to-[#252525]
+          px-5
+          py-20
+          md:py-28
+          lg:min-h-[720px]
+          lg:px-10
+          lg:py-32
+        "
+      >
+        {/* Decoración */}
+
+        <div
+          className="
+            pointer-events-none
+            absolute
+            left-1/2
+            top-[-280px]
+            h-[650px]
+            w-[650px]
+            -translate-x-1/2
+            rounded-full
+            bg-[#1941cf]/20
+            blur-[160px]
+          "
+        />
+
+        <div
+          className="
+            pointer-events-none
+            absolute
+            bottom-[-300px]
+            right-[-180px]
+            h-[600px]
+            w-[600px]
+            rounded-full
+            bg-[#5CC781]/10
+            blur-[150px]
+          "
+        />
+
+        <div
+          className="
+            relative
+            z-10
+            mx-auto
+            flex
+            min-h-[520px]
+            max-w-[1180px]
+            items-center
+          "
+        >
+          <div
+            className="
+              grid
+              w-full
+              grid-cols-1
+              items-center
+              gap-10
+              lg:grid-cols-12
+              lg:gap-14
+            "
+          >
+            {/* Título */}
+
+            <ScrollReveal
+              className="lg:col-span-3"
+              distance={55}
+              duration={850}
+            >
+              <h1
+                className="
+                  text-center
+                  font-[Lora]
+                  text-[4rem]
+                  font-normal
+                  leading-[1.2em]
+                  tracking-[-0.05em]
+                  text-[#F6F4EF]
+                  sm:text-[5rem]
+                  lg:text-left
+                  lg:text-[6rem]
+                  xl:text-[7rem]
+                "
+              >
+                Lo más
+
+                <br />
+
+                <span
+                  className="
+                    font-te-it
+                    text-[6rem]
+                    text-white
+                    sm:text-[8rem]
+                    lg:text-[9rem]
+                    xl:text-[10rem]
+                  "
+                >
                   Top!
                 </span>
               </h1>
+            </ScrollReveal>
 
-              <div className="w-full lg:w-[70%] lg:pl-10">
-                <h2 className="relative !font-['Montserrat'] font-semibold z-10 mt-2 text-center font-[Lora] text-[1.7rem] leading-[1em] text-[#F6F4EF] lg:text-left lg:text-[2.125rem]">
+
+            {/* Search */}
+
+            <ScrollReveal
+              className="lg:col-span-9"
+              delay={120}
+              distance={55}
+              duration={850}
+            >
+              <div className="lg:pl-5">
+                <h2
+                  className="
+                    text-center
+                    !font-['Montserrat']
+                    text-[1.8rem]
+                    font-semibold
+                    leading-[1.15em]
+                    tracking-[-0.03em]
+                    text-[#F6F4EF]
+                    md:text-[2.2rem]
+                    lg:text-left
+                    lg:text-[2.5rem]
+                  "
+                >
                   Encuentra tu próxima certificación
                 </h2>
 
-                <p className="relative z-10 mt-2 text-center text-[1.125rem] text-[#a8a8a8] lg:text-left">
-                  Descubre oportunidades de formación diseñadas para el futuro.
-                  Prepárate y da el siguiente paso en tu carrera profesional.
+                <p
+                  className="
+                    mx-auto
+                    mt-4
+                    max-w-[650px]
+                    text-center
+                    font-['Montserrat']
+                    text-[1rem]
+                    leading-[1.7em]
+                    text-[#a8a8a8]
+                    md:text-[1.1rem]
+                    lg:mx-0
+                    lg:text-left
+                  "
+                >
+                  Descubre oportunidades de formación diseñadas
+                  para el futuro. Prepárate y da el siguiente paso
+                  en tu carrera profesional.
                 </p>
 
-                <SearchLMT />
+                <div className="mt-8">
+                  <SearchLMT />
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
-
-          <div className="w-[100vw] px-10">
-            <div className="m-auto flex max-w-[100vw] flex-wrap justify-center pt-90 lg:pt-70">
-              <div>
-                <h3 className="mb-[-10px] text-center font-te text-[3rem] leading-[1.2em] text-[#0F090B] md:text-[4rem]">
-                  <span className="text-[4rem] text-[#034694] md:text-[5rem]">
-                    Rankings
-                  </span>
-                  <br />
-                  de lo más <span className="font-te-it">Top!</span>
-                </h3>
-
-                <p className="relative z-10 m-auto my-4 max-w-[80%] text-center text-[1.125rem] leading-[1.1em] text-[#3a3540]/90">
-                  Más de 250,000 reseñas escritas por usuarios te ayudan a
-                  elegir los mejores cursos.
-                </p>
-              </div>
-            </div>
-          </div>
-        </HorizontalScroll>
-      </section>
-
-      <section className="relative z-10 mt-[-70%] h-full w-screen flex-shrink-0 p-5 lg:mt-[-20%] lg:p-10">
-        <div className="container m-auto">
-          {rankingsLoading ? (
-            <RankingsPreviewSkeleton />
-          ) : (
-            <div className="grid grid-cols-1 gap-5 pt-10 text-sm md:grid-cols-3 lg:pt-20">
-              <div className="rounded-2xl border border-[rgba(15,9,11,0.07)] bg-white p-6 shadow-sm">
-                <h4 className="mb-5 font-[Montserrat] text-base font-semibold text-[#0F090B]">
-                  {rankingName1}
-                </h4>
-
-                <div className="flex flex-wrap gap-1">
-                  {renderItems(universidades, "Universidad")}
-                </div>
-
-                <Link
-                  className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-[#2563EB] transition-colors hover:text-[#1941CF]"
-                  to={`/lo-mas-top/ranking/${rankingName1Slug}`}
-                >
-                  Ver el top de universidades →
-                </Link>
-              </div>
-
-              <div className="rounded-2xl border border-[rgba(15,9,11,0.07)] bg-white p-6 shadow-sm">
-                <h4 className="mb-5 font-[Montserrat] text-base font-semibold text-[#0F090B]">
-                  {rankingName3}
-                </h4>
-
-                <div className="flex flex-wrap gap-1">
-                  {renderItems(universidadesLatam, "Universidad")}
-                </div>
-
-                <Link
-                  className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-[#2563EB] transition-colors hover:text-[#1941CF]"
-                  to={`/lo-mas-top/ranking/${rankingName3Slug}`}
-                >
-                  Ver el top de universidades →
-                </Link>
-              </div>
-
-              <div className="rounded-2xl border border-[rgba(15,9,11,0.07)] bg-white p-6 shadow-sm">
-                <h4 className="mb-5 font-[Montserrat] text-base font-semibold text-[#0F090B]">
-                  {rankingName2}
-                </h4>
-
-                <div className="flex flex-wrap gap-1">
-                  {renderItems(empresas, "Empresa")}
-                </div>
-
-                <Link
-                  className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-[#2563EB] transition-colors hover:text-[#1941CF]"
-                  to={`/lo-mas-top/ranking/${rankingName2Slug}`}
-                >
-                  Ver el top de empresas →
-                </Link>
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
-      <RankingsGrid />
+
+      {/* ======================================================= */}
+      {/* INTRO RANKINGS */}
+      {/* ======================================================= */}
+
+      <section
+        className="
+          relative
+          overflow-hidden
+          bg-white
+          px-5
+          pb-8
+          pt-20
+          md:pt-28
+          lg:px-10
+          lg:pt-32
+        "
+      >
+        <ScrollReveal
+          className="mx-auto max-w-[900px]"
+          distance={50}
+        >
+          <div className="text-center">
+            <span
+              className="
+                inline-flex
+                rounded-full
+                bg-[#1941cf]/10
+                px-4
+                py-2
+                font-['Montserrat']
+                text-[11px]
+                font-bold
+                uppercase
+                tracking-[0.12em]
+                text-[#1941cf]
+              "
+            >
+              Descubre los mejores
+            </span>
+
+            <h3
+              className="
+                mt-5
+                text-center
+                font-te
+                text-[3rem]
+                leading-[1em]
+                tracking-[-0.04em]
+                text-[#0F090B]
+                md:text-[4rem]
+                lg:text-[5rem]
+              "
+            >
+              <span className="text-[#034694]">
+                Rankings
+              </span>
+
+              <br />
+
+              de lo más{" "}
+
+              <span className="font-te-it">
+                Top!
+              </span>
+            </h3>
+
+            <p
+              className="
+                mx-auto
+                mt-6
+                max-w-[680px]
+                font-['Montserrat']
+                text-[1rem]
+                leading-[1.7em]
+                text-[#3a3540]/75
+                md:text-[1.1rem]
+              "
+            >
+              Más de 250,000 reseñas escritas por usuarios
+              te ayudan a elegir los mejores cursos.
+            </p>
+          </div>
+        </ScrollReveal>
+      </section>
+
+
+      {/* ======================================================= */}
+      {/* RANKINGS PREVIEW */}
+      {/* ======================================================= */}
+
+      <section
+        className="
+          relative
+          bg-white
+          px-5
+          pb-24
+          pt-8
+          lg:px-10
+          lg:pb-32
+          lg:pt-12
+        "
+      >
+        <div className="mx-auto max-w-[1180px]">
+
+          {rankingsLoading ? (
+
+            <RankingsPreviewSkeleton />
+
+          ) : (
+
+            <div
+              className="
+                grid
+                grid-cols-1
+                gap-5
+                text-sm
+                md:grid-cols-3
+              "
+            >
+
+              {/* ================================================= */}
+              {/* UNIVERSIDADES */}
+              {/* ================================================= */}
+
+              <ScrollReveal
+                delay={0}
+                distance={45}
+              >
+                <div
+                  className="
+                    h-full
+                    rounded-[24px]
+                    border
+                    border-black/[0.07]
+                    bg-white
+                    p-6
+                    shadow-[0_18px_50px_rgba(0,0,0,0.05)]
+                    transition
+                    duration-300
+                    hover:-translate-y-1
+                    hover:shadow-[0_22px_60px_rgba(0,0,0,0.08)]
+                  "
+                >
+                  <h4
+                    className="
+                      mb-5
+                      font-[Montserrat]
+                      text-base
+                      font-semibold
+                      text-[#0F090B]
+                    "
+                  >
+                    {rankingName1}
+                  </h4>
+
+                  <div className="flex flex-wrap gap-1">
+                    {renderItems(
+                      universidades,
+                      "Universidad"
+                    )}
+                  </div>
+
+                  <Link
+                    className="
+                      mt-5
+                      flex
+                      items-center
+                      gap-1.5
+                      text-xs
+                      font-semibold
+                      text-[#2563EB]
+                      transition-colors
+                      hover:text-[#1941CF]
+                    "
+                    to={`/lo-mas-top/ranking/${rankingName1Slug}`}
+                  >
+                    Ver el top de universidades →
+                  </Link>
+                </div>
+              </ScrollReveal>
+
+
+              {/* ================================================= */}
+              {/* LATAM */}
+              {/* ================================================= */}
+
+              <ScrollReveal
+                delay={100}
+                distance={45}
+              >
+                <div
+                  className="
+                    h-full
+                    rounded-[24px]
+                    border
+                    border-black/[0.07]
+                    bg-white
+                    p-6
+                    shadow-[0_18px_50px_rgba(0,0,0,0.05)]
+                    transition
+                    duration-300
+                    hover:-translate-y-1
+                    hover:shadow-[0_22px_60px_rgba(0,0,0,0.08)]
+                  "
+                >
+                  <h4
+                    className="
+                      mb-5
+                      font-[Montserrat]
+                      text-base
+                      font-semibold
+                      text-[#0F090B]
+                    "
+                  >
+                    {rankingName3}
+                  </h4>
+
+                  <div className="flex flex-wrap gap-1">
+                    {renderItems(
+                      universidadesLatam,
+                      "Universidad"
+                    )}
+                  </div>
+
+                  <Link
+                    className="
+                      mt-5
+                      flex
+                      items-center
+                      gap-1.5
+                      text-xs
+                      font-semibold
+                      text-[#2563EB]
+                      transition-colors
+                      hover:text-[#1941CF]
+                    "
+                    to={`/lo-mas-top/ranking/${rankingName3Slug}`}
+                  >
+                    Ver el top de universidades →
+                  </Link>
+                </div>
+              </ScrollReveal>
+
+
+              {/* ================================================= */}
+              {/* EMPRESAS */}
+              {/* ================================================= */}
+
+              <ScrollReveal
+                delay={200}
+                distance={45}
+              >
+                <div
+                  className="
+                    h-full
+                    rounded-[24px]
+                    border
+                    border-black/[0.07]
+                    bg-white
+                    p-6
+                    shadow-[0_18px_50px_rgba(0,0,0,0.05)]
+                    transition
+                    duration-300
+                    hover:-translate-y-1
+                    hover:shadow-[0_22px_60px_rgba(0,0,0,0.08)]
+                  "
+                >
+                  <h4
+                    className="
+                      mb-5
+                      font-[Montserrat]
+                      text-base
+                      font-semibold
+                      text-[#0F090B]
+                    "
+                  >
+                    {rankingName2}
+                  </h4>
+
+                  <div className="flex flex-wrap gap-1">
+                    {renderItems(
+                      empresas,
+                      "Empresa"
+                    )}
+                  </div>
+
+                  <Link
+                    className="
+                      mt-5
+                      flex
+                      items-center
+                      gap-1.5
+                      text-xs
+                      font-semibold
+                      text-[#2563EB]
+                      transition-colors
+                      hover:text-[#1941CF]
+                    "
+                    to={`/lo-mas-top/ranking/${rankingName2Slug}`}
+                  >
+                    Ver el top de empresas →
+                  </Link>
+                </div>
+              </ScrollReveal>
+
+            </div>
+          )}
+
+        </div>
+      </section>
+
+
+      {/* ======================================================= */}
+      {/* GRID COMPLETO */}
+      {/* ======================================================= */}
+
+      <ScrollReveal
+        distance={55}
+        duration={800}
+        threshold={0.05}
+      >
+        <RankingsGrid />
+      </ScrollReveal>
     </>
   );
 }

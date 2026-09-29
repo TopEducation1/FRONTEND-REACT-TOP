@@ -22,6 +22,14 @@ import {
   FaAnglesRight,
 } from "react-icons/fa6";
 
+import {
+  buildExploreUrl,
+} from "../utils/exploreNavigation";
+
+import {
+  HOME_FILTER_IDS,
+} from "../constants/homeFilterIds";
+
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -412,6 +420,33 @@ function HomePage() {
     },
   ];
 
+  const platformsWithFilterIds =
+  platforms.map(
+    (platform) => ({
+      ...platform,
+
+      filterId:
+        HOME_FILTER_IDS
+          .platforms[
+            platform.name
+          ] ?? null,
+    })
+  );
+
+
+const flagsImagesWithFilterIds =
+  flagsImages.map(
+    (image) => ({
+      ...image,
+
+      filterId:
+        HOME_FILTER_IDS
+          .universities[
+            image.link
+          ] ?? null,
+    })
+  );
+
   const [logos, setLogos] = useState([]);
 
   useEffect(() => {
@@ -595,7 +630,16 @@ function HomePage() {
           <div className="flex justify-center mt-14">
             <button
               type="button"
-              onClick={() => navigateWithTransition("/explora")}
+              onClick={() =>
+                navigateWithTransition(
+                  buildExploreUrl(
+                    {},
+                    {
+                      path: "/explora",
+                    }
+                  )
+                )
+              }
               className="group inline-flex items-center gap-3 text-[#0F090B] transition-all duration-300 hover:text-[#1941cf]"
             >
               <span className="text-[1rem] font-medium">Ver todas las categorías</span>
@@ -625,7 +669,12 @@ function HomePage() {
               globalmente y encuentra nuevas rutas para tu crecimiento profesional.
             </p>
           </div>
-          <ImageSlider3D images={flagsImages} action="explora" />
+          <ImageSlider3D
+            images={
+              flagsImagesWithFilterIds
+            }
+            action="explora"
+          />
         </div>
       </section>
 
@@ -706,7 +755,11 @@ function HomePage() {
           </button>
           {/* Slide 1 */}
           <SwiperSlide>
-            <PlatformsSelector platforms={platforms} />
+            <PlatformsSelector
+              platforms={
+                platformsWithFilterIds
+              }
+            />
           </SwiperSlide>
 
           {/* Slide 2 */}

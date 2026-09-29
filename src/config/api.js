@@ -42,6 +42,7 @@ export const endpoints = {
   filterSkills: `${BASE_URL}/api/filters/skills/`,
   filterCompanies: `${BASE_URL}/api/filters/companies/`,
   filterPlatforms: `${BASE_URL}/api/filters/platforms/`,
+  exploreFilterCatalogs: `${BASE_URL}/api/explore/filter-catalogs/`,
   filterUniversitiesRegion: `${BASE_URL}/api/filters/universities-by-region/`,
   learningRouteCompleteSignup: `${BASE_URL}/api/learning-route/complete-signup/`,
   learningRouteRecommendations: `${API_URL}/api/learning-route/recommendations/`,
