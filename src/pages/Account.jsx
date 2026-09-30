@@ -1446,50 +1446,162 @@ function normalizeHelpDeskOptions(raw) {
   };
 }
 
-async function postHelpDeskJSON(url, body) {
-  const response = await fetch(url, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify(body),
-  });
+let helpDeskCsrfToken = null;
+
+async function getHelpDeskCsrfToken() {
+  if (helpDeskCsrfToken) {
+    return helpDeskCsrfToken;
+  }
+
+  const response = await fetch(
+    endpoints.helpDeskCsrf,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    }
+  );
 
   const text = await response.text();
+
   let data = {};
 
   try {
-    data = text ? JSON.parse(text) : {};
+    data = text
+      ? JSON.parse(text)
+      : {};
   } catch {
-    const error = new Error(
-      `El servidor devolvió una respuesta no válida. HTTP ${response.status}`
+    throw new Error(
+      `No fue posible obtener el token de seguridad. HTTP ${response.status}`
     );
-    error.status = response.status;
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      data?.message ||
+      data?.detail ||
+      data?.error ||
+      `HTTP ${response.status}`
+    );
+  }
+
+  const token =
+    data?.data?.csrfToken ||
+    data?.csrfToken ||
+    "";
+
+  if (!token) {
+    throw new Error(
+      "No fue posible obtener el token de seguridad."
+    );
+  }
+
+  helpDeskCsrfToken = token;
+
+  return token;
+}
+
+async function postHelpDeskJSON(
+  url,
+  body
+) {
+  const csrfToken =
+    await getHelpDeskCsrfToken();
+
+  const response = await fetch(
+    url,
+    {
+      method: "POST",
+
+      credentials: "include",
+
+      headers: {
+        "Content-Type":
+          "application/json",
+
+        Accept:
+          "application/json",
+
+        "X-CSRFToken":
+          csrfToken,
+      },
+
+      body:
+        JSON.stringify(body),
+    }
+  );
+
+  const text =
+    await response.text();
+
+  let data = {};
+
+  try {
+    data = text
+      ? JSON.parse(text)
+      : {};
+  } catch {
+    const error =
+      new Error(
+        `El servidor devolvió una respuesta no válida. HTTP ${response.status}`
+      );
+
+    error.status =
+      response.status;
+
     throw error;
   }
 
-  if (!response.ok || data?.ok === false) {
-    const error = new Error(
-      data?.message ||
+  if (
+    !response.ok ||
+    data?.ok === false
+  ) {
+    const error =
+      new Error(
+        data?.message ||
         data?.detail ||
-        (typeof data?.error === "string" ? data.error : "") ||
+        (
+          typeof data?.error ===
+          "string"
+            ? data.error
+            : ""
+        ) ||
         `HTTP ${response.status}`
-    );
+      );
 
-    error.status = response.status;
+    error.status =
+      response.status;
+
     error.code =
-      typeof data?.error === "string"
+      typeof data?.error ===
+      "string"
         ? data.error
-        : data?.error?.code || "http_error";
-    error.data = data;
+        : data?.error?.code ||
+          "http_error";
+
+    error.data =
+      data;
+
+    /*
+     * Si Django rechaza el token porque expiró
+     * o fue rotado, lo descartamos para que
+     * el próximo intento obtenga uno nuevo.
+     */
+    if (
+      response.status === 403
+    ) {
+      helpDeskCsrfToken = null;
+    }
 
     throw error;
   }
 
   return {
-    status: response.status,
+    status:
+      response.status,
+
     data,
   };
 }
@@ -1894,7 +2006,7 @@ function SupportRequestForm({
         </div>
       )}
 
-      <div className="grid gap-x-4 gap-y-4">
+      <div className="grid gap-x-4 gap-y-2">
         <label className="block">
           <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
             Motivo de contacto
@@ -1905,7 +2017,7 @@ function SupportRequestForm({
               value={category}
               onChange={(event) => setCategory(event.target.value)}
               disabled={loadingOptions || Boolean(optionsError)}
-              className="h-11 w-full appearance-none rounded-[10px] border border-[#D9E0E8] bg-white px-3 pr-9 !font-['Montserrat'] text-[11px] text-[#5C6677] outline-none transition focus:border-[#315D9C] focus:ring-2 focus:ring-[#315D9C]/10 disabled:bg-[#F4F6F8]"
+              className="h-10 w-full appearance-none rounded-[10px] border border-[#D9E0E8] bg-white px-3 pr-9 !font-['Montserrat'] text-[11px] text-[#5C6677] outline-none transition focus:border-[#315D9C] focus:ring-2 focus:ring-[#315D9C]/10 disabled:bg-[#F4F6F8]"
             >
               <option value="" disabled>
                 {loadingOptions ? "Cargando opciones..." : "Selecciona una opción..."}
@@ -1927,57 +2039,57 @@ function SupportRequestForm({
 
       </div>
 
-      <p className="mt-3 !font-['Montserrat'] text-[9px] leading-[1.55] text-[#7D8798]">
+      <p className="mt-1 !font-['Montserrat'] text-[9px] leading-[1.55] text-[#7D8798]">
         El solicitante se obtiene de tu sesión. La institución se completa internamente en el backend y no se solicita en este formulario. El navegador nunca recibe la credencial de integración de México.
       </p>
+      <div className="mt-2 grid grid-cols-2 gap-2">
+        <label className=" block">
+          <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
+            Correo
+          </span>
 
-      <label className="mt-4 block">
-        <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
-          Correo
-        </span>
-
-        <input
-          type="email"
-          value={contactEmail}
-          onChange={(event) => setContactEmail(event.target.value)}
-          maxLength={255}
-          required
-          placeholder="tu@correo.com"
-          className="h-11 w-full rounded-[10px] border border-[#D9E0E8] bg-white px-3 !font-['Montserrat'] text-[11px] text-[#404B5E] outline-none placeholder:text-[#9FA8B6] transition focus:border-[#315D9C] focus:ring-2 focus:ring-[#315D9C]/10"
-        />
-      </label>
-
-      <label className="mt-4 block">
-        <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
-          ¿A cuántas personas afecta?
-        </span>
-
-        <div className="relative">
-          <select
-            value={priority}
-            onChange={(event) => setPriority(event.target.value)}
-            disabled={loadingOptions || Boolean(optionsError)}
-            className="h-11 w-full appearance-none rounded-[10px] border border-[#D9E0E8] bg-white px-3 pr-9 !font-['Montserrat'] text-[11px] text-[#5C6677] outline-none transition focus:border-[#315D9C] focus:ring-2 focus:ring-[#315D9C]/10 disabled:bg-[#F4F6F8]"
-          >
-            <option value="" disabled>
-              {loadingOptions ? "Cargando opciones..." : "Selecciona una opción..."}
-            </option>
-
-            {catalog.priorities.map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-
-          <ChevronDown
-            size={15}
-            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8F99A8]"
+          <input
+            type="email"
+            value={contactEmail}
+            onChange={(event) => setContactEmail(event.target.value)}
+            maxLength={255}
+            required
+            placeholder="tu@correo.com"
+            className="h-10 w-full rounded-[10px] border border-[#D9E0E8] bg-white px-3 !font-['Montserrat'] text-[11px] text-[#404B5E] outline-none placeholder:text-[#9FA8B6] transition focus:border-[#315D9C] focus:ring-2 focus:ring-[#315D9C]/10"
           />
-        </div>
-      </label>
+        </label>
 
-      <label className="mt-4 block">
+        <label className="block">
+          <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
+            ¿A cuántas personas afecta?
+          </span>
+
+          <div className="relative">
+            <select
+              value={priority}
+              onChange={(event) => setPriority(event.target.value)}
+              disabled={loadingOptions || Boolean(optionsError)}
+              className="h-10 w-full appearance-none rounded-[10px] border border-[#D9E0E8] bg-white px-3 pr-9 !font-['Montserrat'] text-[11px] text-[#5C6677] outline-none transition focus:border-[#315D9C] focus:ring-2 focus:ring-[#315D9C]/10 disabled:bg-[#F4F6F8]"
+            >
+              <option value="" disabled>
+                {loadingOptions ? "Cargando opciones..." : "Selecciona una opción..."}
+              </option>
+
+              {catalog.priorities.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+
+            <ChevronDown
+              size={15}
+              className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#8F99A8]"
+            />
+          </div>
+        </label>
+      </div>
+      <label className="mt-2 block">
         <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
           ¿Qué necesitas resolver?
         </span>
@@ -1997,7 +2109,7 @@ function SupportRequestForm({
         </span>
       </label>
 
-      <div className="mt-4">
+      <div className="mt-2">
         <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
           Archivos adjuntos <span className="font-medium text-[#8B95A5]">(Opcional)</span>
         </span>
@@ -2058,7 +2170,7 @@ function SupportRequestForm({
       </div>
 
       {formError && (
-        <div className="mt-4 flex items-start gap-2 rounded-[12px] border border-[#F1D2D2] bg-[#FFF7F7] px-4 py-3">
+        <div className="mt-2 flex items-start gap-2 rounded-[12px] border border-[#F1D2D2] bg-[#FFF7F7] px-4 py-3">
           <AlertCircle size={15} className="mt-0.5 shrink-0 text-[#C94B4B]" />
           <p className="!font-['Montserrat'] text-[9px] font-medium leading-5 text-[#A43E3E]">
             {formError}
@@ -2066,7 +2178,7 @@ function SupportRequestForm({
         </div>
       )}
 
-      <div className="mt-4 flex flex-col gap-3 border-t border-[#EDF0F4] pt-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-2 flex flex-col gap-3 border-t border-[#EDF0F4] pt-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-1.5 !font-['Montserrat'] text-[8px] text-[#7C8797]">
             <CircleHelp size={12} />
@@ -2232,7 +2344,7 @@ function MySupportRequests({ refreshKey = 0 }) {
               <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-[#EEF4FD] text-[#315D9C]">
                 <CircleHelp size={22} />
               </div>
-              <h4 className="mt-4 !font-['Montserrat'] text-[16px] font-bold text-[#253247]">
+              <h4 className="mt-2 !font-['Montserrat'] text-[16px] font-bold text-[#253247]">
                 Aún no tienes solicitudes enviadas
               </h4>
               <p className="mt-2 !font-['Montserrat'] text-[10px] leading-5 text-[#7D8798]">
@@ -2338,7 +2450,7 @@ function MySupportRequests({ refreshKey = 0 }) {
                     </div>
                   </div>
 
-                  <div className="mt-4 rounded-[14px] border border-[#E5E9EF] bg-white p-4">
+                  <div className="mt-2 rounded-[14px] border border-[#E5E9EF] bg-white p-4">
                     <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.1em] text-[#939CAA]">
                       Descripción enviada
                     </span>
@@ -2347,7 +2459,7 @@ function MySupportRequests({ refreshKey = 0 }) {
                     </p>
                   </div>
 
-                  <div className="mt-4 flex flex-wrap gap-3 !font-['Montserrat'] text-[9px] text-[#7D8798]">
+                  <div className="mt-2 flex flex-wrap gap-3 !font-['Montserrat'] text-[9px] text-[#7D8798]">
                     <span>
                       Enviado: {formatHelpDeskDate(selectedRequest.submittedAt)}
                     </span>
@@ -2629,7 +2741,7 @@ function DashboardWelcomeModal({ open, onClose, defaultTab }) {
                   text-white
                   shadow-[0_9px_20px_rgba(49,93,156,0.20)]
 
-                  sm:h-11
+                  sm:h-10
                   sm:w-11
                   sm:rounded-[14px]
                 "
@@ -2947,7 +3059,7 @@ function DashboardWelcomeModal({ open, onClose, defaultTab }) {
               border-[#DDE5EF]
               bg-[#F8FAFC]
 
-              sm:mt-4
+              sm:mt-2
               sm:rounded-[16px]
             "
           >
@@ -3311,7 +3423,7 @@ function AddPaymentMethodModal({
 
           <div className="relative flex items-start justify-between gap-5">
             <div className="flex min-w-0 items-start gap-3">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[13px] bg-[linear-gradient(135deg,#111D31,#41679F)] text-white shadow-[0_8px_20px_rgba(29,53,87,0.18)]">
+              <span className="grid h-10 w-11 shrink-0 place-items-center rounded-[13px] bg-[linear-gradient(135deg,#111D31,#41679F)] text-white shadow-[0_8px_20px_rgba(29,53,87,0.18)]">
                 <span className="text-[17px] font-medium">
                   $
                 </span>
@@ -3409,7 +3521,7 @@ function AddPaymentMethodModal({
 
           {/* ERROR */}
           {errorMsg && (
-            <div className="mt-4 rounded-[13px] border border-[#F0CCCC] bg-[#FFF7F7] px-4 py-3">
+            <div className="mt-2 rounded-[13px] border border-[#F0CCCC] bg-[#FFF7F7] px-4 py-3">
               <div className="flex items-start gap-2">
                 <span className="mt-[1px] text-[#C45555]">
                   !
@@ -3652,7 +3764,7 @@ function CvReportPreviewModal({
 
           <div className="relative flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[13px] bg-[linear-gradient(135deg,#172A48,#41679F)] text-white shadow-[0_8px_20px_rgba(29,53,87,0.18)]">
+              <span className="grid h-10 w-11 shrink-0 place-items-center rounded-[13px] bg-[linear-gradient(135deg,#172A48,#41679F)] text-white shadow-[0_8px_20px_rgba(29,53,87,0.18)]">
                 <FileText size={21} strokeWidth={1.8} />
               </span>
 
@@ -3684,9 +3796,9 @@ function CvReportPreviewModal({
         <div className="relative flex-1 overflow-hidden bg-[#E9EDF3]">
           {loadingPreview && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#F8FAFC]">
-              <div className="h-11 w-11 animate-spin rounded-full border-[3px] border-[#C9D5E5] border-t-[#315D9C]" />
+              <div className="h-10 w-11 animate-spin rounded-full border-[3px] border-[#C9D5E5] border-t-[#315D9C]" />
 
-              <p className="mt-4 !font-['Montserrat'] text-[13px] font-semibold text-[#526075]">
+              <p className="mt-2 !font-['Montserrat'] text-[13px] font-semibold text-[#526075]">
                 Cargando vista previa...
               </p>
 
@@ -3711,7 +3823,7 @@ function CvReportPreviewModal({
                   <FileText size={27} strokeWidth={1.8} />
                 </div>
 
-                <span className="mt-4 block !font-['Montserrat'] text-[9px] font-bold uppercase tracking-[0.14em] text-[#9A6670]">
+                <span className="mt-2 block !font-['Montserrat'] text-[9px] font-bold uppercase tracking-[0.14em] text-[#9A6670]">
                   Vista previa no disponible
                 </span>
 
@@ -3891,7 +4003,7 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                 />
               </div>
 
-              <span className="mt-4 block !font-['Montserrat'] text-[9px] font-bold uppercase tracking-[0.16em] text-[#4C7482]">
+              <span className="mt-2 block !font-['Montserrat'] text-[9px] font-bold uppercase tracking-[0.16em] text-[#4C7482]">
                 Análisis inteligente de Topo
               </span>
 
@@ -4030,7 +4142,7 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                 ⇧
               </span>
 
-              <h2 className="mt-4 max-w-[460px] !font-['Montserrat'] text-[17px] font-semibold leading-snug tracking-[-0.015em] text-[#182235]">
+              <h2 className="mt-2 max-w-[460px] !font-['Montserrat'] text-[17px] font-semibold leading-snug tracking-[-0.015em] text-[#182235]">
                 Arrastra tu CV aquí o selecciona un archivo
               </h2>
 
@@ -4042,12 +4154,12 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                 Seleccionar archivo
               </span>
 
-              <p className="mt-4 !font-['Montserrat'] text-[10.5px] text-[#9AA3B1]">
+              <p className="mt-2 !font-['Montserrat'] text-[10.5px] text-[#9AA3B1]">
                 PDF o Word (.docx) · Máximo 5MB
               </p>
 
               {fileName && (
-                <div className="mt-4 flex max-w-full items-center gap-2 rounded-full border border-[#CAE7D7] bg-[#EFF9F3] px-4 py-2">
+                <div className="mt-2 flex max-w-full items-center gap-2 rounded-full border border-[#CAE7D7] bg-[#EFF9F3] px-4 py-2">
                   <span className="h-2 w-2 shrink-0 rounded-full bg-[#5DA778]" />
                   <span className="max-w-[300px] truncate !font-['Montserrat'] text-[10.5px] font-semibold text-[#4C8261]">
                     {fileName}
@@ -4057,7 +4169,7 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
             </label>
 
             {errorMsg && (
-              <div className="mt-4 rounded-[14px] border border-[#F3D6DA] bg-[#FFF5F6] px-4 py-3 !font-['Montserrat'] text-[11.5px] font-medium text-[#C44D5A]">
+              <div className="mt-2 rounded-[14px] border border-[#F3D6DA] bg-[#FFF5F6] px-4 py-3 !font-['Montserrat'] text-[11.5px] font-medium text-[#C44D5A]">
                 {errorMsg}
               </div>
             )}
@@ -4066,7 +4178,7 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
               type="button"
               disabled={!selectedFile || loadingAnalysis}
               onClick={analyzeCv}
-              className="mt-4 flex h-[50px] w-full items-center justify-center gap-2 rounded-[13px] bg-[linear-gradient(135deg,#172A48,#41679F)] px-6 !font-['Montserrat'] text-[13px] font-semibold text-white shadow-[0_10px_28px_rgba(29,53,87,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(29,53,87,0.28)] disabled:cursor-not-allowed disabled:bg-none disabled:bg-[#B9C0CA] disabled:shadow-none disabled:hover:translate-y-0"
+              className="mt-2 flex h-[50px] w-full items-center justify-center gap-2 rounded-[13px] bg-[linear-gradient(135deg,#172A48,#41679F)] px-6 !font-['Montserrat'] text-[13px] font-semibold text-white shadow-[0_10px_28px_rgba(29,53,87,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(29,53,87,0.28)] disabled:cursor-not-allowed disabled:bg-none disabled:bg-[#B9C0CA] disabled:shadow-none disabled:hover:translate-y-0"
             >
               {loadingAnalysis ? "Analizando CV..." : "Analizar mi CV"}
               {!loadingAnalysis && <span className="text-[16px]">→</span>}
@@ -4201,7 +4313,7 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                 </div>
 
                 {recommendations.length ? (
-                  <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+                  <div className="mt-2 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
                     {recommendations.map((item, index) => (
                       <article
                         key={`${item.title}-${index}`}
@@ -4228,7 +4340,7 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                     ))}
                   </div>
                 ) : (
-                  <div className="mt-4 rounded-[14px] border border-[#E7EBF1] bg-[#F8FAFC] p-5 !font-['Montserrat'] text-[11px] text-[#7D8798]">
+                  <div className="mt-2 rounded-[14px] border border-[#E7EBF1] bg-[#F8FAFC] p-5 !font-['Montserrat'] text-[11px] text-[#7D8798]">
                     Este análisis todavía no contiene recomendaciones detalladas.
                   </div>
                 )}
@@ -4240,7 +4352,7 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
                 <FileText size={22} strokeWidth={1.8} />
               </span>
 
-              <h2 className="mt-4 !font-['Montserrat'] text-[17px] font-semibold text-[#182235]">
+              <h2 className="mt-2 !font-['Montserrat'] text-[17px] font-semibold text-[#182235]">
                 Aún no hay análisis
               </h2>
 
@@ -4334,7 +4446,7 @@ function ProfileTab({ me }) {
                 {initial}
               </div>
 
-              <h2 className="mt-4 line-clamp-2 !font-['Montserrat'] text-[16px] font-semibold text-[#202B3D]">
+              <h2 className="mt-2 line-clamp-2 !font-['Montserrat'] text-[16px] font-semibold text-[#202B3D]">
                 {me?.full_name || me?.name || "Usuario top.education"}
               </h2>
 
@@ -4422,7 +4534,7 @@ function ProfileTab({ me }) {
             )}
           </span>
 
-          <span className="mt-4 !font-['Montserrat'] text-[9px] font-bold uppercase tracking-[0.14em] text-[#78869B]">
+          <span className="mt-2 !font-['Montserrat'] text-[9px] font-bold uppercase tracking-[0.14em] text-[#78869B]">
             {profileTab === "progress" ? "Progreso" : "Certificaciones"}
           </span>
 
@@ -4653,7 +4765,7 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
           </p>
 
           {isCancelScheduled && (
-            <div className="mt-4 flex items-start gap-3 rounded-[16px] border border-[#F0D59E] bg-[#FFF9EE] px-4 py-3.5">
+            <div className="mt-2 flex items-start gap-3 rounded-[16px] border border-[#F0D59E] bg-[#FFF9EE] px-4 py-3.5">
               <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-[#FFF0CB] !font-['Montserrat'] text-sm font-bold text-[#B7791F]">
                 !
               </span>
@@ -4706,7 +4818,7 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
               </p>
 
               {!!currentPlanTags.length && (
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="mt-2 flex flex-wrap gap-2">
                   {currentPlanTags.map((tag) => (
                     <span
                       key={tag}
@@ -5016,7 +5128,7 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
               Administra tus tarjetas y métodos de pago.
             </p>
 
-            <div className="mt-4 space-y-3">
+            <div className="mt-2 space-y-3">
               {paymentMethods.length ? (
                 paymentMethods.map((method) => (
                   <div
@@ -5092,7 +5204,7 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
               Puedes cancelar o reactivar tu membresía según el estado actual.
             </p>
 
-            <div className="mt-4 rounded-[14px] border border-[#E6EAF0] bg-[#F9FAFC] p-4">
+            <div className="mt-2 rounded-[14px] border border-[#E6EAF0] bg-[#F9FAFC] p-4">
               <h3 className="!font-['Montserrat'] text-[13px] font-semibold text-[#263247]">
                 {isCancelScheduled
                   ? "Cancelación programada"
@@ -5476,7 +5588,7 @@ function AccountSkeleton() {
       <main className="min-h-screen px-4 pb-10 pt-[138px] lg:ml-[236px] lg:px-8 lg:pt-[146px]">
         <div className="mx-auto max-w-[1240px] animate-pulse">
           <div className="h-8 w-[280px] rounded-full bg-[#E6EAF0]" />
-          <div className="mt-4 h-5 w-[460px] max-w-full rounded-full bg-[#E9EDF2]" />
+          <div className="mt-2 h-5 w-[460px] max-w-full rounded-full bg-[#E9EDF2]" />
           <div className="mt-10 h-[360px] rounded-[24px] bg-white shadow-sm" />
           <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div className="h-[240px] rounded-[24px] bg-white shadow-sm" />

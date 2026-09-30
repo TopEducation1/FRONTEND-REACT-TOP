@@ -46,6 +46,7 @@ export const endpoints = {
   filterUniversitiesRegion: `${BASE_URL}/api/filters/universities-by-region/`,
   learningRouteCompleteSignup: `${BASE_URL}/api/learning-route/complete-signup/`,
   learningRouteRecommendations: `${API_URL}/api/learning-route/recommendations/`,
+  helpDeskCsrf: `${BASE_URL}/api/account/csrf/`,
   helpDeskOptions: `${BASE_URL}/api/account/help-desk/options/`,
   helpDeskAttachmentUploads: `${BASE_URL}/api/account/help-desk/attachment-uploads/`,
   helpDeskDirectRequests: `${BASE_URL}/api/account/help-desk/direct-requests/`,
