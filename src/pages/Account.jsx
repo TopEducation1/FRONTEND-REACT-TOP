@@ -30,6 +30,7 @@ import { toast } from "react-toastify";
 import Seo from "../components/Seo";
 import CareerTab from "../components/account/CareerTab";
 import AvailableCoursesTab from "../components/account/AvailableCoursesTab";
+import endpoints from "../config/api";
 
 const stripePublishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
@@ -1402,15 +1403,21 @@ function normalizeHelpDeskOption(item) {
 function normalizeHelpDeskOptions(raw) {
   const data = raw?.data ?? raw ?? {};
 
+  // Contrato MX:
+  // data.reasons -> motivo de contacto
   const categoryItems = extractHelpDeskArray(data, [
+    "reasons",
     "categories",
     "categoryOptions",
     "category_options",
-    "reasons",
     "motivos",
   ]);
 
+  // Contrato MX:
+  // data.audiences -> alcance visible.
+  // Se envía en el payload final como "priority".
   const priorityItems = extractHelpDeskArray(data, [
+    "audiences",
     "priorities",
     "priorityOptions",
     "priority_options",
@@ -1422,9 +1429,20 @@ function normalizeHelpDeskOptions(raw) {
   ]);
 
   return {
-    categories: categoryItems.map(normalizeHelpDeskOption).filter((item) => item.value),
-    priorities: priorityItems.map(normalizeHelpDeskOption).filter((item) => item.value),
-    limits: data?.limits || data?.constraints || {},
+    categories: categoryItems
+      .map(normalizeHelpDeskOption)
+      .filter((item) => item.value),
+
+    priorities: priorityItems
+      .map(normalizeHelpDeskOption)
+      .filter((item) => item.value),
+
+    limits:
+      data?.limits && typeof data.limits === "object"
+        ? data.limits
+        : data?.constraints && typeof data.constraints === "object"
+        ? data.constraints
+        : {},
   };
 }
 
@@ -1506,27 +1524,14 @@ async function uploadHelpDeskFileToS3(file, authorizationPayload) {
   return uploadToken;
 }
 
-function getHelpDeskInstitutionLabel(me, learningRoute) {
-  return (
-    me?.institution_name ||
-    me?.institutionName ||
-    me?.institution?.name ||
-    learningRoute?.institution_name ||
-    learningRoute?.institutionName ||
-    learningRoute?.institution?.name ||
-    "Se completará automáticamente desde tu cuenta"
-  );
-}
 
 function SupportRequestForm({
-  backendBaseUrl,
   me,
-  learningRoute,
   onSubmitted,
 }) {
-  const OPTIONS_URL = `${backendBaseUrl}/api/account/help-desk/options/`;
-  const ATTACHMENT_URL = `${backendBaseUrl}/api/account/help-desk/attachment-uploads/`;
-  const DIRECT_REQUEST_URL = `${backendBaseUrl}/api/account/help-desk/direct-requests/`;
+  const OPTIONS_URL = endpoints.helpDeskOptions;
+  const ATTACHMENT_URL = endpoints.helpDeskAttachmentUploads;
+  const DIRECT_REQUEST_URL = endpoints.helpDeskDirectRequests;
 
   const [catalog, setCatalog] = useState({
     categories: [],
@@ -1546,7 +1551,45 @@ function SupportRequestForm({
   const [uploadProgress, setUploadProgress] = useState("");
   const [successData, setSuccessData] = useState(null);
 
-  const institutionLabel = getHelpDeskInstitutionLabel(me, learningRoute);
+  const helpDeskLimits = useMemo(() => {
+    const limits = catalog?.limits || {};
+
+    const maxAttachments =
+      Number(limits?.maxAttachments) > 0
+        ? Number(limits.maxAttachments)
+        : HELP_DESK_MAX_FILES;
+
+    const maxAttachmentBytes =
+      Number(limits?.maxAttachmentBytes) > 0
+        ? Number(limits.maxAttachmentBytes)
+        : HELP_DESK_MAX_FILE_SIZE;
+
+    const maxDescriptionLength =
+      Number(limits?.maxDescriptionLength) > 0
+        ? Number(limits.maxDescriptionLength)
+        : 2000;
+
+    const allowedMimeTypes =
+      Array.isArray(limits?.allowedMimeTypes) &&
+      limits.allowedMimeTypes.length > 0
+        ? limits.allowedMimeTypes
+            .map((value) => String(value || "").trim())
+            .filter(Boolean)
+        : Array.from(HELP_DESK_ALLOWED_TYPES);
+
+    return {
+      maxAttachments,
+      maxAttachmentBytes,
+      maxDescriptionLength,
+      allowedMimeTypes,
+      allowedMimeTypesSet: new Set(allowedMimeTypes),
+    };
+  }, [catalog?.limits]);
+
+  const maxAttachmentMiB = Math.max(
+    1,
+    Math.round(helpDeskLimits.maxAttachmentBytes / (1024 * 1024))
+  );
 
   const loadOptions = async () => {
     setLoadingOptions(true);
@@ -1585,17 +1628,20 @@ function SupportRequestForm({
   }, [me?.email, contactEmail]);
 
   const validateSelectedFiles = (selectedFiles) => {
-    if (selectedFiles.length > HELP_DESK_MAX_FILES) {
-      return `Puedes adjuntar máximo ${HELP_DESK_MAX_FILES} archivos.`;
+    if (selectedFiles.length > helpDeskLimits.maxAttachments) {
+      return `Puedes adjuntar máximo ${helpDeskLimits.maxAttachments} archivos.`;
     }
 
     for (const file of selectedFiles) {
-      if (!HELP_DESK_ALLOWED_TYPES.has(file.type)) {
-        return `${file.name}: solo se permiten PNG, JPG/JPEG y PDF.`;
+      if (!helpDeskLimits.allowedMimeTypesSet.has(file.type)) {
+        return `${file.name}: el tipo de archivo no está permitido.`;
       }
 
-      if (file.size <= 0 || file.size > HELP_DESK_MAX_FILE_SIZE) {
-        return `${file.name}: cada archivo debe pesar máximo 10 MiB.`;
+      if (
+        file.size <= 0 ||
+        file.size > helpDeskLimits.maxAttachmentBytes
+      ) {
+        return `${file.name}: cada archivo debe pesar máximo ${maxAttachmentMiB} MiB.`;
       }
     }
 
@@ -1661,8 +1707,15 @@ function SupportRequestForm({
       return;
     }
 
-    if (description.trim().length > 2000) {
-      setFormError("La descripción no puede superar 2.000 caracteres.");
+    if (
+      description.trim().length >
+      helpDeskLimits.maxDescriptionLength
+    ) {
+      setFormError(
+        `La descripción no puede superar ${helpDeskLimits.maxDescriptionLength.toLocaleString(
+          "es-CO"
+        )} caracteres.`
+      );
       return;
     }
 
@@ -1677,8 +1730,8 @@ function SupportRequestForm({
     try {
       const attachments = [];
 
-      // El contexto requester/institution NO sale del navegador.
-      // Nuestro backend lo resuelve desde la sesión del usuario.
+      // requester NO sale del navegador: el backend lo obtiene de la sesión.
+      // institution tampoco sale del navegador: el backend usa el valor estático acordado con MX.
       for (let index = 0; index < files.length; index += 1) {
         const file = files[index];
 
@@ -1841,7 +1894,7 @@ function SupportRequestForm({
         </div>
       )}
 
-      <div className="grid gap-x-4 gap-y-4 sm:grid-cols-2">
+      <div className="grid gap-x-4 gap-y-4">
         <label className="block">
           <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
             Motivo de contacto
@@ -1872,23 +1925,10 @@ function SupportRequestForm({
           </div>
         </label>
 
-        <label className="block">
-          <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
-            Institución / Colegio
-          </span>
-
-          <input
-            type="text"
-            value={institutionLabel}
-            readOnly
-            disabled
-            className="h-11 w-full rounded-[10px] border border-[#D9E0E8] bg-[#F4F6F8] px-3 !font-['Montserrat'] text-[11px] text-[#667085] outline-none disabled:cursor-not-allowed"
-          />
-        </label>
       </div>
 
       <p className="mt-3 !font-['Montserrat'] text-[9px] leading-[1.55] text-[#7D8798]">
-        Solicitante e institución se completan en el backend desde tu sesión. El navegador nunca recibe la credencial de integración de México.
+        El solicitante se obtiene de tu sesión. La institución se completa internamente en el backend y no se solicita en este formulario. El navegador nunca recibe la credencial de integración de México.
       </p>
 
       <label className="mt-4 block">
@@ -1946,14 +1986,14 @@ function SupportRequestForm({
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           rows={4}
-          maxLength={2000}
+          maxLength={helpDeskLimits.maxDescriptionLength}
           required
           placeholder="Describe el problema, cuándo ocurrió y si hay algún mensaje de error..."
           className="min-h-[116px] w-full resize-none rounded-[10px] border border-[#D9E0E8] bg-white px-3 py-3 !font-['Montserrat'] text-[11px] leading-[1.55] text-[#404B5E] outline-none placeholder:text-[#BAC1CB] transition focus:border-[#315D9C] focus:ring-2 focus:ring-[#315D9C]/10"
         />
 
         <span className="mt-1 block text-right !font-['Montserrat'] text-[8px] text-[#9AA3B0]">
-          {description.length}/2000
+          {description.length}/{helpDeskLimits.maxDescriptionLength}
         </span>
       </label>
 
@@ -1966,9 +2006,9 @@ function SupportRequestForm({
           <input
             type="file"
             multiple
-            accept="image/png,image/jpeg,application/pdf,.png,.jpg,.jpeg,.pdf"
+            accept={helpDeskLimits.allowedMimeTypes.join(",")}
             onChange={handleFilesChange}
-            disabled={submitting || files.length >= HELP_DESK_MAX_FILES}
+            disabled={submitting || files.length >= helpDeskLimits.maxAttachments}
             className="hidden"
           />
 
@@ -1981,7 +2021,8 @@ function SupportRequestForm({
           </span>
 
           <span className="mt-0.5 !font-['Montserrat'] text-[8px] text-[#9AA3B0]">
-            PNG, JPG o PDF · máximo 10 MiB por archivo · hasta 10 archivos.
+            PNG, JPG o PDF · máximo {maxAttachmentMiB} MiB por archivo · hasta{" "}
+            {helpDeskLimits.maxAttachments} archivos.
           </span>
         </label>
 
@@ -2075,7 +2116,6 @@ function normalizeLocalHelpDeskRequests(raw) {
     priority: item?.priority ?? "",
     contactEmail: item?.contact_email ?? item?.contactEmail ?? "",
     description: item?.description ?? "",
-    institutionName: item?.institution_name ?? item?.institutionName ?? "",
     attachments: Array.isArray(item?.attachments) ? item.attachments : [],
     submittedAt: item?.submitted_at ?? item?.submittedAt ?? item?.created_at ?? item?.createdAt ?? null,
     createdAt: item?.created_at ?? item?.createdAt ?? null,
@@ -2097,8 +2137,8 @@ function formatHelpDeskDate(value) {
   });
 }
 
-function MySupportRequests({ backendBaseUrl, refreshKey = 0 }) {
-  const REQUESTS_URL = `${backendBaseUrl}/api/account/help-desk/requests/`;
+function MySupportRequests({ refreshKey = 0 }) {
+  const REQUESTS_URL = endpoints.helpDeskRequests;
 
   const [requests, setRequests] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
@@ -2290,15 +2330,6 @@ function MySupportRequests({ backendBaseUrl, refreshKey = 0 }) {
 
                     <div className="rounded-[14px] border border-[#E5E9EF] bg-white p-4">
                       <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.1em] text-[#939CAA]">
-                        Institución
-                      </span>
-                      <strong className="mt-1 block !font-['Montserrat'] text-[11px] text-[#2E3B4E]">
-                        {selectedRequest.institutionName || "—"}
-                      </strong>
-                    </div>
-
-                    <div className="rounded-[14px] border border-[#E5E9EF] bg-white p-4">
-                      <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.1em] text-[#939CAA]">
                         Correo de respuesta
                       </span>
                       <strong className="mt-1 block break-all !font-['Montserrat'] text-[11px] text-[#2E3B4E]">
@@ -2343,9 +2374,7 @@ function MySupportRequests({ backendBaseUrl, refreshKey = 0 }) {
 function HelpFormModal({
   open,
   onClose,
-  backendBaseUrl,
   me,
-  learningRoute,
 }) {
   const [helpView, setHelpView] = useState("help");
   const [requestsRefreshKey, setRequestsRefreshKey] = useState(0);
@@ -2472,16 +2501,13 @@ function HelpFormModal({
 
               <div className="bg-[#FBFCFD] px-5 pb-6 pt-[92px] sm:px-8 sm:pb-8 lg:px-12 lg:pb-10 lg:pt-[88px] xl:px-14">
                 <SupportRequestForm
-                  backendBaseUrl={backendBaseUrl}
                   me={me}
-                  learningRoute={learningRoute}
                   onSubmitted={handleSubmitted}
                 />
               </div>
             </div>
           ) : (
             <MySupportRequests
-              backendBaseUrl={backendBaseUrl}
               refreshKey={requestsRefreshKey}
             />
           )}
@@ -5687,9 +5713,7 @@ export default function Account() {
           <HelpFormModal
             open={showHelp}
             onClose={() => setShowHelp(false)}
-            backendBaseUrl={backendBaseUrl}
             me={me}
-            learningRoute={learningRoute}
           />
 
           <DashboardWelcomeModal
