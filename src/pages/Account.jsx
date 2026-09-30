@@ -1977,7 +1977,7 @@ function SupportRequestForm({
           Mesa de ayuda
         </span>
 
-        <h3 className="mt-2 !font-['Montserrat'] text-[28px] font-semibold leading-[1.12] tracking-[-0.035em] text-[#1E293B] sm:text-[32px]">
+        <h3 className="!font-['Montserrat'] text-[28px] font-semibold leading-[1.12] tracking-[-0.035em] text-[#1E293B] sm:text-[32px]">
           ¿Cómo podemos ayudarte?
         </h3>
 
@@ -2039,9 +2039,6 @@ function SupportRequestForm({
 
       </div>
 
-      <p className="mt-1 !font-['Montserrat'] text-[9px] leading-[1.55] text-[#7D8798]">
-        El solicitante se obtiene de tu sesión. La institución se completa internamente en el backend y no se solicita en este formulario. El navegador nunca recibe la credencial de integración de México.
-      </p>
       <div className="mt-2 grid grid-cols-2 gap-2">
         <label className=" block">
           <span className="mb-1.5 block !font-['Montserrat'] text-[10px] font-bold text-[#313B4D]">
@@ -2296,7 +2293,7 @@ function MySupportRequests({ refreshKey = 0 }) {
   return (
     <div className="min-h-[690px] bg-[#F8FAFC] px-5 pb-6 pt-[92px] sm:px-8 sm:pb-8 lg:px-10 lg:pt-8">
       <div className="mx-auto max-w-[1080px]">
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <span className="!font-['Montserrat'] text-[10px] font-bold uppercase tracking-[0.16em] text-[#315D9C]">
               Historial
@@ -2353,7 +2350,7 @@ function MySupportRequests({ refreshKey = 0 }) {
             </div>
           </div>
         ) : (
-          <div className="grid overflow-hidden rounded-[20px] border border-[#E3E8EF] bg-white shadow-[0_18px_45px_rgba(30,45,65,0.07)] lg:grid-cols-[360px_minmax(0,1fr)]">
+          <div className="grid overflow-hidden rounded-[20px] border border-[#E3E8EF] bg-white shadow-[0_18px_45px_rgba(30,45,65,0.07)] lg:grid-cols-[300px_minmax(0,1fr)]">
             <div className="border-b border-[#E7EBF0] bg-[#FBFCFD] lg:border-b-0 lg:border-r">
               <div className="border-b border-[#E7EBF0] px-4 py-4">
                 <strong className="!font-['Montserrat'] text-[11px] font-bold text-[#283548]">
@@ -2402,10 +2399,10 @@ function MySupportRequests({ refreshKey = 0 }) {
             </div>
 
             {selectedRequest && (
-              <div className="flex min-h-[520px] flex-col">
-                <div className="border-b border-[#E7EBF0] px-5 py-5 sm:px-6">
+              <div className="flex min-h-[500px] flex-col">
+                <div className="border-b border-[#E7EBF0] px-4 py-4 sm:px-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
+                    <div className="-mt-2">
                       <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.12em] text-[#8B95A4]">
                         Referencia técnica
                       </span>
