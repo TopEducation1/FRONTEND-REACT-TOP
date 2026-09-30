@@ -1,5 +1,5 @@
-const API_URL = "https://app.top.education";
-//const API_URL = "http://localhost:8000";
+//const API_URL = "https://app.top.education";
+const API_URL = "http://localhost:8000";
 
 // LOCAL HOST API URL FOR TESTING http://127.0.0.1:8000
 

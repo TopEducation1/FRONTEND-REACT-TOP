@@ -1972,7 +1972,7 @@ function SupportRequestForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex h-full flex-col">
-      <div className="mb-7">
+      <div className="mb-2">
         <span className="!font-['Montserrat'] text-[10px] font-bold uppercase tracking-[0.16em] text-[#315D9C]">
           Mesa de ayuda
         </span>
@@ -1987,7 +1987,7 @@ function SupportRequestForm({
       </div>
 
       {optionsError && (
-        <div className="mb-4 rounded-[12px] border border-[#F1D2D2] bg-[#FFF7F7] px-4 py-3">
+        <div className="mb-2 rounded-[12px] border border-[#F1D2D2] bg-[#FFF7F7] px-4 py-3">
           <div className="flex items-start gap-2">
             <AlertCircle size={16} className="mt-0.5 shrink-0 text-[#C94B4B]" />
             <div className="min-w-0">
@@ -2294,7 +2294,7 @@ function MySupportRequests({ refreshKey = 0 }) {
     null;
 
   return (
-    <div className="min-h-[690px] bg-[#F8FAFC] px-5 pb-6 pt-[92px] sm:px-8 sm:pb-8 lg:px-10 lg:pt-[88px]">
+    <div className="min-h-[690px] bg-[#F8FAFC] px-5 pb-6 pt-[92px] sm:px-8 sm:pb-8 lg:px-10 lg:pt-8">
       <div className="mx-auto max-w-[1080px]">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -2304,7 +2304,7 @@ function MySupportRequests({ refreshKey = 0 }) {
             <h3 className="mt-2 !font-['Montserrat'] text-[27px] font-semibold tracking-[-0.035em] text-[#1E293B] sm:text-[31px]">
               Mis solicitudes
             </h3>
-            <p className="mt-1 max-w-[620px] !font-['Montserrat'] text-[11px] leading-5 text-[#7D8798]">
+            <p className="max-w-[820px] !font-['Montserrat'] text-[11px] leading-4 text-[#7D8798]">
               Aquí verás las solicitudes que enviamos correctamente al equipo de soporte. Las respuestas llegan al correo indicado en cada solicitud.
             </p>
           </div>
@@ -2359,7 +2359,7 @@ function MySupportRequests({ refreshKey = 0 }) {
                 <strong className="!font-['Montserrat'] text-[11px] font-bold text-[#283548]">
                   Solicitudes enviadas
                 </strong>
-                <p className="mt-1 !font-['Montserrat'] text-[9px] text-[#929BA8]">
+                <p className="!font-['Montserrat'] text-[9px] text-[#929BA8]">
                   Selecciona una referencia para consultar lo que enviaste.
                 </p>
               </div>
@@ -2388,11 +2388,11 @@ function MySupportRequests({ refreshKey = 0 }) {
                         </span>
                       </div>
 
-                      <strong className="mt-2 block truncate !font-['Montserrat'] text-[11px] font-bold text-[#253247]">
+                      <strong className="mt-1 block truncate !font-['Montserrat'] text-[11px] font-bold text-[#253247]">
                         {request.category || "Mesa de ayuda"}
                       </strong>
 
-                      <span className="mt-1.5 block !font-['Montserrat'] text-[9px] text-[#8B95A4]">
+                      <span className=" block !font-['Montserrat'] text-[9px] text-[#8B95A4]">
                         {formatHelpDeskDate(request.submittedAt)}
                       </span>
                     </button>
@@ -2409,7 +2409,7 @@ function MySupportRequests({ refreshKey = 0 }) {
                       <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.12em] text-[#8B95A4]">
                         Referencia técnica
                       </span>
-                      <h4 className="mt-1 break-all !font-['Montserrat'] text-[15px] font-bold text-[#315D9C]">
+                      <h4 className="break-all !font-['Montserrat'] text-[15px] font-bold text-[#315D9C]">
                         {selectedRequest.requestId || "—"}
                       </h4>
                     </div>
@@ -2421,40 +2421,40 @@ function MySupportRequests({ refreshKey = 0 }) {
                 </div>
 
                 <div className="flex-1 bg-[#FCFDFE] px-5 py-5 sm:px-6">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-[14px] border border-[#E5E9EF] bg-white p-4">
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    <div className="rounded-[14px] border border-[#E5E9EF] bg-white p-3">
                       <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.1em] text-[#939CAA]">
                         Motivo
                       </span>
-                      <strong className="mt-1 block !font-['Montserrat'] text-[11px] text-[#2E3B4E]">
+                      <strong className="block !font-['Montserrat'] text-[11px] text-[#2E3B4E]">
                         {selectedRequest.category || "—"}
                       </strong>
                     </div>
 
-                    <div className="rounded-[14px] border border-[#E5E9EF] bg-white p-4">
+                    <div className="rounded-[14px] border border-[#E5E9EF] bg-white p-3">
                       <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.1em] text-[#939CAA]">
                         Alcance
                       </span>
-                      <strong className="mt-1 block !font-['Montserrat'] text-[11px] text-[#2E3B4E]">
+                      <strong className="block !font-['Montserrat'] text-[11px] text-[#2E3B4E]">
                         {selectedRequest.priority || "—"}
                       </strong>
                     </div>
 
-                    <div className="rounded-[14px] border border-[#E5E9EF] bg-white p-4">
+                    <div className="rounded-[14px] border border-[#E5E9EF] bg-white p-3">
                       <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.1em] text-[#939CAA]">
                         Correo de respuesta
                       </span>
-                      <strong className="mt-1 block break-all !font-['Montserrat'] text-[11px] text-[#2E3B4E]">
+                      <strong className="block break-all !font-['Montserrat'] text-[11px] text-[#2E3B4E]">
                         {selectedRequest.contactEmail || "—"}
                       </strong>
                     </div>
                   </div>
 
-                  <div className="mt-2 rounded-[14px] border border-[#E5E9EF] bg-white p-4">
+                  <div className="mt-2 rounded-[14px] border border-[#E5E9EF] bg-white p-3">
                     <span className="!font-['Montserrat'] text-[8px] font-bold uppercase tracking-[0.1em] text-[#939CAA]">
                       Descripción enviada
                     </span>
-                    <p className="mt-2 whitespace-pre-wrap !font-['Montserrat'] text-[10px] leading-6 text-[#5D6878]">
+                    <p className="whitespace-pre-wrap !font-['Montserrat'] text-[10px] leading-6 text-[#5D6878]">
                       {selectedRequest.description || "—"}
                     </p>
                   </div>
@@ -2470,7 +2470,7 @@ function MySupportRequests({ refreshKey = 0 }) {
                 </div>
 
                 <div className="border-t border-[#E7EBF0] bg-white px-5 py-4 sm:px-6">
-                  <p className="!font-['Montserrat'] text-[9px] leading-5 text-[#7C8797]">
+                  <p className="!font-['Montserrat'] text-[9px] leading-4 text-[#7C8797]">
                     Esta pantalla conserva una referencia local del envío. La API central no expone estados, conversación ni respuestas; cualquier respuesta llegará al correo indicado.
                   </p>
                 </div>
@@ -2611,7 +2611,7 @@ function HelpFormModal({
                 </div>
               </div>
 
-              <div className="bg-[#FBFCFD] px-5 pb-6 pt-[92px] sm:px-8 sm:pb-8 lg:px-12 lg:pb-10 lg:pt-[88px] xl:px-14">
+              <div className="bg-[#FBFCFD] px-4 pb-4 pt-4 sm:px-4 sm:pb-4 lg:px-6 lg:pb-4 lg:pt-4 xl:px-8">
                 <SupportRequestForm
                   me={me}
                   onSubmitted={handleSubmitted}
