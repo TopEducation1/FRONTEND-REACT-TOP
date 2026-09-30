@@ -1640,6 +1640,7 @@ async function uploadHelpDeskFileToS3(file, authorizationPayload) {
 function SupportRequestForm({
   me,
   onSubmitted,
+  onStartNew,
 }) {
   const OPTIONS_URL = endpoints.helpDeskOptions;
   const ATTACHMENT_URL = endpoints.helpDeskAttachmentUploads;
@@ -1790,6 +1791,12 @@ function SupportRequestForm({
     setFormError("");
     setUploadProgress("");
     setSuccessData(null);
+
+    if (
+      typeof onStartNew === "function"
+    ) {
+      onStartNew();
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -2487,10 +2494,12 @@ function HelpFormModal({
 }) {
   const [helpView, setHelpView] = useState("help");
   const [requestsRefreshKey, setRequestsRefreshKey] = useState(0);
+  const [helpSubmitted, setHelpSubmitted] = useState(false);
 
   useEffect(() => {
     if (!open) {
       setHelpView("help");
+      setHelpSubmitted(false);
     }
   }, [open]);
 
@@ -2499,6 +2508,7 @@ function HelpFormModal({
   const isHelpCenter = helpView === "help";
 
   const handleSubmitted = () => {
+    setHelpSubmitted(true);
     setRequestsRefreshKey((value) => value + 1);
   };
 
@@ -2586,32 +2596,54 @@ function HelpFormModal({
 
                 <div className="relative flex h-full min-h-[690px] flex-col items-center justify-center px-10 pb-12 pt-[92px]">
                   <div className="relative grid h-[300px] w-[300px] place-items-center">
-                    <span className="absolute h-[285px] w-[285px] rounded-full border border-[#9BB1C6]/30" />
-                    <span className="absolute h-[210px] w-[210px] rounded-full border border-[#9BB1C6]/35" />
-                    <span className="absolute h-[135px] w-[135px] rounded-full border border-[#9BB1C6]/40" />
+                    {!helpSubmitted && (
+                      <>
+                        <span className="absolute h-[285px] w-[285px] rounded-full border border-[#9BB1C6]/30" />
+                        <span className="absolute h-[210px] w-[210px] rounded-full border border-[#9BB1C6]/35" />
+                        <span className="absolute h-[135px] w-[135px] rounded-full border border-[#9BB1C6]/40" />
+                      </>
+                    )}
 
                     <img
-                      src="/assets/content/resources/Top-Renata-mesa-de-ayuda.png"
-                      alt="Asistente Top Education"
-                      className="relative z-10 h-[255px] w-auto object-contain"
+                      src={
+                        helpSubmitted
+                          ? "/assets/content/resources/renata-send.png"
+                          : "/assets/content/resources/Top-Renata-mesa-de-ayuda.png"
+                      }
+                      alt={
+                        helpSubmitted
+                          ? "Solicitud recibida por Top Education"
+                          : "Asistente Top Education"
+                      }
+                      className={
+                        helpSubmitted
+                          ? "relative z-10 h-[285px] w-auto object-contain"
+                          : "relative z-10 h-[255px] w-auto object-contain"
+                      }
                     />
                   </div>
 
-                  <div className="mt-5 w-full max-w-[350px] rounded-[14px] border border-[#E5E2DC] bg-white/90 px-3 py-4 text-center shadow-[0_12px_28px_rgba(41,46,54,0.08)] backdrop-blur">
+                  <div className="mt-5 w-full max-w-[350px] rounded-[14px] border border-[#E5E2DC] bg-white/90 px-4 py-4 text-center shadow-[0_12px_28px_rgba(41,46,54,0.08)] backdrop-blur">
                     <strong className="block !font-['Montserrat'] text-[11px] font-bold text-[#263247]">
-                      Te acompañamos paso a paso
+                      {helpSubmitted
+                        ? "¡Listo! Hemos recibido tu solicitud"
+                        : "Te acompañamos paso a paso"}
                     </strong>
-                    <span className="mt-1 block !font-['Montserrat'] text-[9px] leading-[1.45] text-[#7B8491]">
-                      Tu solicitud será enviada al equipo de soporte. Las respuestas llegarán directamente al correo indicado.
+
+                    <span className="mt-1 block !font-['Montserrat'] text-[9px] leading-[1.55] text-[#7B8491]">
+                      {helpSubmitted
+                        ? "Gracias por comunicarte con nosotros. Estamos revisando tu caso y te contactaremos pronto para ayudarte."
+                        : "Tu solicitud será enviada al equipo de soporte. Las respuestas llegarán directamente al correo indicado."}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-[#FBFCFD] px-4 pb-4 pt-4 sm:px-4 sm:pb-4 lg:px-6 lg:pb-4 lg:pt-4 xl:px-8">
+              <div className="bg-[#FBFCFD] px-4 pb-4 pt-12 sm:px-4 sm:pb-4 lg:px-6 lg:pb-4 lg:pt-4 xl:px-8">
                 <SupportRequestForm
                   me={me}
                   onSubmitted={handleSubmitted}
+                  onStartNew={() => setHelpSubmitted(false)}
                 />
               </div>
             </div>
