@@ -24,7 +24,9 @@ import {
   ChevronDown,
   ChevronRight,
   ChevronLeft,
+  Upload,
   UploadCloud,
+  ArrowUpRight,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import Seo from "../components/Seo";
@@ -431,6 +433,7 @@ const PLAN_CATALOG = {
     key: "free",
     badge: "FREE",
     title: "Top Education Free",
+    image: "/assets/plans/Paquete-free.png",
     monthlyPrice: "$0",
     yearlyPrice: "$0",
     priceNumber: 0,
@@ -457,7 +460,8 @@ const PLAN_CATALOG = {
   basic: {
     key: "basic",
     badge: "TOP",
-    title: "Top Education",
+    title: "Top Education Básico",
+    image: "/assets/plans/Paquete-basico.png",
     monthlyPrice: "$19",
     yearlyPrice: "$16",
     monthlyValue: 19,
@@ -479,6 +483,7 @@ const PLAN_CATALOG = {
     key: "x",
     badge: "TOP X",
     title: "Top Education X",
+    image: "/assets/plans/Paquete-x.png",
     monthlyPrice: "$29",
     yearlyPrice: "$25",
     monthlyValue: 29,
@@ -512,6 +517,7 @@ const PLAN_CATALOG = {
     key: "plus",
     badge: "PLUS",
     title: "Top Education Plus",
+    image: "/assets/plans/Paquete-plus.png",
     monthlyPrice: "$49",
     yearlyPrice: "$42",
     monthlyValue: 49,
@@ -796,7 +802,13 @@ function StarMark({ small = false }) {
   );
 }
 
-function TopBar({ activeLabel, onOpenMobileMenu, onOpenHelp, onOpenProfile }) {
+function TopBar({
+  activeLabel,
+  onOpenMobileMenu,
+  onOpenHelp,
+  onOpenProfile,
+  sidebarCollapsed = false,
+}) {
   const navigate = useNavigate();
 
   const navigateWithTransition = (url) => {
@@ -807,9 +819,15 @@ function TopBar({ activeLabel, onOpenMobileMenu, onOpenHelp, onOpenProfile }) {
     }
   };
 
+  const desktopOffsetClass = sidebarCollapsed
+    ? "lg:left-[76px] lg:w-[calc(100%-76px)]"
+    : "lg:left-[236px] lg:w-[calc(100%-236px)]";
+
   return (
     <>
-      <div className="fixed left-0 top-0 z-50 flex h-[64px] w-full items-center justify-between border-b border-[#E7EAF0] bg-white px-4 lg:left-[236px] lg:w-[calc(100%-236px)] lg:px-8">
+      <div
+        className={`fixed left-0 top-0 z-50 flex h-[64px] w-full items-center justify-between border-b border-[#E7EAF0] bg-white px-4 transition-[left,width] duration-300 ease-out lg:px-8 ${desktopOffsetClass}`}
+      >
         <div className="flex items-center gap-3 lg:hidden">
           <button
             type="button"
@@ -861,7 +879,9 @@ function TopBar({ activeLabel, onOpenMobileMenu, onOpenHelp, onOpenProfile }) {
         </div>
       </div>
 
-      <div className="fixed left-0 top-[64px] z-40 flex h-[50px] w-full items-center border-b border-[#EDF0F4] bg-white px-4 lg:left-[236px] lg:w-[calc(100%-236px)] lg:px-8">
+      <div
+        className={`fixed left-0 top-[64px] z-40 flex h-[50px] w-full items-center border-b border-[#EDF0F4] bg-white px-4 transition-[left,width] duration-300 ease-out lg:px-8 ${desktopOffsetClass}`}
+      >
         <button
           type="button"
           onClick={() => navigateWithTransition("/inicio")}
@@ -878,13 +898,26 @@ function TopBar({ activeLabel, onOpenMobileMenu, onOpenHelp, onOpenProfile }) {
   );
 }
 
-function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl, learningRoute }) {
+function Sidebar({
+  activeTab,
+  onTabChange,
+  me,
+  planLabel,
+  backendBaseUrl,
+  learningRoute,
+  collapsed = false,
+  onToggleCollapsed,
+}) {
   const navigate = useNavigate();
   const mxAccessActive = hasActiveMxAccess(me, learningRoute);
   const [openingMxApp, setOpeningMxApp] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const displayName = getAccountDisplayName(me);
   const initials = getAccountInitials(me);
+
+  useEffect(() => {
+    if (collapsed) setUserMenuOpen(false);
+  }, [collapsed]);
 
   const goToMxApp = async () => {
     if (!mxAccessActive) {
@@ -980,110 +1013,213 @@ function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl, learni
   );
 
   return (
-    <aside className="fixed left-0 top-0 z-[70] hidden h-screen w-[236px] flex-col border-r border-[#E6EAF0] bg-white lg:flex">
+    <aside
+      className={`fixed left-0 top-0 z-[70] hidden h-screen flex-col overflow-visible border-r border-[#E6EAF0] bg-white transition-[width] duration-300 ease-out lg:flex ${
+        collapsed ? "w-[76px]" : "w-[236px]"
+      }`}
+    >
       <button
         type="button"
         onClick={() => navigate("/inicio")}
-        className="flex h-[64px] min-h-[64px] w-full items-center gap-3 border-b border-[#E7EAF0] bg-white px-4 text-left"
+        className={`flex h-[64px] min-h-[64px] w-full items-center border-b border-[#E7EAF0] bg-white transition-all duration-300 ease-out ${
+          collapsed ? "justify-center px-0" : "gap-3 px-4 text-left"
+        }`}
+        title={collapsed ? "Top Education" : undefined}
       >
         <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[13px] bg-[#111D31] !font-['Montserrat'] text-[17px] font-bold text-white shadow-[0_8px_20px_rgba(17,29,49,0.14)]">
           T
         </span>
-        <span className="min-w-0">
-          <strong className="block truncate !font-['Montserrat'] text-[14px] font-bold leading-[1.1] text-[#1C2738]">
+
+        <span
+          className={`min-w-0 overflow-hidden transition-[max-width,opacity,transform] duration-300 ease-out ${
+            collapsed
+              ? "max-w-0 -translate-x-2 opacity-0"
+              : "max-w-[150px] translate-x-0 opacity-100"
+          }`}
+        >
+          <strong className="block whitespace-nowrap !font-['Montserrat'] text-[14px] font-bold leading-[1.1] text-[#1C2738]">
             Top Education
           </strong>
-          <span className="mt-1 block truncate !font-['Montserrat'] text-[10px] leading-none text-[#8A94A6]">
+          <span className="mt-1 block whitespace-nowrap !font-['Montserrat'] text-[10px] leading-none text-[#8A94A6]">
             Portal Alumno
           </span>
         </span>
       </button>
 
       <div className="px-3 pt-5">
-        <div className="mb-3 flex items-center gap-2 px-1 text-[#8792A4]">
-          <span className="grid h-6 w-6 place-items-center rounded-full bg-[linear-gradient(135deg,#22395F,#4A70AD)] text-white shadow-sm">
-            <ChevronLeft size={14} strokeWidth={2.2} />
+        <button
+          type="button"
+          onClick={onToggleCollapsed}
+          className={`mb-3 flex h-7 w-full items-center text-[#8792A4] transition-all duration-300 ease-out ${
+            collapsed ? "justify-center" : "gap-2 px-1"
+          }`}
+          aria-label={collapsed ? "Expandir menú lateral" : "Contraer menú lateral"}
+          title={collapsed ? "Expandir menú" : "Contraer menú"}
+        >
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#22395F,#4A70AD)] text-white shadow-sm">
+            <ChevronLeft
+              size={14}
+              strokeWidth={2.2}
+              className={`transition-transform duration-300 ease-out ${
+                collapsed ? "rotate-180" : "rotate-0"
+              }`}
+            />
           </span>
-          <span className="!font-['Montserrat'] text-[10px] font-semibold uppercase tracking-[0.13em]">
+
+          <span
+            className={`overflow-hidden whitespace-nowrap !font-['Montserrat'] text-[10px] font-semibold uppercase tracking-[0.13em] transition-[max-width,opacity,transform] duration-300 ease-out ${
+              collapsed
+                ? "max-w-0 -translate-x-2 opacity-0"
+                : "max-w-[130px] translate-x-0 opacity-100"
+            }`}
+          >
             Navegación
           </span>
-        </div>
+        </button>
 
         <nav className="space-y-0">
           {TABS.map((item) => {
             const active = activeTab === item.key;
 
             return (
-              <button
-                key={item.key}
-                type="button"
-                onClick={() => onTabChange(item.key)}
-                className={`group flex min-h-[38px] w-full items-center gap-3 rounded-[14px] px-3 py-2 text-left !font-['Montserrat'] text-[13px] font-medium transition-all duration-200 ${
-                  active
-                    ? "bg-[linear-gradient(105deg,#172A49_0%,#284A7D_52%,#3A65A3_100%)] text-white shadow-[0_9px_22px_rgba(43,80,128,0.20)]"
-                    : "text-[#4B5565] hover:bg-[#F3F6FA] hover:text-[#172033]"
-                }`}
-              >
-                <span className={`grid h-6 w-6 shrink-0 place-items-center ${active ? "text-white" : "text-[#6E788A]"}`}>
-                  <NavigationIcon item={item} active={active} />
-                </span>
-                <span className="truncate">{item.label}</span>
-              </button>
+              <div key={item.key} className="group relative">
+                <button
+                  type="button"
+                  onClick={() => onTabChange(item.key)}
+                  aria-label={item.label}
+                  className={`flex min-h-[40px] w-full items-center rounded-[14px] !font-['Montserrat'] text-[13px] font-medium transition-all duration-200 ${
+                    collapsed ? "justify-center px-0" : "gap-3 px-3 py-2 text-left"
+                  } ${
+                    active
+                      ? "bg-[linear-gradient(105deg,#172A49_0%,#284A7D_52%,#3A65A3_100%)] text-white shadow-[0_9px_22px_rgba(43,80,128,0.20)]"
+                      : "text-[#4B5565] hover:bg-[#F3F6FA] hover:text-[#172033]"
+                  }`}
+                >
+                  <span
+                    className={`grid h-6 w-6 shrink-0 place-items-center ${
+                      active ? "text-white" : "text-[#6E788A]"
+                    }`}
+                  >
+                    <NavigationIcon
+                      item={item}
+                      active={active}
+                      size={collapsed ? 22 : 20}
+                    />
+                  </span>
+
+                  <span
+                    className={`overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform] duration-300 ease-out ${
+                      collapsed
+                        ? "max-w-0 -translate-x-2 opacity-0"
+                        : "max-w-[160px] translate-x-0 opacity-100"
+                    }`}
+                  >
+                    {item.label}
+                  </span>
+                </button>
+
+                {collapsed && (
+                  <span className="pointer-events-none absolute left-[calc(100%+12px)] top-1/2 z-[90] -translate-y-1/2 translate-x-[-4px] whitespace-nowrap rounded-[9px] border border-[#E4E8EE] bg-white px-3 py-2 !font-['Montserrat'] text-[10px] font-semibold text-[#354154] opacity-0 shadow-[0_10px_28px_rgba(25,39,60,0.14)] transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100">
+                    {item.label}
+                  </span>
+                )}
+              </div>
             );
           })}
         </nav>
       </div>
 
       <div className="mt-auto px-3 pb-3 pt-5">
-        <button
-          type="button"
-          onClick={goToMxApp}
-          disabled={openingMxApp || !mxAccessActive}
-          className={`mb-3 flex w-full items-center justify-between rounded-[15px] border px-3 py-3 text-left !font-['Montserrat'] transition ${
-            mxAccessActive
-              ? "border-[#B9ECF2] bg-[linear-gradient(135deg,#D9FAFC_0%,#C3F3F7_100%)] text-[#18304C] hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(75,153,169,0.16)]"
-              : "cursor-not-allowed border-[#E1E5EA] bg-[#F1F3F5] text-[#9AA3AF]"
-          } ${openingMxApp ? "cursor-wait opacity-70" : ""}`}
-        >
-          <span className="flex min-w-0 items-center gap-2.5">
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-white/75 text-[#315D9C] shadow-sm">
-              ↗
-            </span>
-            <span className="min-w-0">
-              <strong className="block truncate text-[12px] font-bold">
-                Ir a la App
-              </strong>
-              <span className="mt-0.5 block truncate text-[10px] opacity-70">
-                {openingMxApp
-                  ? "Generando acceso..."
-                  : mxAccessActive
-                  ? "Abrir plataforma"
-                  : "Acceso suspendido"}
+        <div className="group relative">
+          <button
+            type="button"
+            onClick={goToMxApp}
+            disabled={openingMxApp || !mxAccessActive}
+            className={`mb-3 flex w-full items-center rounded-[15px] border !font-['Montserrat'] transition-all duration-300 ease-out ${
+              collapsed
+                ? "h-[48px] justify-center px-0 py-0"
+                : "justify-between px-3 py-3 text-left"
+            } ${
+              mxAccessActive
+                ? "border-[#B9ECF2] bg-[linear-gradient(135deg,#D9FAFC_0%,#C3F3F7_100%)] text-[#18304C] hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(75,153,169,0.16)]"
+                : "cursor-not-allowed border-[#E1E5EA] bg-[#F1F3F5] text-[#9AA3AF]"
+            } ${openingMxApp ? "cursor-wait opacity-70" : ""}`}
+            aria-label={mxAccessActive ? "Abrir plataforma" : "Acceso suspendido"}
+          >
+            <span className={`flex min-w-0 items-center ${collapsed ? "justify-center" : "gap-2.5"}`}>
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[10px] bg-white/80 text-[#315D9C] shadow-sm transition-transform duration-500 ease-out group-hover:rotate-[360deg]">
+                <ArrowUpRight size={17} strokeWidth={2} />
               </span>
-            </span>
-          </span>
-          <ChevronRight size={15} />
-        </button>
 
-        <div className="mb-3 rounded-[15px] bg-[#0D1A2D] p-3 text-white shadow-[0_12px_28px_rgba(13,26,45,0.14)]">
-          <div className="flex items-start gap-2.5">
-            <StarMark small />
-            <div className="min-w-0  max-w-[75%] -mt-2">
-              <span className="!font-['Montserrat'] text-[10px] -mt-1 font-bold uppercase text-[#74DCE8]">
-                Topo dice
+              <span
+                className={`overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform] duration-300 ease-out ${
+                  collapsed
+                    ? "max-w-0 -translate-x-2 opacity-0"
+                    : "max-w-[120px] translate-x-0 opacity-100"
+                }`}
+              >
+                <strong className="block truncate text-[11px] font-bold">
+                  {openingMxApp
+                    ? "Abriendo..."
+                    : mxAccessActive
+                    ? "Abrir plataforma"
+                    : "Acceso suspendido"}
+                </strong>
               </span>
-              <p className="!font-['Montserrat'] text-[8px] leading-[1.2] text-white/80">
-                {streakDays > 0
-                  ? `Llevas ${streakDays} días seguidos aprendiendo 🔥 ¡Sigue así!`
-                  : "Aún no tienes racha activa. Ingresa a la app para empezar."}
-              </p>
+            </span>
+
+            {!collapsed && (
+              <ChevronRight
+                size={15}
+                className="shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
+              />
+            )}
+          </button>
+
+          {collapsed && (
+            <span className="pointer-events-none absolute left-[calc(100%+12px)] top-1/2 z-[90] -translate-y-1/2 translate-x-[-4px] whitespace-nowrap rounded-[9px] border border-[#E4E8EE] bg-white px-3 py-2 !font-['Montserrat'] text-[10px] font-semibold text-[#354154] opacity-0 shadow-[0_10px_28px_rgba(25,39,60,0.14)] transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100">
+              {openingMxApp
+                ? "Abriendo..."
+                : mxAccessActive
+                ? "Abrir plataforma"
+                : "Acceso suspendido"}
+            </span>
+          )}
+        </div>
+
+        {collapsed ? (
+          <div className="group relative mb-3 flex h-[48px] items-center justify-center">
+            <StarMark small />
+            <span className="pointer-events-none absolute left-[calc(100%+12px)] top-1/2 z-[90] w-[190px] -translate-y-1/2 translate-x-[-4px] rounded-[10px] bg-[#0D1A2D] px-3 py-2 !font-['Montserrat'] text-[9px] leading-[1.35] text-white opacity-0 shadow-[0_12px_28px_rgba(13,26,45,0.18)] transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100">
+              <strong className="mb-1 block text-[9px] font-bold uppercase text-[#74DCE8]">Topo dice</strong>
+              {streakDays > 0
+                ? `Llevas ${streakDays} días seguidos aprendiendo 🔥 ¡Sigue así!`
+                : "Aún no tienes racha activa. Ingresa a la app para empezar."}
+            </span>
+          </div>
+        ) : (
+          <div className="mb-3 rounded-[15px] bg-[#0D1A2D] p-3 text-white shadow-[0_12px_28px_rgba(13,26,45,0.14)]">
+            <div className="flex items-start gap-2.5">
+              <StarMark small />
+              <div className="-mt-2 min-w-0 max-w-[75%]">
+                <span className="-mt-1 !font-['Montserrat'] text-[10px] font-bold uppercase text-[#74DCE8]">Topo dice</span>
+                <p className="!font-['Montserrat'] text-[8px] leading-[1.2] text-white/80">
+                  {streakDays > 0
+                    ? `Llevas ${streakDays} días seguidos aprendiendo 🔥 ¡Sigue así!`
+                    : "Aún no tienes racha activa. Ingresa a la app para empezar."}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <div className="relative border-t border-[#EDF0F4] pt-3">
           {userMenuOpen && (
-            <div className="absolute bottom-[calc(100%+8px)] left-0 right-0 overflow-hidden rounded-[14px] border border-[#E5E9EF] bg-white p-1.5 shadow-[0_16px_40px_rgba(27,39,56,0.16)]">
+            <div
+              className={`absolute bottom-[calc(100%+8px)] overflow-hidden rounded-[14px] border border-[#E5E9EF] bg-white p-1.5 shadow-[0_16px_40px_rgba(27,39,56,0.16)] ${
+                collapsed ? "left-[calc(100%+10px)] w-[190px]" : "left-0 right-0"
+              }`}
+            >
               <button
                 type="button"
                 onClick={handleLogout}
@@ -1098,17 +1234,28 @@ function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl, learni
           <button
             type="button"
             onClick={() => setUserMenuOpen((value) => !value)}
-            className="flex w-full items-center gap-2.5 rounded-[13px] px-1 py-2 text-left transition hover:bg-[#F6F8FA]"
+            className={`flex w-full items-center rounded-[13px] py-2 transition hover:bg-[#F6F8FA] ${
+              collapsed ? "justify-center px-0" : "gap-2.5 px-1 text-left"
+            }`}
             aria-expanded={userMenuOpen}
+            aria-label={collapsed ? displayName : undefined}
+            title={collapsed ? displayName : undefined}
           >
             <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#203B66,#4B72AE)] !font-['Montserrat'] text-[11px] font-bold text-white">
               {initials}
             </span>
-            <span className="min-w-0 flex-1">
+
+            <span
+              className={`min-w-0 flex-1 overflow-hidden transition-[max-width,opacity,transform] duration-300 ease-out ${
+                collapsed
+                  ? "max-w-0 -translate-x-2 opacity-0"
+                  : "max-w-[145px] translate-x-0 opacity-100"
+              }`}
+            >
               <strong className="block truncate !font-['Montserrat'] text-[11px] font-semibold text-[#273244]">
                 {displayName}
               </strong>
-              <span className="mt-0.5 flex items-center gap-1.5 !font-['Montserrat'] text-[9px] text-[#8993A3]">
+              <span className="mt-0.5 flex items-center gap-1.5 whitespace-nowrap !font-['Montserrat'] text-[9px] text-[#8993A3]">
                 Alumno
                 {planLabel && (
                   <>
@@ -1118,12 +1265,15 @@ function Sidebar({ activeTab, onTabChange, me, planLabel, backendBaseUrl, learni
                 )}
               </span>
             </span>
-            <ChevronDown
-              size={15}
-              className={`shrink-0 text-[#98A1AF] transition-transform ${
-                userMenuOpen ? "rotate-180" : ""
-              }`}
-            />
+
+            {!collapsed && (
+              <ChevronDown
+                size={15}
+                className={`shrink-0 text-[#98A1AF] transition-transform ${
+                  userMenuOpen ? "rotate-180" : ""
+                }`}
+              />
+            )}
           </button>
         </div>
       </div>
@@ -4168,7 +4318,11 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
               />
 
               <span className="grid h-14 w-14 place-items-center rounded-[16px] bg-[#EEF3F8] !font-['Montserrat'] text-[27px] font-light text-[#41679F] transition group-hover:bg-[#E7EEF7]">
-                ⇧
+                <Upload
+                  size={24}
+                  color="#315D9C"
+                  strokeWidth={3.5}
+                />
               </span>
 
               <h2 className="mt-2 max-w-[460px] !font-['Montserrat'] text-[17px] font-semibold leading-snug tracking-[-0.015em] text-[#182235]">
@@ -4411,31 +4565,307 @@ function CvTab({ backendBaseUrl, me, learningRoute }) {
   );
 }
 
-function ProfileTab({ me }) {
-  const [profileTab, setProfileTab] = useState("basic");
+const PROFILE_COUNTRIES = [
+  "Colombia",
+  "México",
+  "Perú",
+  "Chile",
+  "Argentina",
+  "Ecuador",
+  "Estados Unidos",
+  "España",
+];
+
+function ProfileTab({
+  me,
+  onProfileUpdated,
+}) {
+  const [
+    profileTab,
+    setProfileTab,
+  ] = useState("basic");
+
+  const [
+    fullName,
+    setFullName,
+  ] = useState(
+    me?.full_name ||
+      me?.name ||
+      ""
+  );
+
+  const [
+    country,
+    setCountry,
+  ] = useState(
+    me?.country ||
+      ""
+  );
+
+  const [
+    saving,
+    setSaving,
+  ] = useState(false);
+
+  const [
+    saveError,
+    setSaveError,
+  ] = useState("");
+
+  const [
+    saved,
+    setSaved,
+  ] = useState(false);
+
+
+  // ==========================================================
+  // SINCRONIZAR CUANDO /account/me CAMBIE
+  // ==========================================================
+
+  useEffect(() => {
+
+    setFullName(
+      me?.full_name ||
+        me?.name ||
+        ""
+    );
+
+    setCountry(
+      me?.country ||
+        ""
+    );
+
+    setSaved(false);
+    setSaveError("");
+
+  }, [
+    me?.full_name,
+    me?.name,
+    me?.country,
+  ]);
+
+
+  // ==========================================================
+  // TABS
+  // ==========================================================
 
   const profileTabs = [
-    ["basic", "Información básica"],
-    ["progress", "Progreso"],
-    ["certs", "Certificaciones"],
+    [
+      "basic",
+      "Información básica",
+    ],
+    [
+      "progress",
+      "Progreso",
+    ],
+    [
+      "certs",
+      "Certificaciones",
+    ],
   ];
 
-  const profileFields = [
-    ["Nombre completo", me?.full_name || me?.name || "Usuario top.education"],
-    ["Correo electrónico", me?.email || "—"],
-    ["País", me?.country || "Colombia"],
-    ["Idioma", me?.language || "Español"],
-  ];
 
-  const initial = String(me?.full_name || me?.name || me?.email || "A")
+  // ==========================================================
+  // PAÍSES
+  // ==========================================================
+
+  const countryOptions =
+    useMemo(() => {
+
+      const options = [
+        ...PROFILE_COUNTRIES,
+      ];
+
+      /*
+       * Si existe un usuario antiguo con
+       * un país que no está en la lista
+       * actual, lo mostramos de todos modos
+       * para no reemplazarlo accidentalmente.
+       */
+      if (
+        me?.country &&
+        !options.includes(
+          me.country
+        )
+      ) {
+        options.unshift(
+          me.country
+        );
+      }
+
+      return options;
+
+    }, [me?.country]);
+
+
+  // ==========================================================
+  // DATOS VISUALES
+  // ==========================================================
+
+  const displayName =
+    fullName.trim() ||
+    me?.full_name ||
+    me?.name ||
+    "Usuario top.education";
+
+  const initial = String(
+    displayName ||
+    me?.email ||
+    "A"
+  )
     .trim()
     .charAt(0)
     .toUpperCase();
 
+
+  // ==========================================================
+  // DETECTAR CAMBIOS
+  // ==========================================================
+
+  const originalName =
+    String(
+      me?.full_name ||
+      me?.name ||
+      ""
+    ).trim();
+
+  const originalCountry =
+    String(
+      me?.country ||
+      ""
+    ).trim();
+
+  const hasChanges =
+    (
+      fullName.trim() !==
+        originalName
+    )
+    ||
+    (
+      country !==
+        originalCountry
+    );
+
+
+  // ==========================================================
+  // GUARDAR
+  // ==========================================================
+
+  const handleSaveProfile =
+    async () => {
+
+      if (saving) {
+        return;
+      }
+
+      setSaveError("");
+      setSaved(false);
+
+      const normalizedName =
+        fullName
+          .trim()
+          .replace(
+            /\s+/g,
+            " "
+          );
+
+      if (!normalizedName) {
+
+        setSaveError(
+          "Ingresa tu nombre completo."
+        );
+
+        return;
+      }
+
+      if (!country) {
+
+        setSaveError(
+          "Selecciona tu país."
+        );
+
+        return;
+      }
+
+      setSaving(true);
+
+      try {
+
+        /*
+         * Reutilizamos este helper porque
+         * ya envía X-CSRFToken correctamente.
+         */
+        const response =
+          await postHelpDeskJSON(
+            endpoints
+              .accountProfileUpdate,
+            {
+              fullName:
+                normalizedName,
+
+              country,
+            }
+          );
+
+        const updated =
+          response?.data?.data ||
+          {};
+
+        setFullName(
+          updated?.full_name ||
+          normalizedName
+        );
+
+        setCountry(
+          updated?.country ||
+          country
+        );
+
+        if (
+          typeof onProfileUpdated
+          === "function"
+        ) {
+
+          onProfileUpdated(
+            updated
+          );
+        }
+
+        setSaved(true);
+
+        toast.success(
+          "Perfil actualizado correctamente."
+        );
+
+      } catch (error) {
+
+        setSaveError(
+          error?.message ||
+          "No fue posible actualizar tu perfil."
+        );
+
+      } finally {
+
+        setSaving(false);
+      }
+    };
+
+
+  // ==========================================================
+  // RENDER
+  // ==========================================================
+
   return (
     <div className="w-full pb-5">
+
+      {/* ======================================================
+          HEADER
+      ====================================================== */}
+
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+
         <div>
+
           <span className="!font-['Montserrat'] text-[10px] font-semibold uppercase tracking-[0.14em] text-[#78869B]">
             Cuenta del alumno
           </span>
@@ -4445,38 +4875,60 @@ function ProfileTab({ me }) {
           </h1>
 
           <p className="mt-2 !font-['Montserrat'] text-sm text-[#7B8699]">
-            Consulta la información principal de tu cuenta y tu avance en Top Education.
+            Consulta y actualiza la información principal de tu cuenta.
           </p>
+
         </div>
+
 
         <div className="flex w-full overflow-x-auto rounded-[14px] border border-[#E2E7EE] bg-white p-1 shadow-[0_6px_18px_rgba(17,29,49,0.035)] md:w-auto">
-          {profileTabs.map(([key, label]) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setProfileTab(key)}
-              className={`min-w-max flex-1 rounded-[10px] px-4 py-2.5 !font-['Montserrat'] text-[10.5px] font-semibold transition md:flex-none md:px-5 ${
-                profileTab === key
-                  ? "bg-[linear-gradient(135deg,#111D31_0%,#4266A4_100%)] text-white shadow-[0_7px_18px_rgba(48,79,134,0.16)]"
-                  : "text-[#687386] hover:bg-[#F6F8FB] hover:text-[#344156]"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+
+          {profileTabs.map(
+            ([key, label]) => (
+
+              <button
+                key={key}
+                type="button"
+                onClick={() =>
+                  setProfileTab(
+                    key
+                  )
+                }
+                className={`min-w-max flex-1 rounded-[10px] px-4 py-2.5 !font-['Montserrat'] text-[10.5px] font-semibold transition md:flex-none md:px-5 ${
+                  profileTab === key
+                    ? "bg-[linear-gradient(135deg,#111D31_0%,#4266A4_100%)] text-white shadow-[0_7px_18px_rgba(48,79,134,0.16)]"
+                    : "text-[#687386] hover:bg-[#F6F8FB] hover:text-[#344156]"
+                }`}
+              >
+                {label}
+              </button>
+
+            )
+          )}
+
         </div>
+
       </div>
 
+
       {profileTab === "basic" ? (
+
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-[260px_minmax(0,1fr)]">
+
+          {/* ==================================================
+              PERFIL IZQUIERDO
+          ================================================== */}
+
           <aside className="h-fit rounded-[20px] border border-[#E4E8EF] bg-white p-5 shadow-[0_7px_24px_rgba(17,29,49,0.035)]">
+
             <div className="flex flex-col items-center text-center">
+
               <div className="grid h-20 w-20 place-items-center rounded-full bg-[linear-gradient(135deg,#223A61,#4E72AA)] !font-['Montserrat'] text-[24px] font-semibold text-white shadow-[0_12px_30px_rgba(49,93,156,0.18)]">
                 {initial}
               </div>
 
               <h2 className="mt-2 line-clamp-2 !font-['Montserrat'] text-[16px] font-semibold text-[#202B3D]">
-                {me?.full_name || me?.name || "Usuario top.education"}
+                {displayName}
               </h2>
 
               <p className="mt-1 max-w-full truncate !font-['Montserrat'] text-[10.5px] text-[#8A94A6]">
@@ -4486,10 +4938,14 @@ function ProfileTab({ me }) {
               <span className="mt-3 rounded-full border border-[#D7E0EC] bg-[#F5F8FB] px-3 py-1 !font-['Montserrat'] text-[9px] font-semibold uppercase tracking-[0.08em] text-[#536A88]">
                 Alumno
               </span>
+
             </div>
 
+
             <div className="mt-5 border-t border-[#EDF0F4] pt-4">
+
               <div className="flex items-start gap-3 rounded-[13px] border border-[#CDEBF0] bg-[linear-gradient(135deg,#F5FBFC,#EFF8FA)] p-3.5">
+
                 <img
                   src="/assets/logos/topo-contenedor-claro.png"
                   alt="Topo"
@@ -4497,19 +4953,32 @@ function ProfileTab({ me }) {
                 />
 
                 <div>
+
                   <span className="!font-['Montserrat'] text-[8.5px] font-bold uppercase tracking-[0.11em] text-[#4B7A85]">
                     Topo dice
                   </span>
+
                   <p className="mt-0.5 !font-['Montserrat'] text-[9.5px] leading-relaxed text-[#657886]">
                     Mantén tus datos actualizados para que tu experiencia sea cada vez más personalizada.
                   </p>
+
                 </div>
+
               </div>
+
             </div>
+
           </aside>
 
+
+          {/* ==================================================
+              FORMULARIO
+          ================================================== */}
+
           <section className="rounded-[20px] border border-[#E4E8EF] bg-white p-5 shadow-[0_7px_24px_rgba(17,29,49,0.035)] md:p-6">
+
             <div className="flex flex-col gap-1 border-b border-[#EDF0F4] pb-4">
+
               <span className="!font-['Montserrat'] text-[9px] font-bold uppercase tracking-[0.14em] text-[#78869B]">
                 Información básica
               </span>
@@ -4519,52 +4988,224 @@ function ProfileTab({ me }) {
               </h2>
 
               <p className="!font-['Montserrat'] text-[11px] text-[#8A94A6]">
-                Esta información corresponde a los datos registrados actualmente en tu perfil.
+                Modifica tu nombre y país. El correo e idioma permanecen asociados a tu cuenta.
               </p>
+
             </div>
+
 
             <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
-              {profileFields.map(([label, value]) => (
-                <label
-                  key={label}
-                  className="block !font-['Montserrat'] text-[10px] font-semibold text-[#687386]"
-                >
-                  {label}
-                  <input
-                    value={value}
-                    readOnly
-                    className="mt-2 h-[46px] w-full rounded-[12px] border border-[#DEE3EB] bg-[#F8FAFC] px-4 !font-['Montserrat'] text-[12px] font-medium text-[#263246] outline-none"
-                  />
-                </label>
-              ))}
+
+              {/* NOMBRE */}
+
+              <label className="block !font-['Montserrat'] text-[10px] font-semibold text-[#687386]">
+
+                Nombre completo
+
+                <input
+                  type="text"
+                  value={fullName}
+                  onChange={(event) => {
+                    setFullName(
+                      event.target.value
+                    );
+
+                    setSaved(false);
+                    setSaveError("");
+                  }}
+                  maxLength={240}
+                  autoComplete="name"
+                  className="mt-2 h-[46px] w-full rounded-[12px] border border-[#D7DEE8] bg-white px-4 !font-['Montserrat'] text-[12px] font-medium text-[#263246] outline-none transition focus:border-[#6F8DB8] focus:ring-4 focus:ring-[#41679F]/10"
+                />
+
+              </label>
+
+
+              {/* EMAIL */}
+
+              <label className="block !font-['Montserrat'] text-[10px] font-semibold text-[#687386]">
+
+                Correo electrónico
+
+                <input
+                  type="email"
+                  value={
+                    me?.email ||
+                    ""
+                  }
+                  readOnly
+                  className="mt-2 h-[46px] w-full cursor-not-allowed rounded-[12px] border border-[#DEE3EB] bg-[#F8FAFC] px-4 !font-['Montserrat'] text-[12px] font-medium text-[#727D8E] outline-none"
+                />
+
+              </label>
+
+
+              {/* PAÍS */}
+
+              <label className="block !font-['Montserrat'] text-[10px] font-semibold text-[#687386]">
+
+                País
+
+                <div className="relative mt-2">
+
+                  <select
+                    value={country}
+                    onChange={(event) => {
+                      setCountry(
+                        event.target.value
+                      );
+
+                      setSaved(false);
+                      setSaveError("");
+                    }}
+                    className="h-[46px] w-full appearance-none rounded-[12px] border border-[#D7DEE8] bg-white px-4 pr-11 !font-['Montserrat'] text-[12px] font-medium text-[#263246] outline-none transition focus:border-[#6F8DB8] focus:ring-4 focus:ring-[#41679F]/10"
+                  >
+
+                    <option value="">
+                      Selecciona tu país
+                    </option>
+
+                    {countryOptions.map(
+                      (item) => (
+
+                        <option
+                          key={item}
+                          value={item}
+                        >
+                          {item}
+                        </option>
+
+                      )
+                    )}
+
+                  </select>
+
+                </div>
+
+              </label>
+
+
+              {/* IDIOMA */}
+
+              <label className="block !font-['Montserrat'] text-[10px] font-semibold text-[#687386]">
+
+                Idioma
+
+                <input
+                  type="text"
+                  value={
+                    me?.language ||
+                    "Español"
+                  }
+                  readOnly
+                  className="mt-2 h-[46px] w-full cursor-not-allowed rounded-[12px] border border-[#DEE3EB] bg-[#F8FAFC] px-4 !font-['Montserrat'] text-[12px] font-medium text-[#727D8E] outline-none"
+                />
+
+              </label>
+
             </div>
 
+
+            {/* ==================================================
+                ERROR
+            ================================================== */}
+
+            {saveError && (
+
+              <div className="mt-4 flex items-start gap-2 rounded-[12px] border border-[#F0CCCC] bg-[#FFF7F7] px-4 py-3 text-[#A43D3D]">
+
+                <AlertCircle
+                  size={16}
+                  className="mt-0.5 shrink-0"
+                />
+
+                <span className="!font-['Montserrat'] text-[10.5px] leading-relaxed">
+                  {saveError}
+                </span>
+
+              </div>
+
+            )}
+
+
+            {/* ==================================================
+                FOOTER
+            ================================================== */}
+
             <div className="mt-6 flex flex-col gap-3 border-t border-[#EDF0F4] pt-5 sm:flex-row sm:items-center sm:justify-between">
-              <p className="!font-['Montserrat'] text-[10.5px] leading-relaxed text-[#8A94A6]">
-                Algunos datos pueden depender de la información registrada durante tu inscripción.
-              </p>
+
+              <div>
+
+                <p className="!font-['Montserrat'] text-[10.5px] leading-relaxed text-[#8A94A6]">
+                  Tus cambios se guardarán en la información asociada a tu cuenta.
+                </p>
+
+                {saved && (
+
+                  <span className="mt-1 block !font-['Montserrat'] text-[9.5px] font-semibold text-[#43845A]">
+                    ✓ Cambios guardados correctamente
+                  </span>
+
+                )}
+
+              </div>
+
 
               <button
                 type="button"
-                className="shrink-0 rounded-[11px] bg-[linear-gradient(135deg,#172A48,#41679F)] px-5 py-2.5 !font-['Montserrat'] text-[11px] font-semibold text-white shadow-[0_8px_20px_rgba(29,53,87,0.18)] transition hover:-translate-y-0.5"
+                onClick={
+                  handleSaveProfile
+                }
+                disabled={
+                  saving ||
+                  !hasChanges
+                }
+                className={`shrink-0 rounded-[11px] px-5 py-2.5 !font-['Montserrat'] text-[11px] font-semibold transition ${
+                  saving ||
+                  !hasChanges
+                    ? "cursor-not-allowed bg-[#EEF1F5] text-[#9AA3B1]"
+                    : "bg-[linear-gradient(135deg,#172A48,#41679F)] text-white shadow-[0_8px_20px_rgba(29,53,87,0.18)] hover:-translate-y-0.5"
+                }`}
               >
-                Guardar cambios
+
+                {saving
+                  ? "Guardando..."
+                  : saved
+                  ? "Cambios guardados"
+                  : "Guardar cambios"}
+
               </button>
+
             </div>
+
           </section>
+
         </div>
+
       ) : (
+
         <section className="flex min-h-[330px] w-full flex-col items-center justify-center rounded-[20px] border border-[#E4E8EF] bg-white p-8 text-center shadow-[0_7px_24px_rgba(17,29,49,0.035)]">
+
           <span className="grid h-14 w-14 place-items-center rounded-[16px] bg-[#EEF3F8] text-[#41679F]">
+
             {profileTab === "progress" ? (
-              <TrendingUp size={25} strokeWidth={1.8} />
+              <TrendingUp
+                size={25}
+                strokeWidth={1.8}
+              />
             ) : (
-              <Star size={25} strokeWidth={1.8} />
+              <Star
+                size={25}
+                strokeWidth={1.8}
+              />
             )}
+
           </span>
 
           <span className="mt-2 !font-['Montserrat'] text-[9px] font-bold uppercase tracking-[0.14em] text-[#78869B]">
-            {profileTab === "progress" ? "Progreso" : "Certificaciones"}
+            {profileTab === "progress"
+              ? "Progreso"
+              : "Certificaciones"}
           </span>
 
           <h2 className="mt-1 !font-['Montserrat'] text-[18px] font-semibold text-[#182235]">
@@ -4572,12 +5213,22 @@ function ProfileTab({ me }) {
           </h2>
 
           <p className="mt-2 max-w-[480px] !font-['Montserrat'] text-[11.5px] leading-relaxed text-[#7D8798]">
+
             {profileTab === "progress"
               ? "Esta sección quedará conectada con el progreso real del usuario y mostrará el avance de su ruta de aprendizaje."
               : "Aquí podrás consultar las certificaciones obtenidas y los logros asociados a tu ruta de aprendizaje."}
+
           </p>
+          <img
+            src="/assets/content/resources/proximamente.png"
+            alt="Proximamente"
+            className="h-full max-w-[250px] rounded-full object-cover"
+          />
+
         </section>
+
       )}
+
     </div>
   );
 }
@@ -5038,7 +5689,23 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
                       </span>
                     )}
                   </div>
-
+                    {plan.image && (
+                      <div className="mt-2 flex min-h-[96px] items-center justify-center">
+                        <img
+                          src={plan.image}
+                          alt={`Plan ${plan.title}`}
+                          className="
+                            h-[90px]
+                            w-[90px]
+                            rounded-[12px]
+                            object-cover
+                            transition
+                            duration-300
+                            ease-out
+                          "
+                        />
+                      </div>
+                    )}
                   <h3 className="mt-3 !font-['Montserrat'] text-[17px] font-semibold leading-tight tracking-[-0.02em] text-[#172033]">
                     {plan.title}
                   </h3>
@@ -5056,7 +5723,7 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
                   </div>
 
                   {plan.key !== "free" && (
-                    <p className="mt-2 min-h-[34px] !font-['Montserrat'] text-[10px] leading-relaxed text-[#7D8798]">
+                    <p className="mt-2 !font-['Montserrat'] text-[10px] leading-relaxed text-[#7D8798]">
                       {isAnnual ? (
                         <>
                           {plan.yearlyTotal}
@@ -5075,7 +5742,7 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
                     </p>
                   )}
 
-                  <p className="mt-3 min-h-[55px] !font-['Montserrat'] text-[11px] leading-[1.55] text-[#687386]">
+                  <p className="mt-3 !font-['Montserrat'] text-[11px] leading-[1.55] text-[#687386]">
                     {plan.planLine}
                   </p>
 
@@ -5604,17 +6271,20 @@ function LicenseTab({ me, purchases, invoices, paymentMethods, load, backendBase
   );
 }
 
-function AccountSkeleton() {
+function AccountSkeleton({ sidebarCollapsed = false }) {
+  const sidebarWidthClass = sidebarCollapsed ? "w-[76px]" : "w-[236px]";
+  const contentOffsetClass = sidebarCollapsed ? "lg:left-[76px]" : "lg:left-[236px]";
+  const mainOffsetClass = sidebarCollapsed ? "lg:ml-[76px]" : "lg:ml-[236px]";
+
   return (
     <div className="min-h-screen bg-[#F7F8FA]">
-      <aside className="fixed inset-y-0 left-0 hidden w-[236px] border-r border-[#E6EAF0] bg-white lg:block">
+      <aside className={`fixed inset-y-0 left-0 hidden border-r border-[#E6EAF0] bg-white transition-[width] duration-300 ease-out lg:block ${sidebarWidthClass}`}>
         <div className="h-[64px] border-b border-[#E7EAF0]" />
       </aside>
+      <div className={`fixed left-0 right-0 top-0 h-[64px] border-b border-[#E7EAF0] bg-white transition-[left] duration-300 ease-out ${contentOffsetClass}`} />
+      <div className={`fixed left-0 right-0 top-[64px] h-[50px] border-b border-[#EDF0F4] bg-white transition-[left] duration-300 ease-out ${contentOffsetClass}`} />
 
-      <div className="fixed left-0 right-0 top-0 h-[64px] border-b border-[#E7EAF0] bg-white lg:left-[236px]" />
-      <div className="fixed left-0 right-0 top-[64px] h-[50px] border-b border-[#EDF0F4] bg-white lg:left-[236px]" />
-
-      <main className="min-h-screen px-4 pb-10 pt-[138px] lg:ml-[236px] lg:px-8 lg:pt-[146px]">
+      <main className={`min-h-screen px-4 pb-10 pt-[138px] transition-[margin-left] duration-300 ease-out lg:px-8 lg:pt-[146px] ${mainOffsetClass}`}>
         <div className="mx-auto max-w-[1240px] animate-pulse">
           <div className="h-8 w-[280px] rounded-full bg-[#E6EAF0]" />
           <div className="mt-2 h-5 w-[460px] max-w-full rounded-full bg-[#E9EDF2]" />
@@ -5635,6 +6305,16 @@ export default function Account() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [invoices, setInvoices] = useState([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    return localStorage.getItem("accountSidebarCollapsed") === "1";
+  });
+
+  useEffect(() => {
+    localStorage.setItem(
+      "accountSidebarCollapsed",
+      sidebarCollapsed ? "1" : "0"
+    );
+  }, [sidebarCollapsed]);
   
 
   const backendBaseUrl = useMemo(() => {
@@ -5732,7 +6412,7 @@ export default function Account() {
           canonicalPath="/account"
           robots="noindex, nofollow"
         />
-        <AccountSkeleton />
+        <AccountSkeleton sidebarCollapsed={sidebarCollapsed} />
       </>
     );
   }
@@ -5781,6 +6461,7 @@ export default function Account() {
             onOpenMobileMenu={() => setMobileMenuOpen(true)}
             onOpenHelp={() => setShowHelp(true)}
             onOpenProfile={() => changeTab("profile")}
+            sidebarCollapsed={sidebarCollapsed}
           />
 
           <Sidebar
@@ -5790,6 +6471,10 @@ export default function Account() {
             me={me}
             planLabel={planLabel}
             backendBaseUrl={backendBaseUrl}
+            collapsed={sidebarCollapsed}
+            onToggleCollapsed={() =>
+              setSidebarCollapsed((value) => !value)
+            }
           />
 
           <MobileMenuDrawer
@@ -5803,7 +6488,11 @@ export default function Account() {
             learningRoute={learningRoute}
           />
 
-          <main className="box-border min-h-screen px-2 pb-8 pt-[126px] sm:px-4 lg:ml-[236px] lg:px-8 lg:pb-12 lg:pt-[138px] xl:px-10">
+          <main
+            className={`box-border min-h-screen px-2 pb-8 pt-[126px] transition-[margin-left] duration-300 ease-out sm:px-4 lg:px-8 lg:pb-12 lg:pt-[138px] xl:px-10 ${
+              sidebarCollapsed ? "lg:ml-[76px]" : "lg:ml-[236px]"
+            }`}
+          >
             <div className="mx-auto max-w-[1240px]">
               {activeTab === "career" && (
                 <CareerTab
@@ -5835,7 +6524,23 @@ export default function Account() {
                 />
               )}
 
-              {activeTab === "profile" && <ProfileTab me={me} />}
+              {activeTab === "profile" && (
+                <ProfileTab
+                  me={me}
+                  onProfileUpdated={(
+                    updated
+                  ) => {
+
+                    setMe(
+                      (current) => ({
+                        ...current,
+                        ...updated,
+                      })
+                    );
+
+                  }}
+                />
+              )}
 
               {activeTab === "license" && (
                 <LicenseTab

@@ -220,8 +220,8 @@ const Header = ({
                   h-auto
                   !z-[999]
                   object-contain
-                  md:w-[210px]
-                  lg:w-[230px]
+                  md:w-[190px]
+                  lg:w-[200px]
                   max-md:w-[128px]
                 "
               />

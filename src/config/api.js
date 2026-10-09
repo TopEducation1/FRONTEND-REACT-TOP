@@ -51,6 +51,7 @@ export const endpoints = {
   helpDeskAttachmentUploads: `${BASE_URL}/api/account/help-desk/attachment-uploads/`,
   helpDeskDirectRequests: `${BASE_URL}/api/account/help-desk/direct-requests/`,
   helpDeskRequests: `${BASE_URL}/api/account/help-desk/requests/`,
+  accountProfileUpdate: `${BASE_URL}/api/account/profile/update/`,
 };
 
 export default endpoints;

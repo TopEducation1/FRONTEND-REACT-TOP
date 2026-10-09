@@ -184,7 +184,7 @@ const StepProgress = ({ current }) => (
 
     <div className="mt-2 h-1 overflow-hidden rounded-full bg-black/10">
       <div
-        className="h-full rounded-full bg-[#2563EB] transition-all duration-300"
+        className="h-full rounded-full bg-[linear-gradient(90deg,#172A49_0%,#284A7D_52%,#3A65A3_100%)] transition-all duration-300"
         style={{ width: `${(current / 3) * 100}%` }}
       />
     </div>
@@ -202,7 +202,7 @@ const FormInput = ({
   readOnly = false,
 }) => (
   <label className="block !font-['Montserrat'] text-[18px] font-semibold text-[#111111]">
-    {label} {required && <span className="text-[#2563EB]">*</span>}
+    {label} {required && <span className="text-[#315D9C]">*</span>}
 
     <div className="relative mt-1">
       <input
@@ -211,7 +211,7 @@ const FormInput = ({
         onChange={onChange}
         placeholder={placeholder}
         readOnly={readOnly}
-        className="w-full rounded-[25px] border border-black/10 bg-white px-7 py-3 pr-20 text-[18px] font-normal text-[#111111] outline-none transition-all duration-300 placeholder:text-neutral-300 focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/15 read-only:bg-neutral-50"
+        className="w-full rounded-[25px] border border-black/10 bg-white px-7 py-3 pr-20 text-[18px] font-normal text-[#111111] outline-none transition-all duration-300 placeholder:text-neutral-300 focus:border-[#41679F] focus:ring-4 focus:ring-[#41679F]/15 read-only:bg-neutral-50"
       />
 
       {rightAction}
@@ -228,12 +228,12 @@ const FormSelect = ({
   children,
 }) => (
   <label className="block !font-['Montserrat'] text-[18px] font-semibold text-[#111111]">
-    {label} {required && <span className="text-[#2563EB]">*</span>}
+    {label} {required && <span className="text-[#315D9C]">*</span>}
 
     <select
       value={value || ""}
       onChange={onChange}
-      className="mt-1 w-full rounded-[25px] border border-black/10 bg-white px-7 py-3 text-[18px] font-normal text-[#111111] outline-none transition-all duration-300 focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/15"
+      className="mt-1 w-full rounded-[25px] border border-black/10 bg-white px-7 py-3 text-[18px] font-normal text-[#111111] outline-none transition-all duration-300 focus:border-[#41679F] focus:ring-4 focus:ring-[#41679F]/15"
     >
       <option value="">{placeholder}</option>
       {children}
@@ -506,7 +506,7 @@ const CourseCard = ({ course }) => (
           Gratis
         </span>
 
-        <span className="rounded-full bg-white px-3 py-1 !font-['Montserrat'] text-[11px] font-bold text-[#2563EB] shadow-sm">
+        <span className="rounded-full bg-white px-3 py-1 !font-['Montserrat'] text-[11px] font-bold text-[#315D9C] shadow-sm">
           {course.level}
         </span>
       </div>
@@ -557,7 +557,7 @@ const CourseCard = ({ course }) => (
       </h4>
 
       {course.mainSkill && (
-        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-[#E8EEFF] px-3 py-1 !font-['Montserrat'] text-[12px] font-bold text-[#2563EB]">
+        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-[#E8EEFF] px-3 py-1 !font-['Montserrat'] text-[12px] font-bold text-[#315D9C]">
           {course.mainSkillIcon && (
             <img
               src={course.mainSkillIcon}
@@ -2775,16 +2775,12 @@ function StartNowContent() {
             100% { transform: scale(1.8); opacity: 0; }
           }
 
-          .route-dot-grid {
-            background-image: radial-gradient(#2563EB 1px, transparent 1px);
-            background-size: 22px 22px;
-          }
         `}
       </style>
 
       {showSuccessToast && <SuccessToast />}
 
-      <main className="min-h-screen bg-[#F6F4EF] text-[#080808]">
+      <main className="min-h-screen bg-[#F9FAFB] text-[#080808]">
         <form
           id="clientify-startnow-form"
           name="clientify-startnow-form"
@@ -2822,10 +2818,6 @@ function StartNowContent() {
         </form>
         {step === "welcome" && !showTopoIntro && (
           <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-20 text-center">
-            <div className="route-dot-grid absolute inset-0 opacity-[0.14]" />
-
-            <div className="pointer-events-none absolute left-1/2 top-[18%] h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-[#2563EB]/10 blur-[120px]" />
-
             <div className="relative z-10 mx-auto max-w-[850px]">
               <div className="flex justify-center">
                 <StarLogo />
@@ -3071,7 +3063,11 @@ function StartNowContent() {
 
                   setStep("topics");
                 }}
-                className="flex flex-1 items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40"
+                className={`flex flex-1 items-center justify-center gap-3 rounded-[18px] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white transition ${
+                  canContinueInfo
+                    ? "bg-[linear-gradient(105deg,#172A49_0%,#284A7D_52%,#3A65A3_100%)] shadow-[0_18px_42px_rgba(29,53,87,0.22)] hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(29,53,87,0.26)]"
+                    : "cursor-not-allowed bg-[linear-gradient(105deg,#B9C8DB_0%,#A9B9CE_100%)] shadow-none"
+                }`}
               >
                 Continuar <ArrowIcon />
               </button>
@@ -3091,28 +3087,7 @@ function StartNowContent() {
               Selecciona hasta 3 dominios que te interesen.
             </p>
 
-            <div className="mt-3 flex items-center gap-3 !font-['Montserrat'] text-sm text-neutral-600">
-              {[1, 2, 3].map((num) => (
-                <span
-                  key={num}
-                  className={`grid h-9 w-9 place-items-center rounded-xl font-semibold ${
-                    form.topic_ids.length >= num
-                      ? "bg-[#2563EB] text-white"
-                      : "bg-black/5 text-neutral-400"
-                  }`}
-                >
-                  {num}
-                </span>
-              ))}
-
-              <span>
-                {form.topic_ids.length === 0
-                  ? "Selecciona al menos 1 dominio"
-                  : `${form.topic_ids.length} dominios seleccionados`}
-              </span>
-            </div>
-
-            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 ">
+            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
               {topicOptions.map((topicOption) => {
                 const {
                   id,
@@ -3131,18 +3106,19 @@ function StartNowContent() {
                     aria-pressed={active}
                     className={`group relative flex min-h-[126px] flex-col items-center justify-center overflow-hidden rounded-[18px] border bg-white px-3 py-4 text-center transition-all duration-300 hover:-translate-y-1 ${
                       active
-                        ? "border-[#2563EB] shadow-[0_20px_45px_rgba(25,65,207,0.16)] ring-2 ring-[#2563EB]/10"
-                        : "border-black/10 shadow-sm hover:border-black/20 hover:shadow-[0_18px_40px_rgba(0,0,0,0.08)]"
+                        ? "border-[#41679F] shadow-[0_18px_42px_rgba(49,93,156,0.16)] ring-2 ring-[#41679F]/10"
+                        : "border-black/10 shadow-sm hover:border-[#BFC9D8] hover:shadow-[0_18px_40px_rgba(0,0,0,0.07)]"
                     }`}
                   >
-                   <span
-                    className={`relative mx-auto grid h-18 w-18 shrink-0 place-items-center rounded-3xl transition-all duration-300 group-hover:scale-105 bg-[${backgroundColor}]/30`}
-                    style={{
-                      boxShadow: active
-                        ? `0 10px 24px ${backgroundColor}45`
-                        : "none",
-                    }}
-                  >
+                    <span
+                      className="relative mx-auto grid h-18 w-18 shrink-0 place-items-center rounded-3xl transition-all duration-300 group-hover:scale-105"
+                      style={{
+                        backgroundColor: `${backgroundColor}22`,
+                        boxShadow: active
+                          ? `0 10px 24px ${backgroundColor}45`
+                          : "none",
+                      }}
+                    >
                       <img
                         src={image}
                         alt=""
@@ -3160,13 +3136,34 @@ function StartNowContent() {
                     </span>
 
                     {active && (
-                      <span className="absolute right-2.5 top-2.5 grid h-5 w-5 place-items-center rounded-full bg-[#2563EB] text-[11px] font-bold text-white shadow-sm">
+                      <span className="absolute right-2.5 top-2.5 grid h-5 w-5 place-items-center rounded-full bg-[linear-gradient(135deg,#172A49,#3A65A3)] text-[11px] font-bold text-white shadow-sm">
                         ✓
                       </span>
                     )}
                   </button>
                 );
               })}
+            </div>
+
+            <div className="mt-5 flex items-center gap-3 !font-['Montserrat'] text-sm text-neutral-600">
+              {[1, 2, 3].map((num) => (
+                <span
+                  key={num}
+                  className={`grid h-9 w-9 place-items-center rounded-xl font-semibold transition-all duration-300 ${
+                    form.topic_ids.length >= num
+                      ? "bg-[linear-gradient(135deg,#172A49,#3A65A3)] text-white shadow-[0_6px_16px_rgba(49,93,156,0.18)]"
+                      : "bg-black/5 text-neutral-400"
+                  }`}
+                >
+                  {num}
+                </span>
+              ))}
+
+              <span>
+                {form.topic_ids.length === 0
+                  ? "Selecciona al menos 1 dominio"
+                  : `${form.topic_ids.length} dominios seleccionados`}
+              </span>
             </div>
 
             <div className="mt-10 flex items-center gap-6">
@@ -3188,7 +3185,11 @@ function StartNowContent() {
 
                   setStep("goal");
                 }}
-                className="flex flex-1 items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40"
+                className={`flex flex-1 items-center justify-center gap-3 rounded-[18px] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white transition ${
+                  form.topic_ids.length > 0
+                    ? "bg-[linear-gradient(105deg,#172A49_0%,#284A7D_52%,#3A65A3_100%)] shadow-[0_18px_42px_rgba(29,53,87,0.22)] hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(29,53,87,0.26)]"
+                    : "cursor-not-allowed bg-[linear-gradient(105deg,#B9C8DB_0%,#A9B9CE_100%)] shadow-none"
+                }`}
               >
                 Continuar <ArrowIcon />
               </button>
@@ -3219,7 +3220,7 @@ function StartNowContent() {
                     onClick={() => setForm({ ...form, goal })}
                     className={`flex min-h-[60px] md:min-h-[80px] items-center gap-3 rounded-[16px] border bg-white p-3 text-left transition-all hover:-translate-y-1 ${
                       active
-                        ? "border-[#2563EB] shadow-[0_20px_45px_rgba(25,65,207,0.16)]"
+                        ? "border-[#41679F] shadow-[0_20px_45px_rgba(49,93,156,0.16)]"
                         : "border-black/10 shadow-sm"
                     }`}
                   >
@@ -3261,7 +3262,11 @@ function StartNowContent() {
 
                   createRoute();
                 }}
-                className="flex flex-1 items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40"
+                className={`flex flex-1 items-center justify-center gap-3 rounded-[18px] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white transition ${
+                  form.goal && !loading
+                    ? "bg-[linear-gradient(105deg,#172A49_0%,#284A7D_52%,#3A65A3_100%)] shadow-[0_18px_42px_rgba(29,53,87,0.22)] hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(29,53,87,0.26)]"
+                    : "cursor-not-allowed bg-[linear-gradient(105deg,#B9C8DB_0%,#A9B9CE_100%)] shadow-none"
+                }`}
               >
                 {loading ? "Generando..." : "Generar Mi Ruta"} <ArrowIcon />
               </button>
@@ -3271,8 +3276,6 @@ function StartNowContent() {
 
         {step === "building" && (
           <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-20 text-center">
-            <div className="route-dot-grid absolute inset-0 opacity-[0.14]" />
-
             <div className="relative z-10 mx-auto w-full max-w-[620px]">
               <div className="flex justify-center">
                 <StarLogo size="sm" />
@@ -3293,7 +3296,7 @@ function StartNowContent() {
 
               <div className="mt-10 h-2 overflow-hidden rounded-full bg-black/10">
                 <div
-                  className="h-full rounded-full bg-[linear-gradient(90deg,#2563EB,#5CC781)] transition-[width] duration-500 ease-out"
+                  className="h-full rounded-full bg-[linear-gradient(90deg,#2F6FED_0%,#45A8E8_52%,#67E8F9_100%)] shadow-[0_0_18px_rgba(103,232,249,0.28)] transition-[width] duration-500 ease-out"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -3319,10 +3322,19 @@ function StartNowContent() {
               </p>
             </div>
 
-            <section className="mt-8 rounded-[24px] bg-[#1941cf] px-8 py-9 text-white shadow-[0_22px_55px_rgba(47,91,219,0.22)] md:px-12">
+            <section className="mt-8 rounded-[24px] bg-[linear-gradient(110deg,#4A70AD_0%,#284A7D_52%,#172A49_100%)] px-8 py-9 text-white shadow-[0_22px_55px_rgba(29,53,87,0.20)] md:px-12">
               <div className="grid grid-cols-2 gap-8 text-center md:grid-cols-4">
                 {[
-                  [String(allRecommendedCourses.length || 0), "Cursos recomendados"],
+                  [
+                    String(
+                      [
+                        recommendedByLevel.level_1?.[0],
+                        recommendedByLevel.level_2?.[0],
+                        recommendedByLevel.level_3?.[0],
+                      ].filter(Boolean).length
+                    ),
+                    "Cursos recomendados",
+                  ],
                   ["3", "Certificaciones potenciales"],
                   ["~6", "Meses estimados"],
                   [String(form.topic_ids.length || 0), "Habilidades principales"],
@@ -3343,7 +3355,7 @@ function StartNowContent() {
                   Proveedores incluidos:
                 </span>
                 <span className="ml-4 inline-flex items-center gap-3 align-middle">
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-white text-[13px] font-black text-[#2563EB]">
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-white text-[13px] font-black text-[#315D9C]">
                     <img
                       className="h-6 w-6"
                       src="/assets/platforms/icons/icon-coursera.png"
@@ -3379,7 +3391,7 @@ function StartNowContent() {
                 </span>
               </div>
 
-              <div className="space-y-12">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 {[
                   [
                     "Nivel 1",
@@ -3400,45 +3412,51 @@ function StartNowContent() {
                     recommendedByLevel.level_3,
                   ],
                 ].map(([level, subtitle, badge, courses], index) => (
-                  <div key={level} className="grid grid-cols-[48px_1fr] gap-4">
-                    <div className="grid h-12 w-12 place-items-center rounded-full bg-[#E8EEFF] font-black text-[#2563EB]">
-                      ✓
+                  <div
+                    key={level}
+                    className="min-w-0"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#223A61,#4E72AA)] font-black text-white shadow-[0_8px_18px_rgba(49,93,156,0.20)]">
+                        ✓
+                      </div>
+
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h4 className="!font-['Montserrat'] text-[1.35rem] font-black text-[#111111]">
+                            {level}
+                          </h4>
+
+                          <span
+                            className={`rounded-full px-3 py-1 !font-['Montserrat'] text-[10px] font-black ${
+                              index === 0
+                                ? "bg-[#5CC781]/12 text-[#5CC781]"
+                                : "bg-[#41679F]/10 text-[#315D9C]"
+                            }`}
+                          >
+                            {badge}
+                          </span>
+                        </div>
+
+                        <p className="!font-['Montserrat'] text-sm text-neutral-500">
+                          {subtitle}
+                        </p>
+                      </div>
                     </div>
 
-                    <div>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <h4 className="!font-['Montserrat'] text-2xl font-black text-[#111111]">
-                          {level}
-                        </h4>
-                        <span
-                          className={`rounded-full px-3 py-1 !font-['Montserrat'] text-xs font-black ${
-                            index === 0
-                              ? "bg-[#5CC781]/12 text-[#5CC781]"
-                              : "bg-[#2563EB]/10 text-[#2563EB]"
-                          }`}
-                        >
-                          {badge}
-                        </span>
-                      </div>
-
-                      <p className="!font-['Montserrat'] text-neutral-500">
-                        {subtitle}
-                      </p>
-
-                      <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-3">
-                        {courses.length > 0 ? (
-                          courses.map((course) => (
-                            <CourseCard
-                              key={`${level}-${course.id || course.title}`}
-                              course={course}
-                            />
-                          ))
-                        ) : (
-                          <p className="rounded-[16px] bg-neutral-50 p-5 !font-['Montserrat'] text-sm text-neutral-400">
-                            No encontramos recomendaciones para este nivel.
-                          </p>
-                        )}
-                      </div>
+                    <div className="mt-5">
+                      {courses.length > 0 ? (
+                        courses.slice(0, 1).map((course) => (
+                          <CourseCard
+                            key={`${level}-${course.id || course.title}`}
+                            course={course}
+                          />
+                        ))
+                      ) : (
+                        <p className="rounded-[16px] bg-neutral-50 p-5 !font-['Montserrat'] text-sm text-neutral-400">
+                          No encontramos recomendaciones para este nivel.
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -3482,7 +3500,7 @@ function StartNowContent() {
                     )
                   }
                   className={`relative h-10 w-[72px] rounded-full p-1 transition ${
-                    isAnnual ? "bg-[#1941cf]" : "bg-neutral-300"
+                    isAnnual ? "bg-[linear-gradient(105deg,#172A49,#3A65A3)]" : "bg-neutral-300"
                   }`}
                 >
                   <span
@@ -3539,13 +3557,13 @@ function StartNowContent() {
                       disabled={loading}
                       className={`relative flex h-full min-h-[720px] flex-col rounded-[26px] px-6 py-8 text-left transition duration-300 hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-60 ${
                         isPopular
-                          ? "bg-[#2438C8] text-white shadow-[0_26px_70px_rgba(36,56,200,0.30)]"
+                          ? "bg-[linear-gradient(160deg,#172A49_0%,#284A7D_48%,#4A70AD_100%)] text-white shadow-[0_26px_70px_rgba(29,53,87,0.26)]"
                           : "border border-black/10 bg-white text-[#111111] shadow-[0_16px_45px_rgba(0,0,0,0.06)]"
                       } ${
                         isSelected
                           ? isPopular
-                            ? "ring-4 ring-[#2438C8]/20"
-                            : "ring-4 ring-[#2563EB]/15"
+                            ? "ring-4 ring-[#315D9C]/20"
+                            : "ring-4 ring-[#41679F]/15"
                           : ""
                       }`}
                     >
@@ -3659,10 +3677,10 @@ function StartNowContent() {
                       <div
                         className={`mt-auto rounded-[18px] px-3 py-3 text-center !font-['Montserrat'] font-black ${
                           isPopular
-                            ? "bg-white text-[#2438C8]"
+                            ? "bg-white text-[#315D9C]"
                             : isFreePlan
-                            ? "border border-black/10 bg-[#F6F4EF] text-[#111111]"
-                            : "bg-[#0D0709] text-white"
+                            ? "border border-black/10 bg-[#F9FAFB] text-[#111111]"
+                            : "bg-[linear-gradient(105deg,#172A49_0%,#284A7D_52%,#3A65A3_100%)] text-white shadow-[0_10px_24px_rgba(29,53,87,0.18)]"
                         }`}
                       >
                         {planConfig.buttonText}
@@ -3706,7 +3724,7 @@ function StartNowContent() {
                       <th className="px-5 py-4">Característica</th>
                       <th className="px-5 py-4 text-center">Free</th>
                       <th className="px-5 py-4 text-center">Básico</th>
-                      <th className="bg-[#F4F6FB] px-5 py-4 text-center text-[#2563EB]">
+                      <th className="bg-[#F4F6FB] px-5 py-4 text-center text-[#315D9C]">
                         X
                       </th>
                       <th className="px-5 py-4 text-center">Plus</th>
@@ -3739,7 +3757,7 @@ function StartNowContent() {
                             key={`${feature}-${index}`}
                             className={`px-5 py-4 text-center ${
                               index === 2
-                                ? "bg-[#F4F6FB] font-bold text-[#2563EB]"
+                                ? "bg-[#F4F6FB] font-bold text-[#315D9C]"
                                 : value === "✓"
                                 ? "text-[#5CC781]"
                                 : value === "×"
@@ -3826,7 +3844,7 @@ function StartNowContent() {
                     onClick={() =>
                       setShowPass((prev) => !prev)
                     }
-                    className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#2563EB]"
+                    className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#315D9C]"
                   >
                     {showPass ? "Ocultar" : "Ver"}
                   </button>
@@ -3850,7 +3868,7 @@ function StartNowContent() {
                     onClick={() =>
                       setShowPass2((prev) => !prev)
                     }
-                    className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#2563EB]"
+                    className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#315D9C]"
                   >
                     {showPass2 ? "Ocultar" : "Ver"}
                   </button>
@@ -3879,7 +3897,11 @@ function StartNowContent() {
                 })
               }
               disabled={!canSubmitPassword}
-              className="mt-7 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#2563EB] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white shadow-[0_22px_50px_rgba(25,65,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:bg-[#879BE8] disabled:opacity-70"
+              className={`mt-7 flex w-full items-center justify-center gap-3 rounded-[18px] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-semibold text-white transition ${
+                canSubmitPassword
+                  ? "bg-[linear-gradient(105deg,#172A49_0%,#284A7D_52%,#3A65A3_100%)] shadow-[0_18px_42px_rgba(29,53,87,0.22)] hover:-translate-y-1"
+                  : "cursor-not-allowed bg-[linear-gradient(105deg,#B9C8DB_0%,#A9B9CE_100%)] shadow-none"
+              }`}
             >
               {loading
                 ? "Creando cuenta..."
@@ -3899,11 +3921,11 @@ function StartNowContent() {
 
         {step === "proPayment" && (
           <section className="mx-auto flex min-h-screen max-w-[820px] flex-col items-center px-5 py-16 md:py-24">
-            <div className="grid h-16 w-16 place-items-center rounded-[18px] bg-[#2563EB]/10 text-3xl text-[#2563EB]">
+            <div className="grid h-16 w-16 place-items-center rounded-[18px] bg-[#315D9C]/10 text-3xl text-[#315D9C]">
               ▬
             </div>
 
-            <span className="mt-6 !font-['Montserrat'] font-black uppercase tracking-[0.12em] text-[#1941cf]">
+            <span className="mt-6 !font-['Montserrat'] font-black uppercase tracking-[0.12em] text-[#315D9C]">
               Empieza tu prueba gratis
             </span>
 
@@ -3915,7 +3937,7 @@ function StartNowContent() {
               {activePlanDescription}
             </p>
 
-            <div className="mt-10 w-full rounded-[22px] bg-[#1941cf] p-6 text-white shadow-[0_22px_60px_rgba(37,58,207,0.22)]">
+            <div className="mt-10 w-full rounded-[22px] bg-[linear-gradient(110deg,#4A70AD_0%,#284A7D_52%,#172A49_100%)] p-6 text-white shadow-[0_22px_60px_rgba(37,58,207,0.22)]">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="!font-['Montserrat'] text-[15px] font-semibold text-white/90">
@@ -3961,7 +3983,7 @@ function StartNowContent() {
                 <label className="block !font-['Montserrat'] text-[16px] font-semibold text-[#111111]">
                   Número de tarjeta
 
-                  <div className="mt-2 rounded-[18px] border border-black/10 bg-white px-5 py-4 transition-all focus-within:border-[#1941cf] focus-within:ring-4 focus-within:ring-[#1941cf]/15">
+                  <div className="mt-2 rounded-[18px] border border-black/10 bg-white px-5 py-4 transition-all focus-within:border-[#41679F] focus-within:ring-4 focus-within:ring-[#41679F]/15">
                     <CardElement
                       options={cardElementOptions}
                       onChange={(event) => {
@@ -4016,7 +4038,11 @@ function StartNowContent() {
                 type="button"
                 onClick={startProSubscription}
                 disabled={loading || !stripe}
-                className="mt-7 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#1941cf] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-black text-white shadow-[0_22px_50px_rgba(37,58,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-50"
+                className={`mt-7 flex w-full items-center justify-center gap-3 rounded-[18px] px-4 py-2 md:px-8 md:py-5 !font-['Montserrat'] text-lg font-black text-white transition ${
+                  !loading && stripe
+                    ? "bg-[linear-gradient(105deg,#172A49_0%,#284A7D_52%,#3A65A3_100%)] shadow-[0_18px_42px_rgba(29,53,87,0.22)] hover:-translate-y-1"
+                    : "cursor-not-allowed bg-[linear-gradient(105deg,#B9C8DB_0%,#A9B9CE_100%)] shadow-none"
+                }`}
               >
                 {loading ? "Activando prueba..." : "Comenzar prueba gratis"}{" "}
                 <ArrowIcon />
@@ -4047,7 +4073,7 @@ function StartNowContent() {
         {step === "subscriptionSuccess" && (
           <section className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 px-5 backdrop-blur-sm">
             <div className="w-full max-w-[740px] mt-15 rounded-[34px] bg-white p-4 text-center shadow-[0_25px_80px_rgba(0,0,0,0.25)] md:p-10">
-              <div className="mx-auto grid h-18 w-18 place-items-center rounded-full bg-[#1941cf] text-white">
+              <div className="mx-auto grid h-18 w-18 place-items-center rounded-full bg-[linear-gradient(135deg,#172A49,#3A65A3)] text-white">
                 <CheckIcon />
               </div>
 
@@ -4110,7 +4136,7 @@ function StartNowContent() {
               <button
                 type="button"
                 onClick={() => setStep("createPassword")}
-                className="mt-3 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#1941cf] px-5 py-3 !font-['Montserrat'] text-lg font-black text-white shadow-[0_20px_45px_rgba(37,58,207,0.25)]"
+                className="mt-3 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[linear-gradient(105deg,#172A49_0%,#284A7D_52%,#3A65A3_100%)] px-5 py-3 !font-['Montserrat'] text-lg font-black text-white shadow-[0_20px_45px_rgba(37,58,207,0.25)]"
               >
                 Crear contraseña <ArrowIcon />
               </button>
@@ -4146,7 +4172,7 @@ function StartNowContent() {
                   <button
                     type="button"
                     onClick={() => setShowPass((prev) => !prev)}
-                    className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#2563EB]"
+                    className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#315D9C]"
                   >
                     {showPass ? "Ocultar" : "Ver"}
                   </button>
@@ -4168,7 +4194,7 @@ function StartNowContent() {
                     <button
                       type="button"
                       onClick={() => setShowPass2((prev) => !prev)}
-                      className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#2563EB]"
+                      className="absolute right-5 top-1/2 -translate-y-1/2 !font-['Montserrat'] text-sm font-semibold text-neutral-400 hover:text-[#315D9C]"
                     >
                       {showPass2 ? "Ocultar" : "Ver"}
                     </button>
@@ -4205,7 +4231,13 @@ function StartNowContent() {
                   getPasswordScore(form.password) < 4 ||
                   form.password !== form.confirm_password
                 }
-                className="mt-3 flex w-full items-center justify-center gap-3 rounded-[18px] bg-[#1941cf] px-5 py-3 !font-['Montserrat'] text-lg font-black text-white shadow-[0_22px_50px_rgba(37,58,207,0.25)] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-50"
+                className={`mt-3 flex w-full items-center justify-center gap-3 rounded-[18px] px-5 py-3 !font-['Montserrat'] text-lg font-black text-white transition ${
+                  !loading &&
+                  getPasswordScore(form.password) >= 4 &&
+                  form.password === form.confirm_password
+                    ? "bg-[linear-gradient(105deg,#172A49_0%,#284A7D_52%,#3A65A3_100%)] shadow-[0_18px_42px_rgba(29,53,87,0.22)] hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(29,53,87,0.26)]"
+                    : "cursor-not-allowed bg-[linear-gradient(105deg,#B9C8DB_0%,#A9B9CE_100%)] shadow-none"
+                }`}
               >
                 {loading ? "Creando cuenta..." : "Guardar y entrar"}{" "}
                 <ArrowIcon />
