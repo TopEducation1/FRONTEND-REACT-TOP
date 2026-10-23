@@ -3378,97 +3378,1091 @@ function DashboardWelcomeModal({ open, onClose, defaultTab }) {
   );
 }
 
-function ChangePlanModal({ open, type, currentPlan, targetPlan, onClose, onConfirm, loading }) {
-  if (!open || !targetPlan) return null;
+function ChangePlanModal({
+  open,
+  type,
+  currentPlan,
+  targetPlan,
+  onClose,
+  onConfirm,
+  loading,
+}) {
+  if (!open || !targetPlan) {
+    return null;
+  }
 
-  const isUpgrade = type === "upgrade";
-  const difference = Math.max(0, (targetPlan.priceNumber || 0) - (currentPlan.priceNumber || 0));
-  const prorated = difference ? Math.round(difference * 0.775 * 100) / 100 : 0;
+  const isUpgrade =
+    type === "upgrade";
+
+  const currentPrice =
+    Number(
+      currentPlan?.priceNumber ||
+      0
+    );
+
+  const targetPrice =
+    Number(
+      targetPlan?.priceNumber ||
+      0
+    );
+
+  const difference =
+    Math.max(
+      0,
+      targetPrice -
+        currentPrice
+    );
+
+  const prorated =
+    difference
+      ? Math.round(
+          difference *
+            0.775 *
+            100
+        ) / 100
+      : 0;
+
+  const upgradeBenefits = [
+    "Acceso a edX adicional",
+    "Todas las certificaciones",
+    "IA Premium",
+    "Rutas avanzadas",
+  ];
+
+  const downgradeKeep = [
+    "Perfil",
+    "Historial",
+    "Progreso",
+    "Certificados obtenidos",
+  ];
+
+  const downgradeLose = [
+    "Acceso a proveedores premium",
+    "Nuevas certificaciones",
+    "Funciones avanzadas",
+  ];
 
   return (
-    <div className="fixed inset-0 z-[95] flex items-center justify-center bg-black/55 px-4 backdrop-blur-sm">
-      <div className="w-full max-w-[560px] rounded-[28px] bg-white p-7 shadow-[0_35px_100px_rgba(0,0,0,0.28)]">
-        <button type="button" onClick={onClose} className="float-right grid h-9 w-9 place-items-center rounded-full bg-neutral-100 text-neutral-500 hover:bg-neutral-200">
-          <X size={18} />
-        </button>
+    <div
+      className="
+        fixed
+        inset-0
+        z-[95]
+        flex
+        items-center
+        justify-center
+        overflow-y-auto
+        bg-[#152033]/55
+        px-4
+        py-6
+        backdrop-blur-[6px]
+      "
+    >
+      <div
+        className="
+          relative
+          my-auto
+          w-full
+          max-w-[680px]
+          overflow-hidden
+          rounded-[30px]
+          border
+          border-white/70
+          bg-white
+          shadow-[0_40px_120px_rgba(15,28,50,0.30)]
+        "
+      >
+        {/* ================================================= */}
+        {/* HEADER */}
+        {/* ================================================= */}
 
-        <h2 className="!font-['Montserrat'] text-[1.65rem] font-semibold text-[#111111]">{isUpgrade ? "Actualizar membresía" : "Cambiar plan"}</h2>
-        <p className="!font-['Montserrat'] text-neutral-500">
-          {isUpgrade ? "Obtendrás acceso inmediato a los beneficios adicionales." : "Tu acceso actual permanecerá activo hasta el final del ciclo de facturación."}
-        </p>
+        <div
+          className="
+            relative
+            overflow-hidden
+            border-b
+            border-[#DCE3EE]
+            bg-[linear-gradient(115deg,#ffffff_0%,#ffffff_58%,#eef8fb_100%)]
+            px-6
+            py-6
+            sm:px-8
+            sm:py-7
+          "
+        >
+          {/* Decoración */}
+          <div
+            className="
+              pointer-events-none
+              absolute
+              -right-12
+              -top-20
+              h-48
+              w-48
+              rounded-full
+              bg-[#74C7E8]/10
+              blur-3xl
+            "
+          />
 
-        {isUpgrade ? (
-          <>
-            <div className="mt-2 rounded-[18px] bg-[#F6F4EF] p-5">
-              <h3 className="!font-['Montserrat'] text-lg font-semibold text-[#111111]">Nuevos beneficios desbloqueados</h3>
-              <ul className="space-y-1 !font-['Montserrat'] text-neutral-700">
-                {["Acceso a edX adicional", "Todas las certificaciones", "IA Premium", "Rutas avanzadas"].map((item) => (
-                  <li key={item} className="flex text-[13px] items-center gap-1">
-                    <CheckCircle className="text-[#5CC781]" size={20} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
+          <div
+            className="
+              relative
+              flex
+              items-start
+              gap-4
+              pr-12
+            "
+          >
+            {/* Icono */}
+            <div
+              className="
+                grid
+                h-[62px]
+                w-[62px]
+                shrink-0
+                place-items-center
+                rounded-[18px]
+                bg-gradient-to-br
+                from-[#172A4B]
+                to-[#416A9E]
+                text-white
+                shadow-[0_12px_30px_rgba(38,69,110,0.22)]
+              "
+            >
+              <span
+                className="
+                  !font-['Montserrat']
+                  text-[25px]
+                  font-medium
+                "
+              >
+                {isUpgrade
+                  ? "↑"
+                  : "↔"}
+              </span>
             </div>
 
-            <div className="mt-3 space-y-1 border-t border-black/10 pt-3 !font-['Montserrat']">
-              <div className="flex justify-between text-neutral-500">
-                <span>Precio actual</span>
-                <span className="font-bold text-[#111111] line-through">{currentPlan.changePrice}</span>
-              </div>
-              <div className="flex justify-between text-neutral-500">
-                <span>Precio nuevo</span>
-                <span className="font-black text-[#1941CF]">{targetPlan.changePrice}</span>
-              </div>
-              <div className="flex justify-between text-neutral-500">
-                <span>Diferencia</span>
-                <span className="font-bold text-[#111111]">+${difference} USD / mes</span>
-              </div>
-            </div>
+            <div
+              className="
+                min-w-0
+                flex-1
+              "
+            >
+              <p
+                className="
+                  !font-['Montserrat']
+                  text-[11px]
+                  font-bold
+                  uppercase
+                  tracking-[0.20em]
+                  text-[#416A9E]
+                "
+              >
+                {isUpgrade
+                  ? "Mejora tu membresía"
+                  : "Cambio de membresía"}
+              </p>
 
-            <div className="mt-5 rounded-[16px] bg-[#EEF2FF] p-4 !font-['Montserrat']">
-              <div className="flex justify-between font-black text-[#1941CF]">
-                <span>Prorrateo estimado</span>
-                <span>${prorated.toFixed(2)} USD hoy</span>
-              </div>
-              <p className="mt-1 text-[12px] text-neutral-500">Se cobrará la diferencia proporcional por los días restantes del ciclo actual.</p>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="mt-3 rounded-[18px] bg-[#F1FAF5] p-5">
-              <h3 className="flex items-center gap-3 !font-['Montserrat'] text-lg font-semibold text-[#111111]">
-                <CheckCircle className="text-[#5CC781]" size={24} />
-                Conservarás
-              </h3>
-              <ul className="mt-1 space-y-1 !font-['Montserrat'] text-neutral-700">
-                {["Perfil", "Historial", "Progreso", "Certificados obtenidos"].map((item) => (
-                  <li key={item} className="text-[#5CC781] text-[13px]">✓ <span className="text-neutral-700">{item}</span></li>
-                ))}
-              </ul>
-            </div>
+              <h2
+                className="
+                  mt-2
+                  !font-['Montserrat']
+                  text-[24px]
+                  font-semibold
+                  leading-tight
+                  text-[#172033]
+                  sm:text-[28px]
+                "
+              >
+                {isUpgrade
+                  ? "Actualizar membresía"
+                  : "Cambiar plan"}
+              </h2>
 
-            <div className="mt-3 rounded-[18px] bg-[#FFF1F1] p-5">
-              <h3 className="flex items-center gap-3 !font-['Montserrat'] text-lg font-semibold text-[#111111]">
-                <AlertCircle className="text-red-500" size={24} />
-                Perderás
-              </h3>
-              <ul className="mt-1 space-y-1 !font-['Montserrat'] text-neutral-700">
-                {["Acceso a proveedores premium", "Nuevas certificaciones", "Funciones avanzadas"].map((item) => (
-                  <li key={item} className="text-red-500 text-[13px]">× <span className="text-neutral-700">{item}</span></li>
-                ))}
-              </ul>
+              <p
+                className="
+                  mt-2
+                  max-w-[520px]
+                  !font-['Montserrat']
+                  text-[13px]
+                  leading-6
+                  text-[#7D8CA3]
+                  sm:text-[14px]
+                "
+              >
+                {isUpgrade
+                  ? "Obtendrás acceso inmediato a los beneficios adicionales incluidos en tu nuevo plan."
+                  : "Tu plan actual continuará activo durante el período correspondiente antes de aplicar el cambio."}
+              </p>
             </div>
-          </>
-        )}
+          </div>
 
-        <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
-          <button type="button" onClick={onClose} className={`rounded-[16px] px-6 py-4 !font-['Montserrat'] font-black ${isUpgrade ? "border border-black/10 text-[#111111]" : "bg-[#1941CF] text-white"}`}>
-            {isUpgrade ? "Cancelar" : "Mantener plan actual"}
+          {/* Cerrar */}
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={loading}
+            className="
+              absolute
+              right-5
+              top-5
+              grid
+              h-11
+              w-11
+              place-items-center
+              rounded-full
+              bg-[#F4F6F9]
+              text-[#6B778B]
+              transition
+              hover:bg-[#E8EDF4]
+              hover:text-[#172033]
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+              sm:right-7
+              sm:top-7
+            "
+            aria-label="Cerrar"
+          >
+            <X size={19} />
           </button>
-          <button type="button" onClick={onConfirm} disabled={loading} className={`rounded-[16px] px-6 py-4 !font-['Montserrat'] font-black disabled:opacity-50 ${isUpgrade ? "bg-[#1941CF] text-white" : "border border-black/10 text-[#111111]"}`}>
-            {loading ? "Procesando..." : isUpgrade ? "Confirmar Upgrade" : "Confirmar cambio"}
-          </button>
+        </div>
+
+
+        {/* ================================================= */}
+        {/* CONTENT */}
+        {/* ================================================= */}
+
+        <div
+          className="
+            px-6
+            py-6
+            sm:px-8
+            sm:py-7
+          "
+        >
+          {/* ================================================= */}
+          {/* RESUMEN DEL CAMBIO */}
+          {/* ================================================= */}
+
+          <div
+            className="
+              mb-5
+              rounded-[20px]
+              border
+              border-[#DCE3EE]
+              bg-[#F8FAFD]
+              p-5
+            "
+          >
+            <p
+              className="
+                !font-['Montserrat']
+                text-[10px]
+                font-bold
+                uppercase
+                tracking-[0.17em]
+                text-[#8998AE]
+              "
+            >
+              Resumen del cambio
+            </p>
+
+            <div
+              className="
+                mt-4
+                grid
+                grid-cols-[1fr_auto_1fr]
+                items-center
+                gap-3
+              "
+            >
+              {/* Plan actual */}
+              <div>
+                <span
+                  className="
+                    !font-['Montserrat']
+                    text-[11px]
+                    font-medium
+                    text-[#8998AE]
+                  "
+                >
+                  Plan actual
+                </span>
+
+                <p
+                  className="
+                    mt-1
+                    !font-['Montserrat']
+                    text-[15px]
+                    font-semibold
+                    text-[#172033]
+                  "
+                >
+                  {currentPlan?.name ||
+                    currentPlan?.title ||
+                    "Plan actual"}
+                </p>
+
+                <p
+                  className="
+                    mt-1
+                    !font-['Montserrat']
+                    text-[13px]
+                    font-bold
+                    text-[#65758C]
+                  "
+                >
+                  {currentPlan?.changePrice ||
+                    "—"}
+                </p>
+              </div>
+
+              {/* Flecha */}
+              <div
+                className="
+                  grid
+                  h-9
+                  w-9
+                  place-items-center
+                  rounded-full
+                  bg-white
+                  text-[#416A9E]
+                  shadow-sm
+                "
+              >
+                →
+              </div>
+
+              {/* Nuevo plan */}
+              <div
+                className="
+                  text-right
+                "
+              >
+                <span
+                  className="
+                    !font-['Montserrat']
+                    text-[11px]
+                    font-medium
+                    text-[#8998AE]
+                  "
+                >
+                  Nuevo plan
+                </span>
+
+                <p
+                  className="
+                    mt-1
+                    !font-['Montserrat']
+                    text-[15px]
+                    font-semibold
+                    text-[#172033]
+                  "
+                >
+                  {targetPlan?.name ||
+                    targetPlan?.title ||
+                    "Nuevo plan"}
+                </p>
+
+                <p
+                  className="
+                    mt-1
+                    !font-['Montserrat']
+                    text-[13px]
+                    font-black
+                    text-[#416A9E]
+                  "
+                >
+                  {targetPlan?.changePrice ||
+                    "—"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+
+          {isUpgrade ? (
+            <>
+              {/* ============================================= */}
+              {/* BENEFICIOS UPGRADE */}
+              {/* ============================================= */}
+
+              <div
+                className="
+                  rounded-[20px]
+                  border
+                  border-[#CFE7D9]
+                  bg-[#F4FBF7]
+                  p-5
+                "
+              >
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-3
+                  "
+                >
+                  <div
+                    className="
+                      grid
+                      h-10
+                      w-10
+                      shrink-0
+                      place-items-center
+                      rounded-[12px]
+                      bg-[#DDF3E6]
+                    "
+                  >
+                    <CheckCircle
+                      className="
+                        text-[#399F67]
+                      "
+                      size={21}
+                    />
+                  </div>
+
+                  <div>
+                    <h3
+                      className="
+                        !font-['Montserrat']
+                        text-[15px]
+                        font-semibold
+                        text-[#243044]
+                      "
+                    >
+                      Nuevos beneficios desbloqueados
+                    </h3>
+
+                    <p
+                      className="
+                        mt-0.5
+                        !font-['Montserrat']
+                        text-[12px]
+                        text-[#7D8CA3]
+                      "
+                    >
+                      Tendrás acceso desde que se confirme el cambio.
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className="
+                    mt-4
+                    grid
+                    gap-2
+                    sm:grid-cols-2
+                  "
+                >
+                  {upgradeBenefits.map(
+                    (item) => (
+                      <div
+                        key={item}
+                        className="
+                          flex
+                          items-center
+                          gap-2
+                          rounded-[12px]
+                          bg-white/80
+                          px-3
+                          py-2.5
+                        "
+                      >
+                        <CheckCircle
+                          className="
+                            shrink-0
+                            text-[#5CC781]
+                          "
+                          size={17}
+                        />
+
+                        <span
+                          className="
+                            !font-['Montserrat']
+                            text-[12px]
+                            font-medium
+                            text-[#46546A]
+                          "
+                        >
+                          {item}
+                        </span>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+
+
+              {/* ============================================= */}
+              {/* PRECIOS */}
+              {/* ============================================= */}
+
+              <div
+                className="
+                  mt-4
+                  overflow-hidden
+                  rounded-[20px]
+                  border
+                  border-[#DCE3EE]
+                  bg-white
+                "
+              >
+                <div
+                  className="
+                    flex
+                    items-center
+                    justify-between
+                    border-b
+                    border-[#E7EBF1]
+                    px-5
+                    py-3.5
+                    !font-['Montserrat']
+                    text-[13px]
+                  "
+                >
+                  <span
+                    className="
+                      text-[#7D8CA3]
+                    "
+                  >
+                    Precio actual
+                  </span>
+
+                  <span
+                    className="
+                      font-semibold
+                      text-[#758196]
+                      line-through
+                    "
+                  >
+                    {currentPlan?.changePrice ||
+                      "—"}
+                  </span>
+                </div>
+
+                <div
+                  className="
+                    flex
+                    items-center
+                    justify-between
+                    border-b
+                    border-[#E7EBF1]
+                    px-5
+                    py-3.5
+                    !font-['Montserrat']
+                    text-[13px]
+                  "
+                >
+                  <span
+                    className="
+                      text-[#7D8CA3]
+                    "
+                  >
+                    Nuevo precio
+                  </span>
+
+                  <span
+                    className="
+                      font-black
+                      text-[#416A9E]
+                    "
+                  >
+                    {targetPlan?.changePrice ||
+                      "—"}
+                  </span>
+                </div>
+
+                <div
+                  className="
+                    flex
+                    items-center
+                    justify-between
+                    px-5
+                    py-3.5
+                    !font-['Montserrat']
+                    text-[13px]
+                  "
+                >
+                  <span
+                    className="
+                      text-[#7D8CA3]
+                    "
+                  >
+                    Diferencia
+                  </span>
+
+                  <span
+                    className="
+                      font-bold
+                      text-[#243044]
+                    "
+                  >
+                    +${difference.toFixed(2)} USD / mes
+                  </span>
+                </div>
+              </div>
+
+
+              {/* ============================================= */}
+              {/* PRORRATEO */}
+              {/* ============================================= */}
+
+              <div
+                className="
+                  mt-4
+                  rounded-[20px]
+                  border
+                  border-[#CFDDF2]
+                  bg-[linear-gradient(110deg,#F8FAFF_0%,#EEF5FF_100%)]
+                  p-5
+                "
+              >
+                <div
+                  className="
+                    flex
+                    flex-col
+                    gap-2
+                    sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                  "
+                >
+                  <span
+                    className="
+                      !font-['Montserrat']
+                      text-[13px]
+                      font-semibold
+                      text-[#416A9E]
+                    "
+                  >
+                    Prorrateo estimado
+                  </span>
+
+                  <span
+                    className="
+                      !font-['Montserrat']
+                      text-[19px]
+                      font-black
+                      text-[#274A78]
+                    "
+                  >
+                    ${prorated.toFixed(2)} USD hoy
+                  </span>
+                </div>
+
+                <p
+                  className="
+                    mt-2
+                    !font-['Montserrat']
+                    text-[11px]
+                    leading-5
+                    text-[#7D8CA3]
+                  "
+                >
+                  Este valor es una estimación.
+                  Stripe calculará automáticamente
+                  la diferencia proporcional según
+                  los días restantes de tu ciclo actual.
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* ============================================= */}
+              {/* CONSERVA */}
+              {/* ============================================= */}
+
+              <div
+                className="
+                  rounded-[20px]
+                  border
+                  border-[#CFE7D9]
+                  bg-[#F4FBF7]
+                  p-5
+                "
+              >
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-3
+                  "
+                >
+                  <div
+                    className="
+                      grid
+                      h-10
+                      w-10
+                      shrink-0
+                      place-items-center
+                      rounded-[12px]
+                      bg-[#DDF3E6]
+                    "
+                  >
+                    <CheckCircle
+                      className="
+                        text-[#399F67]
+                      "
+                      size={21}
+                    />
+                  </div>
+
+                  <div>
+                    <h3
+                      className="
+                        !font-['Montserrat']
+                        text-[15px]
+                        font-semibold
+                        text-[#243044]
+                      "
+                    >
+                      Conservarás
+                    </h3>
+
+                    <p
+                      className="
+                        mt-0.5
+                        !font-['Montserrat']
+                        text-[12px]
+                        text-[#7D8CA3]
+                      "
+                    >
+                      Tu información y avances seguirán disponibles.
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className="
+                    mt-4
+                    grid
+                    gap-2
+                    sm:grid-cols-2
+                  "
+                >
+                  {downgradeKeep.map(
+                    (item) => (
+                      <div
+                        key={item}
+                        className="
+                          flex
+                          items-center
+                          gap-2
+                          rounded-[12px]
+                          bg-white/80
+                          px-3
+                          py-2.5
+                        "
+                      >
+                        <CheckCircle
+                          className="
+                            shrink-0
+                            text-[#5CC781]
+                          "
+                          size={17}
+                        />
+
+                        <span
+                          className="
+                            !font-['Montserrat']
+                            text-[12px]
+                            font-medium
+                            text-[#46546A]
+                          "
+                        >
+                          {item}
+                        </span>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+
+
+              {/* ============================================= */}
+              {/* PIERDE */}
+              {/* ============================================= */}
+
+              <div
+                className="
+                  mt-4
+                  rounded-[20px]
+                  border
+                  border-[#F0D7D7]
+                  bg-[#FFF8F8]
+                  p-5
+                "
+              >
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-3
+                  "
+                >
+                  <div
+                    className="
+                      grid
+                      h-10
+                      w-10
+                      shrink-0
+                      place-items-center
+                      rounded-[12px]
+                      bg-[#FCE7E7]
+                    "
+                  >
+                    <AlertCircle
+                      className="
+                        text-[#D75A5A]
+                      "
+                      size={21}
+                    />
+                  </div>
+
+                  <div>
+                    <h3
+                      className="
+                        !font-['Montserrat']
+                        text-[15px]
+                        font-semibold
+                        text-[#243044]
+                      "
+                    >
+                      Beneficios que dejarán de estar disponibles
+                    </h3>
+
+                    <p
+                      className="
+                        mt-0.5
+                        !font-['Montserrat']
+                        text-[12px]
+                        text-[#7D8CA3]
+                      "
+                    >
+                      El acceso cambiará según las condiciones de tu nuevo plan.
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className="
+                    mt-4
+                    space-y-2
+                  "
+                >
+                  {downgradeLose.map(
+                    (item) => (
+                      <div
+                        key={item}
+                        className="
+                          flex
+                          items-center
+                          gap-2
+                          rounded-[12px]
+                          bg-white/80
+                          px-3
+                          py-2.5
+                        "
+                      >
+                        <span
+                          className="
+                            grid
+                            h-5
+                            w-5
+                            shrink-0
+                            place-items-center
+                            rounded-full
+                            bg-[#FCE7E7]
+                            text-[13px]
+                            font-bold
+                            text-[#D75A5A]
+                          "
+                        >
+                          ×
+                        </span>
+
+                        <span
+                          className="
+                            !font-['Montserrat']
+                            text-[12px]
+                            font-medium
+                            text-[#46546A]
+                          "
+                        >
+                          {item}
+                        </span>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+
+
+              {/* Aviso */}
+              <div
+                className="
+                  mt-4
+                  rounded-[18px]
+                  border
+                  border-[#E2E7EF]
+                  bg-[#F8FAFD]
+                  px-4
+                  py-3.5
+                "
+              >
+                <p
+                  className="
+                    !font-['Montserrat']
+                    text-[11px]
+                    leading-5
+                    text-[#738198]
+                  "
+                >
+                  Tu acceso actual no se interrumpirá
+                  inmediatamente. El cambio se gestionará
+                  de acuerdo con el ciclo de facturación
+                  vigente.
+                </p>
+              </div>
+            </>
+          )}
+
+
+          {/* ================================================= */}
+          {/* ACTIONS */}
+          {/* ================================================= */}
+
+          <div
+            className="
+              mt-6
+              grid
+              grid-cols-1
+              gap-3
+              sm:grid-cols-[0.85fr_1.35fr]
+            "
+          >
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={loading}
+              className="
+                min-h-[52px]
+                rounded-[16px]
+                border
+                border-[#D7DFEA]
+                bg-white
+                px-5
+                py-3
+                !font-['Montserrat']
+                text-[13px]
+                font-semibold
+                text-[#46546A]
+                transition
+                hover:border-[#B8C4D4]
+                hover:bg-[#F8FAFD]
+                disabled:cursor-not-allowed
+                disabled:opacity-50
+              "
+            >
+              {isUpgrade
+                ? "Cancelar"
+                : "Mantener plan actual"}
+            </button>
+
+            <button
+              type="button"
+              onClick={onConfirm}
+              disabled={loading}
+              className="
+                relative
+                min-h-[52px]
+                overflow-hidden
+                rounded-[16px]
+                bg-gradient-to-r
+                from-[#172A4B]
+                via-[#294B77]
+                to-[#416A9E]
+                px-6
+                py-3
+                !font-['Montserrat']
+                text-[13px]
+                font-bold
+                text-white
+                shadow-[0_14px_30px_rgba(40,76,120,0.22)]
+                transition
+                duration-300
+                hover:-translate-y-[1px]
+                hover:shadow-[0_18px_36px_rgba(40,76,120,0.28)]
+                disabled:cursor-not-allowed
+                disabled:opacity-60
+                disabled:hover:translate-y-0
+              "
+            >
+              {loading ? (
+                <span
+                  className="
+                    flex
+                    items-center
+                    justify-center
+                    gap-2
+                  "
+                >
+                  <span
+                    className="
+                      h-4
+                      w-4
+                      animate-spin
+                      rounded-full
+                      border-2
+                      border-white/30
+                      border-t-white
+                    "
+                  />
+
+                  Procesando...
+                </span>
+              ) : isUpgrade ? (
+                "Confirmar actualización"
+              ) : (
+                "Confirmar cambio de plan"
+              )}
+            </button>
+          </div>
+
+
+          {/* Footer seguridad */}
+          <div
+            className="
+              mt-5
+              flex
+              items-start
+              justify-center
+              gap-2
+              text-center
+            "
+          >
+            <span
+              className="
+                mt-[1px]
+                text-[12px]
+              "
+            >
+              🔒
+            </span>
+
+            <p
+              className="
+                !font-['Montserrat']
+                text-[10px]
+                leading-4
+                text-[#97A4B6]
+              "
+            >
+              Los cambios de facturación y cobros
+              son procesados de forma segura por Stripe.
+            </p>
+          </div>
         </div>
       </div>
     </div>
