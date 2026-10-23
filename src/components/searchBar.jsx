@@ -7,7 +7,7 @@ import React, {
 
 import { useDebounce } from "use-debounce";
 import { useLocation } from "react-router-dom";
-import { X, Search } from "lucide-react";
+import { X, Search, Sparkles } from "lucide-react";
 
 import FilterBySearch from "../services/filterBySearch";
 import CertificationsList from "../components/layoutCertifications";
@@ -15,6 +15,41 @@ import CertificationsList from "../components/layoutCertifications";
 
 const MIN_SEARCH_LENGTH = 2;
 const SEARCH_DEBOUNCE_MS = 350;
+
+const LOADING_MESSAGE_INTERVAL_MS = 1800;
+
+const LOADING_MESSAGES = [
+  {
+    title:
+      "Buscando el mejor contenido para ti",
+    description:
+      "Estamos revisando certificaciones relacionadas con tu búsqueda y los filtros seleccionados.",
+  },
+  {
+    title:
+      "Priorizando las coincidencias más relevantes",
+    description:
+      "Comparamos temas, habilidades, plataformas y entidades para acercarte primero a las mejores opciones.",
+  },
+  {
+    title:
+      "Revisando las opciones más completas",
+    description:
+      "Estamos dando prioridad a resultados con información útil, vigente y alineada con lo que estás buscando.",
+  },
+  {
+    title:
+      "Afinando los resultados para tu búsqueda",
+    description:
+      "Ordenamos las coincidencias para mostrarte primero el contenido que puede aportarte mayor valor.",
+  },
+  {
+    title:
+      "Preparando tus mejores coincidencias",
+    description:
+      "Estamos terminando de organizar los resultados para que puedas explorarlos de forma más rápida y clara.",
+  },
+];
 
 
 const SearchBar = ({
@@ -31,6 +66,11 @@ const SearchBar = ({
 
   const [loading, setLoading] =
     useState(false);
+
+  const [
+    loadingMessageIndex,
+    setLoadingMessageIndex,
+  ] = useState(0);
 
   const [
     resultsVisible,
@@ -449,6 +489,12 @@ const SearchBar = ({
   const isFixed =
     hasMinimumCharacters;
 
+  const currentLoadingMessage =
+    LOADING_MESSAGES[
+      loadingMessageIndex
+    ] ||
+    LOADING_MESSAGES[0];
+
 
   // ============================================================
   // INPUT
@@ -572,6 +618,44 @@ const SearchBar = ({
   useEffect(() => {
     FilterBySearch.clearCache();
   }, [activeFiltersKey]);
+
+
+  // ============================================================
+  // PRELOAD DINÁMICO
+  // ============================================================
+
+  useEffect(() => {
+    if (!loading) {
+      setLoadingMessageIndex(0);
+      return undefined;
+    }
+
+    setLoadingMessageIndex(0);
+
+    const intervalId =
+      window.setInterval(
+        () => {
+          setLoadingMessageIndex(
+            (currentIndex) =>
+              (
+                currentIndex + 1
+              ) %
+              LOADING_MESSAGES.length
+          );
+        },
+        LOADING_MESSAGE_INTERVAL_MS
+      );
+
+    return () => {
+      window.clearInterval(
+        intervalId
+      );
+    };
+  }, [
+    loading,
+    debouncedText,
+    activeFiltersKey,
+  ]);
 
 
   // ============================================================
@@ -1054,73 +1138,313 @@ const SearchBar = ({
             {loading ? (
               <div
                 className="
-                  grid
-                  grid-cols-1
-                  gap-5
-                  sm:grid-cols-2
-                  xl:grid-cols-4
+                  space-y-6
                 "
               >
-                {Array.from({
-                  length: 8,
-                }).map(
-                  (_, i) => (
-                    <div
-                      key={i}
+                {/* ============================================= */}
+                {/* PRELOADER INFORMATIVO */}
+                {/* ============================================= */}
 
+                <div
+                  className="
+                    relative
+                    overflow-hidden
+                    rounded-[30px]
+                    border
+                    border-[#1941cf]/15
+                    bg-[linear-gradient(110deg,#ffffff_0%,#fbfcff_58%,#eef5ff_100%)]
+                    shadow-[0_20px_60px_rgba(25,65,207,0.07)]
+                  "
+                >
+                  {/* Decoración de fondo */}
+                  <div
+                    className="
+                      pointer-events-none
+                      absolute
+                      -left-10
+                      -top-16
+                      h-52
+                      w-52
+                      rounded-full
+                      bg-[#1941cf]/[0.035]
+                      blur-[1px]
+                    "
+                  />
+
+                  <div
+                    className="
+                      pointer-events-none
+                      absolute
+                      -right-14
+                      -top-20
+                      h-64
+                      w-64
+                      rounded-full
+                      bg-[#58a6ff]/[0.06]
+                      blur-2xl
+                    "
+                  />
+
+                  <div
+                    className="
+                      relative
+                      flex
+                      flex-col
+                      gap-4
+                      p-5
+                      sm:flex-row
+                      sm:items-center
+                      sm:gap-6
+                      sm:p-6
+                    "
+                  >
+                    {/* Loader */}
+                    <div
                       className="
-                        w-full
-                        animate-pulse
-                        rounded-[18px]
-                        border
-                        border-black/10
-                        bg-white
+                        relative
+                        grid
+                        h-[74px]
+                        w-[74px]
+                        shrink-0
+                        place-items-center
+                        rounded-full
+                        bg-[#e9edff]
+                        shadow-[0_10px_30px_rgba(25,65,207,0.08)]
                       "
                     >
                       <div
                         className="
-                          h-[180px]
-                          rounded-t-[18px]
-                          bg-neutral-200
+                          absolute
+                          h-[42px]
+                          w-[42px]
+                          animate-spin
+                          rounded-full
+                          border-[3px]
+                          border-[#1941cf]/15
+                          border-t-[#1941cf]
                         "
                       />
 
+                      <Sparkles
+                        className="
+                          h-4
+                          w-4
+                          text-[#1941cf]
+                        "
+                      />
+                    </div>
+
+                    {/* Copy */}
+                    <div
+                      className="
+                        min-w-0
+                        flex-1
+                      "
+                    >
                       <div
                         className="
-                          space-y-3
-                          p-4
+                          mb-2
+                          flex
+                          flex-wrap
+                          items-center
+                          gap-2
+                        "
+                      >
+                        <span
+                          className="
+                            inline-flex
+                            items-center
+                            rounded-full
+                            bg-[#1941cf]/10
+                            px-2.5
+                            py-1
+                            text-[10px]
+                            font-bold
+                            uppercase
+                            tracking-[0.14em]
+                            text-[#1941cf]
+                          "
+                        >
+                          Búsqueda inteligente
+                        </span>
+
+                        <span
+                          className="
+                            text-[11px]
+                            font-medium
+                            text-neutral-400
+                          "
+                        >
+                          Analizando resultados…
+                        </span>
+                      </div>
+
+                      <div
+                        key={
+                          loadingMessageIndex
+                        }
+                        className="
+                          animate-[pulse_0.55s_ease-in-out_1]
+                        "
+                      >
+                        <h3
+                          className="
+                            text-[20px]
+                            font-bold
+                            leading-tight
+                            text-neutral-950
+                            sm:text-[23px]
+                          "
+                        >
+                          {
+                            currentLoadingMessage
+                              .title
+                          }
+                        </h3>
+
+                        <p
+                          className="
+                            mt-2
+                            max-w-[850px]
+                            text-[14px]
+                            leading-6
+                            text-neutral-500
+                            sm:text-[15px]
+                          "
+                        >
+                          {
+                            currentLoadingMessage
+                              .description
+                          }
+                        </p>
+                      </div>
+
+                      {/* Indicador visual de mensajes */}
+                      <div
+                        className="
+                          mt-4
+                          flex
+                          items-center
+                          gap-1.5
+                        "
+                        aria-hidden="true"
+                      >
+                        {LOADING_MESSAGES.map(
+                          (
+                            _message,
+                            index
+                          ) => (
+                            <span
+                              key={index}
+                              className={`
+                                h-1.5
+                                rounded-full
+                                transition-all
+                                duration-500
+
+                                ${
+                                  index ===
+                                  loadingMessageIndex
+                                    ? `
+                                      w-8
+                                      bg-[#1941cf]
+                                    `
+                                    : index <
+                                      loadingMessageIndex
+                                    ? `
+                                      w-4
+                                      bg-[#1941cf]/35
+                                    `
+                                    : `
+                                      w-4
+                                      bg-neutral-200
+                                    `
+                                }
+                              `}
+                            />
+                          )
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                {/* ============================================= */}
+                {/* SKELETONS */}
+                {/* ============================================= */}
+
+                <div
+                  className="
+                    grid
+                    grid-cols-1
+                    gap-5
+                    sm:grid-cols-2
+                    xl:grid-cols-4
+                  "
+                >
+                  {Array.from({
+                    length: 8,
+                  }).map(
+                    (_, i) => (
+                      <div
+                        key={i}
+
+                        className="
+                          w-full
+                          animate-pulse
+                          overflow-hidden
+                          rounded-[18px]
+                          border
+                          border-black/10
+                          bg-white
                         "
                       >
                         <div
                           className="
-                            h-4
-                            w-[90%]
-                            rounded
+                            h-[180px]
+                            rounded-t-[18px]
                             bg-neutral-200
                           "
                         />
 
                         <div
                           className="
-                            h-4
-                            w-[70%]
-                            rounded
-                            bg-neutral-200
+                            space-y-3
+                            p-4
                           "
-                        />
+                        >
+                          <div
+                            className="
+                              h-4
+                              w-[90%]
+                              rounded
+                              bg-neutral-200
+                            "
+                          />
 
-                        <div
-                          className="
-                            h-6
-                            w-[45%]
-                            rounded-full
-                            bg-neutral-200
-                          "
-                        />
+                          <div
+                            className="
+                              h-4
+                              w-[70%]
+                              rounded
+                              bg-neutral-200
+                            "
+                          />
+
+                          <div
+                            className="
+                              h-6
+                              w-[45%]
+                              rounded-full
+                              bg-neutral-200
+                            "
+                          />
+                        </div>
                       </div>
-                    </div>
-                  )
-                )}
+                    )
+                  )}
+                </div>
               </div>
             ) : error ? (
 
